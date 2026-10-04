@@ -823,6 +823,7 @@ async function portScene(){f().portScene=1;const p=MAPS.port.npcs.find(n=>n.t===
  await say('Il est temps que je te dise la vérité. Il y a des siècles, les fondateurs d\'Aurélys ont scellé Nocturion, le gardien de la nuit, sous l\'Observatoire.',P);
  await say('Ils voulaient des jours sans fin, des récoltes sans fin. Depuis, les nuits raccourcissent… et les créatures d\'ombre s\'affaiblissent. Mes ancêtres en faisaient partie. Je le savais, et je me suis tu.',P);
  await say('Valen a raison sur un point : la nuit a été trahie. Mais une éclipse éternelle étoufferait tout le reste. Avec le Cœur d\'Aube, il peut briser le sceau et soumettre Nocturion.',P);
+ await say('Et ces bracelets… Les Éclats d\'Aube réagissent au lien entre un dresseur et sa créature. Valen l\'avait compris avant tout le monde : c\'est pour ça qu\'il les faisait voler.',P);
  await say('Maëlle, la championne du port, connaissait bien Valen. Bats-la : elle seule peut t\'ouvrir la Grotte Écho. Et souviens-toi : une attaque LUMIÈRE dissipe une éclipse. Les Lumignon brillent la nuit sur la Route 2…',P);await cine(0);save()}
 async function kael3(){const k=tmpN('port',{x:16,y:2,t:'rival',d:2,name:'Kael'});await cine(1);await bang(k);await approach(k,6);
  await say('Attends. Laisse-moi y aller seul. C\'est mon frère, c\'est à moi de le ramener.','Kael');await emote(k,'…',700);await say('…Tu refuses ? Alors prouve-moi que tu ne seras pas un poids là-haut ! Brasia m\'a confié un bracelet, à moi aussi. On verra qui s\'éveille le mieux !','Kael');await cine(0);
