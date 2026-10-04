@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pixémon Éclipse</title>
+<style>
+/* Console portable : écran pixel centré dans une coque violet crépuscule, pad tactile sous l'écran sur mobile */
+:root{--bg:#120f1d;--shell:#2a2440;--rim:#3d3460;--ink:#ece6d6;--mute:#8f87ad;--btn:#3b3357;--btnd:#241d38;--a:#e8484f;--ad:#a8303a;--gold:#f6c445;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:0;padding-inline:16px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#c{display:block;width:min(100%,960px,calc((100dvh - 80px)*1.5));aspect-ratio:3/2;height:auto;image-rendering:pixelated;background:#000;border:8px solid var(--shell);border-radius:14px;box-shadow:0 0 0 2px var(--rim),0 10px 0 0 #0b0914;box-sizing:border-box;outline:none;cursor:pointer}
+#help{color:var(--mute);text-align:center}
+#help b{color:var(--ink);font-weight:400;background:var(--btnd);padding:1px 6px;border-radius:4px;box-shadow:0 2px 0 #0b0914}
+#pad{display:none;width:min(100%,520px);justify-content:space-between;align-items:center;gap:12px}
+.dp{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:4px}
+#pad button{font:inherit;font-weight:700;color:var(--ink);background:var(--btn);border:0;border-radius:10px;font-size:18px;touch-action:none;box-shadow:inset 0 -5px 0 var(--btnd),0 2px 0 #0b0914;transition:transform .05s}
+#pad button:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 var(--btnd)}
+.ab{display:flex;gap:14px;align-items:center}
+#pad .ab button{width:66px;height:66px;border-radius:50%;background:var(--a);box-shadow:inset 0 -6px 0 var(--ad),0 2px 0 #0b0914;font-size:22px}
+#pad .ab button.b{background:var(--btn);box-shadow:inset 0 -6px 0 var(--btnd),0 2px 0 #0b0914}
+#pad .st{width:72px;height:34px;font-size:12px;letter-spacing:.08em}
+button:focus-visible{outline:2px solid var(--gold)}
+@media (pointer:coarse){#pad{display:flex}#help{display:none}#c{width:min(100%,960px,calc((100dvh - 260px)*1.5))}}
+@media (prefers-reduced-motion:reduce){#pad button{transition:none}}
+</style>
+<canvas id="c" width="480" height="320" tabindex="0"></canvas>
+<div id="help"><b>Flèches/ZQSD</b> bouger · <b>Espace</b> valider · <b>Échap</b> retour (maintenir = courir) · <b>M</b> menu · souris acceptée</div>
+<div id="pad">
+  <div class="dp"><span></span><button data-k="up">▲</button><span></span><button data-k="left">◀</button><span></span><button data-k="right">▶</button><span></span><button data-k="down">▼</button><span></span></div>
+  <button class="st" data-k="start">MENU</button>
+  <div class="ab"><button class="b" data-k="b">B</button><button data-k="a">A</button></div>
+</div>
