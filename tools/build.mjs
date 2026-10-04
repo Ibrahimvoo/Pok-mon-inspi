@@ -1,7 +1,9 @@
-// Assemble le jeu en un seul fichier HTML autonome : shell + données de sprites + code.
-import {readFileSync,writeFileSync} from 'node:fs';
+// Assemble le jeu en un seul fichier HTML autonome : shell + sprites + illustrations cuites + code (module monde inséré).
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 const r=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const sprites=JSON.stringify(JSON.parse(r('src/sprites.json')));
-const html=r('src/shell.html').trimEnd()+'\n<script>\n'+r('src/game.js').replace('/*@PIXB@*/','const PIXB='+sprites+';')+'\n</script>\n</body></html>\n';
+const art=existsSync(new URL('../src/art.json',import.meta.url))?r('src/art.json'):'{}';
+const code=r('src/game.js').replace('/*@PIXB@*/','const PIXB='+sprites+';').replace('/*@ART@*/','const ART='+art+';').replace('/*@WORLD@*/',r('src/world.js'));
+const html=r('src/shell.html').trimEnd()+'\n<script>\n'+code+'\n</script>\n</body></html>\n';
 writeFileSync(new URL('../index.html',import.meta.url),html);
 console.log('index.html',(html.length/1024).toFixed(0)+' Ko');
