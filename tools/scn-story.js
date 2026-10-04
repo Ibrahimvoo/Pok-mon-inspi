@@ -20,7 +20,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);
  loadMap('route2',16,10,2);G.dir=2;await interact();L('rocher',MAPS.route2.rows[10][15]);
  loadMap('port',22,8,2);await MAPS.port.enter();L('port',f().portScene);await SNAP('port');
  await fightAll('gym2');L('badge2',f().badge2,G.keys.lantern);
- loadMap('port',12,2,1);await MAPS.port.step();L('kael3',f().kael3);
+ loadMap('port',12,1,1);await MAPS.port.step();L('kael3',f().kael3);
  loadMap('grotte',13,16,1);await SNAP('grotte');await fightAll('grotte');
  loadMap('obs',8,9,1);await MAPS.obs.enter();L('obsScene',f().obsScene);await SNAP('obs');
  await fightAll('obs');for(const i of[1,0,2])await consoleAct(i);L('bar',f().bar,MAPS.obs.rows[3]);
