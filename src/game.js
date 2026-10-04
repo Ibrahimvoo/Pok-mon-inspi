@@ -85,6 +85,7 @@ Object.assign(ICO,{baiesoin:icon(BERRY,{g:'#6ac85a',G:'#2f8a4a'}),baieprisme:ico
  trophy:icon(["oooooooo","oyyyyyYo","ooywyYoo",".oyyyYo.","..oyYo..","...oo...","..oYYo..",".oooooo."]),
  board:icon(["..oooo..","oooyyooo","owwwwwwo","owkkkwwo","owwwwwwo","owkkkkwo","owwwwwwo","oooooooo"]),
  hrt:icon([".oo.oo.","orrorro","orrrrRo",".orrRo.","..oRo..","...o..."],{r:'#ff7aa8',R:'#d84a7a'}),hrt0:icon([".oo.oo.","owwowwo","owwwwlo",".owwlo.","..olo..","...o..."],{w:'#e6dcef',l:'#cfc4dc'})});
+ICO.guide=icon([".oooooo.","owwbbwwo","owbwwbwo","owwwbwwo","owwbwwwo","owwwwwwo","owwbwwwo",".oooooo."]);
 ICO.team=ICO.capsule;const BALL=epx(ICO.capsule),BIG={};const bigIco=k=>BIG[k]||(BIG[k]=epx(ICO[k]));
 const LEGS={d:[["...oppppppppo...","...opPo..oPpo...","...okko..okko..."],["...oppppppppo...","...opPo..okko...","...okko........."],["...oppppppppo...","...okko..oPpo...",".........okko..."]],
 s:[["....oppppppo....","....opPooPpo....","....okkookko...."],["....oppppppo....","...oPpo..oPpo...","..okko....okko.."],["....oppppppo....",".....oPppo......",".....okkko......"]]};
@@ -606,7 +607,8 @@ const SWARMS=[['route1','volticelle',4,7],['route1','lumignon',4,7],['foret','la
 function swarm(){const day=Math.floor(G.t/CYC),L=SWARMS.filter(([m])=>G.seen?.[m]&&(m!=='route2'&&m!=='grotte'||f().r2));return L.length&&f().badge?L[(day*7919+13)%L.length]:null}
 function encTable(M,k){let T=[...(M.enc||[])];const sw=swarm();if(sw&&sw[0]===k)T.push([sw[1],sw[2],sw[3],60]);if(rain()&&M.fish&&T.length){const lv=T.map(e=>e[1]);T.push([M.fish[0][0],Math.min(...lv),Math.max(...T.map(e=>e[2])),28])}return T}
 const pickEnc=T=>{const L=T.filter(e=>!e[4]||(e[4]==='n')===night());let r=Math.random()*L.reduce((a,e)=>a+e[3],0);return L.find(e=>(r-=e[3])<0)||L[0]};
-async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;const ld=G.party[0];if(ld&&ld.hp>0&&G.t%8===0)bondUp(ld,1);if(G.t%48===0)G.party.forEach(m=>m.hp>0&&bondUp(m,1));if(night()&&!act2()&&M.amb!=='in')tip('nuit','C\'est la nuit ! D\'autres créatures sortent des herbes (Lumignon, Ombrelin…), et certains talents changent. Le lit de la maison permet de choisir l\'heure.');if(rain())tip('pluie','Une averse ! Pendant la pluie, les combats commencent sous la PLUIE (EAU x1,5, FEU x0,5) et des créatures d\'eau sortent des herbes.');if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
+async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;const ld=G.party[0];if(ld&&ld.hp>0&&G.t%8===0)bondUp(ld,1);if(G.t%48===0)G.party.forEach(m=>m.hp>0&&bondUp(m,1));
+ if(G.t%160===0&&folMon()&&bondLv(ld)>=3&&!['in','tech'].includes(M.amb)&&Math.random()<.4){const k=['baiesoin','biscuit','potion','capsule','superpotion','baieprisme'][rnd(0,5)];await emote('fol','!',500);give(k);await say(`${nm(ld)} a déniché quelque chose ! Tu reçois ${IT[k][0]} !`);tip('flair','Quand le lien est fort, ta créature de tête déniche parfois des objets en chemin.')}if(night()&&!act2()&&M.amb!=='in')tip('nuit','C\'est la nuit ! D\'autres créatures sortent des herbes (Lumignon, Ombrelin…), et certains talents changent. Le lit de la maison permet de choisir l\'heure.');if(rain())tip('pluie','Une averse ! Pendant la pluie, les combats commencent sous la PLUIE (EAU x1,5, FEU x0,5) et des créatures d\'eau sortent des herbes.');if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
  if(ch===','||ch==='v'){sfx('grass');for(let i=0;i<4;i++)AMB.push({k:'rl',x:G.x*TS+8+Math.random()*16,y:G.y*TS+18,vx:(Math.random()-.5)*1.6,vy:-1.5-Math.random(),l:22,c:ch===','?'#7fd05a':M.cave?'#6a7a8a':'#d8743a'})}
  if(steps===40)tip('fol','Ta créature de tête te suit partout. Elle s\'agite quand un objet caché est tout proche. Appuie sur MENU pour l\'équipe, la carte et le journal.');
  if(G.repel>0&&--G.repel===0){await say('L\'effet de la Repousse se dissipe.');return}
@@ -862,10 +864,13 @@ async function valenTalk(){const d=Math.floor(G.t/CYC),V='Valen',v=MAPS.dome.npc
  const r=await battle([mon('nocturelle',42),mon('magmor',42),mon('ombrelin',43),mon('noctyrex',45)],{tr:{name:'Valen',look:'valen',money:4500,vs:1,boss:1,items:1,ev:1,after:'Tu as toujours le dernier mot. C\'est agaçant.'}});if(r==='win')f().valenDay=d;save()}
 // --- La Mine de Cendreville : la Team Éclipse y vole des Éclats d'Aube, Tito est coincé au fond ---
 async function mineDoor(){if(!f().badge)return say('Une barrière de bois bloque l\'entrée de la mine : "Accès réservé aux mineurs."');await warp('mine',11,16,1)}
-async function mineAlert(){f().mineAlert=1;const V='ville',mi=tmpN(V,{x:10,y:5,t:'miner',d:2,name:'Mineur'});await cine(1);await emote(mi,'!',600);await approach(mi,6);
+// Case libre à quelques pas du joueur, en ligne droite (pour faire arriver un personnage pendant une scène)
+function nearSpot(r=3){const M=MAPS[G.map],ok=(x,y)=>{const c=M.rows[y]?.[x];return c&&!SOLID.has(c)&&!npcs(M).some(n=>n.x===x&&n.y===y)&&!(folMon()&&FOL.x===x&&FOL.y===y)&&!M.doors?.[x+','+y]};
+ for(let k=r;k>=1;k--)for(const d of[3,2,0,1]){let fine=true;for(let i=1;i<=k;i++)if(!ok(G.x+DX[d]*i,G.y+DY[d]*i)){fine=false;break}if(fine)return[G.x+DX[d]*k,G.y+DY[d]*k]}return[G.x,G.y]}
+async function mineAlert(){f().mineAlert=1;const V='ville',[mx,my]=nearSpot(3),mi=tmpN(V,{x:mx,y:my,t:'miner',d:0,name:'Mineur'});faceTo(mi,G.x,G.y);puff(mx,my,'#c8b8a0',6);await cine(1);await emote(mi,'!',600);await approach(mi,6);
  await say('Hé, toi ! Tu es dresseur ? Au secours ! Des sbires de la Team Éclipse sont descendus dans la mine cette nuit, avec des explosifs !','Mineur');
  await say('Ils ont fait sauter la galerie du fond… Mon apprenti, Tito, est coincé là-dessous !','Mineur');
- const br=tmpN(V,{x:6,y:4,t:'leader',d:0,name:'Brasia'});sfx('door');await emote(br,'!',500);
+ const[bx,by]=G.x===6&&G.y===5?[6,4]:nearSpot(2),br=tmpN(V,{x:bx,y:by,t:'leader',d:0,name:'Brasia'});faceTo(br,G.x,G.y);sfx('door');await emote(br,'!',500);
  await say('Encore la Team Éclipse ! Je dois rester en ville, au cas où ils remonteraient par les vieux puits.','Brasia');
  await say('Mais toi, tu viens de prouver ta valeur. L\'entrée de la mine est au nord de la ville. Ramène Tito… et découvre ce qu\'ils cherchent là-dessous.','Brasia');
  await fadeTo(1,250);rmN(V,mi);rmN(V,br);await cine(0);await fadeTo(0,250);save()}
@@ -927,22 +932,23 @@ async function tourFinale(){musStop();ui.flash=1;ui.flashC='#ffffff';sfx('lv');a
  G.money+=8000;const rare=RARE.filter(k=>!(G.bag[k]>0)&&!G.party.some(m=>m.item===k)),it=rare.length?rare[rnd(0,rare.length-1)]:'biscuit',q=rare.length?1:5;give(it,q);await say(`Tu remportes 8000 pièces et ${IT[it][0]} x${q} !`);
  (G.hof??=[]).push({t:G.play,n:f().tourWins,team:G.party.map(m=>[m.sp,m.lv,m.sh?1:0])});await hallOfFame(G.hof.length-1);
  healAll();jingle('heal');musPlay(mapMus(MAPS[G.map]));await say(first?'Ton nom est gravé au Panthéon du Cycle. Reviens défendre ton titre quand tu veux : le Tournoi a lieu chaque jour !':'Ton équipe rejoint encore le Panthéon. Le titre te va bien !','Brasia')}
-async function hallOfFame(i){const h=G.hof[i];ui.panel=()=>{const t=now();panel(8,8,464,304,{fill:'#efe2bf'});txt('PANTHÉON DU CYCLE',W/2,40,C.acc,{al:'c'});txt(`VICTOIRE ${h.n} · ${fmtT(h.t)}`,W/2,58,C.ink2,{mini:1,al:'c'});
+async function hallOfFame(i){const h=G.hof[i];ui.panel=()=>{const t=now();panel(8,8,464,304,{fill:'#efe2bf'});txt('PANTHÉON DU CYCLE',W/2,40,C.acc,{al:'c'});txt(`VICTOIRE ${h.n} - ${fmtT(h.t)}`,W/2,58,C.ink2,{mini:1,al:'c'});
   h.team.forEach(([sp,lv,sh],j)=>{const x=40+(j%3)*140,y=68+(j/3|0)*112,b=((t/380|0)+j)%2*2;pell(X,x+48,y+92,30,5,'#d8cbb0');X.drawImage(monSpr(sp,0,96,!!sh),x,y-b,96,96);txt(`${SP[sp].name} · Nv ${lv}`,x+48,y+106,C.ink,{s:1,al:'c',sh:0})});
   txt('A : CONTINUER',W-24,302,C.mute,{mini:1,al:'r'})};for(;;){const k=await key();if(k==='a'||k==='b')break}ui.panel=null}
 // --- Tableau des Missions : 3 missions à la fois (capture, chasse, pêche), remplacées dès que la récompense est touchée ---
-const MSK={cap:'CAPTURE',ko:'CHASSE',fish:'PÊCHE'};
-const msTxt=q=>q.k==='cap'?`capturer ${SP[q.v].name}`:q.k==='ko'?`vaincre ${q.need} créatures ${TY[q.v][0]} sauvages`:`pêcher ${q.need} créatures`;
-const msShort=q=>q.k==='cap'?`Capturer ${SP[q.v].name}`:q.k==='ko'?`Vaincre ${q.need} ${TY[q.v][0]}`:`Pêcher ${q.need} créatures`;
+const MSK={cap:'CAPTURE',ko:'CHASSE',fish:'PÊCHE',ev:'ÉVEIL'};
+const msTxt=q=>q.k==='cap'?`capturer ${SP[q.v].name}`:q.k==='ko'?`vaincre ${q.need} créatures ${TY[q.v][0]} sauvages`:q.k==='ev'?`éveiller ${q.need} fois une créature en combat`:`pêcher ${q.need} créatures`;
+const msShort=q=>q.k==='cap'?`Capturer ${SP[q.v].name}`:q.k==='ko'?`Vaincre ${q.need} ${TY[q.v][0]}`:q.k==='ev'?`Éveiller ${q.need} fois`:`Pêcher ${q.need} créatures`;
 function msNew(){const L=G.ms?.L||[],tier=(f().badge?1:0)+(f().eclipse?1:0)+(f().badge2?1:0)+(f().balance?1:0),pk=a=>a[Math.floor(Math.random()*a.length)],zone=k=>MAPS[k].name.split(' · ')[0];
  const E=Object.keys(MAPS).filter(k=>G.seen?.[k]&&MAPS[k].enc).flatMap(k=>MAPS[k].enc.map(e=>({m:k,sp:e[0],tm:e[4]})));
- const kinds=['cap','cap','ko','ko',...(G.keys.rod?['fish']:[])];let q=null;
+ const kinds=['cap','cap','ko','ko',...(G.keys.rod?['fish']:[]),...(G.keys.bracelet?['ev']:[])];let q=null;
  for(let n=0;n<24&&!q;n++){const k=pk(kinds);
   if(k==='cap'&&E.length){const un=E.filter(e=>G.dex[e.sp]!==2),e=un.length&&Math.random()<.65?pk(un):pk(E);if(L.some(o=>o.k==='cap'&&o.v===e.sp))continue;q={k,v:e.sp,need:1,where:zone(e.m)+(e.tm?` (${e.tm==='n'?'la nuit':'le jour'})`:'')}}
   else if(k==='ko'&&E.length){const t=SP[pk(E).sp].t;if(L.some(o=>o.k==='ko'&&o.v===t))continue;q={k,v:t,need:3+(tier>>1)+rnd(0,1),where:'Créatures sauvages : '+[...new Set(E.filter(e=>SP[e.sp].t===t).map(e=>zone(e.m)))].slice(0,2).join(', ')}}
-  else if(k==='fish'){if(L.some(o=>o.k==='fish'))continue;q={k,v:'',need:2+(tier>1?1:0),where:'Face à l\'eau, avec la canne de Gus'}}}
+  else if(k==='fish'){if(L.some(o=>o.k==='fish'))continue;q={k,v:'',need:2+(tier>1?1:0),where:'Face à l\'eau, avec la canne de Gus'}}
+  else if(k==='ev'){if(L.some(o=>o.k==='ev'))continue;q={k,v:'',need:2,where:'Remplis la jauge du Bracelet, puis choisis ÉVEIL DU CYCLE'}}}
  q??={k:'ko',v:'NOR',need:3,where:'Créatures sauvages : Route 1'};
- const tt=q.k==='ko'?q.v:q.k==='cap'?SP[q.v].t:'EAU',pool=[['biscuit',2],['baiesoin',2],['supercapsule',3],['superpotion',2],['repousse',2],...(tier?[['baieprisme',2],['hypercapsule',2],['elixir',1],[BOOST[tt],1],[BOOST[tt],1]]:[])];
+ const tt=q.k==='ko'?q.v:q.k==='cap'?SP[q.v].t:q.k==='ev'?'LUM':'EAU',pool=[['biscuit',2],['baiesoin',2],['supercapsule',3],['superpotion',2],['repousse',2],...(tier?[['baieprisme',2],['hypercapsule',2],['elixir',1],[BOOST[tt],1],[BOOST[tt],1]]:[])];
  const own=k=>G.bag[k]>0||G.party.some(m=>m.item===k)||G.box.some(m=>m.item===k),rare=RARE.filter(k=>!own(k));
  q.rw=tier&&rare.length&&Math.random()<.2?[pk(rare),1]:pk(pool);q.gold=300+tier*250+(q.k==='cap'?150:0)+rnd(0,4)*25;q.n=0;return q}
 async function missionBoard(){G.ms??={L:[],done:0};while(G.ms.L.length<3)G.ms.L.push(msNew());
@@ -951,7 +957,7 @@ async function missionBoard(){G.ms??={L:[],done:0};while(G.ms.L.length<3)G.ms.L.
   if(q.done){G.money+=q.gold;give(q.rw[0],q.rw[1]);G.ms.done=(G.ms.done||0)+1;await say(`Mission réussie ! Tu reçois ${q.gold} pièces et ${IT[q.rw[0]][0]} x${q.rw[1]} !`);G.ms.L[i]=msNew();save();continue}
   show(`${msShort(q)}. ${q.where}.`);const c=await choose(['GARDER','ABANDONNER'],{w:200});ui.text=null;if(c===1&&await ask('Abandonner cette mission ? Une autre la remplacera.'))G.ms.L[i]=msNew()}}
 function drawMission(q,[x,y,w,h],sel,pr){rr(x+4,y+4,w,h,4,'rgba(8,6,20,.45)');rr(x,y,w,h,4,C.ink);rr(x+2,y+2,w-4,h-4,2,sel||pr?C.acc:q.done?C.gold:C.frame);rr(x+6,y+6,w-12,h-12,2,sel?'#fff8ee':C.paper);R(X,'#ffffff',x+8,y+6,w-16,2);
- if(q.k==='cap'){const im=monSpr(q.v,0,48);X.drawImage(G.dex[q.v]?im:silh(im,'#8a80a6'),x+10,y+18,48,48)}else X.drawImage(bigIco(q.k==='ko'?'star':'rod'),x+18,y+26,32,32);
+ if(q.k==='cap'){const im=monSpr(q.v,0,48);X.drawImage(G.dex[q.v]?im:silh(im,'#8a80a6'),x+10,y+18,48,48)}else X.drawImage(bigIco(q.k==='ko'?'star':q.k==='ev'?'bracelet':'rod'),x+18,y+26,32,32);
  txt(MSK[q.k],x+66,y+24,C.mute,{mini:1});txt(msShort(q),x+66,y+44,C.ink);txt(q.where,x+66,y+58,C.ink2,{s:1,sh:0});
  bar(x+66,y+64,170,q.n/q.need,q.done?C.green:C.blue,8);txt(`${q.n}/${q.need}`,x+244,y+72,C.ink2,{mini:1});
  X.drawImage(ICO[q.rw[0]],x+w-118,y+16,16,16);txt('x'+q.rw[1],x+w-96,y+29,C.ink,{mini:1});X.drawImage(ICO.coin,x+w-118,y+38,16,16);txt(q.gold,x+w-96,y+51,C.ink,{mini:1});
@@ -964,9 +970,17 @@ const NEWS=[[()=>ICO.star,'Éveil du Cycle','Remplis la jauge du Bracelet (offer
  [()=>ICO.pin,'Nouveau chapitre','Après le Badge Roc, la Team Éclipse pille la Mine de Cendreville. Sauve Tito et découvre ce qu\'ils cherchent.'],
  [()=>ICO.flag,'Dresseurs plus malins','Ils choisissent leur créature selon les types, et les boss savent battre en retraite. Option : combats rapides.'],
  [()=>ICO.trophy,'Tournoi du Cycle','Après l\'aventure : quatre combats d\'affilée à Cendreville, des revanches d\'arène et un Panthéon.']];
-async function whatsNew(){ui.panel=()=>{panel(8,8,464,304);X.drawImage(ICO.star,24,22,16,16);txt('NOUVEAUTÉS 4.0',46,36,C.acc,{sh:0});txt('A / B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
-  NEWS.forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))})};
+const newsBody=()=>NEWS.forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))});
+async function whatsNew(){ui.panel=()=>{panel(8,8,464,304);X.drawImage(ICO.star,24,22,16,16);txt('NOUVEAUTÉS 4.0',46,36,C.acc,{sh:0});txt('A / B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);newsBody()};
  for(;;){const k=await key();if(k==='a'||k==='b')break}ui.panel=null}
+// Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
+async function guide(){let pg=0;const TT=Object.keys(TY),AB={NOR:'NOR',FEU:'FEU',EAU:'EAU',PLA:'PLA',ELE:'ÉLE',ROC:'ROC',OMB:'OMB',LUM:'LUM'};
+ ui.panel=()=>{panel(8,8,464,304);X.drawImage(ICO.guide,24,22,16,16);txt(pg?'MÉCANIQUES':'TABLE DES TYPES',46,36,C.acc,{sh:0});txt('PAGE '+(pg+1)+'/2 - B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+  if(pg){newsBody();return}const x0=100,y0=72,cw=44,ch=25;
+  TT.forEach((t,j)=>{const x=x0+j*cw;rr(x,y0-18,cw-4,16,2,C.ink);R(X,TY[t][1],x+2,y0-16,cw-8,12);txt(AB[t],x+(cw-4)/2,y0-6,'#ffffff',{mini:1,al:'c'})});
+  TT.forEach((a,i)=>{const y=y0+2+i*ch;chip(a,22,y+4);TT.forEach((d,j)=>{const x=x0+j*cw,e=eff(a,d);R(X,(i+j)%2?'#efe6d2':'#f6efdf',x,y,cw-4,ch-3);if(e!==1){R(X,e>1?'#bfe8b0':'#f0c0c0',x+2,y+2,cw-8,ch-7);txt(e>1?'X2':'/2',x+(cw-4)/2,y+16,e>1?'#2f7a3a':'#a8303a',{mini:1,al:'c'})}})});
+  txt('LIGNE : TYPE QUI ATTAQUE   COLONNE : TYPE QUI DÉFEND',W/2,288,C.mute,{mini:1,al:'c'});txt('X2 : SUPER EFFICACE   /2 : PEU EFFICACE   VIDE : NORMAL',W/2,300,C.ink2,{mini:1,al:'c'})};
+ for(;;){const k=await key();if(['left','right','up','down','a'].includes(k)){pg=1-pg;sfx('sel');continue}if(k==='b')break}ui.panel=null}
 const fmtT=ms=>{const m=Math.floor(ms/60000);return`${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}`};
 function goal(){const g=f();return!g.starter?'Va voir le Prof. Saule dans son labo (toit vert).':!g.badge?'Rejoins Cendreville au nord et bats Brasia, la championne d\'arène.':!g.mine&&!g.rival2?'Sauve Tito, l\'apprenti mineur coincé dans la Mine de Cendreville, au nord de la ville.':!g.rival2?'Traverse la Forêt Murmure, à l\'est de Cendreville.':!g.boss?'Gravis le Mont Braise et arrête Vex, le chef de la Team Éclipse.':
  !g.r2?'Retourne à Cendreville : Brasia peut dégager la route de l\'ouest.':!g.portScene?'Suis la Route 2 vers l\'ouest jusqu\'à Port-Miroir.':!g.badge2?'Bats Maëlle, la championne de Port-Miroir, pour accéder à la Grotte Écho.':!g.kael3?'Rejoins la sortie nord de Port-Miroir.':
@@ -985,7 +999,7 @@ function partyMenu(title,cancel=true){ui.dim=title;return choose(G.party.map(nm)
 function drawDim(){if(!ui.dim)return;X.fillStyle='rgba(18,14,34,.8)';X.fillRect(0,0,W,H);tag(12,8,ui.dim.toUpperCase(),C.acc);txt('B : RETOUR',W-14,24,'#c9c2d6',{mini:1,al:'r'})}
 async function summary(m){ui.panel=()=>{const S=st(m),sp=SP[m.sp];panel(8,8,464,304);rr(20,20,176,184,4,'#efe6d2');pell(X,108,182,64,10,'#d8cbb0');pell(X,108,180,58,8,'#e6dcc6');X.drawImage(monSpr(m.sp,0,96,m.sh),60,84-(now()/400|0)%2*2,96,96);
  txt(nm(m),28,44);txt('Nv '+m.lv,188,44,C.ink,{al:'r'});const cw=chip(sp.t,28,54);stChip(m,32+cw,54);if(m.sh){X.drawImage(ICO.star,174,56,14,14);txt('CHROMA',188,84,C.acc,{mini:1,al:'r'})}const bl=bondLv(m);for(let h=0;h<5;h++)X.drawImage(h<bl?ICO.hrt:ICO.hrt0,28+h*15,74,14,12);
- if(m.item){X.drawImage(ICO[m.item],26,182,16,16);txt(IT[m.item][0],46,196,C.ink2,{mini:1})}
+ if(m.item){X.drawImage(ICO[m.item],26,182,16,16);txt(IT[m.item][0],46,195,C.ink2,{s:1,sh:0})}
  const mx=Math.max(S.atk,S.def,S.spd)*1.15;[['PV',`${m.hp}/${S.hp}`,m.hp/S.hp,hpCol(m.hp/S.hp)],['ATTAQUE',S.atk,S.atk/mx,C.acc],['DÉFENSE',S.def,S.def/mx,C.blue],['VITESSE',S.spd,S.spd/mx,C.gold]].forEach(([a,b,k,c],i)=>{const y=36+i*30;txt(a,212,y,C.mute,{sh:0});txt(b,456,y,C.ink,{al:'r'});bar(212,y+3,244,k,c,6)});
  const T=TAL[sp.tal];txt('TALENT',212,158,C.mute,{sh:0});txt(T[0],456,158,C.acc,{al:'r',sh:0});wrap(T[1],244,1).slice(0,2).forEach((l,i)=>txt(l,212,170+i*10,C.ink2,{s:1,sh:0}));
  const e0=xpFor(m.lv),e1=xpFor(m.lv+1);txt('EXP',212,194,C.blue,{mini:1});txt(`${Math.max(0,e1-m.exp)} AVANT NV ${m.lv+1}`,456,194,C.ink2,{mini:1,al:'r'});bar(212,198,244,(m.exp-e0)/(e1-e0),C.blue,6);
@@ -1063,10 +1077,10 @@ function drawCard(){panel(8,8,302,214);X.drawImage(ICO.flag,24,24,16,16);txt('OB
  G.party.forEach((m,i)=>{const x=22+i*48;rr(x,160,46,46,2,'#efe6d2');X.drawImage(m.hp>0?monSpr(m.sp,0,48,m.sh):silh(monSpr(m.sp,0,48),'#9a92aa'),x-1,159,48,48)});
  rr(8,226,302,34,4,C.ink);rr(10,228,298,30,2,C.frameD);[['badge',ICO.bRoc],['badge2',ICO.bMir]].forEach(([k,ic],i)=>X.drawImage(f()[k]?ic:silh(ic,'#6a5f8f'),20+i*20,234,16,16));
  X.drawImage(ICO.shard,72,234,16,16);txt(G.keys.shards||0,92,248,'#ffffff',{sh:C.ink});if(G.keys.bracelet)X.drawImage(ICO.bracelet,132,234,16,16);if(G.keys.trophy)X.drawImage(ICO.trophy,154,234,16,16);X.drawImage(ICO.coin,186,234,16,16);txt(G.money,208,248,'#ffffff',{sh:C.ink})}
-async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),['JOURNAL',ICO.book],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
+async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),['JOURNAL',ICO.book],['GUIDE',ICO.guide],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
  const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:O.length>9?24:26,vis:10,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
  if(i<0||k==='FERMER')return;if(k==='ÉQUIPE')await teamMenu();if(k==='PIXÉDEX')await dexMenu();if(k==='SAC')await bagMenu(false);if(k==='JOURNAL')await journal();if(k==='SAUVER')await say(save()?'Partie sauvegardée !':'Impossible de sauvegarder dans ce navigateur.');
- if(k==='CARTE')await regionMap();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
+ if(k==='CARTE')await regionMap();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
  if(k==='TITRE'&&await ask('Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}}
 
 // =====================================================================
@@ -1135,7 +1149,7 @@ async function awaken(s){const m=side(s),T=s?FOE:ME,lu=lunar(),col=lu?'#b89aff':
  sfx('roar');B.awk.add(m);B.awkC.set(m,lu?'#b89aff':'#ffd23a');B.zoom=1.1;ui.flash=.8;ui.flashC=col;B.evB={k:lu,t0:now()};
  for(let i=0;i<3;i++){spawn({k:'ring',x:T[0],y:T[1],r0:90-i*20,r1:-80,l:24,c:col});await wait(110)}
  for(let i=0;i<6;i++)spawn({k:'beam',x:T[0]+(i-2.5)*16,y:0,h:T[1]+50,l:30,c:i%2?col:'#ffffff'});burstAt(T,26,[col,'#ffffff',lu?'#e84aff':C.gold],5,{k:'star'});sfx('shard');await wait(650);
- const ks=lu?['atk','def']:['atk','spd'];for(const k of ks){B.stg[s][k]=Math.min(6,B.stg[s][k]+1);statFx(s,1,k)}sfx('lv');
+ if(!s)msEvt('ev');const ks=lu?['atk','def']:['atk','spd'];for(const k of ks){B.stg[s][k]=Math.min(6,B.stg[s][k]+1);statFx(s,1,k)}sfx('lv');
  await say(`${lu?'Éveil Lunaire':'Éveil Solaire'} ! ${lu?'L\'Attaque et la Défense':'L\'Attaque et la Vitesse'} de ${who(s)} augmentent !`,0,1);
  if(lu){if(m.st){m.st=null;m.slp=0;await say(`La lune purifie ${who(s)} !`,0,1)}}else if(m.hp<S.hp){m.hp=Math.min(S.hp,m.hp+Math.max(1,Math.floor(S.hp/5)));healFx(s);await tween(B.dh,s,m.hp,400);await say(`La lumière soigne ${who(s)} !`,0,1)}
  if(!s)await tipSay('evd','l\'Éveil ne sert qu\'une fois par combat, et ses bonus s\'effacent si ta créature quitte le terrain. Choisis bien ton moment !')}
@@ -1156,7 +1170,7 @@ function foeSwitchTo(){if(B.lvl<2||B.awk.has(B.foe)||B.turn-(B.lsw??-9)<3)return
 async function foeSwitch(m){B.lsw=B.turn;B.awk.delete(B.foe);B.awkC.delete(B.foe);await say(`${B.tr.name} rappelle ${nm(B.foe)} !`,0,1);B.hf=0;B.fo.b=1;await tween(B.fo,'s',0,220);B.fo.b=0;B.fo.v=0;B.foe=m;B.fi=B.foes.indexOf(m);B.stg[1]={atk:0,def:0,spd:0};await sendFoe()}
 // Missions : progression signalée pendant le jeu, annoncée en fin de combat
 const MSQ=[];
-function msEvt(k,v){for(const q of G.ms?.L||[])if(!q.done&&q.k===k&&(k==='fish'||q.v===v)){q.n=Math.min(q.need,q.n+1);if(q.n>=q.need){q.done=1;MSQ.push(q)}}}
+function msEvt(k,v){for(const q of G.ms?.L||[])if(!q.done&&q.k===k&&(k==='fish'||k==='ev'||q.v===v)){q.n=Math.min(q.need,q.n+1);if(q.n>=q.need){q.done=1;MSQ.push(q)}}}
 async function msFlush(){while(MSQ.length){const q=MSQ.shift();sfx('lv');await say(`Mission accomplie : ${msTxt(q)} ! Récupère ta récompense au Tableau des Missions d'un Centre de Soins.`)}}
 async function battle(foes,o={}){const tr=o.tr;if(o.legend){ui.ring={t0:now(),c:TY[SP[foes[foes.length-1].sp].t][1]};sfx('roar');ui.shake=12;await wait(700)}for(let i=0;i<2;i++){ui.flash=1;ui.flashC='#ffffff';await wait(160)}musPlay(o.legend?'final':tr?.vs?'boss':'battle');
  if(tr&&tr.vs){ui.vs={tr,t0:now()};sfx('alert');await wait(1700)}
@@ -1260,7 +1274,7 @@ async function throwBall(k){await say(`Tu lances une ${IT[k][0]} !`,0,1);const b
  const mx=st(B.foe).hp,bk=k==='crepuscapsule'?(isN()?3:1):IT[k][3],sb={slp:2,par:1.5,psn:1.5,brn:1.5}[B.foe.st]||1,p=Math.min(1,(3*mx-2*B.foe.hp)*SP[B.foe.sp].cr*bk*sb/(3*mx)/255),q=Math.cbrt(p);
  for(let i=0;i<3;i++){await wait(380);if(Math.random()>q){B.ball=null;sfx('hit');spawn({k:'ring',x:FOE[0],y:FOE[1]+30,r0:4,r1:50,l:16,c:'#ffffff'});burstAt(FOE,12,['#ffffff',C.acc],4);B.fo.b=1;await tween(B.fo,'s',1,200);B.fo.b=0;await say(['Oh non ! Il s\'est libéré !','Raah ! Presque !','Argh ! Ça y était presque !'][i],0,1);return false}
   sfx('sel');for(const r of[-.35,.35,-.2,.2,0]){b.r=r;await wait(55)}}
- b.done=1;sfx('lv');burstAt([FOE[0],FOE[1]+40],10,[C.gold,C.goldL],2.5,{k:'star',g:-.04});const m=B.foe,nw=G.dex[m.sp]!==2;dex(m.sp,2);msEvt('cap',m.sp);await say(`Bravo ! ${nm(m)} est attrapé !`);if(nw)await say(`Les données de ${nm(m)} sont ajoutées au Pixédex.`);
+ b.done=1;sfx('lv');burstAt([FOE[0],FOE[1]+40],10,[C.gold,C.goldL],2.5,{k:'star',g:-.04});const m=B.foe,nw=G.dex[m.sp]!==2;dex(m.sp,2);msEvt('cap',m.sp);await say(`Bravo ! ${nm(m)} est attrapé !`);if(m.item)await say(`${nm(m)} tenait ${IT[m.item][0]} !`);if(nw)await say(`Les données de ${nm(m)} sont ajoutées au Pixédex.`);
  m.st=m.st==='slp'?null:m.st;if(G.party.length<6)G.party.push(m);else{G.box.push(m);await say(`${nm(m)} est envoyé dans la Boîte du Centre de Soins.`)}return true}
 async function endBattle(r){const{tr,o}=B;
  if(r==='win'&&tr){B.fo.v=0;B.hf=0;B.trX=260;musPlay('win');await tween(B,'trX',0,350,1);await say(`Tu as battu ${tr.name} !`);if(tr.after)await say(tr.after,tr.name,0,tr.look);G.money+=tr.money;sfx('lv');await say(`Tu remportes ${tr.money} pièces.`)}
@@ -1399,7 +1413,7 @@ function drawMon(m,back,cx,by,o,t){if(!o.v||o.s<=.01)return;const N=back?120:96,
  X.drawImage(o.dk?silh(img,C.ink):o.b?silh(img,'#ffffff'):img,ev(cx+o.x-w/2),ev(by+o.y-w+4-bob),w,w);X.restore()}
 function hud(x,y,w,h,m,side,dh,t){const k=dh/st(m).hp,lo=k<=.2&&k>0;rr(x+4,y+4,w,h,4,'rgba(12,8,28,.35)');rr(x,y,w,h,4,lo&&(t/300|0)%2?C.red:C.ink);rr(x+2,y+2,w-4,h-4,2,C.paper);R(X,'#ffffff',x+4,y+2,w-8,2);R(X,side?C.frame:C.acc,x+2,y+h-6,w-4,4);
  if(B.lvf&&!side&&now()-B.lvf<500){X.globalAlpha=.6*(1-(now()-B.lvf)/500);rr(x+2,y+2,w-4,h-4,2,C.gold);X.globalAlpha=1}
- txt(nm(m),x+12,y+24);txt(m.lv,x+w-12,y+24,C.ink,{al:'r'});txt('NV',x+w-16-tw(m.lv),y+22,C.ink2,{mini:1,al:'r'});hpBar(x+38,y+32,w-50,k);
+ txt(nm(m),x+12,y+24);txt(m.lv,x+w-12,y+24,C.ink,{al:'r'});txt('NV',x+w-16-tw(m.lv),y+22,C.ink2,{mini:1,al:'r'});if(!side&&m.item)X.drawImage(ICO[m.item],x+w-38-tw(m.lv)-tw('NV',2,1),y+11,14,14);hpBar(x+38,y+32,w-50,k);
  const sg=B.stg[side?1:0];let sx=x+stChip(m,x,y+h+4);if(m.st&&m.hp>0)sx+=4;for(const s of['atk','def','spd'])if(sg[s]){const lab={atk:'ATT',def:'DEF',spd:'VIT'}[s]+(sg[s]>0?'+':'')+sg[s],ww=tw(lab,2,1)+10;rr(sx,y+h+4,ww,14,2,C.ink);R(X,sg[s]>0?C.green:C.blue,sx+2,y+h+6,ww-4,10);txt(lab,sx+5,y+h+14,'#ffffff',{mini:1});sx+=ww+4}
  if(side&&B.tr)B.foes.forEach((f2,i)=>{const bx=x+w-16-(B.foes.length-1-i)*14;X.drawImage(f2.hp>0?BALL:silh(BALL,'#6a5f8f'),bx,y+h+4,12,12)});if(side&&!B.tr&&G.dex[m.sp]===2)X.drawImage(ICO.capsule,x+w-26,y+8,12,12);
  if(!side){txt(`${Math.ceil(dh)}/${st(m).hp}`,x+w-12,y+58,C.ink2,{mini:1,al:'r'});const e0=xpFor(m.lv),e1=xpFor(m.lv+1),xv=B.xpv!=null?B.xpv:m.exp;txt('EXP',x+12,y+70,C.blue,{mini:1});bar(x+42,y+62,w-54,(xv-e0)/(e1-e0),C.blue,8);if(B.xpv!=null)R(X,'#ffffff',x+42+ev((w-58)*Math.min(1,(xv-e0)/(e1-e0))),y+64,2,4)}}

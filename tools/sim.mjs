@@ -54,6 +54,7 @@ const T=(...a)=>a.map(([s,l,mv,it])=>Object.assign(mon(s,l,mv),{item:it||null}))
 const BOSS={
  brasia:()=>T(['rocaillon',12,['jetpierre','durcir','grimace','charge']],['rocaroc',15,['jetpierre','murroc','belier','grimace']]),
  selene1:()=>T(['nocturelle',15,['ombrefurtive','hypnose','morsure','vent']],['magmor',16,['feufollet','braise','durcir','crocsfeu']],['ombrelin',16,['hypnose','morsure','ombrefurtive','grondement']]),
+ corvin:()=>T(['ombrelin',14,['hypnose','morsure','ombrefurtive','grondement']],['rocaillon',15,['jetpierre','durcir','charge','grimace']],['magmor',16,['braise','feufollet','crocsfeu','durcir'],V3?null:'charbon']),
  vex1:()=>T(['ombrelin',17,['hypnose','morsure','ombrefurtive','grondement']],['magmor',18,['feufollet','crocsfeu','durcir','braise']],['noctyrex',20,['cri','morsure','ombrefurtive','grimace']]),
  maelle:()=>T(...(process.env.M||'crapaflot:27:dansepluie,aquajet,bulles,grimace|torrentor:28:vague,morsure,durcir,hydro|crapaflot:29:dansepluie,vague,plaquage,aquajet').split('|').map(x=>{const[a,b,c,d]=x.split(':');return[a,+b,c.split(','),V3?null:d]})),
  selene2:()=>T(['nocturelle',29,['hypnose','nuit','clairlune','ombrefurtive']],['magmor',30,['feufollet','lanceflam','durcir','crocsfeu']],['noctyrex',31,['hypnose','nuit','morsure','cri']]),
@@ -63,6 +64,7 @@ const V=process.env.VAR;if(V&&0){const[l1,l2]=V.split(',').map(Number);BOSS.vex2
 for(const s of Object.keys(ST)){console.log('— Départ :',s);
  run('Brasia  (Nv 13 + Larvigne 11 + Têtardin 11 + Piafou 11)',()=>T([sv(s,13),13],['larvigne',11],['tetardin',11],['piafou',11]),BOSS.brasia,{pots:3,items:1});
  run('Brasia  (Nv 13 + Piafou 11 + Ratounet 11, sans contre)',()=>T([sv(s,13),13],['piafou',11],['ratounet',11]),BOSS.brasia,{pots:3,items:1});
+ run('Corvin  (Nv 16 + 3 x Nv 13, mine)',()=>T([sv(s,16),16],['larvigne',13],['tetardin',13],['piafou',13]),BOSS.corvin,{pots:3,items:1});
  run('Sélène 1 (Nv 17 + 3 x Nv 15, Total Soin)',()=>T([sv(s,17),17],['larvigne',15],['tetardin',15],['volticelle',15]),BOSS.selene1,{pots:4,items:1,cures:1});
  run('Vex 1   (Nv 19 + 3 x Nv 17)',()=>T([sv(s,19),19],['larvigne',17],['tetardin',17],['rocaillon',17]),BOSS.vex1,{pots:3,items:1,ev:1});
  run('Maëlle  (Nv 26 + 4 x Nv 24)',()=>T([sv(s,26),26],['papivigne',24],['crapaflot',24],['volticelle',24],['rocaroc',24]),BOSS.maelle,{pots:4,items:2,ev:1});
