@@ -181,7 +181,7 @@ function chroma(c){const g=c.getContext('2d'),d=g.getImageData(0,0,c.width,c.hei
 // =====================================================================
 // TUILES & CONSTRUCTION DES CARTES (couche statique + avant-plan + tuiles animées)
 // =====================================================================
-const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZ'),SC={};
+const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZhwJQ'),SC={};
 function shapeSpr(key,w,h,mark,pal){if(SC[key])return SC[key];const g=[...Array(h)].map(()=>Array(w).fill(0));mark(g);const src=g.map(r=>r.slice());
  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!src[y][x]&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(src[y+b]?.[x+a]||0)>0))g[y][x]=9;
  const o=(x,y)=>g[y]?.[x]===9,out=g.map(r=>r.slice());
@@ -238,9 +238,13 @@ function ground(g,M,at,x,y){const ch=at(x,y),p=tp(g,x*16,y*16),h=HSH(x,y),a=2+(h
  if(ch==='E'){floorP();p('#8a2028',1,2,14,12);p('#b8343e',2,3,12,10);p(C.gold,3,4,10,1);p(C.gold,3,11,10,1);return}
  if(ch==='r'){p('#b8343e',0,0,16,16);p('#a42c36',0,(h%4)*4+1,16,1);if(at(x-1,y)!=='r'){p('#7a1c26',0,0,1,16);p(C.gold,1,0,1,16)}if(at(x+1,y)!=='r'){p('#7a1c26',15,0,1,16);p(C.gold,14,0,1,16)}if(at(x,y-1)==='X')p('rgba(40,28,70,.22)',0,0,16,3);return}
  if(ch==='Z'){floorP();return}
+ if(ch==='h'){floorP();p('#2a2230',1,1,14,14);p('#140e18',3,3,10,10);p('#3e3446',1,1,14,2);p('#5a5048',1,13,14,2);p('#0a060c',5,6,6,5);return}
+ if(ch==='u'){floorP();p('#6e695f',1,1,14,14);p('#8a8478',2,2,12,4);p('#a8a296',3,2,6,1);p('#5a5550',2,12,12,2);return}
+ if(ch==='w'){p(K.wD,0,0,16,16);p('#2f66b0',0,4,16,8);for(let i=0;i<16;i+=4)p('#3a6aa0',i,5,3,6);p(K.wM,a,b,3,1);return}
  if(ch==='X'){if(at(x,y+1)!=='X'){if(M.floor==='tech'){p('#2a2440',0,0,16,16);p('#3a3256',1,1,14,9);p('#4a4070',1,1,14,1);p('#5ad0e0',2,11,12,1);p('#1e1a30',0,13,16,3)}else if(M.floor==='stone'){p('#8a8478',0,0,16,16);for(let r=0;r<3;r++){p('#6e695f',0,r*4+3,16,1);for(let i=(r%2)*4;i<16;i+=8)p('#6e695f',i,r*4,1,3);p('#a29c90',(r%2)*4+1,r*4,3,1)}p('#4a463f',0,12,16,4);p('#6e695f',0,12,16,1)}
    else{p('#6e5b8f',0,0,16,16);for(let i=0;i<16;i+=4)p('#7a679b',i,0,2,10);p('#4c3f66',0,10,16,2);p('#d8c8a0',0,12,16,1);p('#3b3152',0,13,16,3)}}else{p('#2e2645',0,0,16,16);p('#3b3152',0,15,16,1)}return}
- if(ch==='C'){if(M.cstyle==='tech'){floorP();p('rgba(10,8,24,.35)',1,13,14,3);p('#1e1a30',1,3,14,11);p('#3a3256',2,4,12,9);p('#14303a',3,5,10,5);p('#5ad0e0',4,6,(h%5)+3,1);p('#5ad0e0',4,8,(h>>3)%6+2,1);p('#e84a8a',11,11,2,1);return}
+ if(ch==='C'){if(M.cstyle==='valve'){floorP();p('rgba(20,24,40,.3)',2,13,13,3);p('#5a6a7a',6,8,4,7);p('#7a8a9a',6,8,2,7);p(C.ink,2,2,12,12);p('#c8503a',3,3,10,10);p('#e8784a',4,4,8,2);p(C.ink,7,3,2,10);p(C.ink,3,7,10,2);p('#ffd08a',7,7,2,2);return}
+  if(M.cstyle==='tech'){floorP();p('rgba(10,8,24,.35)',1,13,14,3);p('#1e1a30',1,3,14,11);p('#3a3256',2,4,12,9);p('#14303a',3,5,10,5);p('#5ad0e0',4,6,(h%5)+3,1);p('#5ad0e0',4,8,(h>>3)%6+2,1);p('#e84a8a',11,11,2,1);return}
   if(M.cstyle==='statue'){floorP();p('rgba(30,24,40,.25)',2,13,13,3);p('#6e695f',3,10,10,5);p('#a8a296',3,10,10,1);p('#5a5550',3,14,10,1);p('#5a5550',4,3,8,7);p('#8a8478',5,3,6,6);p('#a8a296',5,3,4,2);p(C.gold,7,5,2,2);return}
   if(at(x,y-1)==='X'){p('#4a2e1c',0,0,16,16);p('#7a4e2a',1,1,14,14);const BK=['#e8484f','#4d8fe6','#f6c445','#4cc46a','#9a5ad0','#f08a3a'];for(let s=0;s<3;s++){const yy=1+s*5;for(let i=1;i<15;i+=2){const hh=3+((h>>>(i+s*3))&1);p(BK[(h>>>(i*2+s))%6],i,yy+4-hh,2,hh);p('rgba(0,0,0,.18)',i+1,yy+4-hh,1,hh)}p('#4a2e1c',1,yy+4,14,1)}return}
   floorP();p('rgba(40,28,70,.22)',2,13,13,3);p('#5a3a22',1,4,14,10);p('#c8925a',1,3,14,7);p('#dcae74',1,3,14,1);p('#a8723e',1,9,14,2);p('#4a2e1c',2,12,2,3);p('#4a2e1c',12,12,2,3);return}
@@ -360,7 +364,7 @@ function drawText(){const T=ui.text;if(!T)return;const k=T.t0?Math.min(1,(now()-
  let n=Math.floor(T.t);T.s.forEach((l,i)=>{txt(l.slice(0,Math.max(0,n)),22,y+38+i*26);n-=l.length+1});
  if(T.who){let nx=14;if(T.pt&&LOOK[T.pt]){const px=12,py=y-60,talk=T.t<1e8&&T.t<T.s.join(' ').length?(now()/110|0)%2:0;rr(px,py,58,58,4,C.ink);rr(px+2,py+2,54,54,2,C.frame);R(X,'#efe6d2',px+6,py+6,46,46);R(X,mix('#efe6d2',C.frameL,.35),px+6,py+30,46,22);X.save();X.beginPath();X.rect(px+6,py+6,46,46);X.clip();X.drawImage(portrait(T.pt),px-3,py+8-talk,64,52);X.restore();R(X,'#ffffff',px+6,py+6,46,2);nx=74}tag(nx,y-18,T.who)}if(n>=-1&&!T.auto)X.drawImage(ICO.down,w-26,y+66+(now()/260|0)%2*2,14,10);X.globalAlpha=1}
 async function choose(opts,o={}){const cols=o.cols||1,rh=o.rh||24,w=o.w||160,rows=Math.ceil(opts.length/cols),vis=Math.min(rows,o.vis||8),h=vis*rh+20+(o.title?26:0);
- const m={opts,i:o.i||0,top:0,cols,rh,w,vis,h,x:o.x??W-w-8,y:o.y??H-98-h,title:o.title,draw:o.draw,info:o.info,infoDraw:o.infoDraw,ib:o.ib,dis:o.dis,icons:o.icons,bare:o.bare,rect:o.rect,t0:now(),press:0,cancel:o.cancel!==false,rects:[]};ui.menus.push(m);let r;
+ const m={opts,i:o.i||0,top:0,cols,rh,w,vis,h,x:o.x??W-w-8,y:o.y??H-98-h,title:o.title,draw:o.draw,info:o.info,infoDraw:o.infoDraw,infoShow:o.infoShow,ib:o.ib,dis:o.dis,icons:o.icons,bare:o.bare,rect:o.rect,t0:now(),press:0,cancel:o.cancel!==false,rects:[]};ui.menus.push(m);let r;
  for(;;){const k=await key(),n=opts.length;if(k==='up'){m.i=cols>1?(m.i-cols+n)%n:(m.i+n-1)%n;sfx('sel')}else if(k==='down'){m.i=cols>1?(m.i+cols)%n:(m.i+1)%n;sfx('sel')}
   else if(k==='left'&&cols>1){m.i=(m.i+n-1)%n;sfx('sel')}else if(k==='right'&&cols>1){m.i=(m.i+1)%n;sfx('sel')}else if(k==='a'){r=m.i;break}else if(k==='b'&&m.cancel){r=-1;break}}
  sfx(r<0?'back':'ok');if(r>=0){m.press=now();await wait(90)}ui.menus.splice(ui.menus.indexOf(m),1);return r}
@@ -375,7 +379,7 @@ function drawMenu(m){const k=Math.min(1,(now()-m.t0)/120),dy=ev((1-k)*8),pr=m.pr
   let tx=rx+22;if(m.icons){X.drawImage(m.icons[i],rx+22,ry+(m.rh-16)/2,16,16);tx+=22}
   if(m.draw)m.draw(i,tx,ry,sel,pr&&sel);else txt(m.opts[i],tx,ry+m.rh/2+7,pr&&sel?'#ffffff':dis?C.mute:C.ink,{sh:pr&&sel?0:undefined})}
  if(m.top>0)txt('▲',m.x+m.w-24,m.y+dy+24,C.mute,{sh:0});if(m.top+m.vis<nrows)txt('▼',m.x+m.w-24,m.y+dy+m.h-8,C.mute,{sh:0});
- if(m.infoDraw){const[x,y,w,h]=m.ib;panel(x,y,w,h);m.infoDraw(m.i,x,y,w,h)}
+ if(m.infoDraw&&m.infoShow?.(m.i)!==false){const[x,y,w,h]=m.ib;panel(x,y,w,h);m.infoDraw(m.i,x,y,w,h)}
  if(m.info){const[x,y,w,h]=m.ib||[4,H-90,W-8,86];panel(x,y,w,h);const inf=m.info(m.i);let tx=x+20,ty=y;if(inf.icon){X.drawImage(inf.icon,x+18,y+26,32,32);tx+=44}if(inf.t){chip(inf.t,x+18,y+16);ty+=26}wrap(inf.s??inf,w-(tx-x)-18).slice(0,2).forEach((l,i)=>txt(l,tx,ty+38+i*26))}
  X.globalAlpha=1}
 
@@ -394,15 +398,15 @@ bourg:{name:'Bourg-Lueur',bg:'plaine',amb:'day',mus:'town',edges:{n:['route1',0]
  doors:{'5,5':homeRest,'15,5':['lab',4,6,1]},signs:{'16,8':'BOURG-LUEUR\nLà où chaque aventure s\'allume.'},
  npcs:[{x:3,y:6,t:'mom',d:3,name:'Maman',say:()=>!f().starter?"Le Prof. Saule t'attend dans son labo, la maison au toit vert !":f().balance?"Regarde le ciel… Les nuits sont redevenues longues et belles. Ton père aurait adoré voir ça.":act2?"Le soleil ne se lève plus depuis des jours… Fais attention à toi, d'accord ? Et rentre dormir de temps en temps !":night()?"Il se fait tard ! La nuit, d'autres créatures sortent des hautes herbes. Rentre dormir si ton équipe est fatiguée.":"Si ton équipe est fatiguée, rentre te reposer à la maison !"},
   {x:6,y:11,t:'fisher',d:2,name:'Vieux Gus',fn:gusTalk},
-  {x:13,y:9,t:'kid',d:0,name:'Petit Théo',time:'j',say:()=>["L'EAU bat le FEU, le FEU bat la PLANTE, et la PLANTE bat l'EAU ! Et la ROCHE ? Elle craint l'EAU et la PLANTE.","Tu savais ? La LUMIÈRE et l'OMBRE sont super efficaces l'une contre l'autre ! Et l'OMBRE effraie les créatures NORMAL.","Ma sœur dit que si une créature dort ou est paralysée, il faut lui donner un Total Soin. Elle sait tout, ma sœur."][(G.t>>4)%3]},
+  {x:13,y:9,t:'kid',d:0,name:'Petit Théo',time:'j',wan:1,say:()=>["L'EAU bat le FEU, le FEU bat la PLANTE, et la PLANTE bat l'EAU ! Et la ROCHE ? Elle craint l'EAU et la PLANTE.","Tu savais ? La LUMIÈRE et l'OMBRE sont super efficaces l'une contre l'autre ! Et l'OMBRE effraie les créatures NORMAL.","Ma sœur dit que si une créature dort ou est paralysée, il faut lui donner un Total Soin. Elle sait tout, ma sœur."][(G.t>>4)%3]},
   {x:12,y:1,t:'rival',d:0,name:'Kael',cond:()=>f().balance,fn:kaelRematch}],
  step:async()=>{if(G.y<=1&&!f().starter){await say('Hé, petit ! Pas dans les hautes herbes sans créature ! Va d\'abord voir le Prof. Saule.','Vieux Gus');await forceStep(0);return true}}},
 lab:{name:'Labo du Prof. Saule',bg:'plaine',amb:'in',dark:1,mus:'town',rows:["XXXXXXXXXX","XCCCFFCCCX","XFFFFFFFFX","XFFCCCFFFX","XFFFFFFFFX","XFFFFFFFFX","XFFFFFFFFX","XXXXEEXXXX"],
  doors:{'4,7':['bourg',15,6,0],'5,7':['bourg',15,6,0]},
  npcs:[{x:7,y:2,t:'prof',d:0,name:'Prof. Saule',cond:()=>!act2(),fn:profTalk},
-  ...['flamiot','goutelin','pousseron'].map((sp,i)=>({x:3+i,y:3,t:'ball',fn:()=>pickStarter(sp),cond:()=>!f().starter||sp!==f().starter&&(sp!==f().rs||!f().kaelPick)})),
+  ...['flamiot','goutelin','pousseron'].map((sp,i)=>({x:3+i,y:3,t:'ball',fn:()=>pickStarter(sp),cond:()=>!f().starter||sp!==f().starter&&sp!==f().rs&&!f().gift3||sp===f().rs&&!f().kaelPick})),
   {x:2,y:5,t:'rival',d:3,name:'Kael',cond:()=>!f().rival1,say:'Pfff… Le Prof m\'a dit de te laisser choisir en premier. Dépêche-toi, je n\'ai pas toute la journée.'},
-  {x:1,y:6,t:'girl',d:3,name:'Assistante Lucie',say:()=>f().keys?.dex?`Ton Pixédex compte ${caught()} créature${caught()>1?'s':''} capturée${caught()>1?'s':''}. Le Prof. récompense chaque palier : 4, 8, 12 et 18 !`:'Le Prof. a passé sa vie à étudier le Cycle d\'Aurélys : le jour, la nuit… et les créatures qui en dépendent.'}]},
+  {x:1,y:6,t:'girl',d:3,name:'Assistante Lucie',wan:1,say:()=>f().keys?.dex?`Ton Pixédex compte ${caught()} créature${caught()>1?'s':''} capturée${caught()>1?'s':''}. Le Prof. récompense chaque palier : 4, 8, 12 et 18 !`:'Le Prof. a passé sa vie à étudier le Cycle d\'Aurélys : le jour, la nuit… et les créatures qui en dépendent.'}]},
 route1:{name:'Route 1',bg:'plaine',amb:'day',mus:'route',edges:{s:['bourg',0],n:['ville',0]},enc:[['ratounet',2,4,35],['piafou',2,4,35],['larvigne',3,4,18],['volticelle',3,5,10,'j'],['ombrelin',3,5,14,'n'],['lumignon',3,5,10,'n']],
  rows:["TTTTTTTTT==TTTTTTTTT","TT,,,,...==...,,,,TT","TT,,,,...==...,,,,TT","TT.......==.......TT","TT..TT...==..o....TT","TT..TT...==.......TT","TT,,,,,,,==,,,,,..TT","TT,,,,,,,==,,,,,..TT","TT,,,,,,,==,,,,,..TT","TT.......==.....S.TT","TTTTTT...==...TTTTTT","TT.......==.......TT","TT.,,,,,.==.,,,,,.TT","TT.,,,,,.==.,,,,,.TT","TT.,,,,,.==.,,,,,.TT","TT.......==.....TTTT","TT..f....==....fb.TT","TTTTTTTTT==TTTTTTTTT"],
  signs:{'16,9':'ROUTE 1\nNord : Cendreville · Sud : Bourg-Lueur'},
@@ -414,21 +418,22 @@ ville:{name:'Cendreville',bg:'plaine',amb:'day',mus:'town',edges:{s:['route1',0]
  deco:[{x:13.5,y:2.5,k:'heal'},{x:4.5,y:8.5,k:'bag'},{x:5.5,y:2.5,k:'star'}],hidden:[{x:19,y:1,sh:'v1'}],
  opens:{k:['r2','=']},doors:{'14,4':()=>center('Cendreville',['ville',14,5]),'4,10':shop,'6,4':['gym',5,8,1]},signs:{'15,11':'CENDREVILLE\nToit rouge : Centre de Soins · Toit bleu : Boutique · Toit doré : Arène','4,1':'STATUE DE SOLARION\n« Que sa lumière veille sur la mine et sur nos foyers. »'.replace(/[«»]/g,'"')},
  npcs:[{x:19,y:7,t:'grunt',d:0,name:'Sbire Éclipse',cond:()=>!f().badge,say:'La Team Éclipse a des affaires dans la Forêt Murmure. Dégage, minus !'},
-  {x:16,y:13,t:'girl',d:2,name:'Randonneuse',say:()=>f().badge?"Au nord de la forêt se dresse le Mont Braise. Ses créatures FEU et ROCHE n'aiment pas l'EAU…":"Brasia utilise des créatures ROCHE. L'EAU et la PLANTE sont très efficaces contre elles ! On pêche des Têtardin dans la mare, d'ailleurs."},
+  {x:16,y:13,t:'girl',d:2,name:'Randonneuse',wan:1,say:()=>f().badge?"Au nord de la forêt se dresse le Mont Braise. Ses créatures FEU et ROCHE n'aiment pas l'EAU…":"Brasia utilise des créatures ROCHE. L'EAU et la PLANTE sont très efficaces contre elles ! On pêche des Têtardin dans la mare, d'ailleurs."},
   {x:6,y:14,t:'old',d:3,name:'Ancien',say:()=>f().balance?"Le jour et la nuit, enfin réconciliés… Je n'espérais plus voir ça de mon vivant.":act2?"Une éclipse qui ne finit pas… Les anciens parlaient d'un gardien de la nuit enchaîné quelque part. Je croyais que c'était un conte.":"On raconte que Solarion, le gardien de lumière, dort au sommet du Mont Braise. Et qu'il avait jadis un frère… de l'autre côté du Cycle."},
   {x:7,y:13,t:'lili',d:0,name:'Lili',fn:liliTalk},
   {x:1,y:12,t:'miner',d:3,name:'Mineur',cond:()=>!f().r2,say:()=>f().badge?'L\'éboulement bloque toujours la route de l\'ouest. Même ma pioche n\'en vient pas à bout…':'Route 2 fermée ! Un éboulement bloque le passage vers le lac Miroir.'},
   {x:1,y:13,t:'miner',d:3,name:'Mineur',cond:()=>!f().r2,say:'Faudrait une créature ROCHE vraiment costaude pour dégager tout ça. Comme la Rocaroc de la championne…'}],
  enter:async()=>{if(f().eclipse&&!f().r2)await brasiaClears()},
  step:async()=>{if(G.x>=19&&(G.y===8||G.y===9)&&!f().badge){await say('Halte ! La forêt appartient à la Team Éclipse ! Reviens quand tu auras un badge… hé hé !','Sbire Éclipse');await forceStep(2);return true}}},
-gym:{name:'Arène de Cendreville',bg:'salle',amb:'in',floor:'stone',cstyle:'statue',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","XCCCFrrFCCCX","XFFFFrrFFFFX","XFFFFrrFFFFX","XFCCCrrCCCFX","XFFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
- doors:{'5,9':['ville',6,5,0],'6,9':['ville',6,5,0]},
+gym:{name:'Arène de Cendreville',bg:'salle',amb:'in',floor:'stone',cstyle:'statue',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","XCCCChhCCCCX","XFFFFrrFFFFX","XFFFFrrFFFFX","XFCCCrrCCCFX","XFFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
+ doors:{'5,9':['ville',6,5,0],'6,9':['ville',6,5,0]},signs:{},acts:{'4,9':()=>say('Une plaque : "La roche ne se tire pas, elle se pousse. Comble une faille et la voie s\'ouvrira." Coincé ? Ressors de l\'arène : les rochers reprendront leur place.')},
  npcs:[{x:5,y:1,t:'leader',d:0,los:0,tr:TR('brasia','Championne Brasia',[['rocaillon',12,['jetpierre','durcir','grimace','charge']],['rocaroc',15,['jetpierre','murroc','belier','grimace']]],1200,
    'Bienvenue dans mon arène ! Ici, la roche ne cède jamais : grâce à leur FERMETÉ, mes créatures survivent toujours au premier coup fatal. Et ma Rocaroc sait durcir sa carapace… Montre-moi comment tu comptes percer ma défense !',
    'Incroyable… Tu as trouvé la faille. Tu as gagné !',{vs:1,boss:1,items:1,post:()=>f().eclipse?'Le Cycle est brisé, mais Cendreville tient bon. Va, et ramène la lumière !':'Grimace, attaques super efficaces… ou patience. Il y a toujours une faille, même dans la roche. Retiens-le pour la suite !',
    win:async()=>{f().badge=1;await badgeGet('BADGE ROC',ICO.bRoc);G.bag.hypercapsule=(G.bag.hypercapsule||0)+2;await say('Brasia te remet aussi 2 Hyper Capsules ! La Boutique vend désormais des Hyper Capsules et des Crépuscapsules.');
     await say('Des sbires de la Team Éclipse bloquaient la sortie est ? Je les ai chassés ! Leur chef, Vex, prépare quelque chose au sommet du Mont Braise. Traverse la Forêt Murmure, vite !','Brasia')}})},
-  {x:3,y:5,t:'scout',d:3,tr:TR('bob','Montagnard Bob',[['rocaillon',9],['ratounet',10]],300,'Tu veux affronter Brasia ? Passe d\'abord sur mon corps !','Aïe… solide.',{post:'Mes Rocaillon ont tenu bon à 1 PV ? C\'est leur Fermeté ! Il faut deux coups pour les faire tomber depuis leurs PV max.'})},
+  OB(3,4,'boulder',{push:1}),OB(8,5,'boulder',{push:1}),
+  {x:2,y:7,t:'scout',d:3,tr:TR('bob','Montagnard Bob',[['rocaillon',9],['ratounet',10]],300,'Tu veux affronter Brasia ? Passe d\'abord sur mon corps !','Aïe… solide.',{post:'Mes Rocaillon ont tenu bon à 1 PV ? C\'est leur Fermeté ! Il faut deux coups pour les faire tomber depuis leurs PV max. Et pour atteindre Brasia, pousse un rocher dans une faille !'})},
   {x:8,y:2,t:'girl',d:2,tr:TR('zoe','Grimpeuse Zoé',[['rocaillon',10],['piafou',10]],300,'Brasia est la meilleure ! Je ne te laisserai pas passer !','Bon… tu es prêt pour Brasia. Peut-être.',{post:'Quand Brasia utilise Mur de Roc, sa défense grimpe en flèche. Grimace la fait redescendre !'})}]},
 foret:{name:'Forêt Murmure',bg:'foret',amb:'foret',tree:'pine',mus:'foret',edges:{w:['ville',0],n:['mont',-9]},fish:[['tetardin',9,12,100]],
  enc:[['larvigne',8,11,26],['piafou',9,11,16],['ratounet',9,11,12],['ombrelin',9,12,14,'n'],['volticelle',10,12,16,'j'],['lumignon',9,12,14,'n'],['nocturelle',10,12,8,'n']],
@@ -472,11 +477,12 @@ port:{name:'Port-Miroir',bg:'lac',amb:'day',mus:'town',edges:{e:['route2',-4],n:
  doors:{'19,4':()=>center('Port-Miroir',['port',19,5]),'4,10':shop,'6,4':['gym2',5,8,1]},signs:{'21,8':'PORT-MIROIR\nNord : Grotte Écho (accès réservé) · Est : Route 2'},
  npcs:[{x:13,y:7,t:'prof',d:0,name:'Prof. Saule',cond:act2,fn:profTalk},
   {x:16,y:15,t:'sailor',d:2,name:'Capitaine Loup',say:()=>f().balance?'La mer retrouve ses marées. Les marées suivent la lune, tu sais.':'Le lac est noir comme de l\'encre depuis l\'éclipse. Avant, l\'Observatoire brillait comme un phare, là-haut sur la falaise. On disait que ses bâtisseurs y avaient enfermé quelque chose…'},
-  {x:16,y:11,t:'kid',d:2,name:'Mousse Timéo',say:()=>f().badge2?'Maëlle t\'a donné sa Lanterne ? Dans la Grotte Écho, sans lumière, on ne voit même pas ses pieds !':'Maëlle, c\'est la plus forte ! Sous la pluie, ses Crapaflot nagent deux fois plus vite !'},
+  {x:16,y:11,t:'kid',d:2,name:'Mousse Timéo',wan:1,say:()=>f().badge2?'Maëlle t\'a donné sa Lanterne ? Dans la Grotte Écho, sans lumière, on ne voit même pas ses pieds !':'Maëlle, c\'est la plus forte ! Sous la pluie, ses Crapaflot nagent deux fois plus vite !'},
   {x:20,y:12,t:'old',d:2,name:'Mémé Rosa',say:()=>f().balance?'J\'ai revu une vraie nuit étoilée. Merci, petit.':'Valen ? Le gamin qui passait ses nuits sur le ponton avec son Ombrelin ? Il était si gentil… jusqu\'à ce que son Ombrelin s\'éteigne. Il a quitté le port après ça.'}],
  enter:async()=>{if(act2()&&!f().portScene)await portScene()},
  step:async()=>{if(G.y<=1&&act2()){if(!f().badge2){await say('La Grotte Écho est trop dangereuse sans lumière. La championne Maëlle seule peut t\'en ouvrir l\'accès !','Garde-côte');await forceStep(0);return true}if(!f().kael3){await kael3();return true}}}},
-gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","X~~~FrrF~~~X","X~~~HHHH~~~X","XFFFFrrFFFFX","XFF~~rr~~FFX","XFF~~HH~~FFX","XFFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
+gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","X~~Q~~~~J~~X","XFFFF~~FFFCX","XFFFF~~FFFFX","X~~J~~~~Q~~X","XCFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
+ cstyle:'valve',sw:{J:()=>f().tide?'w':'H',Q:()=>f().tide?'H':'w'},acts:{'1,7':valve,'10,4':valve,'4,9':()=>say('Une plaque : "Marée haute, marée basse… Chaque vanne inverse la marée. Les ponts émergent selon le niveau de l\'eau."')},
  doors:{'5,9':['port',6,5,0],'6,9':['port',6,5,0]},
  npcs:[{x:5,y:1,t:'maelle',d:0,los:0,tr:TR('maelle','Championne Maëlle',[['crapaflot',27,['dansepluie','aquajet','bulles','grimace']],['torrentor',28,['vague','morsure','durcir','hydro']],['crapaflot',29,['dansepluie','vague','plaquage','aquajet']]],2500,
    'Je suis Maëlle. La pluie est mon alliée : sous l\'averse, mes Crapaflot nagent deux fois plus vite et l\'EAU frappe une fois et demie plus fort. Change le temps, ou noie-toi sous la vague !',
@@ -484,8 +490,9 @@ gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'town',row
    win:async()=>{f().badge2=1;await badgeGet('BADGE MIROIR',ICO.bMir);G.keys.lantern=1;jingle('item');ui.pop={ic:ICO.lantern,t0:now()};await say('Maëlle te confie aussi sa LANTERNE DE MARIN ! Elle éclaire les endroits sombres.');
     await say('La Grotte Écho, au nord, mène à l\'Observatoire. Avec ma Lanterne, tu y verras un peu. Avec une créature FEU, LUMIÈRE ou ÉLEC, tu y verras bien mieux.','Maëlle');
     await say('Et… si tu croises Valen — Vex, comme il se fait appeler —, dis-lui que le ponton l\'attend toujours.','Maëlle')}})},
-  {x:2,y:4,t:'sailor',d:3,tr:TR('loic','Marin Loïc',[['tetardin',22],['crapaflot',23]],800,'Prêt à te faire tremper ?','Coulé…',{post:'La Danse Pluie dure cinq tours. Tiens bon, ou change la météo avec un Zénith !'})},
-  {x:9,y:7,t:'sailor',d:2,tr:TR('ana','Matelote Ana',[['volticelle',23],['crapaflot',23]],800,'L\'ÉLEC contre l\'EAU ? Je connais la parade !','Bien joué, moussaillon.')}]},
+  I(1,4,'elixir',1,'g2a'),
+  {x:2,y:5,t:'sailor',d:3,tr:TR('loic','Marin Loïc',[['tetardin',22],['crapaflot',23]],800,'Prêt à te faire tremper ?','Coulé…',{post:'La Danse Pluie dure cinq tours. Tiens bon, ou change la météo avec un Zénith ! Ah, et cet îlot est un cul-de-sac à marée basse…'})},
+  {x:10,y:5,t:'sailor',d:2,tr:TR('ana','Matelote Ana',[['volticelle',23],['crapaflot',23]],800,'L\'ÉLEC contre l\'EAU ? Je connais la parade !','Bien joué, moussaillon.')}]},
 grotte:{name:'Grotte Écho',bg:'grotte',amb:'cave',mus:'mont',cave:1,dark2:1,under:'g',encAll:1,edges:{s:['port',-1]},
  enc:[['nocturelle',23,26,36],['rocaillon',23,26,26],['rocaroc',25,27,8],['magmor',24,26,12],['ombrelin',23,26,18]],
  rows:["^^^^^^^^^^^^^EE^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^ggggggggg^^^^^^^","^^^^^^^^^^g^^^^^^gg^^^^^^^","^^^^^^^^^^gvvvvvvggggg^^^^","^^^^^^^^^^^^^^^^^^^^^g^^^^","^^^^gggg^^^^^^^^^^^^^g^^^^","^^^^ggggkgggg^^^^^^^^g^^^^","^^^^gggg^^^^g^^^^^^^^gggg^","^^g^^^^^^^^^g^^^^^^^^g^^g^","^^gvgvvvv^^^g^^^^^^^^g^gg^","^^^^g^^^^^^^g^^^^^^^^g^^^^","^^^^gggggggggggggggggg^^^^","^^^^g^^^^^^^^^^^^^^^^^^^^^","^^^^g^^^vvvvv^^^^^^^^^^^^^","^^^^ggggvvvvvgggg^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^"],
@@ -517,7 +524,7 @@ const npcs=M=>M.npcs.filter(n=>!n.hid&&(!n.cond||n.cond())&&(!n.time||(n.time===
 // Affinités : une créature du bon type, en forme, dans l'équipe ouvre le passage
 const AFF0={b:['PLA','Des ronces épaisses bloquent le passage.','trancher les ronces','tranche les ronces','PLANTE','#5a9a48'],k:['ROC','Un rocher fissuré barre le chemin.','briser le rocher','brise le rocher','ROCHE','#a08a78'],x:['EAU','Un brasier ardent bloque le chemin.','éteindre le brasier','éteint le brasier','EAU','#ff9a2a']};
 const AFF=new Proxy(AFF0,{get:(o,c)=>c==='k'&&G&&MAPS[G.map]?.opens?.k?undefined:o[c]});
-function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
+function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
 const mapMus=M=>act2()&&(M.mus==='route'||M.mus==='foret')?'ecl':M.mus;
 function loadMap(map,x,y,d){const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;folReset();CAMO=null;musPlay(mapMus(MAPS[map]))}
@@ -526,12 +533,19 @@ function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G
  if(folMon()&&tx===FOL.x&&ty===FOL.y&&(pd!==d||now()-(FOL.turn||0)<160)){if(pd!==d)FOL.turn=now();return}
  if(tx<0||ty<0||tx>=mw||ty>=mh){const e=M.edges?.['snwe'[d]];if(!e)return;const N=MAPS[e[0]];let nx,ny;if(d<2){nx=G.x+e[1];ny=d?N.rows.length-1:0}else{ny=G.y+e[1];nx=d===2?N.rows[0].length-1:0}run(()=>warp(e[0],nx,ny,d));return}
  const dr=M.doors?.[tx+','+ty];if(dr){run(typeof dr==='function'?dr:()=>warp(...dr));return}
- if(SOLID.has(M.rows[ty][tx])||npcs(M).some(n=>n.x===tx&&n.y===ty)){if(now()-lastBump>350){sfx('bump');lastBump=now()}return}
+ const bo=npcs(M).find(n=>n.push&&n.x===tx&&n.y===ty);if(bo){if(now()-lastBump>260){lastBump=now();run(()=>pushRock(bo,d))}return}
+ if(SOLID.has(M.rows[ty][tx])||npcs(M).some(n=>n.x===tx&&n.y===ty||n.rx===tx&&n.ry===ty)){if(now()-lastBump>350){sfx('bump');lastBump=now()}return}
  move={fx:G.x,fy:G.y,tx,ty,t:0};folFollow(G.x,G.y);if(held.b)AMB.push({k:'dst',x:G.x*TS+16,y:G.y*TS+28,l:18,ml:18})}
 function updWorld(dt){G.play+=dt;if(move){move.t+=dt/(held.b?95:170);if(move.t>=1){G.x=move.tx;G.y=move.ty;steps++;const s=move.sil;move=null;if(!s)run(onStep)}return}
- if(busy)return;if((FOL.tt-=dt)<=0){FOL.tt=4500;const M=MAPS[G.map];if(folMon()&&(M.hidden||[]).some(h=>!f()[h.sh?'e_'+h.sh:'i_'+h.id]&&Math.abs(h.x-G.x)+Math.abs(h.y-G.y)<=3))run(()=>emote('fol','!',650))}
- for(const n of npcs(MAPS[G.map]))if((n.say||n.fn)&&!n.fix&&!n.tr&&!['ball','mon','shard','obj'].includes(n.t)){n.tt=(n.tt??Math.random()*3000)-dt;if(n.tt<=0){n.tt=2200+Math.random()*3000;n.d=[0,0,2,3,1][Math.random()*5|0]}}
+ if(busy)return;if((FOL.tt-=dt)<=0){FOL.tt=4500;const M=MAPS[G.map];if(folMon()&&(M.hidden||[]).some(h=>!f()[h.sh?'e_'+h.sh:'i_'+h.id]&&Math.abs(h.x-G.x)+Math.abs(h.y-G.y)<=3)){const e={n:'fol',k:'!',t0:now()};ui.emo.push(e);sfx('sel');setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),700)}}
+ const NM=npcs(MAPS[G.map]);for(const n of NM)if((n.say||n.fn)&&!n.fix&&!n.tr&&!n.walk&&!['ball','mon','shard','obj'].includes(n.t)){n.tt=(n.tt??Math.random()*3000)-dt;if(n.tt<=0){n.tt=2200+Math.random()*3000;const d=[0,0,2,3,1][Math.random()*5|0];n.d=d;
+  if(n.wan&&Math.random()<.6){const M=MAPS[G.map],tx=n.x+DX[d],ty=n.y+DY[d],c=M.rows[ty]?.[tx];if(c&&!SOLID.has(c)&&Math.abs(tx-n.x0)<=2&&Math.abs(ty-n.y0)<=2&&!(tx===G.x&&ty===G.y)&&!(move&&tx===move.tx&&ty===move.ty)&&!(tx===FOL.x&&ty===FOL.y)&&!NM.some(o=>o!==n&&(o.x===tx&&o.y===ty||o.rx===tx&&o.ry===ty))&&!M.doors?.[tx+','+ty]){n.walk=1;n.rx=tx;n.ry=ty;npcStep(n,d,320).then(()=>{n.walk=0;n.rx=n.ry=null})}}}}
  const d=['down','up','left','right'].findIndex(k=>held[k]);if(d>=0)tryMove(d)}
+async function pushRock(n,d){const M=MAPS[G.map],bx=n.x+DX[d],by=n.y+DY[d],c=M.rows[by]?.[bx];
+ if(c==='h'){sfx('hit');await npcStep(n,d,240);ui.shake=10;debris(bx,by,'#8a8478',12);rmN(G.map,n);n.hid=1;f()[`c_${G.map}_${bx}_${by}`]=1;refreshMap(G.map);sfx('lv');return say('Le rocher comble la faille ! Un passage s\'ouvre.')}
+ if(!c||SOLID.has(c)||npcs(M).some(o=>o!==n&&o.x===bx&&o.y===by)||bx===G.x&&by===G.y){sfx('bump');return}sfx('hit');await npcStep(n,d,260);puff(n.x,n.y,'#c8b8a0',4)}
+async function valve(){const hi=f().tide;if(!await ask(`Une grosse vanne marine. Marée ${hi?'haute':'basse'}. La tourner ?`))return;sfx('splash');ui.shake=8;for(let i=0;i<3;i++){ui.flash=.25;ui.flashC='#7ac8ff';await wait(140)}f().tide=hi?0:1;refreshMap(G.map);sfx('splash');
+ await say(hi?'L\'eau redescend… La marée est BASSE : les ponts de marée basse émergent.':'L\'eau monte ! La marée est HAUTE : les ponts de marée haute émergent, les autres sont submergés.')}
 async function forceStep(d){G.dir=d;move={fx:G.x,fy:G.y,tx:G.x+DX[d],ty:G.y+DY[d],t:0,sil:1};folFollow(G.x,G.y);while(move)await frame()}
 const pickEnc=T=>{const L=T.filter(e=>!e[4]||(e[4]==='n')===night());let r=Math.random()*L.reduce((a,e)=>a+e[3],0);return L.find(e=>(r-=e[3])<0)||L[0]};
 async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
@@ -570,7 +584,7 @@ async function npcStep(n,d,ms=200){const t0=now();n.d=d;for(;;){const k=Math.min
 const team=T=>T.map(([s,l,mv])=>mon(s,l,{moves:mv}));
 async function trainerBattle(n){const tr=n.tr;await say(tr.pre,tr.name,0,n.t);const r=await battle(team(tr.team),{tr:{...tr,look:n.t}});if(r==='win'){f()['t_'+tr.id]=1;if(tr.win)await tr.win()}save();return r}
 function facing(){const M=MAPS[G.map],tx=G.x+DX[G.dir],ty=G.y+DY[G.dir];return{n:npcs(M).find(n=>n.x===tx&&n.y===ty),s:M.signs?.[tx+','+ty],a:M.acts?.[tx+','+ty],h:(M.hidden||[]).find(h=>h.x===tx&&h.y===ty&&!f()[h.sh?'e_'+h.sh:'i_'+h.id]),c:M.rows[ty]?.[tx],tx,ty}}
-const OBJ={tent:'Une tente de toile, rapiécée de partout. Ça sent la soupe.',fire:'Un feu de camp crépite doucement.'};
+const OBJ={boulder:'Un gros rocher. Il bouge un peu quand on le pousse…',tent:'Une tente de toile, rapiécée de partout. Ça sent la soupe.',fire:'Un feu de camp crépite doucement.'};
 function give(k,q=1){G.bag[k]=(G.bag[k]||0)+q;jingle('item');ui.pop={ic:ICO[k],t0:now()}}
 async function interact(){const{n,s,a,h,c,tx,ty}=facing(),M=MAPS[G.map];
  if(n){if(!['ball','mon','shard','obj'].includes(n.t))n.d=OPP[G.dir];
@@ -625,7 +639,8 @@ async function gusTalk(){const g='Vieux Gus';if(!f().starter)return say('Moi, c\
  if(!G.keys.rod){await say('Te voilà dresseur ! Écoute le vieux Gus : les créatures d\'eau ne vivent pas dans les herbes. Faut aller les chercher.',g);G.keys.rod=1;sfx('lv');ui.pop={ic:ICO.rod,t0:now()};await say('Tu reçois la VIEILLE CANNE !');
   return say('Face à l\'eau, appuie sur A pour lancer. Quand ça mord, appuie vite ! Trop tôt ou trop tard, et ça file. Les Têtardin de la mare adorent battre les créatures ROCHE, si tu vois ce que je veux dire…',g)}
  return say(f().balance?'Les Têtardin mordent mieux à la tombée de la nuit. Ça m\'avait manqué, les vraies nuits.':act2()?'Même les poissons boudent depuis l\'éclipse… Mais ils mordent encore, eux au moins.':['Chaque point d\'eau a ses habitants. Au port, on raconte qu\'on y pêche des Crapaflot !','Un poisson, ça se mérite. Patience, et réflexes !'][G.t>>5&1],g)}
-async function pickStarter(sp){if(f().starter)return say('Le Prof. Saule garde ce Pixémon pour le prochain jeune dresseur de Bourg-Lueur.');
+async function pickStarter(sp){if(f().starter){if(!f().balance||f().gift3)return say('Le Prof. Saule garde ce Pixémon pour le prochain jeune dresseur de Bourg-Lueur.');
+  await say('Le Prof. Saule t\'observe… puis hoche la tête.');await say('Ce petit n\'a jamais trouvé de dresseur. Il t\'a vu partir, puis revenir en héros. Je crois qu\'il veut te suivre. Prends-en soin !','Prof. Saule');f().gift3=1;const m=mon(sp,30);dex(sp,2);jingle('item');if(G.party.length<6)G.party.push(m);else G.box.push(m);return say(`Tu reçois ${SP[sp].name} !${G.party.includes(m)?'':' Il est envoyé dans la Boîte.'}`)}
  ui.panel=()=>{panel(152,10,176,190);const fl=(now()/400|0)%2*2;pell(X,240,166,52,6,'rgba(31,26,51,.16)');X.drawImage(monSpr(sp,0,96),192,68-fl,96,96);const w=tw(TY[SP[sp].t][0],2,1)+12;chip(SP[sp].t,ev(240-w/2),176);txt(SP[sp].name,240,46,C.ink,{al:'c'})};
  const ok=await ask(`${SP[sp].name}, le Pixémon de type ${TY[SP[sp].t][0]}. Son talent : ${TAL[SP[sp].tal][0]}. Tu le choisis ?`);ui.panel=null;if(!ok)return;
  G.party.push(mon(sp,5));dex(sp,2);f().starter=sp;folReset();jingle('item');puff(G.x,G.y-1,'#ffffff',12);await say(`Tu as choisi ${SP[sp].name} !`);const rs={flamiot:'goutelin',goutelin:'pousseron',pousseron:'flamiot'}[sp];f().rs=rs;
@@ -744,7 +759,7 @@ async function legend(sp){const n=SP[sp].name,L=npcs(MAPS[G.map]).find(x=>x.sp==
  const r=await battle([mon(sp,45)],{legend:1});if(r==='catch'){f()[sp==='solarion'?'legS':'legN']=1;await say(`${n} a rejoint ton équipe. Prends soin de lui.`)}else if(r==='win')await say(`${n} s'éloigne, apaisé… Il reviendra peut-être.`)}
 async function kaelRematch(){const d=Math.floor(G.t/CYC);if(f().kaelDay===d)return say('On remet ça demain ! J\'entraîne mon équipe jusque-là.','Kael');
  await say('Valen et Maëlle m\'ont appris deux-trois trucs. Revanche ?','Kael');if(!await ask('Affronter Kael ?'))return;
- const r=await battle([mon('piafou',40),mon('bourdonnerre',41),mon('phalumine',41),mon(SP[f().rs||'goutelin'].evo[1],44)],{tr:{name:'Kael',look:'rival',money:4000,vs:1,boss:1,items:1,after:'Toujours un pas devant moi… Pour l\'instant !'}});if(r==='win')f().kaelDay=d;save()}
+ const r=await battle([mon('piafou',40),mon('bourdonnerre',41),mon('phalumine',41),mon(SP[f().rs||'goutelin'].evo[1],44)],{tr:{name:'Kael',look:'rival',money:4000,vs:1,boss:1,items:1,after:'Toujours un pas devant moi… Pour l\'instant !'}});if(r==='win'){f().kaelDay=d;if(!f().kaelGift){f().kaelGift=1;const sp=SP[f().rs||'goutelin'].base,m=mon(sp,30);dex(sp,2);await say(`Tiens. Mon ${SP[SP[f().rs].evo[1]].name} a eu un petit frère… enfin, un petit protégé. Il te ressemble : têtu. Élève-le bien.`,'Kael');jingle('item');if(G.party.length<6)G.party.push(m);else G.box.push(m);await say(`Tu reçois ${SP[sp].name} !`)}}save()}
 async function valenTalk(){const d=Math.floor(G.t/CYC);await say('Je viens parfois ici, la nuit, pour parler à Nocturion. Il n\'est plus enchaîné. Il revient de lui-même.','Valen');
  if(f().valenDay===d)return say('Demain soir, si tu veux. Mes créatures se reposent.','Valen');if(!await ask('Valen propose un combat amical. Accepter ?'))return;
  const r=await battle([mon('nocturelle',42),mon('magmor',42),mon('ombrelin',43),mon('noctyrex',45)],{tr:{name:'Valen',look:'valen',money:4500,vs:1,boss:1,items:1,after:'Tu as toujours le dernier mot. C\'est agaçant.'}});if(r==='win')f().valenDay=d;save()}
@@ -976,7 +991,7 @@ async function endBattle(r){const{tr,o}=B;
  for(const m of G.party){const e=SP[m.sp].evo;if(e&&m.lv>=e[0]&&m.hp>0)await evolve(m,e[1])}
  musPlay(mapMus(MAPS[G.map]));await fadeTo(0,350);if((r==='lose'||wiped)&&!o.noLose)await say('Ton équipe a été soignée. Ne baisse pas les bras !');return r}
 async function evolve(m,to){mode='evo';ui.evo={a:m.sp,b:to,t0:0,fx:[],sh:m.sh};await fadeTo(0,250);await say(`Quoi ? ${nm(m)} évolue !`);ui.evo.t0=now();await wait(3400);
- const old=nm(m),oh=st(m).hp;m.sp=to;dex(to,2);m.hp+=st(m).hp-oh;sfx('lv');ui.flash=1;ui.flashC='#ffffff';await say(`Félicitations ! ${old} a évolué en ${SP[to].name} !`);for(const[l,mv]of SP[to].learn)if(l===m.lv)await learn(m,mv);await fadeTo(1,250);ui.evo=null;mode='world'}
+ const old=nm(m),oh=st(m).hp;m.sp=to;dex(to,2);m.hp+=st(m).hp-oh;jingle('evo');ui.flash=1;ui.flashC='#ffffff';await say(`Félicitations ! ${old} a évolué en ${SP[to].name} !`);for(const[l,mv]of SP[to].learn)if(l===m.lv)await learn(m,mv);await fadeTo(1,250);ui.evo=null;mode='world'}
 
 // =====================================================================
 // RENDU : MONDE (couche, tuiles animées, entités, avant-plan, ambiance, lumière)
@@ -1038,7 +1053,7 @@ function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='mul
 let CAM=[0,0];const cxw=()=>CAM[0],cyw=()=>CAM[1];
 const SHARDI=epx(ICO.shard);
 const HEARTI=epx(epx(ICO.shard));
-function drawObj(k,sx,sy,t){if(k==='heart'){X.globalCompositeOperation='lighter';X.globalAlpha=.6+.2*Math.sin(t/160);X.drawImage(GLOWY,sx-32,sy-40,96,96);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(HEARTI,sx,sy-8+Math.round(Math.sin(t/300)*2),32,32);for(let i=0;i<4;i++){const a=t/500+i*1.57;R(X,'#ffffff',ev(sx+16+Math.cos(a)*22),ev(sy+8+Math.sin(a)*12),2,2)}return}if(k==='tent'){X.drawImage(SHD,sx-2,sy+22,36,10);for(let i=0;i<14;i++){R(X,C.ink,sx+16-i-1,sy+4+i*2-1,2+i*2+2,3)}for(let i=0;i<13;i++){R(X,'#c87a3a',sx+16-i,sy+4+i*2,i*2+1,2);R(X,'#e8a05a',sx+16-i,sy+4+i*2,Math.max(1,i),2)}R(X,'#3a2418',sx+13,sy+18,6,10);R(X,C.ink,sx+2,sy+30,28,2)}
+function drawObj(k,sx,sy,t){if(k==='boulder'){X.drawImage(SHD,sx,sy+22,32,10);X.drawImage(rockSpr(1),sx,sy-2,32,32);return}if(k==='valve'){return}if(k==='heart'){X.globalCompositeOperation='lighter';X.globalAlpha=.6+.2*Math.sin(t/160);X.drawImage(GLOWY,sx-32,sy-40,96,96);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(HEARTI,sx,sy-8+Math.round(Math.sin(t/300)*2),32,32);for(let i=0;i<4;i++){const a=t/500+i*1.57;R(X,'#ffffff',ev(sx+16+Math.cos(a)*22),ev(sy+8+Math.sin(a)*12),2,2)}return}if(k==='tent'){X.drawImage(SHD,sx-2,sy+22,36,10);for(let i=0;i<14;i++){R(X,C.ink,sx+16-i-1,sy+4+i*2-1,2+i*2+2,3)}for(let i=0;i<13;i++){R(X,'#c87a3a',sx+16-i,sy+4+i*2,i*2+1,2);R(X,'#e8a05a',sx+16-i,sy+4+i*2,Math.max(1,i),2)}R(X,'#3a2418',sx+13,sy+18,6,10);R(X,C.ink,sx+2,sy+30,28,2)}
  if(k==='fire'){R(X,'#4a2e1c',sx+6,sy+24,20,4);R(X,'#7a4e2a',sx+8,sy+22,16,3);for(let i=0;i<3;i++){const fh=8+((t/90+i*4)%4|0)*3,fx=sx+9+i*5;R(X,'#ff5a1e',fx,sy+22-fh,5,fh);R(X,'#ffd23a',fx+1,sy+22-fh+4,3,Math.max(2,fh-6))}if(Math.random()<.08)AMB.push({k:'em',x:sx+16+cxw(),y:sy+10+cyw(),vy:-.8,vx:(Math.random()-.5)*.4,l:60})}}
 
 function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R(X,'#0d0b16',0,0,W,H);
@@ -1179,7 +1194,7 @@ let last=0;function loop(t){const dt=Math.min(50,t-last);last=t;if(ui.text&&ui.t
 // =====================================================================
 const INTRO=['Bienvenue dans la région d\'Aurélys ! Ici vivent d\'étranges créatures : les Pixémons. Moi, je suis le Prof. Saule.','Aurélys vit au rythme du Cycle. Le jour, Solarion veille sur nous. La nuit, d\'autres créatures s\'éveillent… même si nos nuits sont bien courtes.','Mais une ombre plane : la Team Éclipse rôde, et veut s\'emparer de la lumière de Solarion.','Ton aventure commence aujourd\'hui, à Bourg-Lueur. Viens me voir au labo !'];
 async function titleScreen(){mode='title';B=null;move=null;ui.menus=[];ui.text=null;ui.panel=null;ui.dim=null;G=null;musPlay('title');await fadeTo(0,400);
- for(;;){const sv=load(),opts=sv?['CONTINUER','NOUVELLE PARTIE']:['NOUVELLE PARTIE'],i=await choose(opts,{x:W/2-120,y:226,w:240,cancel:false});
+ for(;;){const sv=load(),opts=sv?['CONTINUER','NOUVELLE PARTIE']:['NOUVELLE PARTIE'],i=await choose(opts,{x:W/2-120,y:226,w:240,cancel:false,ib:[W/2-160,160,320,58],infoShow:i=>i===0,infoDraw:sv?(i,x,y,w)=>{if(i)return;const F=sv.flags,nb=(F.badge?1:0)+(F.badge2?1:0);txt(MAPS[sv.map]?.name.split(' · ')[0]||'',x+16,y+28);txt(fmtT(sv.play||0),x+w-16,y+28,C.ink2,{al:'r'});[ICO.bRoc,ICO.bMir].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+34,14,14));X.drawImage(ICO.dex,x+70,y+34,14,14);txt(DEX.filter(k=>sv.dex?.[k]===2).length,x+88,y+46,C.ink,{mini:1});X.drawImage(ICO.shard,x+120,y+34,14,14);txt(sv.keys?.shards||0,x+138,y+46,C.ink,{mini:1});sv.party.slice(0,6).forEach((m,j)=>X.drawImage(monSpr(m.sp,0,48),x+w-140+j*22,y+28,24,24))}:null});
   if(sv&&i===0){G=sv;await fadeTo(1,300);mode='world';ui.banner=null;loadMap(G.map,G.x,G.y,G.dir);await fadeTo(0,300);return}
   if(sv&&!await ask('Une sauvegarde existe. Une nouvelle partie l\'effacera. Continuer ?'))continue;
   G=newGame();await fadeTo(1,400);mode='intro';ui.slide=0;await fadeTo(0,300);for(const[i,s]of INTRO.entries()){if(i&&[0,1,2,0][i]!==ui.slide){ui.text=null;await fadeTo(1,220);ui.slide=[0,1,2,0][i];await fadeTo(0,220)}await say(s,'Prof. Saule')}
