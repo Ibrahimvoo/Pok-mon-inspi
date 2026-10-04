@@ -575,7 +575,7 @@ const AFF=new Proxy(AFF0,{get:(o,c)=>c==='k'&&G&&MAPS[G.map]?.opens?.k?undefined
 function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
 const mapMus=M=>act2()&&(M.mus==='route'||M.mus==='foret')?'ecl':M.mus;
-function loadMap(map,x,y,d){const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
+function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
  if(ch&&!G.wx&&RAINY.has(map)&&f().starter&&Math.random()<.16){G.wx={k:'rain',n:rnd(70,150)};ui.note={s:'Averse',t0:now()+900}}const sw=swarm();if(ch&&sw&&sw[0]===map)setTimeout(()=>{ui.note={s:'Essaim : '+SP[sw[1]].name,t0:now()}},1600)}
 async function warp(map,x,y,d){sfx('door');await fadeTo(1,200);loadMap(map,x,y,d);await fadeTo(0,200);save();if(MAPS[map].enter)await MAPS[map].enter()}
 function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G.y+DY[d],mw=M.rows[0].length,mh=M.rows.length;
@@ -601,14 +601,18 @@ const SWARMS=[['route1','volticelle',4,7],['route1','lumignon',4,7],['foret','la
 function swarm(){const day=Math.floor(G.t/CYC),L=SWARMS.filter(([m])=>G.seen?.[m]&&(m!=='route2'&&m!=='grotte'||f().r2));return L.length&&f().badge?L[(day*7919+13)%L.length]:null}
 function encTable(M,k){let T=[...(M.enc||[])];const sw=swarm();if(sw&&sw[0]===k)T.push([sw[1],sw[2],sw[3],60]);if(rain()&&M.fish&&T.length){const lv=T.map(e=>e[1]);T.push([M.fish[0][0],Math.min(...lv),Math.max(...T.map(e=>e[2])),28])}return T}
 const pickEnc=T=>{const L=T.filter(e=>!e[4]||(e[4]==='n')===night());let r=Math.random()*L.reduce((a,e)=>a+e[3],0);return L.find(e=>(r-=e[3])<0)||L[0]};
-async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
+async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;if(night()&&!act2()&&M.amb!=='in')tip('nuit','C\'est la nuit ! D\'autres créatures sortent des herbes (Lumignon, Ombrelin…), et certains talents changent. Le lit de la maison permet de choisir l\'heure.');if(rain())tip('pluie','Une averse ! Pendant la pluie, les combats commencent sous la PLUIE (EAU x1,5, FEU x0,5) et des créatures d\'eau sortent des herbes.');if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
  if(ch===','||ch==='v'){sfx('grass');for(let i=0;i<4;i++)AMB.push({k:'rl',x:G.x*TS+8+Math.random()*16,y:G.y*TS+18,vx:(Math.random()-.5)*1.6,vy:-1.5-Math.random(),l:22,c:ch===','?'#7fd05a':M.cave?'#6a7a8a':'#d8743a'})}
+ if(steps===40)tip('fol','Ta créature de tête te suit partout. Elle s\'agite quand un objet caché est tout proche. Appuie sur MENU pour l\'équipe, la carte et le journal.');
  if(G.repel>0&&--G.repel===0){await say('L\'effet de la Repousse se dissipe.');return}
  if(M.step&&await M.step())return;if(await checkTrainers())return;
  const tall=ch===','||ch==='v',cave=M.encAll&&ch==='g';
  if((tall||cave)&&M.enc&&G.party.some(alive)&&Math.random()<(tall?.1:.045)){const e=pickEnc(encTable(M,G.map)),lv=rnd(e[1],e[2]);if(G.repel>0&&lv<G.party.find(alive).lv)return;await battle([mon(e[0],lv,{wild:1})])}}
 async function checkTrainers(){const M=MAPS[G.map];for(const n of npcs(M)){if(!n.tr||n.los===0||f()['t_'+n.tr.id])continue;let x=n.x,y=n.y;for(let k=1;k<=4;k++){x+=DX[n.d];y+=DY[n.d];if(x===G.x&&y===G.y){await bang(n);for(let i=1;i<k;i++)await npcStep(n,n.d);G.dir=OPP[n.d];await trainerBattle(n);return true}const c=M.rows[y]?.[x];if(!c||SOLID.has(c)||npcs(M).some(o=>o!==n&&o.x===x&&o.y===y))break}}return false}
 async function bang(n){await emote(n,'!',750)}
+function tip(id,txt2){if(!G||f()['tip_'+id])return;f()['tip_'+id]=1;ui.tip={s:txt2}}
+async function tipSay(id,txt2){if(!G||f()['tip_'+id])return;f()['tip_'+id]=1;await say('Astuce : '+txt2)}
+function drawTip(){const T=ui.tip;T.t0??=now();const k=now()-T.t0;if(k>6500){ui.tip=null;return}const L=wrap(T.s,W-178,1).slice(0,4),h=16+L.length*11,y=ev(Math.min(8,-h+k/3,8+(6000-k)/3));X.globalAlpha=.94;rr(40,y,W-80,h,3,C.ink);rr(42,y+2,W-84,h-4,2,'#2a2440');X.globalAlpha=1;X.drawImage(ICO.star,50,y+5,12,12);txt('ASTUCE',68,y+14,C.gold,{mini:1});L.forEach((l,i)=>txt(l,118,y+15+i*11,'#ece6d6',{s:1,sh:0}))}
 // --- Mise en scène : bandes cinéma, caméra libre, émotions, déplacements scriptés, rayons, flux de particules ---
 let CAMO=null;const EMO=()=>({'!':ICO.bang,'?':ICO.q,'…':ICO.dots,'♥':ICO.heart,'♪':ICO.note});
 async function emote(n,k='!',ms=700){const e={n,k,t0:now()};ui.emo.push(e);sfx(k==='!'?'alert':k==='♥'||k==='♪'?'ok':'sel');await wait(ms);ui.emo.splice(ui.emo.indexOf(e),1)}
@@ -630,10 +634,11 @@ const FOL={x:0,y:0,fx:0,fy:0,d:0,tt:0};
 const folMon=()=>G.opt.fol!==0&&G.party[0]&&G.party[0].hp>0?G.party[0]:null;
 function folReset(){const d=G.dir,bx=G.x-DX[d],by=G.y-DY[d],M=MAPS[G.map],c=M.rows[by]?.[bx],ok=c&&!SOLID.has(c);FOL.x=FOL.fx=ok?bx:G.x;FOL.y=FOL.fy=ok?by:G.y;FOL.d=d}
 function folFollow(fx,fy){FOL.fx=FOL.x;FOL.fy=FOL.y;if(FOL.x!==fx||FOL.y!==fy){FOL.d=fx>FOL.x?3:fx<FOL.x?2:fy>FOL.y?0:1}FOL.x=fx;FOL.y=fy}
-async function folTalk(){const m=folMon();if(!m)return;const S=st(m),t=SP[m.sp].t,n=nm(m),r=m.st?['…',`${n} ne se sent pas très bien. Un Total Soin l'aiderait.`]:m.hp<S.hp*.3?['…',`${n} a l'air épuisé. Il aimerait se reposer.`]:night()&&t==='OMB'?['♪',`${n} danse dans l'obscurité. La nuit lui va si bien.`]:night()&&t==='LUM'?['♪',`${n} brille doucement pour éclairer ton chemin.`]:act2()?['…',`${n} lève les yeux vers le soleil voilé. Il reste près de toi.`]:[['♥',`${n} te regarde avec confiance.`],['♪',`${n} sautille joyeusement derrière toi.`],['♥',`${n} se frotte contre ta jambe.`]][G.t%3];
+async function folTalk(){const m=folMon();if(!m)return;tip('fol','Ta créature de tête te suit partout. Elle s\'agite quand un objet caché est tout proche : regarde bien autour de toi !');const S=st(m),t=SP[m.sp].t,n=nm(m),r=m.st?['…',`${n} ne se sent pas très bien. Un Total Soin l'aiderait.`]:m.hp<S.hp*.3?['…',`${n} a l'air épuisé. Il aimerait se reposer.`]:night()&&t==='OMB'?['♪',`${n} danse dans l'obscurité. La nuit lui va si bien.`]:night()&&t==='LUM'?['♪',`${n} brille doucement pour éclairer ton chemin.`]:act2()?['…',`${n} lève les yeux vers le soleil voilé. Il reste près de toi.`]:[['♥',`${n} te regarde avec confiance.`],['♪',`${n} sautille joyeusement derrière toi.`],['♥',`${n} se frotte contre ta jambe.`]][G.t%3];
  await emote('fol',r[0],500);await say(r[1])}
 
-async function npcStep(n,d,ms=200){const t0=now();n.d=d;for(;;){const k=Math.min(1,(now()-t0)/ms);n.ox=DX[d]*TS*k;n.oy=DY[d]*TS*k;if(k>=1)break;await frame()}n.x+=DX[d];n.y+=DY[d];n.ox=n.oy=0}
+let EPOCH=0;
+async function npcStep(n,d,ms=200){const t0=now(),ep=EPOCH;n.d=d;for(;;){if(ep!==EPOCH){n.ox=n.oy=0;return}const k=Math.min(1,(now()-t0)/ms);n.ox=DX[d]*TS*k;n.oy=DY[d]*TS*k;if(k>=1)break;await frame()}n.x+=DX[d];n.y+=DY[d];n.ox=n.oy=0}
 const team=T=>T.map(([s,l,mv])=>mon(s,l,{moves:mv}));
 async function trainerBattle(n){const tr=n.tr;await say(tr.pre,tr.name,0,n.t);const r=await battle(team(tr.team),{tr:{...tr,look:n.t}});if(r==='win'){f()['t_'+tr.id]=1;if(tr.win)await tr.win()}save();return r}
 function facing(){const M=MAPS[G.map],tx=G.x+DX[G.dir],ty=G.y+DY[G.dir];return{n:npcs(M).find(n=>n.x===tx&&n.y===ty),s:M.signs?.[tx+','+ty],a:M.acts?.[tx+','+ty],h:(M.hidden||[]).find(h=>h.x===tx&&h.y===ty&&!f()[hk(h)]),c:M.rows[ty]?.[tx],tx,ty}}
@@ -666,7 +671,7 @@ async function getPage(i){f()['pg_'+i]=1;const n=G.keys.pages=(G.keys.pages||0)+
 async function readPages(){const L=[1,2,3,4].filter(i=>f()['pg_'+i]);if(!L.length)return;for(;;){const i=await choose(L.map(i=>`Page ${i}`),{x:W-170,y:8,w:162,title:'Journal'});if(i<0)return;await say(PAGES[L[i]-1],'Valen')}}
 async function getShard(id){f()['e_'+id]=1;const n=G.keys.shards=(G.keys.shards||0)+1;sfx('shard');ui.pop={ic:ICO.shard,t0:now()};ui.flash=.5;ui.flashC=C.goldL;
  await say(`Tu trouves un ÉCLAT D'AUBE ! (${n}/12)`);if(n===1)await say('Un fragment de lumière cristallisée, tiède au toucher. Quelqu\'un saura peut-être à quoi il sert… On parle d\'un ermite dans la Forêt Murmure.')}
-async function fieldMove(c,tx,ty){const[t,desc,inf,verb,tn,col]=AFF[c],m=G.party.find(m=>alive(m)&&SP[m.sp].t===t);
+async function fieldMove(c,tx,ty){tip('aff','Ronces, rochers fissurés, brasiers : une créature du bon type dans ton équipe ouvre le passage. Les secrets d\'Aurélys se cachent souvent derrière.');const[t,desc,inf,verb,tn,col]=AFF[c],m=G.party.find(m=>alive(m)&&SP[m.sp].t===t);
  if(!m)return say(`${desc} Une créature de type ${tn} en forme, dans ton équipe, pourrait ${inf}.`);
  if(!await ask(`${desc} Demander à ${nm(m)} de ${inf} ?`))return;
  sfx(c==='k'?'hit':c==='x'?'splash':'cut');ui.shake=c==='k'?8:0;for(let i=0;i<16;i++)AMB.push({k:'rl',x:tx*TS+16+(Math.random()-.5)*20,y:ty*TS+16,vx:(Math.random()-.5)*3,vy:-2-Math.random()*2,l:30,c:i%2?col:'#ffffff'});
@@ -984,7 +989,7 @@ async function battle(foes,o={}){const tr=o.tr;if(o.legend){ui.ring={t0:now(),c:
  await wipeTo(0,380);await Promise.all([tween(B.pf,'f',0,600,1),tween(B.pf,'m',0,600,1)]);if(rain()&&!['in','cave','tech'].includes(MAPS[G.map].amb)){B.sky={k:'rain',n:99};await say('Il pleut ! EAU x1,5 · FEU x0,5.',0,1)}
  if(tr){await say(`${tr.name} veut se battre !`);await tween(B,'trX',260,350);B.trX=null;await sendFoe()}
  else{B.fo.b=1;B.fo.dk=0;sfx('cry');burstAt(FOE,12,['#ffffff',C.goldL],3,{k:'star'});await wait(120);B.fo.b=0;tween(B,'hf',1,300,1);dex(B.foe.sp,1);if(B.foe.sh){sfx('shard');burstAt(FOE,20,[C.gold,'#ffffff','#ff8ad8'],4,{k:'star'})}
-  await say(`${B.foe.sh?'Oh ! Un ':'Un '}${nm(B.foe)} sauvage ${B.foe.sh?'aux couleurs rares ':''}apparaît !`);await entryTal(1)}
+  await say(`${B.foe.sh?'Oh ! Un ':'Un '}${nm(B.foe)} sauvage ${B.foe.sh?'aux couleurs rares ':''}apparaît !`);await tipSay('cap','Affaiblis une créature sauvage avant de lancer une Capsule. Endormie, paralysée, brûlée ou empoisonnée, elle s\'attrape bien plus facilement.');await entryTal(1)}
  await sendOut();return endBattle(await battleLoop())}
 async function entryTal(s){const m=side(s),t=tal(m);if(t==='levejour'||t==='eclipsetot'){await talPop(s);await setSky(t==='levejour'?'sun':'eclipse',s)}}
 async function throwArc(b,x0,y0,x1,y1,ms,hgt){const t0=now();for(;;){const t=Math.min(1,(now()-t0)/ms);b.x=x0+(x1-x0)*t;b.y=y0+(y1-y0)*t-hgt*Math.sin(Math.PI*t);b.r=t*14;if(Math.random()<.6)spawn({x:b.x,y:b.y,l:10,c:'#ffffff',s:2});if(t>=1)return;await frame()}}
@@ -1277,7 +1282,7 @@ function drawWipe(){if(ui.wipe<=0)return;const p=ui.wipe,st2=ui.wst||'bars';
 function draw(t){X.imageSmoothingEnabled=false;
  if(mode==='credits')drawCredits(t);else if(mode==='title')drawTitle(t);else if(mode==='world')drawWorld(t);else if(mode==='battle'&&B)drawBattle(t);else if(mode==='evo')drawEvo();else if(mode==='intro')drawIntro(t);else if(mode==='end')drawEnd(t);else R(X,'#000000',0,0,W,H);
  if(ui.lb>0){const h=ev(30*ui.lb);R(X,'#000000',0,0,W,h);R(X,'#000000',0,H-h,W,h)}
- if(ui.ring)drawRing();drawDim();ui.panel?.();if(ui.badge)drawBadge();drawText();ui.menus.forEach(drawMenu);drawToast();if(ui.vs)drawVs();
+ if(ui.ring)drawRing();if(ui.tip&&mode==='world'&&!ui.text&&!ui.menus.length&&!ui.panel)drawTip();drawDim();ui.panel?.();if(ui.badge)drawBadge();drawText();ui.menus.forEach(drawMenu);drawToast();if(ui.vs)drawVs();
  if(ui.flash>0){X.globalAlpha=ui.flash;R(X,ui.flashC,0,0,W,H);X.globalAlpha=1;ui.flash=Math.max(0,ui.flash-.05)}drawWipe();
  if(ui.fade>0){X.globalAlpha=Math.round(ui.fade*5)/5;R(X,'#000000',0,0,W,H);X.globalAlpha=1}}
 let last=0;function loop(t){const dt=Math.min(50,t-last);last=t;if(ui.text&&ui.text.t<1e8){const o=ui.text.t|0;ui.text.t+=dt*(G?.opt?.txt===2?.11:.055);if(ui.text.who&&(ui.text.t|0)>o&&(ui.text.t|0)%3===0&&(ui.text.t|0)<ui.text.s.join(' ').length)sfx('blip')}if(mode==='world')updWorld(dt);draw(t);requestAnimationFrame(loop)}
