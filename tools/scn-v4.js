@@ -32,5 +32,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),until=async(c,ms=60000)=>{cons
  loadMap('gym2',5,2,1);await leaderTalk(MAPS.gym2.npcs.find(n=>n.t==='maelle'),'maelle');L('revanche maelle',f().rm_maelle===dayN(),G.bag.eaumystique);
  loadMap('gym',5,2,1);AUTO.pick=m=>m.opts.includes('TOURNOI DU CYCLE')?1:op(m);await leaderTalk(MAPS.gym.npcs.find(n=>n.t==='leader'),'brasia');AUTO.pick=op;
  L('tournoi',f().tourWins,G.keys.trophy,G.hof?.length,f().tourDay===dayN());
- // 10. Écrans : nouveautés, journal
+ // 10. Épilogue du ponton, combats rapides
+ loadMap('port',20,9,2);await MAPS.port.enter();L('ponton',f().ponton,G.bag.grelot);G.opt.fast=1;const tf=performance.now();await battle([mon('ratounet',5)]);L('combat rapide (ms)',Math.round(performance.now()-tf));G.opt.fast=0;
+ // 11. Écrans : nouveautés, journal
  AUTO.off=1;p=whatsNew();await wait(300);await SNAP('nouveautes');AUTO.off=0;await p;AUTO.off=1;p=journal();await wait(300);await SNAP('journal');AUTO.off=0;await p;L('fin')}

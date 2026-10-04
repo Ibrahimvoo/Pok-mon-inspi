@@ -5,7 +5,11 @@ async()=>{const L=(...a)=>console.log('LOG',...a);
  await gusTalk();L('rod',G.keys.rod);
  G.party=[mon('torrentor',60),mon('bourdonnerre',60),mon('phalumine',60),mon('rocaroc',60),mon('papivigne',60),mon('brasilion',60)];
  const fightAll=async k=>{loadMap(k,MAPS[k].npcs[0].x,MAPS[k].npcs[0].y);for(const n of [...MAPS[k].npcs])if(n.tr&&!f()['t_'+n.tr.id]&&(!n.cond||n.cond())){await trainerBattle(n);L('beat',n.tr.id,!!f()['t_'+n.tr.id])}};
- await fightAll('route1');await fightAll('gym');L('badge',f().badge);
+ await fightAll('route1');await fightAll('gym');L('badge',f().badge,G.keys.bracelet);
+ // la Mine de Cendreville (après le badge)
+ loadMap('ville',6,5,0);await MAPS.ville.enter();L('mineAlert',f().mineAlert);loadMap('ville',17,2,1);await SNAP('mine-entree');
+ await run(mineDoor);L('dans la mine',G.map);await SNAP('mine');await fightAll('mine');L('corvin',f().t_corvin,npcs(MAPS.mine).some(n=>n.tr?.id==='corvin'));
+ loadMap('mine',11,2,1);await titoTalk(MAPS.mine.npcs.find(n=>n.name==='Tito'));L('mine',f().mine,G.map,G.bag.griffe,npcs(MAPS.ville).some(n=>n.t==='grunt'));
  loadMap('foret',2,8);await SNAP('foret');await fightAll('foret');await rival2();L('rival2',f().rival2);
  // affinités & éclats
  G.dir=3;loadMap('foret',22,3,3);await interact();L('ronces',MAPS.foret.rows[3][23]);loadMap('foret',24,3,3);await SNAP('ermite');
