@@ -27,4 +27,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a);
  const sel=MAPS.obs.npcs.find(n=>n.t==='selene');loadMap('obs',9,4,1);await trainerBattle(sel);L('selene2',f().selene2done);
  loadMap('dome',5,5,1);await SNAP('dome');await finalBattle();L('final',f().vex2,f().balance,G.map);await SNAP('fin');
  G.t=CYC*9+CYC-50;loadMap('dome',5,3,1);G.dir=1;L('legN visible',npcs(MAPS.dome).map(n=>n.sp||n.t).join());
- await kaelRematch();L('done',caught(),G.keys.shards)}
+ await kaelRematch();L('done',caught(),G.keys.shards);
+ await ruinsDoor();L('ruins',G.map);await fightAll('ruines');const sb=MAPS.ruines.npcs.find(n=>n.k==='sablier');loadMap('ruines',9,2,1);G.dir=1;await interact();L('sablier',G.keys.sablier);loadMap('route1',10,8,0);await useSablier();L('time',PHN[phase()])}

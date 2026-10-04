@@ -62,7 +62,7 @@ star:icon(["...oo...","..oyyo..","oooyyooo","oyyyyyyo",".oyyyyo.","..oyyo..",".o
 pin:icon(["..oooo..",".orrrro.","orrwwrro","orrwwrro",".orrrro.","..orro..","...oo...","........"]),heal:icon(["..oooo..","..orro..","ooorrooo","orrrrrro","orrrrrro","ooorrooo","..orro..","..oooo.."]),
 cur:icon(["o....","oo...","oro..","orro.","orrro","orro.","oro..","oo...","o...."]),down:icon(["ooooooo","orrrrro",".orrro.","..oro..","...o..."]),
 abtn:icon(["..ooooo..",".orrrrro.","orrwwwrro","orwrrrwro","orwwwwwro","orwrrrwro","orrrrrrro",".oRRRRRo.","..ooooo.."]),bang:icon([".oooooo.","owwwwwwo","owwrrwwo","owwrrwwo","owwrrwwo","owwwwwwo","owwrrwwo","owwwwwwo",".oooooo.","..owo...","...o...."])};
-Object.assign(ICO,{rain:icon(["..oooo..",".owwwwo.","owwwwwwo","oooooooo",".b..b...","...b..b.",".b..b...","...b..b."]),q:icon([".oooooo.","owwbbwwo","owbwwbwo","owwwwbwo","owwwbwwo","owwwwwwo","owwwbwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),dots:icon([".oooooo.","owwwwwwo","owwwwwwo","owwwwwwo","obwbwbwo","owwwwwwo","owwwwwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),
+Object.assign(ICO,{sablier:icon(["oooooooo",".oyyyyo.","..oyyo..","...oo...","...oo...","..obbo..",".obbbbo.","oooooooo"],{b:'#6a5ab8'}),rain:icon(["..oooo..",".owwwwo.","owwwwwwo","oooooooo",".b..b...","...b..b.",".b..b...","...b..b."]),q:icon([".oooooo.","owwbbwwo","owbwwbwo","owwwwbwo","owwwbwwo","owwwwwwo","owwwbwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),dots:icon([".oooooo.","owwwwwwo","owwwwwwo","owwwwwwo","obwbwbwo","owwwwwwo","owwwwwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),
  heart:icon([".oooooo.","owwwwwwo","owrrwrro","orrrrrRo","orrrrrRo","owrrrRwo","owwrRwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),note:icon([".oooooo.","owwwwbbo","owwwbwbo","owwwbwwo","owwwbwwo","owbbbwwo","owbbbwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),
  bRoc:icon(["...oo...","..oYyo..",".oYyyyo.","oYyywyyo","oNyyyyNo",".oNNyNo.","..oNNo..","...oo..."],{y:'#e8a050',Y:'#ffd08a',N:'#9a5a2a'}),bMir:icon(["...oo...","..obbo..","..obbo..",".obwbbo.","obwbbbbo","obbbbbBo",".oBbbBo.","..oooo.."]),
  map:icon(["oooooooo","oggyyggo","ogbbygyo","obbbyggo","oggyyggo","oygggbbo","oyggbbbo","oooooooo"]),gear:icon(["...oo...",".oollo..","olllllo.","oll.llo.","oll.llo.","olllllo.",".oollo..","...oo..."]),
@@ -181,7 +181,7 @@ function chroma(c){const g=c.getContext('2d'),d=g.getImageData(0,0,c.width,c.hei
 // =====================================================================
 // TUILES & CONSTRUCTION DES CARTES (couche statique + avant-plan + tuiles animées)
 // =====================================================================
-const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZhwJQ'),SC={};
+const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZhwJQ@'),SC={};
 function shapeSpr(key,w,h,mark,pal){if(SC[key])return SC[key];const g=[...Array(h)].map(()=>Array(w).fill(0));mark(g);const src=g.map(r=>r.slice());
  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!src[y][x]&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(src[y+b]?.[x+a]||0)>0))g[y][x]=9;
  const o=(x,y)=>g[y]?.[x]===9,out=g.map(r=>r.slice());
@@ -199,7 +199,7 @@ const CRACKED=(()=>{const c=mkc(16,16,g=>{g.drawImage(shapeSpr('crk',16,16,g=>{f
 const LAMP=icon(["................",".....oooooo.....","....oyyyyyyo....","....oywwyyyo....","....oyyyyyyo....",".....oooooo.....","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","......okko......","....oooooooo....","....okkkkkko....","....oooooooo....","................"]);
 const SIGN=icon(["................","................",".oooooooooooooo.",".oyyyyyyyyyyyyo.",".onnnnnnnnnnnno.",".onNNNNNnNNNnno.",".onnnnnnnnnnnno.",".onNNNNnNNNNnno.",".oNNNNNNNNNNNNo.",".oooooooooooooo.","......onNo......","......onNo......","......onNo......","......onNo......",".....oonNoo.....","................"],{y:'#d8a06a'});
 function grassFrames(cs){return[0,1].map(f=>mkc(16,16,g=>{for(const[bx,by]of[[3,7],[9,6],[14,7],[1,15],[6,15],[12,14]]){R(g,cs.dk,bx-3,by+1,7,1);[-2,0,2].forEach((o,i)=>{const hh=i===1?6:4,sw=f?(o<=0?1:0):(o<0?-1:o>0?1:0);for(let k=0;k<hh;k++){const x=bx+o+(k>=hh-2?sw:0),y=by-k;R(g,k===hh-1?cs.hi:k>=hh-3?cs.lt:cs.md,x,y);if(k<hh-1)R(g,cs.dk,x-1,y)}})}}))}
-const TG=grassFrames({hi:'#b6ec7a',lt:'#7fd05a',md:'#4f9e3f',dk:'#2f6e30'}),TV=grassFrames({hi:'#ffb070',lt:'#d8743a',md:'#9a4a2a',dk:'#5a2a1e'});
+const TG=grassFrames({hi:'#b6ec7a',lt:'#7fd05a',md:'#4f9e3f',dk:'#2f6e30'}),TV=grassFrames({hi:'#ffb070',lt:'#d8743a',md:'#9a4a2a',dk:'#5a2a1e'}),TCV=grassFrames({hi:'#a8b0d0',lt:'#7e84a8',md:'#5a5e7e',dk:'#363850'});
 const tp=(g,ox,oy)=>(c,a,b,w=1,h=1)=>{if(a<0){w+=a;a=0}if(b<0){h+=b;b=0}if(a+w>16)w=16-a;if(b+h>16)h=16-b;if(w>0&&h>0){g.fillStyle=c;g.fillRect(ox+a,oy+b,w,h)}};
 const RC={R:'#d2524a',B:'#4a78d0',Y:'#d9a63a',G:'#46a06e',A:'#5a9ac8'};
 const KC={aM:'#5c566e',aD:'#4a445c',aL:'#726c88',rM:'#3e3852',rD:'#2e2a40',rL:'#5a5474',rDD:'#1a1626',lL:'#7ad8e8'};
@@ -235,15 +235,18 @@ function ground(g,M,at,x,y){const ch=at(x,y),p=tp(g,x*16,y*16),h=HSH(x,y),a=2+(h
   else{p('#dcc39b',0,0,16,16);for(let r=0;r<4;r++){p('#c4a67c',0,r*4+3,16,1);p('#c4a67c',((h>>>r*4)%12)+2,r*4,1,3);p('#e8d4b0',((h>>>r*4+2)%10)+3,r*4,3,1)}}
   if('XC'.includes(at(x,y-1)))p('rgba(40,28,70,.22)',0,0,16,3)};
  if(ch==='F'){floorP();return}
+ if(ch==='E'&&M.cave){p(KC.aM,0,0,16,16);p('#1a1626',2,0,12,16);for(let i=0;i<4;i++)p(i%2?'#2e2a40':'#3e3852',3,i*4,10,2);return}
  if(ch==='E'){floorP();p('#8a2028',1,2,14,12);p('#b8343e',2,3,12,10);p(C.gold,3,4,10,1);p(C.gold,3,11,10,1);return}
  if(ch==='r'){p('#b8343e',0,0,16,16);p('#a42c36',0,(h%4)*4+1,16,1);if(at(x-1,y)!=='r'){p('#7a1c26',0,0,1,16);p(C.gold,1,0,1,16)}if(at(x+1,y)!=='r'){p('#7a1c26',15,0,1,16);p(C.gold,14,0,1,16)}if(at(x,y-1)==='X')p('rgba(40,28,70,.22)',0,0,16,3);return}
  if(ch==='Z'){floorP();return}
+ if(ch==='@'){const K2=K;p(K2.rM,0,0,16,16);p(K2.rL,0,0,16,2);p('#2a1e1c',3,3,10,13);p('#4a3a34',4,3,8,1);pell(g,x*16+8,y*16+7,3,3,f()?.balance?C.gold:'#8a7a6a');p('#1a1410',7,6,2,2);p(K2.rDD,0,14,16,2);return}
  if(ch==='h'){floorP();p('#2a2230',1,1,14,14);p('#140e18',3,3,10,10);p('#3e3446',1,1,14,2);p('#5a5048',1,13,14,2);p('#0a060c',5,6,6,5);return}
  if(ch==='u'){floorP();p('#6e695f',1,1,14,14);p('#8a8478',2,2,12,4);p('#a8a296',3,2,6,1);p('#5a5550',2,12,12,2);return}
  if(ch==='w'){p(K.wD,0,0,16,16);p('#2f66b0',0,4,16,8);for(let i=0;i<16;i+=4)p('#3a6aa0',i,5,3,6);p(K.wM,a,b,3,1);return}
  if(ch==='X'){if(at(x,y+1)!=='X'){if(M.floor==='tech'){p('#2a2440',0,0,16,16);p('#3a3256',1,1,14,9);p('#4a4070',1,1,14,1);p('#5ad0e0',2,11,12,1);p('#1e1a30',0,13,16,3)}else if(M.floor==='stone'){p('#8a8478',0,0,16,16);for(let r=0;r<3;r++){p('#6e695f',0,r*4+3,16,1);for(let i=(r%2)*4;i<16;i+=8)p('#6e695f',i,r*4,1,3);p('#a29c90',(r%2)*4+1,r*4,3,1)}p('#4a463f',0,12,16,4);p('#6e695f',0,12,16,1)}
    else{p('#6e5b8f',0,0,16,16);for(let i=0;i<16;i+=4)p('#7a679b',i,0,2,10);p('#4c3f66',0,10,16,2);p('#d8c8a0',0,12,16,1);p('#3b3152',0,13,16,3)}}else{p('#2e2645',0,0,16,16);p('#3b3152',0,15,16,1)}return}
- if(ch==='C'){if(M.cstyle==='valve'){floorP();p('rgba(20,24,40,.3)',2,13,13,3);p('#5a6a7a',6,8,4,7);p('#7a8a9a',6,8,2,7);p(C.ink,2,2,12,12);p('#c8503a',3,3,10,10);p('#e8784a',4,4,8,2);p(C.ink,7,3,2,10);p(C.ink,3,7,10,2);p('#ffd08a',7,7,2,2);return}
+ if(ch==='C'){if(M.cstyle==='stele'){p(KC.aM,0,0,16,16);p(KC.aD,a,b,3,1);p('rgba(10,8,20,.35)',2,13,13,3);p('#3a3450',3,1,10,13);p('#6a6488',4,2,8,11);p('#8a84a8',4,2,8,1);for(let i=0;i<4;i++)p('#3a3450',5,4+i*2,(h>>i&3)+3,1);p(KC.lL,7,12,2,1);return}
+  if(M.cstyle==='valve'){floorP();p('rgba(20,24,40,.3)',2,13,13,3);p('#5a6a7a',6,8,4,7);p('#7a8a9a',6,8,2,7);p(C.ink,2,2,12,12);p('#c8503a',3,3,10,10);p('#e8784a',4,4,8,2);p(C.ink,7,3,2,10);p(C.ink,3,7,10,2);p('#ffd08a',7,7,2,2);return}
   if(M.cstyle==='tech'){floorP();p('rgba(10,8,24,.35)',1,13,14,3);p('#1e1a30',1,3,14,11);p('#3a3256',2,4,12,9);p('#14303a',3,5,10,5);p('#5ad0e0',4,6,(h%5)+3,1);p('#5ad0e0',4,8,(h>>3)%6+2,1);p('#e84a8a',11,11,2,1);return}
   if(M.cstyle==='statue'){floorP();p('rgba(30,24,40,.25)',2,13,13,3);p('#6e695f',3,10,10,5);p('#a8a296',3,10,10,1);p('#5a5550',3,14,10,1);p('#5a5550',4,3,8,7);p('#8a8478',5,3,6,6);p('#a8a296',5,3,4,2);p(C.gold,7,5,2,2);return}
   if(at(x,y-1)==='X'){p('#4a2e1c',0,0,16,16);p('#7a4e2a',1,1,14,14);const BK=['#e8484f','#4d8fe6','#f6c445','#4cc46a','#9a5ad0','#f08a3a'];for(let s=0;s<3;s++){const yy=1+s*5;for(let i=1;i<15;i+=2){const hh=3+((h>>>(i+s*3))&1);p(BK[(h>>>(i*2+s))%6],i,yy+4-hh,2,hh);p('rgba(0,0,0,.18)',i+1,yy+4-hh,1,hh)}p('#4a2e1c',1,yy+4,14,1)}return}
@@ -307,6 +310,9 @@ const SONG={
  ecl:[200,['square',.018,'C5 - - D#5 - - G5 - F#5 - - - G5 - - - C5 - - D#5 - - G#5 - G5 - F5 - D#5 - D5 - C5 - - D#5 - - G5 - A#5 - G#5 - G5 - - - F5 - D#5 - D5 - B4 - C5 - - - - - - -'],['triangle',.05,'C2 - G2 - C3 - G2 - C2 - G2 - C3 - G2 - G#1 - D#2 - G#2 - D#2 - G1 - D2 - G2 - D2 - C2 - G2 - C3 - G2 - D#2 - A#2 - D#3 - A#2 - F2 - C3 - G2 - D3 - C2 - G2 - C3 - - -']],
  battle:[112,['square',.02,'A4 . C5 . E5 . A5 G5 F5 . E5 . D5 . E5 . A4 . C5 . E5 . A5 B5 C6 . B5 . A5 . G5 . F5 . A5 . C6 . A5 . G5 . B5 . D6 . B5 . A5 . G5 . F5 . E5 . E5 . G#5 . B5 . E5 .'],['triangle',.05,'A2 A3 A2 A3 A2 A3 A2 A3 F2 F3 F2 F3 F2 F3 F2 F3 A2 A3 A2 A3 A2 A3 A2 A3 G2 G3 G2 G3 G2 G3 G2 G3 F2 F3 F2 F3 F2 F3 F2 F3 G2 G3 G2 G3 G2 G3 G2 G3 A2 A3 A2 A3 D3 D4 D3 D4 E2 E3 E2 E3 E2 E3 E2 E3']],
  boss:[104,['square',.022,'D5 . D5 . F5 . A5 . G#5 . A5 . F5 . D5 . C5 . C5 . E5 . G5 . F5 . E5 . C5 . A4 . A#4 . D5 . F5 . A#5 . A5 . G5 . F5 . E5 . D5 . F5 . A5 . D6 . C#6 . A5 . E5 . C#5 .'],['triangle',.055,'D2 D3 D2 D3 D2 D3 D2 D3 D2 D3 D2 D3 D2 D3 D2 D3 C2 C3 C2 C3 C2 C3 C2 C3 C2 C3 C2 C3 C2 C3 C2 C3 A#1 A#2 A#1 A#2 A#1 A#2 A#1 A#2 A#1 A#2 A#1 A#2 C2 C3 C2 C3 D2 D3 D2 D3 D2 D3 D2 D3 A1 A2 A1 A2 A1 A2 C#2 C#3']],
+ gym:[118,['square',.02,'D5 . A4 . D5 . F#5 . E5 . D5 . C#5 . A4 . B4 . D5 . G5 . F#5 . E5 . D5 . E5 . A4 . D5 . A4 . D5 . F#5 . A5 . G5 . F#5 . E5 . D5 . . . A4 . C#5 . D5 - - - . . . .'],['triangle',.05,'D3 D3 A2 A2 D3 D3 A2 A2 A2 A2 E3 E3 A2 A2 C#3 C#3 G2 G2 D3 D3 G2 G2 D3 D3 A2 A2 E3 E3 A2 A2 C#3 C#3 D3 D3 A2 A2 D3 D3 F#3 F#3 G2 G2 A2 A2 B2 B2 C#3 C#3 D3 . A2 . D3 . . . D3 . A2 . D3 . . .']],
+ final:[100,['square',.024,'C5 . . D#5 G5 . F5 D#5 D5 . . C5 D5 . D#5 . C5 . . D#5 G5 . A#5 G#5 G5 . . F5 G5 . . . G#5 . G5 . F5 . D#5 . F5 . D#5 . D5 . C5 . D5 . D#5 . F5 . G5 . G5 - - - B4 - - -'],['triangle',.055,'C3 C3 C3 C3 G2 G2 G2 G2 G#2 G#2 G#2 G#2 G2 G2 G2 G2 C3 C3 C3 C3 G2 G2 G2 G2 G#2 G#2 A#2 A#2 C3 C3 C3 C3 F2 F2 F2 F2 C3 C3 C3 C3 A#2 A#2 A#2 A#2 G#2 G#2 G#2 G#2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2 G2']],
+ ruines:[190,['square',.016,'A4 - - E5 - - D5 - C5 - - B4 - - A4 - G4 - - A4 - - B4 - C5 - - - E5 - - - A4 - - E5 - - F5 - E5 - - D5 - - C5 - B4 - - C5 - D5 - E5 - - - - - - -'],['triangle',.045,'A2 - - - E3 - - - A2 - - - E3 - - - G2 - - - D3 - - - C3 - - - E3 - - - F2 - - - C3 - - - D3 - - - A2 - - - E2 - - - B2 - - - A2 - - - - - - -']],
  win:[120,['square',.025,'C5 E5 G5 C6 - G5 C6 - - - - -'],['triangle',.05,'C3 - G3 - C3 - E3 - C3 - - -'],1],
  heal:[130,['square',.025,'C5 E5 G5 E5 C6 - - -'],['triangle',.05,'C3 - E3 - G3 - - -'],1],
  item:[110,['square',.025,'G5 A5 B5 D6 - B5 D6 - -'],['triangle',.05,'G3 - D4 - G3 - G4 - -'],1],
@@ -425,7 +431,7 @@ ville:{name:'Cendreville',bg:'plaine',amb:'day',mus:'town',edges:{s:['route1',0]
   {x:1,y:13,t:'miner',d:3,name:'Mineur',cond:()=>!f().r2,say:'Faudrait une créature ROCHE vraiment costaude pour dégager tout ça. Comme la Rocaroc de la championne…'}],
  enter:async()=>{if(f().eclipse&&!f().r2)await brasiaClears()},
  step:async()=>{if(G.x>=19&&(G.y===8||G.y===9)&&!f().badge){await say('Halte ! La forêt appartient à la Team Éclipse ! Reviens quand tu auras un badge… hé hé !','Sbire Éclipse');await forceStep(2);return true}}},
-gym:{name:'Arène de Cendreville',bg:'salle',amb:'in',floor:'stone',cstyle:'statue',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","XCCCChhCCCCX","XFFFFrrFFFFX","XFFFFrrFFFFX","XFCCCrrCCCFX","XFFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
+gym:{name:'Arène de Cendreville',bg:'salle',amb:'in',floor:'stone',cstyle:'statue',dark:1,mus:'gym',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","XCCCChhCCCCX","XFFFFrrFFFFX","XFFFFrrFFFFX","XFCCCrrCCCFX","XFFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
  doors:{'5,9':['ville',6,5,0],'6,9':['ville',6,5,0]},signs:{},acts:{'4,9':()=>say('Une plaque : "La roche ne se tire pas, elle se pousse. Comble une faille et la voie s\'ouvrira." Coincé ? Ressors de l\'arène : les rochers reprendront leur place.')},
  npcs:[{x:5,y:1,t:'leader',d:0,los:0,tr:TR('brasia','Championne Brasia',[['rocaillon',12,['jetpierre','durcir','grimace','charge']],['rocaroc',15,['jetpierre','murroc','belier','grimace']]],1200,
    'Bienvenue dans mon arène ! Ici, la roche ne cède jamais : grâce à leur FERMETÉ, mes créatures survivent toujours au premier coup fatal. Et ma Rocaroc sait durcir sa carapace… Montre-moi comment tu comptes percer ma défense !',
@@ -450,8 +456,8 @@ foret:{name:'Forêt Murmure',bg:'foret',amb:'foret',tree:'pine',mus:'foret',edge
   I(3,1,'superpotion',2,'f1i'),I(21,13,'rappel',1,'f2i'),I(20,11,'supercapsule',3,'f3i'),I(23,14,'repousse',2,'f4i')],
  step:async()=>{if(G.x>=18&&G.y<=4&&!f().rival2){await rival2();return true}}},
 mont:{name:'Mont Braise',bg:'mont',amb:'mont',mus:'mont',under:'g',edges:{s:['foret',9]},enc:[['rocaillon',14,17,32],['magmor',15,17,24],['ratoroi',15,17,16],['ombrelin',15,17,14,'n'],['nocturelle',15,17,12,'n']],
- rows:["^^^^^^^^^^^^^^^^^^^^","^^^^^^^gggg^^^^^^^^^","^^^^^^gggggggS^^^^^^","^^^LL^ggggggg^LL^^^^","^^LLLggggggggggLL^^^","^^LLggvvggggvvggLL^^","^^gggvvvvggvvvvggg^^","^^gggvvvvggvvvvggg^^","^^gg^^^^ggg^^^^^gg^^","^^gg^LL^ggg^LL^ggg^^","^^gggggggggggggggv^^","^^vvvvvgggggvvvvvv^^","^^vvvvvggggvvvvvvv^^","^^^^^^^^^^g^^^^^^^^^","^^^^gggggggggggg^^^^","^^gg^ggvvvvggvvg^^^^","^^gg^ggvvvvggvvggg^^","^^gxggggggg^^ggggg^^","^^^^^ggggLLLLvvvgg^^","^^vvvvggggggggvvvg^^","^^vvvvgggggggggggg^^","^^^^^^^^^gg^^^^^^^^^"],
- signs:{'13,2':'STÈLE ANCIENNE\n"Le jour chante, la nuit répond. Que l\'un se taise, et le Cycle se brise."'},hidden:[{x:7,y:1,sh:'m2'},{x:17,y:7,it:'hyperpotion',q:1,id:'mh1'}],
+ rows:["^^^^^^^^^^^^^^^^^^^^","^^^^^^^gggg@^^^^^^^^","^^^^^^gggggggS^^^^^^","^^^LL^ggggggg^LL^^^^","^^LLLggggggggggLL^^^","^^LLggvvggggvvggLL^^","^^gggvvvvggvvvvggg^^","^^gggvvvvggvvvvggg^^","^^gg^^^^ggg^^^^^gg^^","^^gg^LL^ggg^LL^ggg^^","^^gggggggggggggggv^^","^^vvvvvgggggvvvvvv^^","^^vvvvvggggvvvvvvv^^","^^^^^^^^^^g^^^^^^^^^","^^^^gggggggggggg^^^^","^^gg^ggvvvvggvvg^^^^","^^gg^ggvvvvggvvggg^^","^^gxggggggg^^ggggg^^","^^^^^ggggLLLLvvvgg^^","^^vvvvggggggggvvvg^^","^^vvvvgggggggggggg^^","^^^^^^^^^gg^^^^^^^^^"],
+ doors:{'11,1':ruinsDoor},signs:{'13,2':'STÈLE ANCIENNE\n"Le jour chante, la nuit répond. Que l\'un se taise, et le Cycle se brise."'},hidden:[{x:7,y:1,sh:'m2'},{x:17,y:7,it:'hyperpotion',q:1,id:'mh1'}],
  npcs:[{x:9,y:8,t:'grunt',d:0,tr:TR('g3','Sbire Éclipse',[['magmor',15],['ombrelin',16]],700,'Le chef est en plein rituel ! Tu ne passeras pas !','Chef… pardon…')},
   {x:12,y:6,t:'grunt',d:2,tr:TR('g4','Sbire Éclipse',[['rocaillon',16],['ratoroi',16]],700,'La nuit éternelle approche, gamin !','Impossible…')},
   {x:10,y:13,t:'selene',d:0,cond:()=>!f().t_selene1,tr:TR('selene1','Admin Sélène',[['nocturelle',15,['ombrefurtive','hypnose','morsure','vent']],['magmor',16,['feufollet','braise','durcir','crocsfeu']],['ombrelin',16,['hypnose','morsure','ombrefurtive','grondement']]],1500,
@@ -481,7 +487,7 @@ port:{name:'Port-Miroir',bg:'lac',amb:'day',mus:'town',edges:{e:['route2',-4],n:
   {x:20,y:12,t:'old',d:2,name:'Mémé Rosa',say:()=>f().balance?'J\'ai revu une vraie nuit étoilée. Merci, petit.':'Valen ? Le gamin qui passait ses nuits sur le ponton avec son Ombrelin ? Il était si gentil… jusqu\'à ce que son Ombrelin s\'éteigne. Il a quitté le port après ça.'}],
  enter:async()=>{if(act2()&&!f().portScene)await portScene()},
  step:async()=>{if(G.y<=1&&act2()){if(!f().badge2){await say('La Grotte Écho est trop dangereuse sans lumière. La championne Maëlle seule peut t\'en ouvrir l\'accès !','Garde-côte');await forceStep(0);return true}if(!f().kael3){await kael3();return true}}}},
-gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'town',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","X~~Q~~~~J~~X","XFFFF~~FFFCX","XFFFF~~FFFFX","X~~J~~~~Q~~X","XCFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
+gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'gym',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","X~~Q~~~~J~~X","XFFFF~~FFFCX","XFFFF~~FFFFX","X~~J~~~~Q~~X","XCFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
  cstyle:'valve',sw:{J:()=>f().tide?'w':'H',Q:()=>f().tide?'H':'w'},acts:{'1,7':valve,'10,4':valve,'4,9':()=>say('Une plaque : "Marée haute, marée basse… Chaque vanne inverse la marée. Les ponts émergent selon le niveau de l\'eau."')},
  doors:{'5,9':['port',6,5,0],'6,9':['port',6,5,0]},
  npcs:[{x:5,y:1,t:'maelle',d:0,los:0,tr:TR('maelle','Championne Maëlle',[['crapaflot',27,['dansepluie','aquajet','bulles','grimace']],['torrentor',28,['vague','morsure','durcir','hydro']],['crapaflot',29,['dansepluie','vague','plaquage','aquajet']]],2500,
@@ -510,6 +516,18 @@ obs:{name:'Observatoire Éclipse',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech
    'Encore toi. Valen est là-haut, avec Nocturion. Si tu passes, tu brises le seul espoir des créatures d\'ombre. Endormies, brûlées… comme la dernière fois. Mais je ne retiendrai plus mes coups.',
    '…C\'est fini. Écoute-moi, maintenant.',{vs:1,boss:1,items:1,win:seleneTruth})}],
  enter:async()=>{if(!f().obsScene)await obsScene()}},
+ruines:{name:'Ruines de l\'Aube',bg:'grotte',amb:'cave',mus:'ruines',cave:1,under:'g',cstyle:'stele',
+ enc:[['noctyrex',40,44,18],['rocaroc',40,44,18],['phalumine',40,43,14],['bourdonnerre',40,43,14],['magmor',40,44,18],['crapaflot',40,43,10],['papivigne',40,43,8]],
+ rows:["^^^^^^^^^^^^^^^^^^^^","^^^^^^^CgggC^^^^^^^^","^^^^^^^ggggg^^^^^^^^","^^^^^^^ggggg^^^^^^^^","^^^^^^^^^h^^^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^^^g^^^^^^^^^","^^Cgvvvggggggvvvgg^^","^^ggvvvggggggvvvgC^^","^^ggggg^^gg^^ggggg^^","^^vvggg^^gg^^gggvv^^","^^vvggggggggggggvv^^","^^^^^^^^^EE^^^^^^^^^"],
+ doors:{'9,14':['mont',10,1,2],'10,14':['mont',10,1,2]},
+ acts:{'2,9':()=>say('Une tablette usée : "Nous, fondateurs d\'Aurélys, avions faim. Les nuits étaient longues, les récoltes maigres. Nous voulions le jour, toujours plus de jour."'),
+  '17,10':()=>say('Une tablette fendue : "Aldric Saule proposa d\'enchaîner le gardien de la nuit. Personne ne s\'y opposa. Personne ne demanda l\'avis des créatures d\'ombre."'),
+  '7,1':()=>say('Une tablette dorée : "Solarion pleura. Sans personne pour lui répondre, sa lumière devint trop lourde à porter."'),
+  '11,1':()=>say('Une tablette d\'obsidienne : "À qui lira ces mots : le Cycle n\'a pas de maître. Rendez à chacun sa part, et le monde respirera."')},
+ npcs:[OB(10,6,'boulder',{push:1}),OB(9,7,'boulder',{push:1}),
+  {x:7,y:3,t:'lumen',d:3,tr:TR('gard1','Gardien de l\'Aube',[['phalumine',46],['sylvorne',46],['rocaroc',47]],5000,'Nul ne foule l\'autel du Cycle sans prouver qu\'il respecte le jour.','Le jour te reconnaît.',{vs:1,boss:1,items:1})},
+  {x:11,y:2,t:'selene',d:2,tr:TR('gard2','Gardienne du Crépuscule',[['noctyrex',47],['nocturelle',46],['torrentor',47]],5000,'Et la nuit ? Saurais-tu la respecter, elle aussi ?','La nuit te reconnaît aussi.',{vs:1,boss:1,items:1})},
+  {x:9,y:1,t:'obj',k:'sablier',cond:()=>!G.keys.sablier,fn:sablierGet}]},
 dome:{name:'Dôme de l\'Observatoire',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech',dark:1,mus:'ecl',rows:["XXXXXXXXXXXX","XCFFFFFFFFCX","XFFFFFFFFFFX","XFFFrrrrFFFX","XFFFrrrrFFFX","XFFFFFFFFFFX","XCFFFFFFFFCX","XXXXXEEXXXXX"],
  doors:{'5,7':['obs',8,2,0],'6,7':['obs',9,2,0]},acts:{'1,1':()=>say('Le télescope est pointé vers le soleil voilé. Une plaque dit : "Ici fut scellé le gardien de la nuit, pour que le jour règne."'),'10,1':()=>say('Des notes de Valen : "Le Cœur d\'Aube a brisé le sceau. Nocturion m\'écoute. Bientôt, plus aucune créature d\'ombre ne s\'éteindra."')},
  npcs:[{x:5,y:2,t:'vex',d:0,name:'Vex',fix:1,cond:()=>!f().vex2,say:'…'},{x:6,y:1,t:'mon',sp:'nocturion',cond:()=>!f().vex2},
@@ -590,12 +608,12 @@ const team=T=>T.map(([s,l,mv])=>mon(s,l,{moves:mv}));
 async function trainerBattle(n){const tr=n.tr;await say(tr.pre,tr.name,0,n.t);const r=await battle(team(tr.team),{tr:{...tr,look:n.t}});if(r==='win'){f()['t_'+tr.id]=1;if(tr.win)await tr.win()}save();return r}
 function facing(){const M=MAPS[G.map],tx=G.x+DX[G.dir],ty=G.y+DY[G.dir];return{n:npcs(M).find(n=>n.x===tx&&n.y===ty),s:M.signs?.[tx+','+ty],a:M.acts?.[tx+','+ty],h:(M.hidden||[]).find(h=>h.x===tx&&h.y===ty&&!f()[hk(h)]),c:M.rows[ty]?.[tx],tx,ty}}
 const hk=h=>h.sh?'e_'+h.sh:h.pg?'pg_'+h.pg:'i_'+h.id;
-const OBJ={boulder:'Un gros rocher. Il bouge un peu quand on le pousse…',tent:'Une tente de toile, rapiécée de partout. Ça sent la soupe.',fire:'Un feu de camp crépite doucement.'};
+const OBJ={sablier:'Un sablier de cristal posé sur l\'autel.',boulder:'Un gros rocher. Il bouge un peu quand on le pousse…',tent:'Une tente de toile, rapiécée de partout. Ça sent la soupe.',fire:'Un feu de camp crépite doucement.'};
 function give(k,q=1){G.bag[k]=(G.bag[k]||0)+q;jingle('item');ui.pop={ic:ICO[k],t0:now()}}
 async function interact(){const{n,s,a,h,c,tx,ty}=facing(),M=MAPS[G.map];
  if(n){if(!['ball','mon','shard','obj'].includes(n.t))n.d=OPP[G.dir];
   if(n.item){f()['i_'+n.id]=1;give(n.item[0],n.item[1]);return say(`Tu trouves ${IT[n.item[0]][0]} x${n.item[1]} !`)}
-  if(n.t==='shard')return getShard(n.id);if(n.t==='obj')return say(OBJ[n.k]);
+  if(n.t==='shard')return getShard(n.id);if(n.t==='obj'&&!n.fn)return say(OBJ[n.k]);
   if(n.fn)return n.fn(n);
   if(n.tr)return f()['t_'+n.tr.id]?say(typeof n.tr.post==='function'?n.tr.post():n.tr.post||n.tr.after,n.tr.name,0,n.t):trainerBattle(n);
   return say(typeof n.say==='function'?n.say():n.say,n.name,0,n.t)}
@@ -609,6 +627,11 @@ const PAGES=['Jour 1. Brume ne s\'est pas réveillé ce matin. Le soleil était 
  'Maëlle dit que ce n\'est la faute de personne. Mais les vieux registres de l\'Observatoire parlent d\'un sceau, et d\'un gardien de la nuit enchaîné pour que le jour dure. Quelqu\'un a choisi. Quelqu\'un a décidé que Brume compterait moins que les récoltes.',
  'Kael m\'a demandé pourquoi je partais. Je lui ai dit que je reviendrais quand les nuits seraient longues. Il avait huit ans. Il m\'a donné son bonnet vert, pour que j\'aie chaud la nuit. Je l\'ai encore.',
  'Le Cœur d\'Aube brille entre mes mains. Si je brise le sceau, Nocturion sera libre. Et si je me trompe ? Sélène doute. Moi aussi, parfois. Je continue quand même. Pour Brume.'];
+async function ruinsDoor(){if(!f().balance)return say('Une porte de pierre scellée, gravée d\'un soleil et d\'une lune entrelacés. Elle ne bouge pas d\'un pouce.');if(!f().ruinsOpen){f().ruinsOpen=1;await cine(1);ui.shake=10;sfx('roar');rays(11,1,C.goldL,2200);await say('Le soleil et la lune gravés sur la porte s\'illuminent… La pierre glisse dans un grondement !');await cine(0)}await warp('ruines',9,13,1)}
+async function sablierGet(){await cine(1);rays(9,1,C.goldL,2600);await say('Sur l\'autel repose un sablier de cristal. Une moitié brille comme le jour, l\'autre comme la nuit.');G.keys.sablier=1;jingle('item');ui.pop={ic:ICO.sablier,t0:now()};
+ await say('Tu obtiens le SABLIER DU CYCLE ! Depuis le menu, il permet de choisir le moment de la journée.');await cine(0);save()}
+async function useSablier(){const M=MAPS[G.map];if(['in','cave','tech'].includes(M.amb))return say('Le sable reste immobile… Il faut être à ciel ouvert.');const i=await choose(['AUBE','JOUR','CRÉPUSCULE','NUIT'],{x:W-200,y:8,w:192,title:'Sablier du Cycle'});if(i<0)return;
+ const n=f().balance?180:120,b=Math.ceil((G.t+1)/CYC)*CYC;G.t=b+[5,45,CYC-n-35,CYC-n+5][i];await fadeTo(.8,300);sfx('shard');await fadeTo(0,300);await say(`Le sable s'écoule… ${['L\'aube','Le jour','Le crépuscule','La nuit'][i]} tombe sur ${M.name.split(' · ')[0]}.`)}
 async function getPage(i){f()['pg_'+i]=1;const n=G.keys.pages=(G.keys.pages||0)+1;jingle('item');ui.pop={ic:ICO.book,t0:now()};await say(`Tu trouves une page déchirée… le journal de Valen ! (${n}/4)`);await say(PAGES[i-1],'Valen')}
 async function readPages(){const L=[1,2,3,4].filter(i=>f()['pg_'+i]);if(!L.length)return;for(;;){const i=await choose(L.map(i=>`Page ${i}`),{x:W-170,y:8,w:162,title:'Journal'});if(i<0)return;await say(PAGES[L[i]-1],'Valen')}}
 async function getShard(id){f()['e_'+id]=1;const n=G.keys.shards=(G.keys.shards||0)+1;sfx('shard');ui.pop={ic:ICO.shard,t0:now()};ui.flash=.5;ui.flashC=C.goldL;
@@ -834,8 +857,9 @@ function quests(){const g=f(),n=G.keys.shards||0,nx=DXR.find(r=>caught()<r[0]);r
  G.keys.dex&&['Pixédex',caught()>=DEX.length?2:1,`${caught()}/${DEX.length} capturées.${nx?` Récompense du Prof. à ${nx[0]}.`:''}`],
 (()=>{const sw=swarm();return sw&&['Rumeur du jour',1,`Un essaim de ${SP[sw[1]].name} a été aperçu : ${MAPS[sw[0]].name.split(' · ')[0]}. Ça ne durera qu'une journée !`]})(),
  G.keys.pages&&['Le journal de Valen',G.keys.pages>=4?2:1,`${G.keys.pages}/4 pages retrouvées.${G.keys.pages>=4&&!g.pagesDone?' Valen voudra sans doute les relire.':''} Appuie sur A pour les lire.`],
+ g.balance&&['Les Ruines de l\'Aube',G.keys.sablier?2:1,G.keys.sablier?'Tu as obtenu le Sablier du Cycle.':g.ruinsOpen?'Les Ruines s\'ouvrent au sommet du Mont Braise. Atteins l\'autel.':'Une porte scellée, au sommet du Mont Braise, réagit peut-être au retour du Cycle…'],
  g.balance&&['Les gardiens',g.legS&&g.legN?2:1,`Solarion ${g.legS?'capturé':'au Mont Braise (jour)'} · Nocturion ${g.legN?'capturé':'à l\'Observatoire (nuit)'}`]].filter(Boolean)}
-const RMAP={bourg:[300,262,'BOURG-LUEUR',12,3],route1:[300,214,'ROUTE 1',12,3],ville:[300,166,'CENDREVILLE',0,-12],foret:[384,166,'FORÊT MURMURE',0,20],mont:[384,82,'MONT BRAISE',0,20],route2:[216,166,'RIVE BRUMEUSE',0,-12],port:[132,190,'PORT-MIROIR',0,20],grotte:[132,122,'GROTTE ÉCHO',12,3],obs:[132,58,'OBSERVATOIRE',12,3]},RPAR={lab:'bourg',gym:'ville',gym2:'port',dome:'obs'},RLINK=[['bourg','route1'],['route1','ville'],['ville','foret'],['foret','mont'],['ville','route2'],['route2','port'],['port','grotte'],['grotte','obs']];
+const RMAP={bourg:[300,262,'BOURG-LUEUR',12,3],route1:[300,214,'ROUTE 1',12,3],ville:[300,166,'CENDREVILLE',0,-12],foret:[384,166,'FORÊT MURMURE',0,20],mont:[384,82,'MONT BRAISE',0,20],route2:[216,166,'RIVE BRUMEUSE',0,-12],port:[132,190,'PORT-MIROIR',0,20],grotte:[132,122,'GROTTE ÉCHO',12,3],obs:[132,58,'OBSERVATOIRE',12,3]},RPAR={lab:'bourg',gym:'ville',gym2:'port',dome:'obs',ruines:'mont'},RLINK=[['bourg','route1'],['route1','ville'],['ville','foret'],['foret','mont'],['ville','route2'],['route2','port'],['port','grotte'],['grotte','obs']];
 async function regionMap(){const cur=RPAR[G.map]||G.map,seen=k=>G.seen?.[k]||Object.entries(RPAR).some(([a,b])=>b===k&&G.seen?.[a]);
  ui.panel=()=>{panel(8,8,464,304,{fill:'#efe2bf'});const t=now(),p=(c,x,y,w,h)=>R(X,c,x,y,w,h);
   pell(X,150,214,92,46,'#7ab0c8');pell(X,150,212,86,42,'#8ac8e0');for(let i=0;i<9;i++)p('#b8e4f0',100+(i*23)%100,196+(i*7)%30,8,2);
@@ -859,10 +883,10 @@ function drawCard(){panel(8,8,302,214);X.drawImage(ICO.flag,24,24,16,16);txt('OB
  G.party.forEach((m,i)=>{const x=22+i*48;rr(x,160,46,46,2,'#efe6d2');X.drawImage(m.hp>0?monSpr(m.sp,0,48,m.sh):silh(monSpr(m.sp,0,48),'#9a92aa'),x-1,159,48,48)});
  rr(8,226,302,34,4,C.ink);rr(10,228,298,30,2,C.frameD);[['badge',ICO.bRoc],['badge2',ICO.bMir]].forEach(([k,ic],i)=>X.drawImage(f()[k]?ic:silh(ic,'#6a5f8f'),20+i*20,234,16,16));
  X.drawImage(ICO.shard,72,234,16,16);txt(G.keys.shards||0,92,248,'#ffffff',{sh:C.ink});X.drawImage(ICO.coin,186,234,16,16);txt(G.money,208,248,'#ffffff',{sh:C.ink})}
-async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],['JOURNAL',ICO.book],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
- const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:26,vis:9,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
+async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),['JOURNAL',ICO.book],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
+ const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:O.length>9?24:26,vis:10,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
  if(i<0||k==='FERMER')return;if(k==='ÉQUIPE')await teamMenu();if(k==='PIXÉDEX')await dexMenu();if(k==='SAC')await bagMenu(false);if(k==='JOURNAL')await journal();if(k==='SAUVER')await say(save()?'Partie sauvegardée !':'Impossible de sauvegarder dans ce navigateur.');
- if(k==='CARTE')await regionMap();if(k==='OPTIONS')await options();
+ if(k==='CARTE')await regionMap();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
  if(k==='TITRE'&&await ask('Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}}
 
 // =====================================================================
@@ -922,7 +946,7 @@ function statusFx(sd,k){const T=sd?FOE:ME,c=STN[k][1];if(k==='slp')for(let i=0;i
 const popText=(T,s,c)=>spawn({k:'txt',ch:s,x:T[0]+30,y:T[1]-30,vy:-1.6,dr:.9,l:54,c});
 async function talPop(s,m=side(s)){B.tp={s,t:TAL[tal(m)][0],t0:now()};await wait(450)}
 async function setSky(k,s){if(B.sky?.k===k){B.sky.n=5;return say('Le ciel est déjà ainsi…',0,1)}B.sky={k,n:5};ui.flash=.5;ui.flashC=SKY[k][1];B.skyT=now();sfx(k==='rain'?'splash':'shard');await say(SKY[k][2],0,1)}
-async function battle(foes,o={}){const tr=o.tr;if(o.legend){ui.ring={t0:now(),c:TY[SP[foes[foes.length-1].sp].t][1]};sfx('roar');ui.shake=12;await wait(700)}for(let i=0;i<2;i++){ui.flash=1;ui.flashC='#ffffff';await wait(160)}musPlay(tr?.vs||o.legend?'boss':'battle');
+async function battle(foes,o={}){const tr=o.tr;if(o.legend){ui.ring={t0:now(),c:TY[SP[foes[foes.length-1].sp].t][1]};sfx('roar');ui.shake=12;await wait(700)}for(let i=0;i<2;i++){ui.flash=1;ui.flashC='#ffffff';await wait(160)}musPlay(o.legend?'final':tr?.vs?'boss':'battle');
  if(tr&&tr.vs){ui.vs={tr,t0:now()};sfx('alert');await wait(1700)}
  ui.wst=o.legend||tr?.boss?'iris':tr?'bars':o.fish?'wave':'spiral';await wipeTo(1,o.legend?700:420);ui.vs=null;
  mode='battle';B={foes,fi:0,foe:foes[0],me:G.party.find(alive),tr,o,bgk:MAPS[G.map].bg,stg:[{atk:0,def:0,spd:0},{atk:0,def:0,spd:0}],fx:[],bolts:[],shake:0,tint:null,pf:{f:-320,m:320},sky:null,part:new Set(),items:tr?.items||0,lvl:tr?.boss?2:tr?1:0,
@@ -1034,7 +1058,7 @@ const GLOW=mkc(96,96,g=>{const gr=g.createRadialGradient(48,48,4,48,48,48);gr.ad
 const GLOWY=mkc(96,96,g=>{const gr=g.createRadialGradient(48,48,4,48,48,48);gr.addColorStop(0,'rgba(255,236,150,.6)');gr.addColorStop(1,'rgba(255,220,120,0)');g.fillStyle=gr;g.fillRect(0,0,96,96)});
 function animTiles(M,cx,cy,t){const mh=M.rows.length,mw=M.rows[0].length,x0=Math.max(0,cx/TS|0),y0=Math.max(0,cy/TS|0),x1=Math.min(mw-1,(cx+W)/TS|0),y1=Math.min(mh-1,(cy+H)/TS|0),at=(x,y)=>M.rows[y]?.[x];
  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const ch=M.rows[y][x],sx=x*TS-cx,sy=y*TS-cy,h=HSH(x,y);
-  if(ch===','||ch==='v')X.drawImage((ch===','?TG:TV)[((t/520+x*.37+y*.21)|0)%2],sx,sy,TS,TS);
+  if(ch===','||ch==='v')X.drawImage((ch===','?TG:M.cave?TCV:TV)[((t/520+x*.37+y*.21)|0)%2],sx,sy,TS,TS);
   else if(ch==='~'){const fr=(t/420+h%7)|0;R(X,K.wL,sx+((h>>>4)%7+fr%4)*2+4,sy+((h>>>8)%9+3)*2,6,2);R(X,K.wL,sx+((h>>>12)%7+(fr+2)%4)*2+4,sy+((h>>>16)%9+4)*2,4,2);if(((t/130|0)+h)%37===0)R(X,'#ffffff',sx+((h>>>3)%10+3)*2,sy+((h>>>7)%10+3)*2,2,2);
    const fo=(t/380|0)%2,wt=c=>c===undefined||c==='~';if(!wt(at(x,y-1)))for(let i=fo;i<8;i+=2)R(X,K.foam,sx+i*4,sy+4,4,2);if(!wt(at(x,y+1)))for(let i=1-fo;i<8;i+=2)R(X,K.foam,sx+i*4,sy+24,4,2);if(!wt(at(x-1,y)))for(let i=fo;i<8;i+=2)R(X,K.foam,sx+4,sy+i*4,2,4);if(!wt(at(x+1,y)))for(let i=1-fo;i<8;i+=2)R(X,K.foam,sx+26,sy+i*4,2,4)}
   else if(ch==='x'){for(let i=0;i<3;i++){const fh=10+((t/90+i*3+h)%5|0)*2,fx=sx+8+i*6;R(X,'#ff5a1e',fx-2,sy+20-fh,6,fh);R(X,'#ff9a2a',fx,sy+22-fh+2,4,fh-4);R(X,'#ffe27a',fx,sy+16,2,4)}}
@@ -1087,14 +1111,14 @@ function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='mul
 let CAM=[0,0];const cxw=()=>CAM[0],cyw=()=>CAM[1];
 const SHARDI=epx(ICO.shard);
 const HEARTI=epx(epx(ICO.shard));
-function drawObj(k,sx,sy,t){if(k==='boulder'){X.drawImage(SHD,sx,sy+22,32,10);X.drawImage(rockSpr(1),sx,sy-2,32,32);return}if(k==='valve'){return}if(k==='heart'){X.globalCompositeOperation='lighter';X.globalAlpha=.6+.2*Math.sin(t/160);X.drawImage(GLOWY,sx-32,sy-40,96,96);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(HEARTI,sx,sy-8+Math.round(Math.sin(t/300)*2),32,32);for(let i=0;i<4;i++){const a=t/500+i*1.57;R(X,'#ffffff',ev(sx+16+Math.cos(a)*22),ev(sy+8+Math.sin(a)*12),2,2)}return}if(k==='tent'){X.drawImage(SHD,sx-2,sy+22,36,10);for(let i=0;i<14;i++){R(X,C.ink,sx+16-i-1,sy+4+i*2-1,2+i*2+2,3)}for(let i=0;i<13;i++){R(X,'#c87a3a',sx+16-i,sy+4+i*2,i*2+1,2);R(X,'#e8a05a',sx+16-i,sy+4+i*2,Math.max(1,i),2)}R(X,'#3a2418',sx+13,sy+18,6,10);R(X,C.ink,sx+2,sy+30,28,2)}
+function drawObj(k,sx,sy,t){if(k==='boulder'){X.drawImage(SHD,sx,sy+22,32,10);X.drawImage(rockSpr(1),sx,sy-2,32,32);return}if(k==='valve'){return}if(k==='sablier'){X.globalCompositeOperation='lighter';X.globalAlpha=.4+.15*Math.sin(t/220);X.drawImage(GLOWY,sx-32,sy-36);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(ICO.sablier,sx+8,sy+2+Math.round(Math.sin(t/300)*2),16,16);return}if(k==='heart'){X.globalCompositeOperation='lighter';X.globalAlpha=.6+.2*Math.sin(t/160);X.drawImage(GLOWY,sx-32,sy-40,96,96);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(HEARTI,sx,sy-8+Math.round(Math.sin(t/300)*2),32,32);for(let i=0;i<4;i++){const a=t/500+i*1.57;R(X,'#ffffff',ev(sx+16+Math.cos(a)*22),ev(sy+8+Math.sin(a)*12),2,2)}return}if(k==='tent'){X.drawImage(SHD,sx-2,sy+22,36,10);for(let i=0;i<14;i++){R(X,C.ink,sx+16-i-1,sy+4+i*2-1,2+i*2+2,3)}for(let i=0;i<13;i++){R(X,'#c87a3a',sx+16-i,sy+4+i*2,i*2+1,2);R(X,'#e8a05a',sx+16-i,sy+4+i*2,Math.max(1,i),2)}R(X,'#3a2418',sx+13,sy+18,6,10);R(X,C.ink,sx+2,sy+30,28,2)}
  if(k==='fire'){R(X,'#4a2e1c',sx+6,sy+24,20,4);R(X,'#7a4e2a',sx+8,sy+22,16,3);for(let i=0;i<3;i++){const fh=8+((t/90+i*4)%4|0)*3,fx=sx+9+i*5;R(X,'#ff5a1e',fx,sy+22-fh,5,fh);R(X,'#ffd23a',fx+1,sy+22-fh+4,3,Math.max(2,fh-6))}if(Math.random()<.08)AMB.push({k:'em',x:sx+16+cxw(),y:sy+10+cyw(),vy:-.8,vx:(Math.random()-.5)*.4,l:60})}}
 
 function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R(X,'#0d0b16',0,0,W,H);
  let px=G.x*TS,py=G.y*TS;if(move){px=(move.fx+(move.tx-move.fx)*move.t)*TS;py=(move.fy+(move.ty-move.fy)*move.t)*TS}px=ev(px);py=ev(py);
  const cam=(p,m,v)=>ev(m*TS<=v?(m*TS-v)/2:Math.max(0,Math.min(m*TS-v,p+16-v/2)));let cx=cam(CAMO?ev(CAMO.x-16):px,mw,W),cy=cam(CAMO?ev(CAMO.y-16):py,mh,H);CAM=[cx,cy];if(ui.shake>0){cx+=ev((Math.random()-.5)*ui.shake);cy+=ev((Math.random()-.5)*ui.shake*.5);ui.shake=Math.max(0,ui.shake-.4)}
  X.drawImage(M.L,-cx,-cy,mw*TS,mh*TS);animTiles(M,cx,cy,t);
- const grassOver=(x,y,sx,sy)=>{const c=M.rows[y]?.[x];if(c===','||c==='v')X.drawImage((c===','?TG:TV)[((t/520+x*.37+y*.21)|0)%2],0,8,16,8,sx,sy+16,TS,16)};
+ const grassOver=(x,y,sx,sy)=>{const c=M.rows[y]?.[x];if(c===','||c==='v')X.drawImage((c===','?TG:M.cave?TCV:TV)[((t/520+x*.37+y*.21)|0)%2],0,8,16,8,sx,sy+16,TS,16)};
  const ents=npcs(M).map(n=>({y:n.y*TS+(n.oy||0),d:()=>{const sx=ev(n.x*TS+(n.ox||0)-cx),sy=ev(n.y*TS+(n.oy||0)-cy);
   if(n.t==='ball'){X.drawImage(SHD,sx+2,sy+20,28,10);X.drawImage(BALL,sx,sy-2,32,32);if(((t/180|0)+n.x*3)%14===0){R(X,'#ffffff',sx+20,sy+2,2,6);R(X,'#ffffff',sx+18,sy+4,6,2)}}
   else if(n.t==='shard'){const bob=Math.round(Math.sin(t/300+n.x)*2);X.drawImage(SHD,sx+6,sy+20,20,8);X.globalCompositeOperation='lighter';X.globalAlpha=.35+.15*Math.sin(t/250);X.drawImage(GLOWY,sx-32,sy-36);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(SHARDI,sx+8,sy+2+bob,16,16);if(((t/140|0)+n.x)%10===0)R(X,'#ffffff',sx+22,sy+2,2,2)}
