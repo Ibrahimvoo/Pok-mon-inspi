@@ -119,11 +119,11 @@ const MV={};[['charge','Charge','NOR',40,100,35],['griffe','Griffe','NOR',50,95,
 ['jetpierre','Jet-Pierres','ROC',50,90,15],['durcir','Armure','ROC',0,0,20,'def+'],['eboul','Éboulement','ROC',75,90,10,'spd-',30],['murroc','Mur de Roc','ROC',0,0,10,'def+2'],['lameroc','Lame de Roc','ROC',100,80,5],
 ['ombrefurtive','Ombre Furtive','OMB',40,100,30,0,0,1],['morsure','Morsure','OMB',60,100,25],['hypnose','Hypnose Noire','OMB',0,65,15,'slp'],['nuit','Griffe Nuit','OMB',80,100,15],['clairlune','Clair de Lune','OMB',0,0,10,'heal_n'],['rayonnoir','Rayon Noir','OMB',90,100,10,'def-',20],['eclipse','Éclipse','OMB',0,0,5,'eclipse'],['lunenoire','Lune Noire','OMB',95,90,5],
 ['lueur','Lueur','LUM',40,100,30,0,0,1],['aube','Lame d\'Aube','LUM',65,100,20],['poudreor','Poudre d\'Or','LUM',0,75,15,'slp'],['zenith','Zénith','LUM',0,0,5,'sun'],['prisme','Prisme','LUM',90,100,10],['aubeeternelle','Aube Éternelle','LUM',110,90,5],
-['lutte','Lutte','NOR',50,0,1,'recoil']].forEach(([id,n,t,p,a,pp,e,ch,pr])=>MV[id]={id,n,t,p,a,pp,e,ch:p?ch||0:100,pr:pr||0});
+['lutte','Lutte','NOR',50,0,1,'recoil'],['retour','Retour','NOR',1,100,20]].forEach(([id,n,t,p,a,pp,e,ch,pr])=>MV[id]={id,n,t,p,a,pp,e,ch:p?ch||0:100,pr:pr||0});
 const STN={brn:['BRÛ','#e8702e','brûlé','brûler','Brûle'],psn:['PSN','#9a5ad0','empoisonné','empoisonner','Empoisonne'],par:['PAR','#d8b018','paralysé','paralyser','Paralyse'],slp:['SOM','#7a86a8','endormi','endormir','Endort']};
 const STAT={atk:'L\'Attaque',def:'La Défense',spd:'La Vitesse'};
 const SKY={rain:['PLUIE','#4a8ad8','Il pleut ! EAU x1,5 · FEU x0,5.','La pluie s\'arrête.'],sun:['ZÉNITH','#e0a820','Le soleil brille au zénith ! FEU et LUMIÈRE x1,5 · EAU x0,5.','Le soleil se voile.'],eclipse:['ÉCLIPSE','#7050a0','Une éclipse obscurcit le terrain ! OMBRE x1,5. La LUMIÈRE peut la dissiper.','L\'éclipse se dissipe.']};
-function mvDesc(v){const e=v.e||'',m=e.match(/^(atk|def|spd)([+-])(\d?)$/),ch=v.p&&v.ch<100?` (${v.ch}%)`:'';let s='';if(v.id==='lutte')return'Dernier recours : blesse aussi le lanceur.';
+function mvDesc(v){const e=v.e||'',m=e.match(/^(atk|def|spd)([+-])(\d?)$/),ch=v.p&&v.ch<100?` (${v.ch}%)`:'';let s='';if(v.id==='lutte')return'Dernier recours : blesse aussi le lanceur.';if(v.id==='retour')return'Puissance selon le lien : jusqu\'à 102 quand vous êtes inséparables.';
  if(m)s=(v.p?'Peut baisser':m[2]==='+'?'Monte':'Baisse')+' '+{atk:'l\'Attaque',def:'la Défense',spd:'la Vitesse'}[m[1]]+(m[2]==='-'?' adverse':'')+(m[3]==='2'?' de 2 crans':'')+ch+'.';
  else if(STN[e])s=(v.p?'Peut '+STN[e][3]+' la cible':STN[e][4]+' la cible')+ch+'.';
  else s={heal:'Soigne la moitié des PV.',heal_j:'Soigne ; bien plus efficace le jour.',heal_n:'Soigne ; bien plus efficace la nuit.',drain:'Rend la moitié des dégâts infligés.',recoil:'Blesse aussi le lanceur.',rain:'Fait pleuvoir 5 tours.',sun:'Invoque le Zénith 5 tours.',eclipse:'Invoque une Éclipse 5 tours.'}[e]||'';
@@ -311,6 +311,13 @@ const PHN=['Aube','Jour','Crépuscule','Nuit','Éclipse'];
 const phase=()=>G&&f().eclipse&&!f().balance?4:G?phaseOf(G.t):1,night=()=>phase()>=3;
 const dex=(sp,v)=>{if(G&&(G.dex[sp]||0)<v)G.dex[sp]=v},caught=()=>DEX.filter(k=>G.dex[k]===2).length;
 // Lien : grandit en marchant en tête, en montant de niveau, en gagnant, au coin du feu ou avec une friandise (5 cœurs)
+const bp=(a,v)=>v.id==='retour'?Math.max(10,Math.floor((a.aff??70)/2.5)):v.p;
+// Maman : ses conseils, et RETOUR pour une créature qui t'aime vraiment (lien de 3 cœurs ou plus)
+async function momTalk(n){const M='Maman';await say(n.say(),M,0,'mom');if(!f().starter)return;const ok=G.party.some(m=>bondLv(m)>=3&&!m.moves.includes('retour'));
+ if(!ok){if(!f().momHint){f().momHint=1;await say('Tu sais, quand une créature t\'aime vraiment, elle peut apprendre RETOUR : une attaque qui puise sa force dans votre lien. Reviens me voir quand l\'une d\'elles sera vraiment complice avec toi !',M,0,'mom')}return}
+ if(!await ask('Une de tes créatures t\'aime vraiment, ça se voit. Je peux lui apprendre RETOUR : plus votre lien est fort, plus elle frappe fort. On essaie ?',M))return;
+ const j=await partyMenu('Qui doit apprendre ?');if(j<0)return;const m=G.party[j];if(bondLv(m)<3)return say(`${nm(m)} n'est pas encore assez proche de toi. Il faut au moins trois cœurs de lien.`,M,0,'mom');
+ if(m.moves.includes('retour'))return say(`${nm(m)} connaît déjà Retour.`);await learn(m,'retour')}
 const HEARTS=[50,100,150,200,250],BONDN=['Méfiant','Curieux','Attaché','Complice','Fidèle','Inséparable'],bondLv=m=>HEARTS.filter(v=>(m.aff||0)>=v).length,mine=m=>!!G&&G.party.includes(m),hold=(m,k)=>!!m&&m.item===k;
 function bondUp(m,n){if(!m)return;const b=bondLv(m);m.aff=Math.max(0,Math.min(255,(m.aff||0)+n));if(bondLv(m)>b&&mode==='world'&&G.party.includes(m)){ui.note={s:`Lien : ${nm(m)} ${BONDN[bondLv(m)]}`,t0:now()};
  tip('lien','Le lien grandit quand ta créature marche en tête, gagne, monte de niveau ou se repose au feu de camp. Fort, il l\'aide en combat : elle tient bon et chasse ses statuts.')}}
@@ -424,7 +431,7 @@ bourg:{name:'Bourg-Lueur',bg:'plaine',amb:'day',mus:'town',edges:{n:['route1',0]
  rows:["TTTTTTTTT==TTTTTTTTT","TT.......==.......TT","TT.ff....==....ff.TT","TT.RRRR..==..GGGGGTT","TT.RRRR..==..GGGGGTT","TT.WnDW..==..WnDnWTT","TT...=..l==....=..TT","TT...===========..TT","TT.......==.....S.TT","TT.f.....==l......TT","TT~~~~...==...ffffTT","TT~~~~...==.......TT","TT~~~~...==...f...TT","TTTTTTTTTTTTTTTTTTTT"],
  deco:[{x:15,y:3.5,k:'potion'},{x:4,y:3,k:'chim'}],smoke:[[71,42]],hidden:[{x:17,y:10,sh:'b1'}],
  doors:{'5,5':homeRest,'15,5':['lab',4,6,1]},signs:{'16,8':'BOURG-LUEUR\nLà où chaque aventure s\'allume.'},
- npcs:[{x:3,y:6,t:'mom',d:3,name:'Maman',say:()=>!f().starter?"Le Prof. Saule t'attend dans son labo, la maison au toit vert !":f().balance?"Regarde le ciel… Les nuits sont redevenues longues et belles. Ton père aurait adoré voir ça.":act2?"Le soleil ne se lève plus depuis des jours… Fais attention à toi, d'accord ? Et rentre dormir de temps en temps !":night()?"Il se fait tard ! La nuit, d'autres créatures sortent des hautes herbes. Rentre dormir si ton équipe est fatiguée.":"Si ton équipe est fatiguée, rentre te reposer à la maison !"},
+ npcs:[{x:3,y:6,t:'mom',d:3,name:'Maman',fn:momTalk,say:()=>!f().starter?"Le Prof. Saule t'attend dans son labo, la maison au toit vert !":f().balance?"Regarde le ciel… Les nuits sont redevenues longues et belles. Ton père aurait adoré voir ça.":act2()?"Le soleil ne se lève plus depuis des jours… Fais attention à toi, d'accord ? Et rentre dormir de temps en temps !":night()?"Il se fait tard ! La nuit, d'autres créatures sortent des hautes herbes. Rentre dormir si ton équipe est fatiguée.":"Si ton équipe est fatiguée, rentre te reposer à la maison !"},
   {x:6,y:11,t:'gus',d:2,name:'Vieux Gus',fn:gusTalk},
   {x:13,y:9,t:'kid',d:0,name:'Petit Théo',time:'j',wan:1,say:()=>["L'EAU bat le FEU, le FEU bat la PLANTE, et la PLANTE bat l'EAU ! Et la ROCHE ? Elle craint l'EAU et la PLANTE.","Tu savais ? La LUMIÈRE et l'OMBRE sont super efficaces l'une contre l'autre ! Et l'OMBRE effraie les créatures NORMAL.","Ma sœur dit que si une créature dort ou est paralysée, il faut lui donner un Total Soin. Elle sait tout, ma sœur.","Mon Piafou m'adore ! Plus on se balade ensemble, plus notre lien grandit. Avec un lien très fort, il tient bon même face à un coup fatal !","Tu as vu l'arbre à baies près de la mare ? Ses baies repoussent chaque jour. Fais-en tenir une à ta créature : elle la mangera toute seule en combat !"][(G.t>>4)%5]},
   {x:12,y:1,t:'rival',d:0,name:'Kael',cond:()=>f().balance,fn:kaelRematch},BT(17,11,'bourg','baiesoin')],
@@ -964,7 +971,7 @@ function drawMission(q,[x,y,w,h],sel,pr){rr(x+4,y+4,w,h,4,'rgba(8,6,20,.45)');rr
  if(q.done&&(now()/400|0)%2)txt('RÉCOMPENSE !',x+w-14,y+74,'#c8902a',{mini:1,al:'r'})}
 // --- Nouveautés de la version 4.0 ---
 const NEWS=[[()=>ICO.star,'Éveil du Cycle','Remplis la jauge du Bracelet (offert par Brasia) et éveille ta créature une fois par combat. Attention : les boss aussi !'],
- [()=>ICO.hrt,'Lien','Plus ta créature marche avec toi, gagne et se repose, plus votre lien grandit (5 cœurs). Un lien fort la rend coriace.'],
+ [()=>ICO.hrt,'Lien','Plus ta créature marche avec toi, gagne et se repose, plus votre lien grandit (5 cœurs). Fort, il la rend coriace, et Maman lui enseigne RETOUR.'],
  [()=>ICO.baiesoin,'Objets tenus','Baies, Charbon, Orbe Furie… agissent seuls en combat. Les arbres à baies repoussent chaque jour, et la Boutique rachète tes objets.'],
  [()=>ICO.board,'Tableau des Missions','Dans les Centres de Soins : captures, chasses et pêches récompensées par de l\'argent et des objets rares.'],
  [()=>ICO.pin,'Nouveau chapitre','Après le Badge Roc, la Team Éclipse pille la Mine de Cendreville. Sauve Tito et découvre ce qu\'ils cherchent.'],
@@ -1003,7 +1010,7 @@ async function summary(m){ui.panel=()=>{const S=st(m),sp=SP[m.sp];panel(8,8,464,
  const mx=Math.max(S.atk,S.def,S.spd)*1.15;[['PV',`${m.hp}/${S.hp}`,m.hp/S.hp,hpCol(m.hp/S.hp)],['ATTAQUE',S.atk,S.atk/mx,C.acc],['DÉFENSE',S.def,S.def/mx,C.blue],['VITESSE',S.spd,S.spd/mx,C.gold]].forEach(([a,b,k,c],i)=>{const y=36+i*30;txt(a,212,y,C.mute,{sh:0});txt(b,456,y,C.ink,{al:'r'});bar(212,y+3,244,k,c,6)});
  const T=TAL[sp.tal];txt('TALENT',212,158,C.mute,{sh:0});txt(T[0],456,158,C.acc,{al:'r',sh:0});wrap(T[1],244,1).slice(0,2).forEach((l,i)=>txt(l,212,170+i*10,C.ink2,{s:1,sh:0}));
  const e0=xpFor(m.lv),e1=xpFor(m.lv+1);txt('EXP',212,194,C.blue,{mini:1});txt(`${Math.max(0,e1-m.exp)} AVANT NV ${m.lv+1}`,456,194,C.ink2,{mini:1,al:'r'});bar(212,198,244,(m.exp-e0)/(e1-e0),C.blue,6);
- R(X,C.paper2,20,210,440,2);m.moves.forEach((id,i)=>{const v=MV[id],x=20+(i%2)*222,y=216+(i>>1)*44;rr(x,y,216,40,2,'#efe6d2');chip(v.t,x+6,y+4);txt(v.p?'PUISS '+v.p:'STATUT',x+208,y+16,C.ink2,{mini:1,al:'r'});txt(v.n,x+8,y+36);txt(`PP ${m.pp[i]}/${v.pp}`,x+208,y+34,m.pp[i]?C.ink2:C.red,{mini:1,al:'r'})})};
+ R(X,C.paper2,20,210,440,2);m.moves.forEach((id,i)=>{const v=MV[id],x=20+(i%2)*222,y=216+(i>>1)*44;rr(x,y,216,40,2,'#efe6d2');chip(v.t,x+6,y+4);txt(v.p?'PUISS '+bp(m,v):'STATUT',x+208,y+16,C.ink2,{mini:1,al:'r'});txt(v.n,x+8,y+36);txt(`PP ${m.pp[i]}/${v.pp}`,x+208,y+34,m.pp[i]?C.ink2:C.red,{mini:1,al:'r'})})};
  for(;;){const k=await key();if(k==='a'||k==='b')break}ui.panel=null}
 async function teamMenu(){if(!G.party.length)return say('Tu n\'as pas encore de créature.');for(;;){const i=await partyMenu('Équipe');if(i<0)return;ui.dim='Équipe';const j=await choose(['RÉSUMÉ','EN TÊTE','OBJET','RETOUR'],{w:160});ui.dim=null;if(j===0)await summary(G.party[i]);if(j===1&&i>0)G.party.unshift(G.party.splice(i,1)[0]);if(j===2)await itemMenu(G.party[i])}}
 async function itemMenu(m){if(m.item){if(await ask(`${nm(m)} tient ${IT[m.item][0]}. Le reprendre ?`)){const k=m.item;m.item=null;G.bag[k]=(G.bag[k]||0)+1;await say(`Tu reprends ${IT[k][0]} à ${nm(m)}.`)}return}
@@ -1095,7 +1102,7 @@ function power(a,v){let k=1;const t=v.t,sk=B.sky?.k;if(a.hp<=st(a).hp/3&&{brasie
  if(isN()&&(tal(a)==='noctambule'&&t==='OMB'||tal(a)==='lueur'&&t==='LUM'))k*=1.2;
  if(sk==='rain'){if(t==='EAU')k*=1.5;if(t==='FEU')k*=.5}if(sk==='sun'){if(t==='FEU'||t==='LUM')k*=1.5;if(t==='EAU')k*=.5}if(sk==='eclipse'&&t==='OMB')k*=1.5;const it=a.item&&IT[a.item];if(it&&it[4]==='held'&&it[3]===t)k*=1.2;if(a.item==='orbe')k*=1.3;return k}
 function dmg(a,d,v,sa,sd,avg){const A=st(a).atk*sm(sa.atk)*(a.st==='brn'?.75:1),D=st(d).def*sm(sd.def),ef=eff(v.t,SP[d.sp].t),cr=!avg&&Math.random()<.0625*(mine(a)&&bondLv(a)>=5?2:1);
- return{ef,cr,n:Math.max(1,Math.floor(((2*a.lv/5+2)*v.p*A/D/50+2)*(v.t===SP[a.sp].t?1.5:1)*ef*power(a,v)*(cr?1.5:1)*(avg?.92:.85+Math.random()*.15)))}}
+ return{ef,cr,n:Math.max(1,Math.floor(((2*a.lv/5+2)*bp(a,v)*A/D/50+2)*(v.t===SP[a.sp].t?1.5:1)*ef*power(a,v)*(cr?1.5:1)*(avg?.92:.85+Math.random()*.15)))}}
 // IA : 0 sauvage (instinct), 1 dresseur (vise juste), 2 boss (planifie : statuts, ciel, soins, objets)
 function ai(fo,me,lv){const fs=B.stg[1],ms=B.stg[0],mx=st(fo).hp;let best=null,bs=-1;const U=fo.moves.filter((id,i)=>fo.pp[i]>0);if(!U.length)return'lutte';
  for(const id of U){const v=MV[id];let s;
@@ -1207,7 +1214,7 @@ async function battleLoop(){for(;;){if(canEv(0)&&!f().tip_evr){f().tip_evr=1;awa
  if(r==='next')continue;if(r)return r;r=await endTurn();if(r&&r!=='next')return r}}
 function moveInfo(i,x,y,w){const id=B.me.moves[i],v=MV[id],ef=v.p?eff(v.t,SP[B.foe.sp].t):1,cw=chip(v.t,x+14,y+14);
  if(v.p&&ef!==1)txt(ef>1?'SUPER EFF.':'PEU EFF.',x+w-14,y+27,ef>1?'#c8902a':C.mute,{mini:1,al:'r'});
- txt(v.p?`PUISS ${v.p}  PRÉC ${v.a||'-'}`:`STATUT  PRÉC ${v.a||'-'}`,x+14,y+46,C.ink2,{mini:1});
+ txt(v.p?`PUISS ${bp(B.me,v)}  PRÉC ${v.a||'-'}`:`STATUT  PRÉC ${v.a||'-'}`,x+14,y+46,C.ink2,{mini:1});
  const d=(v.t==='LUM'&&v.p&&B.sky?.k==='eclipse'?'Dissipe l\'éclipse ! ':'')+(mvDesc(v)||(v.t===SP[B.me.sp].t&&v.p?'Même type : x1,5.':''));wrap(d,w-28,1).slice(0,4).forEach((l,j)=>txt(l,x+14,y+62+j*10,C.ink,{s:1,sh:0}))}
 async function foeItem(){B.items--;const m=B.foe,S=st(m);await say(`${B.tr.name} utilise une Super Potion !`,0,1);sfx('lv');healFx(1);m.hp=Math.min(S.hp,m.hp+Math.max(60,S.hp>>1));m.st=null;await tween(B.dh,1,m.hp,400);await say(`${who(1)} récupère des PV !`,0,1);return null}
 async function inflict(s,k,quiet){const m=side(s);if(m.hp<=0)return false;if(m.st||immune(m,k)){if(!quiet)await say(m.st?`${who(s)} est déjà ${STN[m.st][2]}.`:`Ça n'affecte pas ${who(s)}…`,0,1);return false}

@@ -7,6 +7,8 @@ async()=>{const L=(...a)=>console.log('LOG',...a),until=async(c,ms=60000)=>{cons
  // 2. Nouvelle partie : lien du starter
  G=newGame();G.opt.snd=0;mode='world';loadMap('bourg',5,6,0);await run(()=>pickStarter('flamiot'));const s0=G.party[0];L('starter aff',s0.aff,'coeurs',bondLv(s0));
  s0.aff=148;bondUp(s0,3);L('lien',s0.aff,bondLv(s0),ui.note?.s);await SNAP('lien-note');
+ // Maman enseigne Retour (lien de 3 cœurs ou plus) ; puissance selon le lien
+ loadMap('bourg',4,6,2);await interact();L('retour',s0.moves.includes('retour'),bp(s0,MV.retour),bp({aff:255},MV.retour));
  // 3. Arbre à baies de Bourg-Lueur (17,11)
  loadMap('bourg',16,11,3);await SNAP('arbre');await interact();const nb=G.bag.baiesoin||0;await interact();L('baies',nb,G.bag.baiesoin||0,'repousse demain',!berryRipe(MAPS.bourg.npcs.find(n=>n.k==='berry')));
  // 4. Objet tenu + résumé
@@ -28,7 +30,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),until=async(c,ms=60000)=>{cons
  // 8. Revente
  G.bag={charbon:1};const m1=G.money;await sellMenu();L('vente',G.money-m1,G.bag.charbon);
  // 9. Après l'Équilibre : revanche de Maëlle puis Tournoi du Cycle
- Object.assign(f(),{balance:1,vex2:1,eclipse:1,t_brasia:1,t_maelle:1,badge2:1});G.party=[mon('torrentor',80),mon('bourdonnerre',80),mon('phalumine',80),mon('sylvorne',80),mon('rocaroc',80),mon('brasilion',80)];G.bag={hyperpotion:20,rappel:5};
+ Object.assign(f(),{balance:1,vex2:1,eclipse:1,t_brasia:1,t_maelle:1,badge2:1});G.party=[mon('torrentor',100),mon('bourdonnerre',100),mon('phalumine',100),mon('sylvorne',100),mon('rocaroc',100),mon('brasilion',100)];G.bag={hyperpotion:20,rappel:5};
  loadMap('gym2',5,2,1);await leaderTalk(MAPS.gym2.npcs.find(n=>n.t==='maelle'),'maelle');L('revanche maelle',f().rm_maelle===dayN(),G.bag.eaumystique);
  loadMap('gym',5,2,1);AUTO.pick=m=>m.opts.includes('TOURNOI DU CYCLE')?1:op(m);await leaderTalk(MAPS.gym.npcs.find(n=>n.t==='leader'),'brasia');AUTO.pick=op;
  L('tournoi',f().tourWins,G.keys.trophy,G.hof?.length,f().tourDay===dayN());
