@@ -78,7 +78,7 @@ A.render=function(def,o){
  // ombre portée des parties de devant sur celles de derrière (vers le bas-droite), occlusion des creux
  const cs=(o.cast??2.6)*sc*SS,cdx=Math.round(-L[0]/Math.hypot(L[0],L[1])*cs),cdy=Math.round(-L[1]/Math.hypot(L[0],L[1])*cs);
  const lev=new Int8Array(W*H).fill(-9),own=new Int16Array(W*H).fill(-1),inten=new Float32Array(W*H);
- const TH=o.th||[.30,.47,.74,.9];
+ const GBA=o.preset==='gba',TH=o.th||(GBA?[.2,.46,.84,9]:[.30,.47,.74,.9]);
  for(let oy=0;oy<H;oy++)for(let ox=0;ox<W;ox++){const cnt=new Map();let tot=0;
   for(let j=0;j<SS;j++)for(let i=0;i<SS;i++){const t=top[(oy*SS+j)*GW+ox*SS+i];if(t>=0){cnt.set(t,(cnt.get(t)||0)+1);tot++}}
   if(tot<SS*SS*(o.cov??.5))continue;let best=-1,bc=0;for(const[t,c]of cnt)if(c>bc||c===bc&&t>best){best=t;bc=c}
@@ -90,10 +90,10 @@ A.render=function(def,o){
    if(!po.nocast){const qx=sx+cdx,qy=sy+cdy;if(qx>=0&&qy>=0&&qx<GW&&qy<GH){const q=top[qy*GW+qx];if(q>best&&!(po.grp&&parts[q].o.grp===po.grp)&&!parts[q].o.nocastOn)sh++}}}
   I/=n;sh/=n;
   if(po.tex){I+=po.tex((ox+.5)/W,(oy+.5)/H,ox,oy)}
-  if(po.fur){const f=vnoise(ox*.9,oy*.45,best)*.5+vnoise(ox*.3,oy*.3,best+9)*.5;I+=(f-.5)*po.fur}
-  if(po.noise){I+=(hash(ox,oy,best)-.5)*po.noise}
+  if(po.fur&&!GBA){const f=vnoise(ox*.9,oy*.45,best)*.5+vnoise(ox*.3,oy*.3,best+9)*.5;I+=(f-.5)*po.fur}
+  if(po.noise&&!GBA){I+=(hash(ox,oy,best)-.5)*po.noise}
   I=I*(1-sh*(po.castK??.55))+(po.bias||0);I=Math.max(0,Math.min(1.2,I));inten[oy*W+ox]=I;
-  let lv=I<TH[0]?-2:I<TH[1]?-1:I<TH[2]?0:I<TH[3]?1:2;if(lv===2&&!po.gloss&&!po.hl)lv=1;if(po.min!=null&&lv<po.min)lv=po.min;if(po.max!=null&&lv>po.max)lv=po.max;if(po.emit)lv=po.emit===2?1:0;
+  let lv=I<TH[0]?-2:I<TH[1]?-1:I<TH[2]?0:I<TH[3]?1:2;if(lv===2&&!po.gloss&&!po.hl)lv=1;if(GBA&&lv===1&&po.gloss&&I>.97)lv=2;if(po.min!=null&&lv<po.min)lv=po.min;if(po.max!=null&&lv>po.max)lv=po.max;if(po.emit)lv=po.emit===2?1:0;
   lev[oy*W+ox]=lv;own[oy*W+ox]=best}
  // nettoyage : un pixel isolé prend le ton de ses voisins (pas de bruit de quantification)
  for(let pass=0;pass<2;pass++)for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const k=y*W+x,p=own[k];if(p<0)continue;const nb=[k-1,k+1,k-W,k+W].filter(q=>own[q]===p);if(nb.length<3)continue;const l0=lev[nb[0]];if(lev[k]!==l0&&nb.every(q=>lev[q]===l0))lev[k]=l0}
@@ -101,11 +101,11 @@ A.render=function(def,o){
  const out=new Uint8ClampedArray(W*H*4),put=(k,c)=>{const v=hex(c);out[k*4]=v[0];out[k*4+1]=v[1];out[k*4+2]=v[2];out[k*4+3]=255};
  const OLC=o.olc||'#170e2a';
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const k=y*W+x,p=own[k];if(p<0)continue;const P=parts[p],po=P.o,c=po.col?.(x/W,y/H)||P.c;
-  let col=A.tone(c,lev[k]);
+  let col=po.ramp?po.ramp[Math.max(0,Math.min(po.ramp.length-1,lev[k]+3))]:A.tone(c,lev[k]);
   if(po.ol!==false){let outer=0,inner=0,lit=0;for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy,q=xx<0||yy<0||xx>=W||yy>=H?-1:own[yy*W+xx];
     if(q<0){outer++;if(dx<0||dy<0)lit++}else if(q<p&&po.olIn!==false&&!(po.grp&&parts[q].o.grp===po.grp)&&!parts[q].cut)inner++}
-   if(outer){const sideLit=lit>0&&lit===outer&&lev[k]>=0;col=po.olc||(sideLit?A.mix(A.tone(c,-2),OLC,.25):A.mix(A.tone(c,-3),OLC,.45))}
-   else if(inner)col=po.ilc||A.mix(A.tone(c,-2),OLC,.18)}
+   if(outer){const sideLit=lit>0&&lit===outer&&lev[k]>=0;col=po.olc||(po.ramp?po.ramp[0]:GBA?A.mix(A.tone(c,-3),OLC,sideLit?.42:.62):sideLit?A.mix(A.tone(c,-2),OLC,.25):A.mix(A.tone(c,-3),OLC,.45))}
+   else if(inner)col=po.ilc||(po.ramp?po.ramp[Math.min(1,po.ramp.length-1)]:GBA?A.mix(A.tone(c,-3),OLC,.3):A.mix(A.tone(c,-2),OLC,.18))}
   put(k,col)}
  // aplats (motifs, yeux) et traits
  for(const f of flats){let m;if(f.dot){const[x,y]=f.dot;m=new Uint8Array(W*H);let px=offx+(o.flip?(bx0+bx1-x):x)*sc-bx0*sc,py=offy+(y-by0)*sc;px=Math.floor(px);py=Math.floor(py);if(px>=0&&py>=0&&px<W&&py<H)m[py*W+px]=1}
