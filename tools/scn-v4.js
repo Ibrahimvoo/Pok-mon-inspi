@@ -11,6 +11,10 @@ async()=>{const L=(...a)=>console.log('LOG',...a),until=async(c,ms=60000)=>{cons
  loadMap('bourg',4,6,2);await interact();L('retour',s0.moves.includes('retour'),bp(s0,MV.retour),bp({aff:255},MV.retour));
  // 3. Arbre à baies de Bourg-Lueur (17,11)
  loadMap('bourg',16,11,3);await SNAP('arbre');await interact();const nb=G.bag.baiesoin||0;await interact();L('baies',nb,G.bag.baiesoin||0,'repousse demain',!berryRipe(MAPS.bourg.npcs.find(n=>n.k==='berry')));
+ // Quêtes annexes : Théo (Lumignon), Gus (Crapaflot), Rosa (3 Baies Prisme), marqueurs « ! »
+ f().badge=1;loadMap('bourg',9,10,3);await SNAP('quetes');const th=MAPS.bourg.npcs.find(n=>n.name==='Petit Théo');await theoTalk(th);G.party.push(mon('lumignon',8));await theoTalk(th);
+ await gusTalk();await gusTalk();G.party.push(mon('crapaflot',22));await gusTalk();const ro=MAPS.port.npcs.find(n=>n.name==='Mémé Rosa');await rosaTalk(ro);G.bag.baieprisme=3;await rosaTalk(ro);
+ L('quêtes',f().theoQ,f().gusQ,f().rosaQ,G.bag.poudretoile,G.bag.miettes,G.bag.ruban,G.bag.baieprisme,quests().map(q=>q[0]).join('|'));G.party=[s0];f().badge=0;
  // 4. Objet tenu + résumé
  await giveHeld(s0,'baiesoin');L('tient',s0.item,G.bag.baiesoin);AUTO.off=1;let p=summary(s0);await wait(300);await SNAP('resume');AUTO.off=0;await p;
  // 5. Éveil du joueur (jauge pleine d'office) contre une créature sauvage
