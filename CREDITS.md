@@ -90,6 +90,7 @@ sont découpés dans les sprites de combat.
 - ["Shop Assistant"](https://wiki.tuxemon.org/index.php?title=Shop_Assistant). Main sprite by Catch Challenger, adapted by Sanglorian. Overland sprites by Catch Challenger.
 - ["Soldier"](https://wiki.tuxemon.org/index.php?title=Soldier). Front sprite by Sanglorian. Overland sprites adapted by Sanglorian from sprites by Catch Challenger.
 - ["Spyder Boss"](https://wiki.tuxemon.org/index.php?title=Spyder_Boss). Overland sprites by Catch Challenger. Front sprite by Sanglorian.
+- ["Overseer"](https://wiki.tuxemon.org/index.php?title=Overseer) (Ambroise) et ["Rogue"](https://wiki.tuxemon.org/index.php?title=Rogue) (Commandant Orso) : contributeurs du projet Tuxemon, d'après les sprites de Catch Challenger, CC BY-SA 4.0.
 - Lou (sprites « catgirl », Pboop / Sanglorian / tamashihoshi) et Elias (sprites « professor », contributeurs Tuxemon).
 - Autres personnages (aventurier·e, héroïne, fashionista, infirmière, professeur·e…) : contributeurs du projet
   Tuxemon, d'après les sprites de [Catch Challenger](https://github.com/alphaonex86/CatchChallenger-datapack) (CC BY)

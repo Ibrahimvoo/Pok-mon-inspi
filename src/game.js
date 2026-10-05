@@ -360,7 +360,7 @@ function mon(sp,lv,o={}){const m={sp,lv,exp:xpFor(lv),moves:[],st:null};for(cons
  if(o.moves)m.moves=o.moves.slice();m.pp=m.moves.map(id=>MV[id].pp);m.hp=st(m).hp;if(o.wild&&Math.random()<(G?.keys?.charme?3:1)/256)m.sh=1;
  m.aff=o.aff??70;m.item=o.item||(o.wild&&Math.random()<.08?(Math.random()<.5?'baiesoin':BOOST[SP[sp].t]):null);return m}
 const nm=m=>SP[m.sp].name,f=()=>G.flags,alive=m=>m.hp>0,fullHeal=m=>{m.hp=st(m).hp;m.st=null;m.slp=0;m.pp=m.moves.map(id=>MV[id].pp)},healAll=()=>G.party.forEach(fullHeal);
-const newGame=()=>({v:6,map:'bourg',x:5,y:6,dir:0,party:[],box:[],bag:{potion:1},money:500,flags:{},heal:['bourg',5,6],t:70,dex:{},keys:{},repel:0,play:0,opt:{snd:1}});
+const newGame=()=>({v:7,map:'bourg',x:5,y:6,dir:0,party:[],box:[],bag:{potion:1},money:500,flags:{},heal:['bourg',5,6],t:70,dex:{},keys:{},repel:0,play:0,opt:{snd:1}});
 const SK='pixemon-eclipse-v1',SLOTK=s=>s>1?SK+'-'+s:SK,lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};let SLOT=Math.min(3,Math.max(1,+lsGet('pixemon-slot')||1));
 // Remet à niveau une sauvegarde (y compris celles de la version précédente) : PP, statuts, Pixédex, horloge…
 function normalize(g){if(!g||!Array.isArray(g.party)||!g.flags)return null;g.box??=[];g.bag??={};g.party=g.party.filter(m=>m&&SP[m.sp]);g.box=g.box.filter(m=>m&&SP[m.sp]);if(!MAPS[g.map]){g.map='bourg';g.x=8;g.y=8}g.dex??={};for(const k in g.dex)if(!SP[k])delete g.dex[k];g.keys??={};g.repel??=0;g.t??=70;g.play??=0;g.opt??={snd:1};const F=g.flags;
@@ -368,7 +368,7 @@ function normalize(g){if(!g||!Array.isArray(g.party)||!g.flags)return null;g.box
  if(F.intro==null){F.intro=3;F.intro3=F.hSac=F.hCarte=F.hCap=1}
  if(!g.v){if(F.starter)g.keys.dex=1;if(F.boss){F.eclipse=1;F.r2=1}delete F.legend;g.v=3}
  for(const m of[...g.party,...g.box]){if(m.sp==='solarion')F.legS=1;if(m.sp==='nocturion')F.legN=1;if(m.sp==='crepuscel')F.legC=1;if(m.sp==='presagelle')F.legP=1;if(m.sp==='heliote')F.legH=1;if(m.sp==='seleniote')F.legL=1}
- for(const k in g.bag)if(!IT[k])delete g.bag[k];if(F.badge&&!g.keys.bracelet){g.keys.bracelet=1;g.brRetro=1}if(g.v<4){g.wn=1;g.v=4}if(g.v<5){g.wn=1;g.v=5}if(g.v<6){g.wn=1;g.v=6}return g}
+ for(const k in g.bag)if(!IT[k])delete g.bag[k];if(F.badge&&!g.keys.bracelet){g.keys.bracelet=1;g.brRetro=1}if(g.v<4){g.wn=1;g.v=4}if(g.v<5){g.wn=1;g.v=5}if(g.v<6){g.wn=1;g.v=6}if(g.v<7){g.wn=1;g.v=7}return g}
 function save(){try{const K=SLOTK(SLOT),s=JSON.stringify(G),o=localStorage.getItem(K);if(o&&o!==s)localStorage.setItem(K+'-bak',o);localStorage.setItem(K,s);localStorage.setItem('pixemon-slot',SLOT);G.lastSave=Date.now();ui.toast={t0:now()};return true}catch(e){return false}}
 function load(sl=SLOT){for(const k of[SLOTK(sl),SLOTK(sl)+'-bak']){try{const g=normalize(JSON.parse(localStorage.getItem(k)));if(g)return g}catch(e){}}return null}
 setInterval(()=>{if(G&&mode==='world'&&!busy&&!ui.menus.length&&Date.now()-(G.lastSave||0)>90000)save()},5000);
@@ -1224,7 +1224,7 @@ async function voltLever(){if(!await ask('Un gros levier électrique. L\'abaisse
 // rencontres d'ombre, et (après Crépuscel) une éclipse que l'on peut rappeler avec le Sablier.
 // =====================================================================
 // Larmes de Nocturion : 6 lueurs violettes, visibles seulement pendant une éclipse
-const LARMES=[['route1',17,16],['foret',26,4],['ville',18,13],['route2',13,11],['port',20,13],['coteaux',22,1]];
+const LARMES=[['route1',3,16],['foret',25,4],['ville',18,13],['route2',14,10],['port',20,13],['coteaux',22,1]];
 LARMES.forEach(([m,x,y],i)=>MAPS[m].npcs.push({x,y,t:'obj',k:'tear',cond:()=>ecl()&&!f()['lm'+i],fn:async()=>{f()['lm'+i]=1;const n=G.keys.larmes=(G.keys.larmes||0)+1;sfx('shard');puff(x,y,'#c060ff',12);ui.flash=.3;ui.flashC='#8a5ad0';
  await say(`Une LARME DE NOCTURION ! Une goutte d'ombre, froide et brillante, qui ne s'évapore pas. (${n}/6)`);if(n===1)await say('Elle ne brille que lorsque le soleil est voilé… Il doit y en avoir d\'autres, cachées là où l\'éclipse s\'attarde.');save()}}));
 // La statue de Solarion à Cendreville pleure pendant l'éclipse
@@ -1258,7 +1258,7 @@ async function callEclipse(){f().eclD=dayN();sfx('roar');ui.shake=10;for(let i=0
 // orages de Volterre, et le défi ultime d'Elias.
 // =====================================================================
 // --- Marchande itinérante : une ville différente chaque jour (le jour), avec un stock qui change
-const MERCH=[['bourg',14,8],['ville',16,7],['port',16,11],['lunevie',9,8],['volterre',16,8]],merchHere=()=>{if(!G||!f().badge||night())return null;const L=MERCH.filter(([m])=>G.seen?.[m]);return L.length?L[dayN()%L.length]:null};
+const MERCH=[['bourg',14,8],['ville',16,7],['port',17,13],['lunevie',9,8],['volterre',16,8]],merchHere=()=>{if(!G||!f().badge||night())return null;const L=MERCH.filter(([m])=>G.seen?.[m]);return L.length?L[dayN()%L.length]:null};
 const MPOOL=['pierrelune','pierreorage','charbon','eaumystique','grainemiracle','aimant','pierredure','encensnoir','poudretoile','griffe','grelot','ruban','miettes','hypercapsule','elixir'];
 MERCH.forEach(([m,x,y])=>MAPS[m].npcs.push({x,y,t:'vendor',d:0,name:'Marchande Zélie',cond:()=>merchHere()?.[0]===m,fn:merchTalk}));
 async function merchTalk(){const Z='Marchande Zélie',d=dayN(),pick=[...MPOOL].sort((a,b)=>HSH(d,a.length*31+a.charCodeAt(1))-HSH(d,b.length*31+b.charCodeAt(1))).slice(0,5),PR={hypercapsule:1500,elixir:1800};
@@ -1305,6 +1305,16 @@ async function eliasBattle(n){const P='Papa';await cine(1);faceTo(n,G.x,G.y);awa
  f().eliasWin=1;await cine(1);sfx('roar');rays(n.x,n.y,C.goldL,2000);await wait(600);await say('Tu as gagné. Évidemment. Je l\'ai su le jour où ta mère m\'a écrit que tu étais parti avec ton premier Pixémon.',P,0,'dad');
  await say('Tiens. C\'est l\'étoile que j\'ai suivie jusqu\'au Nord. Je l\'ai fait tailler dans une Pierre Lunaire. Elle est à toi, maintenant.',P,0,'dad');G.keys.etoile=1;give('orbe');give('cyclecapsule');jingle('badge');
  await say(`Tu reçois l'ÉTOILE D'ELIAS, ${IT.orbe[0]} et une Capsule Cycle ! Ta Carte de Dresseur porte désormais l'Étoile.`);await say('Rentrons. Lou va vouloir tout savoir. Et ta mère a sûrement fait un gâteau.',P,0,'dad');await cine(0);save()}
+
+// --- Le facteur de Bourg-Lueur : des lettres qui suivent ta progression (et donnent une raison de revenir au village)
+const LETTRES=[['badge2','Brasia','Deux badges ! Cendreville parle de toi. Garde ces potions pour la route. — Brasia',['superpotion',2]],
+ ['badge4','Ambroise','J\'ai retrouvé une photo : ton père et moi devant le dôme, il y a trente ans. Il disait que tu serais "celle ou celui qui finira le travail". Tiens bon. — Ambroise',['elixir',1]],
+ ['balance','Kael','Valen et moi, on pêche au ponton de Lunévie, la nuit. Passe nous voir. Et prépare-toi : j\'ai de nouvelles créatures. — Kael',['hypercapsule',3]],
+ ['legC','Orane','Les étoiles me parlent de deux jumeaux, l\'un né du soleil, l\'autre de la lune, qui veillent sur le Sanctuaire. Le jour pour l\'un, la nuit pour l\'autre. — Orane',['poussiere',2]],
+ ['failleDone','Sélène','Caïus a mangé trois bols de soupe chez Ysolde. Il n\'a rien dit, mais il est resté. Merci. — Sélène',['miettes',1]]];
+MAPS.bourg.npcs.push({x:14,y:11,t:'kid',d:2,name:'Facteur Léo',fn:facteurTalk,qm:()=>LETTRES.some(([k])=>f()[k]&&!f()['let_'+k])});
+async function facteurTalk(){const F='Facteur Léo',L=LETTRES.find(([k])=>f()[k]&&!f()['let_'+k]);if(!L)return say(f().balance?'Plus de courrier pour toi aujourd\'hui ! Depuis que les nuits sont revenues, tout le monde s\'écrit des lettres d\'amour. Je n\'en peux plus.':'Pas de courrier pour toi. Reviens après tes prochains exploits, ils écrivent tous !',F,0,'kid');
+ const[k,who,txtL,[it,q]]=L;f()['let_'+k]=1;await say(`Une lettre pour toi ! Elle vient de ${who}.`,F,0,'kid');sfx('sel');await say(txtL);give(it,q);jingle('item');await say(`La lettre contenait ${IT[it][0]} x${q} !`);save()}
 
 function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
@@ -1706,13 +1716,13 @@ function drawMission(q,[x,y,w,h],sel,pr){rr(x+4,y+4,w,h,4,'rgba(8,6,20,.45)');rr
  bar(x+66,y+64,170,q.n/q.need,q.done?C.green:C.blue,8);txt(`${q.n}/${q.need}`,x+244,y+72,C.ink2,{mini:1});
  X.drawImage(ICO[q.rw[0]],x+w-118,y+16,16,16);txt('x'+q.rw[1],x+w-96,y+29,C.ink,{mini:1});X.drawImage(ICO.coin,x+w-118,y+38,16,16);txt(q.gold,x+w-96,y+51,C.ink,{mini:1});
  if(q.done&&(now()/400|0)%2)txt('RÉCOMPENSE !',x+w-14,y+74,'#c8902a',{mini:1,al:'r'})}
-// --- Nouveautés de la version 8.0 : une aventure complète ---
-const NEWS=[[()=>ICO.pin,'La Faille (après l\'aventure)','Caïus refuse la paix et creuse sous le Sanctuaire. Leviers, rocher, sbires d\'élite… et la Capsule Cycle.'],
- [()=>monSpr('nebulin',0,48),'7 nouveaux Pixémons','70 espèces : Nébulin et sa lignée stellaire, Grumeroc, Conglolem, et les jumeaux Héliote et Séléniote.'],
- [()=>ICO.poussiere,'Nuits d\'étoiles filantes','Une nuit sur trois : Météosaur plus nombreux, Nébulin à pêcher, poussières d\'étoile à échanger chez Lys.'],
- [()=>ICO.bCre,'Revanches et paliers','Revanche quotidienne contre Orane, récompenses du Pixédex jusqu\'à 60 espèces, rareté affichée.'],
- [()=>ICO.dex,'3 emplacements de sauvegarde','Trois parties en parallèle, volumes séparés pour la musique et les effets.'],
- [()=>ICO.flag,'Toujours un objectif','Le journal t\'indique la prochaine étape, même après la fin de l\'histoire.'],
+// --- Nouveautés de la version 9.0 : une aventure complète ---
+const NEWS=[[()=>ICO.bVol,'Volterre et l\'Arène Volt','Une 4e arène dans l\'histoire : la Centrale occupée par la Team Éclipse, le Commandant Orso, puis le Champion Ambroise.'],
+ [()=>ICO.pin,'L\'éclipse change le monde','Larmes de Nocturion, marée qui découvre une épave, statue qui pleure, rencontres d\'ombre… et une éclipse que l\'on peut rappeler.'],
+ [()=>ICO.dex,'Pixédex : fiches détaillées','Statistiques, talent, chaîne d\'évolution, attaques. A sur une créature vue, GAUCHE/DROITE pour défiler.'],
+ [()=>ICO.hrt,'Liens et photographies','La Photographe Lise immortalise tes créatures les plus proches. Les inséparables te remercient en combat.'],
+ [()=>ICO.coin,'Un monde qui bouge','Marchande itinérante, facteur et ses lettres, carnet de voyage, orages de Volterre, musique de nuit.'],
+ [()=>ICO.star,'Le défi d\'Elias','Quand le Pixédex est presque complet, ton père t\'attend sous le dôme, une nuit. Le combat le plus dur d\'Aurélys.'],
  [()=>ICO.board,'Graphismes libres','Projet libre Tuxemon et ses artistes : appuie sur A pour les crédits.']];
 const newsBody=()=>NEWS.forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))});
 // Crédits graphiques (détail complet dans CREDITS.md)
@@ -1721,7 +1731,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 8.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 9.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2281,7 +2291,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V8.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V9.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);

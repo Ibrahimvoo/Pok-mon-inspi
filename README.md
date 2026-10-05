@@ -40,6 +40,33 @@ Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits anim�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 9.0 : Volterre, l'éclipse vivante et le défi d'Elias
+
+- **4e arène dans l'histoire principale** : entre la Grotte Écho et l'Observatoire, la ville de **Volterre**, plongée dans le noir.
+  - La Team Éclipse occupe la **Centrale** et détourne le courant vers la barrière du dôme.
+  - Base sur deux niveaux : carte d'accès, code à 3 chiffres caché dans les documents, mémos de Vex, Caïus et Sélène, objets cachés, sbires aux stratégies différentes.
+  - Boss : le Commandant Orso. Puis Kael découvre le dossier qui révèle que Vex est Valen, son frère.
+  - **Arène Volt** : leviers qui inversent les barrières électriques. Le Champion Ambroise (paralysie puis vitesse) a construit le dôme avec Elias.
+  - Récompenses : Badge Volt, Aimant, Bracelet du Cycle amélioré (jauge d'Éveil plus rapide). Le téléphérique mène ensuite à l'Observatoire.
+  - Niveaux de l'Observatoire et du combat final remontés pour suivre ce 4e badge.
+- **L'éclipse transforme le monde** :
+  - 6 Larmes de Nocturion visibles seulement pendant l'éclipse, et la statue de Solarion qui pleure une larme de lumière.
+  - La mer se retire sous le ponton de Port-Miroir et découvre une épave.
+  - Rencontres d'ombre sur la Route 1, dans la Forêt et sur la Rive Brumeuse.
+  - Particules et musique propres à l'éclipse.
+  - Après Crépuscel, le Sablier peut rappeler une éclipse d'une journée. L'autel du Sanctuaire unit les larmes en **Amulette du Cycle**.
+- **Pixédex** : fiche détaillée de chaque créature vue (statistiques, talent, chaîne d'évolution avec conditions, attaques, statut). Défilement rapide.
+- **Monde vivant** :
+  - Marchande itinérante (une ville par jour, stock tournant, cadeau de fidélité).
+  - Facteur de Bourg-Lueur et lettres liées à la progression.
+  - Carnet de voyage, orages à Volterre (Orageon sauvage), borne de recharge pour les créatures ÉLEC.
+- **Liens** :
+  - La Photographe Lise de Port-Miroir photographie tes créatures les plus proches, avec des récompenses et le Coeur du Cycle (liens plus rapides).
+  - Message de confiance en combat important.
+- **Combat** : indicateur d'efficacité directement dans la liste des attaques.
+- **Défi ultime** : avec 60 espèces capturées et Crépuscel, Papa t'attend sous le dôme, la nuit. Équipe niveau 72 à 76. Récompense : l'Étoile d'Elias sur la Carte de Dresseur.
+- **Audio** : thème de la Team Éclipse, musique des villes la nuit, thème du Sanctuaire. La musique suit le passage du jour à la nuit.
+
 ## Version 8.0 : la Faille et les nuits d'étoiles
 
 - **La Faille** (après l'aventure) :
