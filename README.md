@@ -38,16 +38,28 @@ Aurélys vit au rythme du Cycle : le jour, Solarion veille ; la nuit, les créat
 
 Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits animés dans les dialogues ; intro illustrée ; écran de badge ; générique de fin. En combat : vol stationnaire des créatures ailées, élan des attaques, effets propres à chaque type et à chaque capacité de soutien, zoom sur les critiques, barre d'EXP animée, transitions selon la situation. Dans le monde : lumières de nuit, brume, nuages, oiseaux, poissons, pluie. Musique chiptune par lieu (villes, routes, forêt, montagne, arènes, éclipse, ruines, combats, finale).
 
-Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 4.0. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
+Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 5.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
+
+## Graphismes
+
+Depuis la version 5.0, tout le jeu est dessiné avec de vrais graphismes en pixel art **libres**, issus du projet
+[Tuxemon](https://github.com/Tuxemon/Tuxemon) : les 25 Pixémons (face, dos et icônes animées), les 32 personnages
+(sprites de marche, de combat et portraits), les tuiles des cartes (herbe, chemins, rives, falaises, grottes, lave, intérieurs),
+les bâtiments (maisons, labo, Centres de Soins, Boutiques, Arènes) et les fonds de combat (avec leur version de nuit).
+Les cartes sont auto-tuilées par quarts de tuile (bords de chemins, rives, falaises). Licences et auteurs : voir [CREDITS.md](CREDITS.md).
+
+![Aperçu de la version 5.0](apercus/v5-apercu.png)
 
 ## Développement
 
 ```
 src/shell.html      page, style et pad tactile
 src/game.js         code du jeu (données, cartes, histoire, combat, rendu)
-src/sprites.json    sprites des créatures (PNG base64, 48/96/120 px)
+src/world.js        rendu des cartes (tuiles, auto-tuilage, décors, animations)
+src/sprites.json    créatures : face et dos 64x64, icônes 24x24 (PNG base64)
+src/art.json        atlas des tuiles et décors, personnages, fonds de combat
+tools/tuxatlas.py   régénère art.json et sprites.json depuis Tuxemon → python3 tools/tuxatlas.py [dossier Tuxemon]
 tools/build.mjs     assemble index.html             → node tools/build.mjs
-tools/art.mjs       dessine les nouvelles créatures  → node tools/art.mjs [id…]
 tools/sim.mjs       simule les combats de boss      → node tools/sim.mjs   (V3=1 : sans Éveil ni lien, BOND=0..5)
 tools/play.mjs      parcours automatique (Playwright) → node tools/play.mjs tools/scn-story.js
 tools/scn-v4.js     teste les mécaniques 4.0         → node tools/play.mjs tools/scn-v4.js
