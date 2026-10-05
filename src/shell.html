@@ -18,6 +18,7 @@ body{background:var(--bg);color:var(--ink);font:13px/1.5 ui-monospace,Menlo,Cons
 #pad .st{width:72px;height:34px;font-size:12px;letter-spacing:.08em}
 button:focus-visible{outline:2px solid var(--gold)}
 @media (pointer:coarse){#pad{display:flex}#help{display:none}#c{width:min(100%,960px,calc((100dvh - 260px)*1.5))}}
+@media (pointer:coarse) and (max-width:440px){#pad{gap:6px}.dp{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px)}#pad .ab{gap:8px}#pad .ab button{width:56px;height:56px}#pad .st{width:56px;font-size:11px;letter-spacing:0}}
 @media (prefers-reduced-motion:reduce){#pad button{transition:none}}
 </style>
 <canvas id="c" width="480" height="320" tabindex="0"></canvas>

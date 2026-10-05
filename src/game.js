@@ -446,6 +446,11 @@ addEventListener('keydown',e=>{const k=KM[e.key.toLowerCase()];if(!k)return;e.pr
 addEventListener('keyup',e=>{const k=KM[e.key.toLowerCase()];if(k)held[k]=0});
 addEventListener('blur',()=>{for(const k in held)held[k]=0});
 document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();down(k)});['pointerup','pointerleave','pointercancel'].forEach(v=>b.addEventListener(v,()=>held[k]=0))});
+// Croix tactile : on peut glisser le doigt d'une direction à l'autre sans le lever ; petite vibration à chaque appui
+{const dp=document.querySelector('.dp');let cur=null;const buzz=()=>{try{navigator.vibrate?.(8)}catch(e){}};document.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('pointerdown',buzz));
+ if(dp){dp.addEventListener('pointerdown',e=>{cur=e.target.closest?.('[data-k]')?.dataset.k||null});
+  dp.addEventListener('pointermove',e=>{if(!cur)return;const k=document.elementFromPoint(e.clientX,e.clientY)?.closest?.('[data-k]')?.dataset.k;if(k&&k!==cur&&dp.contains(document.querySelector(`[data-k="${k}"]`))){held[cur]=0;cur=k;down(k);buzz()}});
+  ['pointerup','pointercancel'].forEach(v=>dp.addEventListener(v,()=>{if(cur)held[cur]=0;cur=null}))}}
 const cpos=e=>{const r=cv.getBoundingClientRect(),s=W/cv.clientWidth;return{x:(e.clientX-r.left-cv.clientLeft)*s,y:(e.clientY-r.top-cv.clientTop)*s}};
 const hit=(m,p)=>m.rects?m.rects.findIndex(r=>r&&p.x>=r[0]&&p.x<r[0]+r[2]&&p.y>=r[1]&&p.y<r[1]+r[3]):-1;
 cv.addEventListener('pointermove',e=>{const m=ui.menus[ui.menus.length-1];if(!m)return;const i=hit(m,cpos(e));if(i>=0&&i!==m.i){m.i=i;sfx('sel')}});
