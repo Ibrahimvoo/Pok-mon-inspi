@@ -174,6 +174,8 @@ T['bGymW'] = building('classic_steamshore_city.tmx', 29, 1, 5, 4)
 T['bHouse2'] = building('cotton_town.tmx', 11, 5, 5, 4)
 T['bHouse3'] = building('classic_hearthrock_city.tmx', 2, 0, 5, 6); T['bHouse4'] = building('classic_hearthrock_city.tmx', 7, 0, 5, 6)
 T['bGymN'] = recolor(T['bGymF'], hshift=0.62, sat=.9, val=.85)
+T['bGymE'] = recolor(T['bGymF'], hshift=0.42, sat=1.0, val=.95)   # arène Volt (Volterre)
+T['bPlant'] = recolor(T['bLab'], sat=.15, val=.78)                  # centrale de Volterre
 
 # ---------------------------------------------------------------- personnages
 PEOPLE = [('hero', 'adventurer', 'adventurer_alt1'), ('rival', 'cooldude_red', 'cooldude_red'), ('prof', 'scientist', 'scientist'),
@@ -188,7 +190,8 @@ PEOPLE = [('hero', 'adventurer', 'adventurer_alt1'), ('rival', 'cooldude_red', '
           ('astro', 'professor_lapi', 'professor_lapi'), ('lili', 'florist_rose', 'florist_rose'), ('fisher', 'fisher_fiery', 'fisher_red'),
           ('gus', 'fisher', 'fisher'), ('vendor', 'shopassistant', 'shopassistant'),
           ('sis', 'catgirl_blonde', 'catgirl_alt1'), ('dad', 'professor_brown', 'professor_brown'),
-          ('caius', 'spyderboss_fiery', 'spyder_boss_fiery'), ('ysolde', 'granny_lapi', 'granny'), ('orane', 'goth_green', 'goth_green')]
+          ('caius', 'spyderboss_fiery', 'spyder_boss_fiery'), ('ysolde', 'granny_lapi', 'granny'), ('orane', 'goth_green', 'goth_green'),
+          ('ambroise', 'overseer', 'overseer'), ('orso', 'rogue_red', 'rogue_red')]
 OW = Image.new('RGBA', (48, 128 * len(PEOPLE))); BT = Image.new('RGBA', (64, 64 * len(PEOPLE)))
 for i, (k, ow, bt) in enumerate(PEOPLE):
     OW.alpha_composite(Image.open(os.path.join(MOD, 'sprites', ow + '.png')).convert('RGBA'), (0, 128 * i))

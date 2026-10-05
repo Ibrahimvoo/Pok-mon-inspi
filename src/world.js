@@ -28,8 +28,8 @@ function buildMap(M){if(M.L)return;M.S=[];if(isInt(M))buildInterior(M);else buil
 
 // ---------------------------------------------------------------- extérieurs
 const WATC=new Set('~wH');
-const BLD={bourg:{R:'bHome',G:'bLab'},ville:{Y:'bGymF',R:'bCenter',B:'bMart'},port:{A:'bGymW',R:'bCenter',B:'bMart'},lunevie:{R:'bHouse3',A:'bHouse4',G:'bCenter',B:'bMart',Y:'bGymN'}},BLDDEF={R:'bHouse2',G:'bLab',B:'bMart',Y:'bGymF',A:'bGymW'},
- DOORC={bHome:2,bLab:2,bCenter:2,bMart:2,bGymF:3,bGymW:2,bHouse2:3,bHouse3:3,bHouse4:3,bGymN:3};
+const BLD={bourg:{R:'bHome',G:'bLab'},ville:{Y:'bGymF',R:'bCenter',B:'bMart'},port:{A:'bGymW',R:'bCenter',B:'bMart'},lunevie:{R:'bHouse3',A:'bHouse4',G:'bCenter',B:'bMart',Y:'bGymN'},volterre:{R:'bHouse3',G:'bCenter',B:'bMart',Y:'bGymE',A:'bPlant'}},BLDDEF={R:'bHouse2',G:'bLab',B:'bMart',Y:'bGymF',A:'bGymW'},
+ DOORC={bHome:2,bLab:2,bCenter:2,bMart:2,bGymF:3,bGymW:2,bHouse2:3,bHouse3:3,bHouse4:3,bGymN:3,bGymE:3,bPlant:2};
 function mapKey(M){for(const k in MAPS)if(MAPS[k]===M)return k}
 function buildOutdoor(M){const mw=M.rows[0].length,mh=M.rows.length,bio=biomeOf(M),key=mapKey(M),
  at=(x,y)=>M.rows[y<0?0:y>=mh?mh-1:y][x<0?0:x>=mw?mw-1:x],at0=(x,y)=>M.rows[y]?.[x],

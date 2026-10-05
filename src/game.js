@@ -65,6 +65,7 @@ cur:icon(["o....","oo...","oro..","orro.","orrro","orro.","oro..","oo...","o....
 abtn:icon(["..ooooo..",".orrrrro.","orrwwwrro","orwrrrwro","orwwwwwro","orwrrrwro","orrrrrrro",".oRRRRRo.","..ooooo.."]),bang:icon([".oooooo.","owwwwwwo","owwrrwwo","owwrrwwo","owwrrwwo","owwwwwwo","owwrrwwo","owwwwwwo",".oooooo.","..owo...","...o...."])};
 Object.assign(ICO,{sablier:icon(["oooooooo",".oyyyyo.","..oyyo..","...oo...","...oo...","..obbo..",".obbbbo.","oooooooo"],{b:'#6a5ab8'}),rain:icon(["..oooo..",".owwwwo.","owwwwwwo","oooooooo",".b..b...","...b..b.",".b..b...","...b..b."]),q:icon([".oooooo.","owwbbwwo","owbwwbwo","owwwwbwo","owwwbwwo","owwwwwwo","owwwbwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),dots:icon([".oooooo.","owwwwwwo","owwwwwwo","owwwwwwo","obwbwbwo","owwwwwwo","owwwwwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),
  heart:icon([".oooooo.","owwwwwwo","owrrwrro","orrrrrRo","orrrrrRo","owrrrRwo","owwrRwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),note:icon([".oooooo.","owwwwbbo","owwwbwbo","owwwbwwo","owwwbwwo","owbbbwwo","owbbbwwo","owwwwwwo",".oooooo.","..owo...","...o...."]),
+ bVol:icon(["....oo..","...oyo..","..oyyo..",".oyyyyoo","oooyyyo.","..oyyo..","..oyo...","..oo...."],{y:'#7ae8f0',Y:'#2a9aa8'}),
  bRoc:icon(["...oo...","..oYyo..",".oYyyyo.","oYyywyyo","oNyyyyNo",".oNNyNo.","..oNNo..","...oo..."],{y:'#e8a050',Y:'#ffd08a',N:'#9a5a2a'}),bMir:icon(["...oo...","..obbo..","..obbo..",".obwbbo.","obwbbbbo","obbbbbBo",".oBbbBo.","..oooo.."]),
  map:icon(["oooooooo","oggyyggo","ogbbygyo","obbbyggo","oggyyggo","oygggbbo","oyggbbbo","oooooooo"]),gear:icon(["...oo...",".oollo..","olllllo.","oll.llo.","oll.llo.","olllllo.",".oollo..","...oo..."]),
  hyperpotion:icon(POT,{p:'#e8484f',P:'#a8303a',l:'#ffc0c0'}),elixir:icon(POT,{p:'#4d8fe6',P:'#2f5fb0',l:'#c8e0ff'}),totalsoin:icon(POT,{p:'#4cc46a',P:'#2f8a4a',l:'#d0f4d0'}),crepuscapsule:icon(BALLR,{r:'#6a3a9a',R:'#40305a',w:'#f6c445'}),cyclecapsule:icon(BALLR,{r:'#ffffff',R:'#1a1420',w:'#e84a8a'}),
@@ -81,6 +82,7 @@ Object.assign(ICO,{baiesoin:icon(BERRY,{g:'#6ac85a',G:'#2f8a4a'}),baieprisme:ico
  griffe:icon(["......oo",".....owo","....owlo","...owlo.","..owlo..",".owlo...","owlo....","ooo....."]),
  amulette:icon(["o......o",".o....o.","..o..o..","...oo...","..obbo..",".obwbbo.",".obbbBo.","..oooo.."]),
  orbe:icon(["..oooo..",".orrrro.","orwrrrRo","orrrrrRo","orrrrRRo","orrrRRRo",".oRRRRo.","..oooo.."],{r:'#e84a8a',R:'#a8305a'}),
+ amucycle:icon(["..oooo..",".o....o.",".o....o.","..o..o..","..owNo..",".owwNNo.",".owwNNo.","..oooo.."],{w:'#ffffff',N:'#3a2a6a'}),
  poussiere:icon(["...o....","..oyo...","ooywyoo.","oyyyyyo.",".oyyyo..",".oyoyo..","oyo.oyo.","oo...oo."]),
  grelot:icon(["...oo...","..oyyo..",".oywyyo.",".oyyyyo.",".oyyyYo.","oyyyyYYo","oooooooo","...oo..."]),
  bracelet:icon(["..oyyo..",".oyrryo.","oyorRoyo","oyo..oYo","oyo..oYo","oyo..oYo",".oYyyYo.","..oooo.."]),
@@ -236,7 +238,7 @@ const IT={potion:['Potion',200,'Soigne 20 PV.',20,'heal'],superpotion:['Super Po
  pierrelune:['Pierre Lunaire',2000,'Une pierre tombée du ciel des nuits longues. Fait évoluer certaines créatures.',0,'evo'],pierreorage:['Pierre Orage',2000,'Elle crépite sous les doigts. Fait évoluer certaines créatures.',0,'evo'],
  fossile:['Fossile Ancien',0,'Une pierre où dort une créature d\'un autre âge. Le Prof. Saule saurait quoi en faire.',0,'quest'],
  capsule:['Capsule',200,'Lance-la sur une créature sauvage affaiblie.',1,'ball'],supercapsule:['Super Capsule',600,'Taux de capture x1,5.',1.5,'ball'],hypercapsule:['Hyper Capsule',1200,'Taux de capture x2.',2,'ball'],
- cyclecapsule:['Capsule Cycle',0,'Fabriquée par Caïus pour Crépuscel. Elle ne rate jamais.',999,'ball'],poussiere:['Poussière d\'Étoile',0,'Tombée une nuit d\'étoiles filantes. L\'Astronome Lys de Lunévie en raffole.',0,'quest'],crepuscapsule:['Crépuscapsule',800,'Taux x3 la nuit et pendant l\'éclipse, sinon x1.',3,'ball'],
+ amucycle:['Amulette du Cycle',0,'À tenir. Attaques x1,15, et le porteur ne peut pas être endormi.',0,'held'],cyclecapsule:['Capsule Cycle',0,'Fabriquée par Caïus pour Crépuscel. Elle ne rate jamais.',999,'ball'],poussiere:['Poussière d\'Étoile',0,'Tombée une nuit d\'étoiles filantes. L\'Astronome Lys de Lunévie en raffole.',0,'quest'],crepuscapsule:['Crépuscapsule',800,'Taux x3 la nuit et pendant l\'éclipse, sinon x1.',3,'ball'],
  biscuit:['Biscuit d\'Aube',150,'Une friandise dorée. Renforce beaucoup le lien d\'une créature.',12,'treat'],
  baiesoin:['Baie Sève',250,'À tenir. Rend 1/4 des PV quand ils passent sous la moitié, puis se consomme.',4,'held'],
  baieprisme:['Baie Prisme',300,'À tenir. Guérit aussitôt brûlure, poison, paralysie ou sommeil, puis se consomme.',0,'held'],
@@ -369,11 +371,12 @@ function normalize(g){if(!g||!Array.isArray(g.party)||!g.flags)return null;g.box
  for(const k in g.bag)if(!IT[k])delete g.bag[k];if(F.badge&&!g.keys.bracelet){g.keys.bracelet=1;g.brRetro=1}if(g.v<4){g.wn=1;g.v=4}if(g.v<5){g.wn=1;g.v=5}if(g.v<6){g.wn=1;g.v=6}return g}
 function save(){try{const K=SLOTK(SLOT),s=JSON.stringify(G),o=localStorage.getItem(K);if(o&&o!==s)localStorage.setItem(K+'-bak',o);localStorage.setItem(K,s);localStorage.setItem('pixemon-slot',SLOT);G.lastSave=Date.now();ui.toast={t0:now()};return true}catch(e){return false}}
 function load(sl=SLOT){for(const k of[SLOTK(sl),SLOTK(sl)+'-bak']){try{const g=normalize(JSON.parse(localStorage.getItem(k)));if(g)return g}catch(e){}}return null}
-setInterval(()=>{if(G&&mode==='world'&&!busy&&!ui.menus.length&&Date.now()-(G.lastSave||0)>90000)save()},5000);   // sauvegarde auto discrète
+setInterval(()=>{if(G&&mode==='world'&&!busy&&!ui.menus.length&&Date.now()-(G.lastSave||0)>90000)save()},5000);
+setInterval(()=>{if(G&&mode==='world'&&!busy&&mus.want&&SONG[mus.want]&&!SONG[mus.want][3]){const k=mapMus(MAPS[G.map]);if(k&&k!==mus.want)musPlay(k)}},4000);   // la musique suit le passage jour/nuit   // sauvegarde auto discrète
 // Cycle d'Aurélys : le temps avance à chaque pas. Avant l'Équilibre, les nuits sont courtes ; après, jour et nuit se partagent le cycle.
 const CYC=420,phaseOf=t=>{const n=f().balance?180:120,c=((t%CYC)+CYC)%CYC;return c<40?0:c<CYC-n-40?1:c<CYC-n?2:3};
 const PHN=['Aube','Jour','Crépuscule','Nuit','Éclipse'];
-const phase=()=>G&&f().eclipse&&!f().balance?4:G?phaseOf(G.t):1,night=()=>phase()>=3;
+const phase=()=>G&&(f().eclipse&&!f().balance||f().eclD!=null&&f().eclD===Math.floor(G.t/CYC))?4:G?phaseOf(G.t):1,night=()=>phase()>=3;
 const dex=(sp,v)=>{if(G&&(G.dex[sp]||0)<v)G.dex[sp]=v},caught=()=>DEX.filter(k=>G.dex[k]===2).length;
 // Lien : grandit en marchant en tête, en montant de niveau, en gagnant, au coin du feu ou avec une friandise (5 cœurs)
 const bp=(a,v)=>v.id==='retour'?Math.max(10,Math.floor((a.aff??70)/2.5)):v.p;
@@ -396,7 +399,7 @@ async function momTalk(n){const M='Maman';await say(n.say(),M,0,'mom');if(!f().s
  const j=await partyMenu('Qui doit apprendre ?');if(j<0)return;const m=G.party[j];if(bondLv(m)<3)return say(`${nm(m)} n'est pas encore assez proche de toi. Il faut au moins trois cœurs de lien.`,M,0,'mom');
  if(m.moves.includes('retour'))return say(`${nm(m)} connaît déjà Retour.`);await learn(m,'retour')}
 const HEARTS=[50,100,150,200,250],BONDN=['Méfiant','Curieux','Attaché','Complice','Fidèle','Inséparable'],bondLv=m=>HEARTS.filter(v=>(m.aff||0)>=v).length,mine=m=>!!G&&G.party.includes(m),hold=(m,k)=>!!m&&m.item===k;
-function bondUp(m,n){if(!m)return;const b=bondLv(m);m.aff=Math.max(0,Math.min(255,(m.aff||0)+n));if(bondLv(m)>b&&mode==='world'&&G.party.includes(m)){ui.note={s:`Lien : ${nm(m)} ${BONDN[bondLv(m)]}`,t0:now()};
+function bondUp(m,n){if(!m)return;if(n>0&&G?.keys?.coeur)n=Math.ceil(n*1.5);const b=bondLv(m);m.aff=Math.max(0,Math.min(255,(m.aff||0)+n));if(bondLv(m)>b&&mode==='world'&&G.party.includes(m)){ui.note={s:`Lien : ${nm(m)} ${BONDN[bondLv(m)]}`,t0:now()};
  tip('lien','Le lien grandit quand ta créature marche en tête, gagne, monte de niveau ou se repose au feu de camp. Fort, il l\'aide en combat : elle tient bon et chasse ses statuts.')}}
 
 // =====================================================================
@@ -408,6 +411,9 @@ function sfx(k){try{if(!AC||!G?.opt?.snd&&mode!=='title')return;const[fq,d,ty,f2
 const initAudio=()=>{try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume?.();mus.want&&musPlay(mus.want)}catch(e){}};
 // Partitions : un jeton par croche ; « . » silence, « - » tenue. [tempo ms, [onde, volume, notes]…]
 const SONG={
+ sanct:[240,['sine',0.06,'A4 - - - E5 - - - D5 - C#5 - - - A4 - B4 - - - E5 - - - F#5 - E5 - - - - -'],['triangle',0.04,'A2 - - - - - - - F#2 - - - - - - - D2 - - - - - - - E2 - - - - - - -'],['sine',0.02,'. . . . A5 - - - . . . . F#5 - - - . . . . B5 - - - . . . . G#5 - - -']],
+ nuit:[210,['triangle',0.05,'E5 - - G5 - - B5 - A5 - - - G5 - E5 - D5 - - E5 - - G5 - E5 - - - - - - -'],['triangle',0.035,'C3 - - - G3 - - - A2 - - - E3 - - - F2 - - - C3 - - - G2 - - - - - - -']],
+ base:[128,['square',0.018,'E4 E4 . E4 G4 - E4 . A#4 - A4 - G4 - E4 - E4 E4 . E4 G4 - E4 . D5 - C5 - B4 - G4 -'],['triangle',0.05,'E2 . E2 . E2 . E2 . E2 . E2 . E2 . E2 . C2 . C2 . C2 . C2 . D2 . D2 . B1 . B1 .'],['sawtooth',0.008,'E3 - - - - - - - F3 - - - - - - - C3 - - - - - - - B2 - - - - - - -']],
  title:[230,['square',.022,'A4 - - C5 E5 - D5 C5 B4 - - G4 A4 - - - A4 - - C5 E5 - G5 F5 E5 - D5 - E5 - - -'],['triangle',.05,'A2 - - - E3 - - - G2 - - - D3 - - - F2 - - - C3 - - - E2 - - - E3 - - -']],
  town:[150,['square',.02,'E5 - G5 - C6 - B5 A5 G5 - E5 - D5 - C5 - F5 - A5 - G5 - E5 C5 D5 - - - . . . . E5 - G5 - C6 - B5 A5 G5 - E5 - D5 - E5 F5 G5 - E5 - D5 - B4 - C5 - - - . . . .'],['triangle',.045,'C3 . G3 . C3 . G3 . E3 . B3 . E3 . B3 . F3 . C4 . F3 . C4 . G3 . D4 . G3 . B3 . C3 . G3 . C3 . G3 . A2 . E3 . A2 . E3 . F3 . C4 . G3 . D4 . C3 . G3 . C3 . . .']],
  route:[135,['square',.02,'D5 - G5 - B5 - A5 G5 A5 - D5 - . - D5 E5 F#5 - A5 - G5 - E5 - D5 - - - . . B4 C5 D5 - G5 - B5 - A5 G5 A5 - D6 - C6 - B5 A5 G5 - F#5 - E5 - F#5 - G5 - - - . . . .'],['triangle',.045,'G2 . D3 . G2 . D3 . D3 . A3 . D3 . A3 . C3 . G3 . C3 . G3 . D3 . A3 . D3 . F#3 . G2 . D3 . G2 . D3 . F3 . C4 . F3 . C4 . C3 . G3 . D3 . A3 . G2 . D3 . G2 . . .']],
@@ -483,7 +489,7 @@ function drawText(){const T=ui.text;if(!T)return;const k=T.t0?Math.min(1,(now()-
 async function choose(opts,o={}){const cols=o.cols||1,rh=o.rh||24,w=o.w||160,rows=Math.ceil(opts.length/cols),vis=Math.min(rows,o.vis||8),h=vis*rh+20+(o.title?26:0);
  const m={opts,i:o.i||0,top:0,cols,rh,w,vis,h,x:o.x??W-w-8,y:o.y??H-98-h,title:o.title,draw:o.draw,info:o.info,infoDraw:o.infoDraw,infoShow:o.infoShow,ib:o.ib,dis:o.dis,icons:o.icons,bare:o.bare,rect:o.rect,t0:now(),press:0,cancel:o.cancel!==false,rects:[]};ui.menus.push(m);let r;
  for(;;){const k=await key(),n=opts.length;if(k==='up'){m.i=cols>1?(m.i-cols+n)%n:(m.i+n-1)%n;sfx('sel')}else if(k==='down'){m.i=cols>1?(m.i+cols)%n:(m.i+1)%n;sfx('sel')}
-  else if(k==='left'&&cols>1){m.i=(m.i+n-1)%n;sfx('sel')}else if(k==='right'&&cols>1){m.i=(m.i+1)%n;sfx('sel')}else if(k==='a'){r=m.i;break}else if(k==='b'&&m.cancel){r=-1;break}}
+  else if((k==='left'||k==='right')&&cols===1&&o.jump){m.i=Math.max(0,Math.min(n-1,m.i+(k==='left'?-o.jump:o.jump)));sfx('sel')}else if(k==='left'&&cols>1){m.i=(m.i+n-1)%n;sfx('sel')}else if(k==='right'&&cols>1){m.i=(m.i+1)%n;sfx('sel')}else if(k==='a'){r=m.i;break}else if(k==='b'&&m.cancel){r=-1;break}}
  sfx(r<0?'back':'ok');if(r>=0){m.press=now();await wait(90)}ui.menus.splice(ui.menus.indexOf(m),1);return r}
 async function ask(q,who){show(q,who);const r=await choose(['OUI','NON'],{w:110});ui.text=null;return r===0}
 function drawMenu(m){const k=Math.min(1,(now()-m.t0)/120),dy=ev((1-k)*8),pr=m.press&&now()-m.press<90;X.globalAlpha=k;m.rects=[];
@@ -508,7 +514,7 @@ const SH=(x,y,id)=>({x,y,t:'shard',id,cond:()=>!f()['e_'+id]});
 const OB=(x,y,k,o={})=>({x,y,t:'obj',k,...o});
 const TR=(id,name,team,money,pre,after,more={})=>({id,name,team,money,pre,after,...more});
 const BT=(x,y,bid,bk)=>({x,y,t:'obj',k:'berry',bid,bk,fn:berryTree});
-const day=()=>!night(),act2=()=>f().eclipse&&!f().balance;
+const day=()=>!night(),act2=()=>f().eclipse&&!f().balance,ecl=()=>!!G&&(act2()||f().eclD!=null&&f().eclD===Math.floor(G.t/CYC));
 const MAPS={
 bourg:{name:'Bourg-Lueur',bg:'plaine',amb:'day',mus:'town',edges:{n:['route1',0]},fish:[['tetardin',4,7,100]],
  rows:["TTTTTTTTT==TTTTTTTTT","TT.......==.......TT","TT.......==.......TT","TT.RRRR..==..GGGGGTT","TT.RRRR..==..GGGGGTT","TT.WnDW..==..WnDnWTT","TT...=..l==....=..TT","TT...===========..TT","TT.......==.....S.TT","TT.f.....==l......TT","TT~~~~...==...ffffTT","TT~~~~...==.......TT","TT~~~~...==...f...TT","TTTTTTTTTTTTTTTTTTTT"],
@@ -635,9 +641,9 @@ obs:{name:'Observatoire Éclipse',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech
  hidden:[{x:16,y:9,pg:4}],doors:{'8,10':['grotte',13,1,0],'9,10':['grotte',14,1,0],'8,0':['dome',5,6,1],'9,0':['dome',6,6,1],'8,1':['dome',5,6,1],'9,1':['dome',6,6,1]},opens:{Z:['bar','F']},
  acts:{'15,5':dadDrawer,'3,7':()=>consoleAct(0),'14,7':()=>consoleAct(1),'6,5':()=>consoleAct(2),'12,5':()=>say('Une note froissée, coincée sous un clavier :\n"Ordre de la barrière : LUNE, puis ÉTOILE, puis SOLEIL. Ne l\'oubliez plus ! — S."'),'1,1':()=>say('Un écran affiche une courbe : "Niveau du sceau : 3 %. Réveil imminent."'),'16,1':()=>say('Un journal de bord : "Jour 1 de l\'éclipse. Valen ne dort plus. Il parle à la chose sous le dôme."')},
  npcs:[{x:10,y:9,t:'rival',d:1,name:'Kael',cond:()=>f().obsScene&&!f().vex2,fn:()=>campHeal('Kael','Besoin d\'une pause ? J\'ai de quoi soigner ton équipe. Vas-y, je tiens l\'entrée.')},
-  {x:3,y:8,t:'grunt',d:3,tr:TR('g7','Sbire Éclipse',[['noctyrex',26],['nocturelle',26]],1000,'Personne n\'entre dans l\'Observatoire !','J\'ai… échoué…')},
-  {x:14,y:6,t:'grunt',d:2,tr:TR('g8','Sbire Éclipse',[['magmor',27],['ombrelin',26]],1000,'La barrière ne s\'ouvrira jamais pour toi !','Elle s\'ouvre avec les consoles… mais je ne te dirai pas l\'ordre !')},
-  {x:9,y:2,t:'selene',d:0,cond:()=>!f().selene2done,tr:TR('selene2','Admin Sélène',[['nocturelle',29,['hypnose','nuit','clairlune','ombrefurtive']],['magmor',30,['feufollet','lanceflam','durcir','crocsfeu']],['noctyrex',31,['hypnose','nuit','morsure','cri']]],3000,
+  {x:3,y:8,t:'grunt',d:3,tr:TR('g7','Sbire Éclipse',[['noctyrex',32],['nocturelle',31]],1400,'Personne n\'entre dans l\'Observatoire !','J\'ai… échoué…')},
+  {x:14,y:6,t:'grunt',d:2,tr:TR('g8','Sbire Éclipse',[['magmor',32],['noctyrex',32]],1400,'La barrière ne s\'ouvrira jamais pour toi !','Elle s\'ouvre avec les consoles… mais je ne te dirai pas l\'ordre !')},
+  {x:9,y:2,t:'selene',d:0,cond:()=>!f().selene2done,tr:TR('selene2','Admin Sélène',[['nocturelle',33,['hypnose','nuit','clairlune','ombrefurtive'],'baiesoin'],['magmor',34,['feufollet','lanceflam','durcir','crocsfeu']],['eclipsoeil',34,['hypnose','rayonnoir','morsure','nuit']],['noctyrex',35,['hypnose','nuit','morsure','cri'],'encensnoir']],4000,
    'Encore toi. Valen est là-haut, avec Nocturion. Si tu passes, tu brises le seul espoir des créatures d\'ombre. Endormies, brûlées… comme la dernière fois. Mais je ne retiendrai plus mes coups.',
    '…C\'est fini. Écoute-moi, maintenant.',{vs:1,boss:1,items:1,win:seleneTruth})}],
  enter:async()=>{if(!f().obsScene)await obsScene()}},
@@ -720,7 +726,7 @@ const CUD={
   txt('Pour mes enfants : un jour, je',128,154,'#5a3a6a',{s:1,sh:0});txt('vous montrerai le vrai ciel. - E.',128,170,'#5a3a6a',{s:1,sh:0});txt('dragon ?',300,118,'#4a5a8a',{s:1,sh:0})},
  lettre:t=>{card(100,20,280,188,'#f8f0dc');R(X,'#c83a3a',220,30,40,6);const L=['Cher voisin,','','Pour la Fête de l\'Aube et tes douze','ans, je t\'attends au labo ce matin.','Un Pixémon t\'y attend.','','Prof. Saule','','PS : Kael a déjà demandé l\'heure','trois fois.'];L.forEach((l,i)=>txt(l,120,56+i*14,i>=8?'#7a6a58':'#3a2a2a',{s:1,sh:0}))},
  carte:t=>{card(110,40,260,150,'#4a7ab8');R(X,'#3a64a0',113,43,254,26);txt('CARTE DE DRESSEUR',240,61,'#ffffff',{al:'c',sh:0});rr(124,80,80,80,3,'#efe6d2');if(PEO.hero)X.drawImage(PEO.hero.pt[0],128,84,72,72);
-  [['Bourg-Lueur',92],['12 ans aujourd\'hui',110],['Badges : '+((f().badge?1:0)+(f().badge2?1:0)+(f().badge3?1:0)),128],['Pixédex : '+DEX.filter(k=>G.dex[k]===2).length,146]].forEach(([s,y])=>txt(s,216,y,'#ffffff',{s:1,sh:0}))},
+  [['Bourg-Lueur',92],['12 ans aujourd\'hui',110],['Badges : '+((f().badge?1:0)+(f().badge2?1:0)+(f().badge3?1:0)+(f().badge4?1:0)),128],['Pixédex : '+DEX.filter(k=>G.dex[k]===2).length,146]].forEach(([s,y])=>txt(s,216,y,'#ffffff',{s:1,sh:0}))},
  calendrier:t=>{card(150,30,180,170,'#f4ead2');R(X,'#c83a3a',153,33,174,26);txt('AUJOURD\'HUI',240,52,'#ffffff',{al:'c',sh:0});txt('FÊTE DE L\'AUBE',240,96,'#3a2a2a',{al:'c',sh:0});
   X.strokeStyle='#e8484f';X.lineWidth=3;X.beginPath();X.ellipse(240,132,46,22,0,0,7);X.stroke();X.lineWidth=1;txt('MES 12 ANS !',240,138,'#c83a3a',{al:'c',sh:0})},
  telescope:t=>{card(110,20,260,186,'#141836');for(let i=0;i<60;i++)R(X,i%6?'#c8c8f0':'#ffe8a0',118+(i*61)%240,28+(i*37)%160,i%9?1:2,i%9?1:2);X.globalAlpha=.5+.2*Math.sin(t/400);pell(X,300,70,10,10,'#e8e0ff');X.globalAlpha=1;
@@ -1011,7 +1017,7 @@ async function towerRun(){const O='Orane',best=f().towerBest||0;await say(`Le D�
  healAll();await say(`Fin du défi : ${w} victoire${w>1?'s':''}. ${w>best?'Nouveau record !':'Reviens quand tu veux.'}`,O,0,'orane');save()}
 
 // --- Sanctuaire du Cycle (après l'équilibre) : Crépuscel, gardien du Cycle
-MAPS.sanctuaire={name:'Sanctuaire du Cycle',bg:'plaine',amb:'day',mus:'ruines',rows:["TTTTTTTTTTTTTT","T^^^^^^^^^^^^T","T^^ff....ff^^T","T^f........f^T","T^....C.....^T","T^..........^T","T^f..f..f..f^T","T^^........^^T","TT^^^....^^^TT","TTT^^....^^TTT","TTTTT....TTTTT","TTTTTT@TTTTTTT"],
+MAPS.sanctuaire={name:'Sanctuaire du Cycle',bg:'plaine',amb:'day',mus:'sanct',rows:["TTTTTTTTTTTTTT","T^^^^^^^^^^^^T","T^^ff....ff^^T","T^f........f^T","T^....C.....^T","T^..........^T","T^f..f..f..f^T","T^^........^^T","TT^^^....^^^TT","TTT^^....^^TTT","TTTTT....TTTTT","TTTTTT@TTTTTTT"],
  doors:{'6,11':['coteaux',21,1,0]},signs:{},
  acts:{'6,4':()=>say('Un autel double : une moitié de pierre blanche, une moitié de pierre noire. Au centre, un creux où pourraient se tenir deux lumières.')},
  npcs:[{x:6,y:3,t:'mon',sp:'crepuscel',d:0,cond:()=>!f().legC&&f().legS&&f().legN,fn:()=>legend2('crepuscel',55,'legC','#ffffff')}],
@@ -1058,7 +1064,7 @@ async function seleneFaille(){const S='Sélène';if(f().failleQ)return say('Caï
  await say('Il veut la lumière de Crépuscel. Toute. Pour que plus personne ne décide à sa place quand il fait jour ou nuit.',S,0,'selene');await emote('me','!',600);
  await say('J\'ai ouvert la barricade. Les galeries sont pleines de Grumeroc : ils mangent les cailloux que les foreurs laissent derrière eux. Fais attention.',S,0,'selene');f().failleQ=1;await cine(0);save()}
 
-MAPS.faille={name:'La Faille',bg:'grotte',amb:'cave',mus:'ecl',cave:1,under:'g',encAll:1,
+MAPS.faille={name:'La Faille',bg:'grotte',amb:'cave',mus:'base',cave:1,under:'g',encAll:1,
  rows:["^^^^^^^^^^^^^^^^^^^^^^","^^^^^^^^^^^^^^^^^^^^^^","^^gggg^^gggggg^^gvvvg^","^^gggg^^gggggggggvvvg^","^^^gg^^^gggggg^^gvvvg^","^^^gg^^^^^^g^^^^^^^^^^","^^^gg^^^^^^h^^^^^^^^^^","^^^gg^^^^^^g^^^^^^^^^^","^^^gg^^^ggggggg^^^gg^^","^^^gg^^^^^^Z^^^^^^gg^^","^^^gg^^^^^^g^^^^^^gg^^","^^^k^^gvvvvgvvvvg^x^^^","^^^g^^gvvvvgvvvvggg^^^","^^^ggggvvvvgvvvvg^^^^^","^^^^^^gggggggggggg^^^^","^^^^^^^^^^EE^^^^^^^^^^"],
  enc:[['grumeroc',44,48,40],['rocaillon',44,46,15],['oeillombre',45,48,15],['magmor',44,47,15],['nocturelle',45,47,15,'n']],
  opens:{Z:['fzOpen','g']},doors:{'10,15':['coteaux',12,8,0],'11,15':['coteaux',12,8,0]},
@@ -1096,9 +1102,213 @@ async function twinMeet(sp,flag,col){const L=npcs(MAPS[G.map]).find(x=>x.sp===sp
  await say(sp==='heliote'?'Une créature solaire veille sur l\'autel. HÉLIOTE ! Elle ne se montre qu\'au grand jour.':'Une silhouette argentée flotte au-dessus de l\'autel. SÉLÉNIOTE ! Elle ne sort qu\'à la nuit.');const ok=await ask(`Affronter ${SP[sp].name} ?`);await cine(0);if(!ok)return;
  const r=await battle([mon(sp,50)],{legend:1});if(r==='catch'){f()[flag]=1;await say(`${SP[sp].name} a rejoint ton équipe.`)}else{f()[flag+'d']=dayN();await say(`${SP[sp].name} s'efface dans la lumière. Il reviendra ${sp==='heliote'?'demain, au grand jour':'la nuit prochaine'}.`)}}
 
+// =====================================================================
+// EXTENSION 9.0 — Volterre, ville de l'énergie entre la Grotte Écho et l'Observatoire.
+// La Team Éclipse occupe sa Centrale pour alimenter la barrière de l'Observatoire. Arène Volt du Champion Ambroise (4e badge).
+// =====================================================================
+MAPS.grotte.doors['13,0']=['volterre',12,20,1];MAPS.grotte.doors['14,0']=['volterre',13,20,1];
+MAPS.obs.doors['8,10']=MAPS.obs.doors['9,10']=['volterre',13,1,0];
+MAPS.volterre={name:'Volterre',bg:'plaine',amb:'day',tree:'pine',mus:'town',
+ rows:["TTTTTTTTTTT^^@^^TTTTTTTTTT","TT,,,,......S=......,,,,TT","TT,,,,.......=..........TT","TT..YYYYYY...=...GGGGG..TT","TT..YYYYYY...=...GGGGG..TT","TT..WnWDWn...=...WnDnW..TT","TT.....=.....=.....=....TT","TT.....=============....TT","TT.f.........=S.......l.TT","TTRRRRR......=....BBBBB.TT","TTRRRRR......=....BBBBB.TT","TTWnWDW....l.=....WnDnW.TT","TT...=.......=......=...TT","TT...================...TT","TT,,,,,,.....=....AAAAA,TT","TT,,,,,,.....=....AAAAA,TT","TT,,,,,,.....=....WnDnW,TT","TT.o,,,,.....=......=...TT","TT...........========...TT","TT,,,,,,....==......f...TT","TTTTTTTTTTTT==TTTTTTTTTTTT","TTTTTTTTTTTT==TTTTTTTTTTTT"],
+ enc:[['volticelle',26,29,24],['etincelot',26,29,20],['herissou',27,29,16],['bourdonnerre',28,30,6],['nuageon',27,29,18,'r'],['ombrelin',26,29,16,'n'],['lueurette',27,29,10,'n'],['meteosaur',28,30,4],['oeillombre',28,30,20,'e']],
+ doors:{'12,21':['grotte',13,1,0],'13,21':['grotte',14,1,0],'13,0':volGate,'7,5':gym4Door,'19,5':()=>center('Volterre',['volterre',19,6]),'20,11':shop,'5,11':['maisonA',4,5,1],'20,16':centraleDoor},
+ signs:{'14,8':'VOLTERRE\n"Ici, le vent tourne les turbines et la foudre allume les lampes."','12,1':'TÉLÉPHÉRIQUE DE L\'OBSERVATOIRE\nAccès réservé aux dresseurs titulaires du BADGE VOLT.'},
+ hidden:[{x:2,y:19,it:'pierreorage',q:1,id:'vo1'},{x:23,y:1,it:'elixir',q:1,id:'vo2'}],
+ acts:{'22,8':pylon},
+ npcs:[I(23,19,'hyperpotion',1,'vo3'),BT(2,8,'vol','baiesoin'),
+  {x:13,y:2,t:'sailor',d:0,name:'Garde du téléphérique',cond:()=>!f().badge4&&!f().obsScene,say:()=>f().baseDone?'Le téléphérique remarche ! Mais le règlement est le règlement : il faut le BADGE VOLT d\'Ambroise.':'Plus de courant, plus de téléphérique ! La Team Éclipse a coupé toute la ville pour alimenter… je ne sais quoi, là-haut.'},
+  {x:9,y:7,t:'ambroise',d:0,name:'Ambroise',cond:()=>!f().baseDone,fn:ambroiseStreet},
+  {x:16,y:12,t:'old',d:2,name:'Électricien Paulin',wan:1,say:tod('Quarante ans que j\'entretiens les turbines. Et ces gamins en noir me les volent en une nuit !','La nuit, Volterre brille comme une constellation. Enfin… quand il y a du courant.','Sans soleil, les panneaux ne chargent plus. Heureusement qu\'il reste le vent.','Les turbines tournent, le soleil revient, la nuit aussi. Je n\'ai jamais eu aussi peu de travail. C\'est merveilleux.')},
+  {x:7,y:12,t:'girlkid',d:1,name:'Petite Lina',wan:1,say:()=>f().baseDone?'Mon Volticelle a mangé tellement d\'électricité qu\'il brille dans le noir ! Si ta créature de tête est ÉLEC, essaie la borne près du panneau.':'Il fait tout noir chez moi… Mon Volticelle a peur. Toi aussi, tu as peur du noir ?'},
+  {x:21,y:2,t:'scout',d:2,name:'Touriste',time:'j',say:'On dit que de l\'Observatoire, on voit les deux légendaires d\'Aurélys. Moi, je vois surtout des nuages.'},
+  {x:10,y:17,t:'grunt',d:1,name:'Sbire Éclipse',cond:()=>!f().baseDone&&f().volArr,say:'La Centrale ? Interdit d\'entrer ! …Quoi ? Bon, d\'accord, la porte est ouverte. Mais c\'est interdit !'}],
+ enter:async()=>{if(!f().volArr){f().volArr=1;await volArrive()}}};
+async function volArrive(){await say('Un plateau battu par les vents, hérissé de turbines immobiles. Pas une lumière : toute la ville est en panne.');
+ const a=MAPS.volterre.npcs.find(n=>n.fn===ambroiseStreet);if(a){await cine(1);await bang(a);await ambroiseStreet(a,1);await cine(0)}}
+async function ambroiseStreet(n,first){const A='Ambroise';if(!first&&f().ambQ)return say('La Centrale, au sud-est. Ramène-moi mes turbines, gamin. Et sois prudent : leur commandant n\'est pas un plaisantin.',A,0,'ambroise');
+ await say('Hé, toi ! Tu viens de la grotte ? Alors tu es soit très courageux, soit très perdu.',A,0,'ambroise');
+ await say('Ambroise, Champion de Volterre. Ingénieur, surtout. C\'est moi qui ai construit le dôme de l\'Observatoire, il y a trente ans.',A,0,'ambroise');
+ await say('Et ces voyous de la Team Éclipse ont pris ma Centrale. Tout le courant de la ville part là-haut, vers une barrière autour du dôme.',A,0,'ambroise');
+ await say('Mon arène marche à l\'électricité. Pas de courant, pas de combat. Libère la Centrale, et je t\'affronterai avec plaisir.',A,0,'ambroise');f().ambQ=1;save()}
+async function centraleDoor(){if(!f().volArr)return;if(f().baseDone)return warp('centrale',9,10,1);await say('Un panneau, collé de travers : "CENTRALE DE VOLTERRE — PROPRIÉTÉ DE LA TEAM ÉCLIPSE". Ils n\'ont même pas fermé à clé.');return warp('centrale',9,10,1)}
+async function gym4Door(){if(!f().baseDone)return say('L\'arène est plongée dans le noir. Une pancarte : "Fermé pour cause de panne. Signé : Ambroise, de très mauvaise humeur."');return warp('gym4',5,8,1)}
+async function volGate(){if(!f().badge4&&!f().obsScene)return say('Le téléphérique est à l\'arrêt. Le garde te barre le passage : il faut le BADGE VOLT.');
+ await say('La cabine du téléphérique grince, puis s\'élève au-dessus des nuages…');return warp('obs',8,9,1)}
+async function pylon(){const m=G.party[0];if(!f().baseDone)return say('Une borne de recharge publique. Éteinte, comme le reste de la ville.');
+ if(!m||SP[m.sp].t!=='ELE')return say('Une borne de recharge publique : "Réservée aux Pixémons ÉLEC. Gratuit, une fois par jour."');
+ if(f().pyl===dayN())return say(`${nm(m)} a déjà fait le plein aujourd'hui. Il crépite de bonheur.`);f().pyl=dayN();sfx('shard');ui.flash=.4;ui.flashC='#fff4a0';fullHeal(m);bondUp(m,4);await emote('fol','♪',600);
+ await say(`${nm(m)} se recharge à la borne ! Il est en pleine forme et semble très content de toi.`)}
+
+// --- Maison des Ambroise (anecdotes, indice)
+MAPS.maisonA={name:'Maison de Paulin',bg:'plaine',amb:'in',style:'home',dark:1,mus:'town',rows:["XXXXXXXXX","XCCFFFCFX","XFFFFFFFX","XFFFCCFFX","XFFFCCFFX","XFFFFFFFX","XXXXEXXXX"],
+ furn:[{x:1,y:1,k:'shelf1'},{x:2,y:1,k:'shelf3'},{x:6,y:1,k:'fridge'},{x:4,y:3,w:2,h:2,k:'bigTable'}],wdeco:[{x:4,k:'window'}],doors:{'4,6':['volterre',5,12,0]},
+ acts:{'1,1':()=>say('Des plans de turbines, annotés à la main : "Version 37. Celle-là, elle tournera."'),'2,1':()=>say('Un album photo : Ambroise jeune, devant le dôme de l\'Observatoire en construction. À côté de lui, un homme avec un carnet sous le bras… ton père ?')},
+ npcs:[{x:6,y:4,t:'granny',d:2,name:'Mamie Rosette',fn:rosetteTalk}]};
+async function rosetteTalk(){const R='Mamie Rosette';if(!f().baseDone)return say('Mon frère Paulin et Ambroise se disputent depuis quarante ans pour savoir qui a inventé la turbine. Moi je dis : personne, c\'est le vent.',R,0,'granny');
+ if(!f().roseG){f().roseG=1;give('superpotion',3);return say('Le courant est revenu grâce à toi ? Tiens, des Super Potions. Et repasse quand tu veux, j\'ai toujours une soupe… ah non, ça, c\'est la grand-mère de Lunévie.',R,0,'granny')}
+ return say(f().badge4?'Ambroise est intenable depuis votre combat. Il raconte la bataille à tout le monde.':'Ambroise t\'attend à son arène. Il a ressorti sa salopette des grands jours.',R,0,'granny')}
+
+// --- La Centrale (base de la Team Éclipse) : niveau 1
+MAPS.centrale={name:'Centrale de Volterre',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech',dark:1,mus:'base',
+ rows:["XXXXXXXXXXXXXXXXXXXX","XCFFFCXFFFFFFXCFEECX","XFFFFFXFFFFFFXFFFFFX","XFFFFFXFFFFFFXFFFFFX","XXFXXXXFFFFFFXXZZXXX","XFFFFFFFFFFFFFFFFFFX","XFCCFFFFFFFFFFFFCCFX","XFFFFFFFFFFFFFFFFFFX","XFFFFFFFFFFFFFFFFFFX","XCFFFFFFFFFFFFFFFFCX","XFFFFFFFFFFFFFFFFFFX","XXXXXXXXXEEXXXXXXXXX"],
+ opens:{Z:['ceCard','F']},doors:{'9,11':['volterre',20,17,0],'10,11':['volterre',20,17,0],'16,1':['centrale2',8,8,1],'17,1':['centrale2',9,8,1]},
+ hidden:[{x:12,y:1,it:'hypercapsule',q:2,id:'ce1'},{x:1,y:10,it:'totalsoin',q:2,id:'ce2'}],
+ acts:{'1,1':()=>docRead('vex'),'5,1':()=>docRead('caius'),'2,6':()=>docRead('prod'),'3,6':()=>docRead('prod'),'16,6':()=>docRead('compta'),'17,6':()=>docRead('compta'),'1,9':()=>docRead('code1'),'18,9':()=>docRead('selene'),'14,1':()=>docRead('code2'),'18,1':()=>say('Un écran : "ÉTAGE INFÉRIEUR — SALLE DES GÉNÉRATEURS. Accès : Commandant Orso uniquement."'),
+  '15,4':cardLock,'16,4':cardLock},
+ npcs:[{x:3,y:2,t:'ball',cond:()=>!G.keys.carteE,fn:async()=>{G.keys.carteE=1;sfx('item');ui.pop={ic:ICO.shard,t0:now()};await say('Tu trouves une CARTE D\'ACCÈS Éclipse, oubliée sur un bureau ! Elle porte la mention : "Salle de contrôle".')}},
+  I(11,3,'superpotion',2,'ce3'),
+  {x:5,y:8,t:'grunt',d:3,tr:TR('ce_g1','Sbire Éclipse',[['ratoroi',27],['ombrelin',27]],1100,'Un intrus ! Alerte ! …Ah non, l\'alarme est coupée, on n\'a plus de courant pour nous non plus.','C\'est le comble, pour une centrale…',{post:'On envoie tout le jus au dôme. Le chef dit que la barrière doit tenir jusqu\'au réveil de "l\'autre".'})},
+  {x:14,y:9,t:'assistant',d:2,name:'Technicienne',tr:TR('ce_t1','Technicienne Éclipse',[['etincelot',27,['cageclair','eclair','hate','viveatk']],['volticelle',28,['cageclair','dardeclair','viveatk','eclair']]],1200,'Paralysie, puis vitesse. C\'est mathématique : tu ne bougeras plus.','Erreur de calcul…',{post:'La carte d\'accès ? Le stagiaire l\'a encore laissée traîner au bureau, à l\'ouest. Quelle équipe…'})},
+  {x:3,y:3,t:'grunt',d:2,tr:TR('ce_g2','Sbire Éclipse',[['noctyrex',28]],1100,'Personne n\'entre dans le bureau du commandant !','Bon, entre. Mais ne lis pas ses mémos, c\'est privé.')},
+  {x:10,y:2,t:'caver',d:0,name:'Éclaireur',tr:TR('ce_e1','Éclaireur Éclipse',[['nocturelle',28,['hypnose','ombrefurtive','vent','morsure']],['ombrelin',28]],1200,'Dors bien !','Je n\'arrive plus à dormir, moi, depuis l\'éclipse…',{post:'Le code de la salle des générateurs est noté quelque part. Le commandant oublie tout.'})}]};
+async function cardLock(){if(f().ceCard)return;if(!G.keys.carteE)return say('Une porte blindée. Un lecteur clignote : "INSÉREZ VOTRE CARTE D\'ACCÈS".');sfx('ok');await say('Tu glisses la Carte d\'accès dans le lecteur… Bip !');f().ceCard=1;refreshMap(G.map);sfx('door');save()}
+const DOCS={vex:'Mémo de Vex : "Le Cœur d\'Aube a brisé la moitié du sceau. Il faut encore du temps, et de l\'énergie, pour que Nocturion s\'éveille. La Centrale fournira l\'énergie. Personne ne doit être blessé."',
+ caius:'Mémo de Caïus : "Vex parle de rendre la nuit aux créatures. Moi, je parle de la garder. Celui qui tient le Cycle tient le monde. Le moment venu, je saurai quoi faire."',
+ prod:'Rapport de production : 87 % du courant de Volterre est détourné vers la barrière du dôme. Les 13 % restants servent à la machine à café du commandant.',
+ compta:'Registre des dépenses : 600 capuches violettes, 1 dôme d\'Observatoire (emprunté), 3 tonnes de croquettes pour Noctyrex. Solde : négatif.',
+ selene:'Une lettre, jamais envoyée : "Valen, est-ce que tu dors, parfois ? Je t\'ai vu parler au sceau toute la nuit. Je te suivrai, mais j\'ai peur de ce qui se réveillera. — S."',
+ code1:'Post-it collé sur l\'écran : "Code des générateurs, 1er chiffre : 3. Comme le nombre de cafés qu\'il me faut pour me souvenir du code."',
+ code2:'Tableau blanc : "Code — 2e chiffre : autant que les branches de notre étoile (voir logo). Le 3e est dans la salle du bas, sous la console de gauche."',
+ code3:'Gravé sous la console : "3e chiffre : 1. Arrêtez de me demander. — Le commandant."'};
+async function docRead(k){f()['doc_'+k]=1;sfx('sel');return say(DOCS[k])}
+
+// --- Niveau inférieur : salle des générateurs et le Commandant Orso
+MAPS.centrale2={name:'Centrale · Générateurs',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech',dark:1,get dark2(){return!f().baseDone},mus:'base',
+ rows:["XXXXXXXXXXXXXXXXXX","XCCCFFFFFFFFFFCCCX","XFFFFFFFFFFFFFFFFX","XFFFCCFFFFFFCCFFFX","XFFFFFFFFFFFFFFFFX","XXXXXXXZZXXXXXXXXX","XFFFFFFFFFFFFFFFFX","XFCFFFFFFFFFFFFCFX","XFFFFFFFFFFFFFFFFX","XXXXXXXXEEXXXXXXXX"],
+ opens:{Z:['ceCode','F']},doors:{'8,9':['centrale',16,2,0],'9,9':['centrale',17,2,0]},
+ acts:{'2,7':()=>docRead('code3'),'15,7':()=>say('Un générateur de secours. Il ronronne. Quelqu\'un a écrit dessus au feutre : "NE PAS TOUCHER (Orso)".'),'7,5':codeLock,'8,5':codeLock,
+  '1,1':()=>say('Des turbines tournent à plein régime. Un câble épais monte vers le plafond, vers l\'Observatoire.'),'16,1':()=>say('Un écran : "Barrière du dôme : alimentée à 100 %. Réveil de N. : estimé dans 3 jours."')},
+ hidden:[{x:16,y:4,it:'elixir',q:2,id:'ce4'}],
+ npcs:[I(1,8,'hyperpotion',2,'ce5'),
+  {x:4,y:7,t:'grunt',d:3,tr:TR('ce_g3','Sbire Éclipse',[['magmor',28,null,'charbon'],['ratoroi',28]],1200,'Le code ? Je ne le connais pas. Personne ne le connaît, à part le commandant. Et le post-it.','Bon, il y a peut-être aussi le tableau blanc.')},
+  {x:13,y:6,t:'grunt',d:2,name:'Sbire d\'élite',tr:TR('ce_g4','Sbire d\'élite',[['noctyrex',29,null,'encensnoir'],['nocturelle',29]],1500,'Sbire d\'élite. Ça veut dire que le commandant connaît mon prénom.','Il va l\'oublier, maintenant…')},
+  {x:9,y:2,t:'orso',d:0,name:'Commandant Orso',cond:()=>!f().baseDone,fn:orsoTalk}]};
+async function codeLock(){if(f().ceCode)return;await say('Un clavier à code. Trois chiffres.');const D=['1','3','8','6'];let code='';for(let i=0;i<3;i++){const c=await choose(D,{w:120,title:`Chiffre ${i+1}`});if(c<0)return;code+=D[c]}
+ if(code!=='381'){sfx('bump');ui.shake=6;return say('BZZT ! "Code erroné." Les documents de la Centrale devraient t\'aider.')}sfx('shard');f().ceCode=1;refreshMap(G.map);await say('Bip-bip-bip ! La barrière s\'éteint.');save()}
+async function orsoTalk(n){const O='Commandant Orso';await cine(1);faceTo(n,G.x,G.y);
+ await say('Tiens donc. Le gamin qui a battu Corvin, Sélène, et la moitié de mes sbires. Tu sais ce que tu fais, là ?',O,0,'orso');
+ await say('Ces turbines alimentent la barrière du dôme. Coupe-les, et la barrière tombe. Et le rêve de Vex avec.',O,0,'orso');
+ await say('Moi, son rêve, je m\'en moque. On me paie pour que ça tourne. Alors ça va tourner.',O,0,'orso');await cine(0);
+ const r=await battle([mon('noctyrex',29,{item:'encensnoir'}),mon('magmor',29,{item:'charbon'}),mon('eclipsoeil',31,{moves:['hypnose','rayonnoir','morsure','nuit'],item:'baiesoin'})],{tr:{name:'Commandant Orso',look:'orso',money:3500,vs:1,boss:1,items:1,after:'Bon. Ça ne tournera pas.'}});
+ if(r!=='win')return;await cine(1);await say('Bon. Ça ne tournera pas. Je vais devoir me trouver un vrai travail.',O,0,'orso');
+ await say('Tu veux un conseil ? Là-haut, Vex ne se bat pas pour l\'argent. Ce genre de type, on ne le bat pas. On le convainc. Ou pas.',O,0,'orso');
+ puff(n.x,n.y,'#c060ff',12);f().baseDone=1;await wait(300);ui.shake=10;sfx('roar');for(let i=0;i<4;i++){ui.flash=.4;ui.flashC='#fff4a0';await wait(160)}
+ await say('Tu abaisses le grand levier. Les turbines ralentissent… puis repartent dans l\'autre sens. Le courant revient à Volterre !');
+ const k=tmpN('centrale2',{x:8,y:8,t:'rival',d:1,name:'Kael'});puff(8,8,'#ffffff',8);await walk(k,'uu');
+ await say('Hé ! J\'ai vu les lumières se rallumer de la grotte. Bien joué. …Attends, c\'est quoi, ça ?','Kael');await emote(k,'!',600);
+ await say('Kael ramasse un dossier tombé du bureau d\'Orso : "Dossier personnel — VEX. Vrai nom : Valen. Ancien du ponton de Port-Miroir."');await emote(k,'…',1100);
+ await say(f().ysL?'Grand-mère avait raison. C\'est vraiment lui. Mon frère est là-haut, et il va réveiller un dragon.':'Valen… C\'est le prénom de mon grand frère. Il est parti il y a des années. Ça ne peut pas être…','Kael');
+ await say('Je pars devant. Je dois le voir. Bats Ambroise, prends le téléphérique, et retrouve-moi à l\'Observatoire.','Kael');puff(k.x,k.y,'#ffffff',8);rmN('centrale2',k);
+ give('miettes',1);jingle('item');await say('Sur le bureau du commandant, tu trouves des MIETTES DORÉES. Orso n\'en aura plus besoin.');await cine(0);healAll();save()}
+
+// --- Arène Volt : barrières électriques à basculer (leviers), Champion Ambroise
+MAPS.gym4={name:'Arène Volt',bg:'tech',amb:'in',floor:'tech',cstyle:'tech',dark:1,mus:'gym',
+ rows:["XXXXXXXXXXXX","XCFFFFFFFFCX","XFFFFFFFFFFX","XJJJJJJJJJJX","XFFFFFFFFFFX","XFFFFFFFFFFX","XQQQQQQQQQQX","XFFFFFFFFFFX","XFFFFFFFFFFX","XXXXXEEXXXXX"],
+ sw:{J:()=>f().volt?'F':'Z',Q:()=>f().volt?'Z':'F'},doors:{'5,9':['volterre',7,6,0],'6,9':['volterre',7,6,0]},
+ acts:{'4,9':()=>say('Une plaque : "Le courant ne passe jamais partout à la fois. Chaque levier inverse les barrières. Réfléchis avant de tirer !"')},
+ npcs:[{x:2,y:8,t:'obj',k:'lever',lv:'volt',fn:voltLever},{x:9,y:4,t:'obj',k:'lever',lv:'volt',fn:voltLever},{x:2,y:2,t:'obj',k:'lever',lv:'volt',fn:voltLever},
+  {x:8,y:7,t:'camper',d:2,name:'Technicien',tr:TR('vt1','Technicien Volt',[['volticelle',27],['etincelot',28]],900,'Tu as compris les leviers ? Moi, j\'ai mis trois semaines.','Court-circuité !',{post:'Les barrières du haut et du bas ne sont jamais ouvertes en même temps. C\'est tout le principe.'})},
+  {x:3,y:5,t:'assistant',d:3,name:'Électricienne',tr:TR('vt2','Électricienne Mona',[['bourdonnerre',29,['dardeclair','cageclair','hate','aeropique']]],1000,'Ambroise dit que la paralysie est la plus belle invention de la nature. Après la turbine.','Je suis à plat…',{post:'Ambroise paralyse d\'abord, puis frappe avant toi. Une créature ROCHE ou une baie anti-paralysie, ça aide.'})},
+  {x:7,y:2,t:'scout',d:2,name:'Apprenti',tr:TR('vt3','Apprenti Volt',[['herissou',28],['nuageon',29]],1000,'Le Champion est juste derrière moi ! Enfin, juste à côté.','Je retourne à mes câbles…')},
+  {x:5,y:1,t:'ambroise',d:0,los:0,fn:n=>leaderTalk(n,'ambroise'),tr:TR('ambroise','Champion Ambroise',[['volticelle',29,['cageclair','dardeclair','hate','viveatk'],'baiesoin'],['etincelot',30,['cageclair','etincelle','hate','eclair']],['bourdonnerre',31,['dardeclair','aeropique','hate','cageclair'],'aimant'],['orageon',32,['tonnerre','cageclair','dansepluie','hate'],'baiesoin']],3200,
+   'Je construis des machines depuis cinquante ans, gamin, et j\'ai appris une chose : ce qui ne bouge plus ne gagne plus. Mes créatures paralysent, puis accélèrent. Tu ne verras même pas l\'éclair !',
+   'Hé hé… Court-circuit complet. Tu as plus de jus que ma Centrale !',{vs:1,boss:1,items:2,ev:1,post:()=>f().balance?'Le dôme que j\'ai construit a enfin servi à quelque chose de bien. Grâce à toi. Reviens quand tu veux une revanche !':'Le téléphérique t\'attend au nord. Là-haut, sous MON dôme, il y a un garçon qui a oublié que la nuit et le jour tournent ensemble. Va le lui rappeler.',
+   win:async()=>{f().badge4=1;await badgeGet('BADGE VOLT',ICO.bVol);give('aimant');G.keys.brv2=1;jingle('item');
+    await say('Ambroise te remet un AIMANT, et bricole ton Bracelet du Cycle : la jauge d\'Éveil se remplira plus vite !');
+    await say('J\'ai construit le dôme de l\'Observatoire avec un astronome, Elias. Un drôle de type, toujours un carnet sous le bras. Il disait : "Un jour, ce dôme servira à réconcilier le jour et la nuit."','Ambroise',0,'ambroise');
+    await say('Je n\'ai jamais compris ce qu\'il voulait dire. Toi, je crois que tu vas comprendre. Le téléphérique est à toi.','Ambroise',0,'ambroise')}})}]};
+async function voltLever(){if(!await ask('Un gros levier électrique. L\'abaisser ?'))return;f().volt=f().volt?0:1;sfx('shard');ui.shake=4;ui.flash=.3;ui.flashC='#fff4a0';refreshMap(G.map);await say(f().volt?'Bzzt ! Les barrières du haut s\'éteignent… celles du bas s\'allument.':'Bzzt ! Les barrières du bas s\'éteignent… celles du haut s\'allument.')}
+
+// =====================================================================
+// EXTENSION 9.0 — L'éclipse transforme le monde : larmes de Nocturion, marée d'éclipse, statue voilée,
+// rencontres d'ombre, et (après Crépuscel) une éclipse que l'on peut rappeler avec le Sablier.
+// =====================================================================
+// Larmes de Nocturion : 6 lueurs violettes, visibles seulement pendant une éclipse
+const LARMES=[['route1',17,16],['foret',26,4],['ville',18,13],['route2',13,11],['port',20,13],['coteaux',22,1]];
+LARMES.forEach(([m,x,y],i)=>MAPS[m].npcs.push({x,y,t:'obj',k:'tear',cond:()=>ecl()&&!f()['lm'+i],fn:async()=>{f()['lm'+i]=1;const n=G.keys.larmes=(G.keys.larmes||0)+1;sfx('shard');puff(x,y,'#c060ff',12);ui.flash=.3;ui.flashC='#8a5ad0';
+ await say(`Une LARME DE NOCTURION ! Une goutte d'ombre, froide et brillante, qui ne s'évapore pas. (${n}/6)`);if(n===1)await say('Elle ne brille que lorsque le soleil est voilé… Il doit y en avoir d\'autres, cachées là où l\'éclipse s\'attarde.');save()}}));
+// La statue de Solarion à Cendreville pleure pendant l'éclipse
+MAPS.ville.acts??={};const SOLST=MAPS.ville.signs['10,1'];delete MAPS.ville.signs['10,1'];
+MAPS.ville.acts['10,1']=async()=>{if(ecl()&&!G.keys.larmeS){G.keys.larmeS=1;sfx('shard');ui.flash=.5;ui.flashC=C.goldL;await say('La statue de Solarion est voilée d\'ombre… Au creux de sa main de pierre, une goutte de lumière tiède refuse de s\'éteindre.');
+  return say('Tu recueilles la LARME DE SOLARION. Elle et les larmes de Nocturion semblent s\'appeler l\'une l\'autre.')}
+ return SOLST&&!ecl()?say(SOLST):say(ecl()?'La statue de Solarion est voilée d\'ombre. On dirait qu\'elle baisse la tête.':'La statue de Solarion, protecteur de Cendreville. Son regard de pierre fixe le ciel.')};
+// Marée d'éclipse : à Port-Miroir, la mer se retire sous le ponton et découvre une épave
+MAPS.port.rows0=null;MAPS.port.rows[16]=MAPS.port.rows[16].slice(0,7)+'U'+MAPS.port.rows[16].slice(8);MAPS.port.rows[17]=MAPS.port.rows[17].slice(0,6)+'UUU'+MAPS.port.rows[17].slice(9);
+MAPS.port.sw={...(MAPS.port.sw||{}),U:()=>ecl()?'.':'~'};
+MAPS.port.npcs.push({x:8,y:17,t:'ball',cond:()=>ecl()&&!f().wreck,fn:async()=>{f().wreck=1;give('ruban');give('hypercapsule',2);jingle('item');await say('Dans l\'épave découverte par la marée d\'éclipse, tu trouves un RUBAN et 2 Hyper Capsules !');save()}},
+ {x:5,y:13,t:'fisher',d:0,name:'Vieux marin',say:()=>ecl()?'Regarde la mer ! Elle s\'est retirée sous le ponton, comme si la lune l\'aspirait. Mon grand-père parlait d\'une épave, là-dessous…':'Quand le soleil s\'éteint en plein jour, la mer recule. C\'est arrivé une fois, il y a soixante ans. On a vu le fond, sous le ponton.'});
+// Rencontres d'ombre dans les anciennes zones
+MAPS.route1.enc.push(['oeillombre',8,10,10,'e'],['ricanoir',8,10,6,'e']);MAPS.foret.enc.push(['ricanoir',11,13,8,'e'],['oeillombre',11,13,10,'e']);MAPS.route2.enc.push(['eclipsoeil',22,24,4,'e'],['anubrume',22,24,4,'e']);
+
+// Après l'équilibre : l'autel du Sanctuaire accueille les larmes (les deux moitiés du Cycle)
+const SANCT0=MAPS.sanctuaire.acts['6,4'];
+MAPS.sanctuaire.acts['6,4']=async()=>{if(f().amuC)return say('L\'autel double est apaisé. La moitié blanche et la moitié noire brillent d\'une même lueur.');
+ if(!(G.keys.larmeS&&(G.keys.larmes||0)>=6))return say(`Un autel double : une moitié de pierre blanche, une moitié de pierre noire. Deux creux attendent une offrande.${G.keys.larmeS||G.keys.larmes?` (Larme de Solarion : ${G.keys.larmeS?'oui':'non'} · Larmes de Nocturion : ${G.keys.larmes||0}/6)`:''}`);
+ await cine(1);await say('Tu déposes la Larme de Solarion dans la pierre blanche, et les six Larmes de Nocturion dans la pierre noire…');sfx('roar');ui.shake=8;for(let i=0;i<3;i++){ui.flash=.6;ui.flashC=i%2?'#ffffff':'#8a5ad0';await wait(220)}
+ rays(6,4,'#ffffff',2000);await wait(600);f().amuC=1;delete G.keys.larmes;delete G.keys.larmeS;G.keys.larmesDone=1;give('amucycle');jingle('item');
+ await say('Les larmes se mêlent et se figent en un pendentif mi-blanc, mi-noir : l\'AMULETTE DU CYCLE !');
+ await say('Une voix, dans le vent : "Ceux qui pleurent pour le jour et pour la nuit ne sont jamais seuls. Porte-la, et ton compagnon ne dormira jamais quand tu auras besoin de lui."');await cine(0);save()};
+
+// Le Sablier peut rappeler l'éclipse une journée, une fois Crépuscel apaisé
+async function callEclipse(){f().eclD=dayN();sfx('roar');ui.shake=10;for(let i=0;i<3;i++){ui.flash=.5;ui.flashC='#3a2050';await wait(200)}refreshMap(G.map);musPlay(mapMus(MAPS[G.map]));
+ await say('Le sable devient noir… Un disque d\'ombre glisse sur le soleil. L\'éclipse revient sur Aurélys, jusqu\'à la fin de cette journée.')}
+
+// =====================================================================
+// EXTENSION 9.0 — Un monde qui vit : marchande itinérante, photographe des liens, carnet de voyage,
+// orages de Volterre, et le défi ultime d'Elias.
+// =====================================================================
+// --- Marchande itinérante : une ville différente chaque jour (le jour), avec un stock qui change
+const MERCH=[['bourg',14,8],['ville',16,7],['port',16,11],['lunevie',9,8],['volterre',16,8]],merchHere=()=>{if(!G||!f().badge||night())return null;const L=MERCH.filter(([m])=>G.seen?.[m]);return L.length?L[dayN()%L.length]:null};
+const MPOOL=['pierrelune','pierreorage','charbon','eaumystique','grainemiracle','aimant','pierredure','encensnoir','poudretoile','griffe','grelot','ruban','miettes','hypercapsule','elixir'];
+MERCH.forEach(([m,x,y])=>MAPS[m].npcs.push({x,y,t:'vendor',d:0,name:'Marchande Zélie',cond:()=>merchHere()?.[0]===m,fn:merchTalk}));
+async function merchTalk(){const Z='Marchande Zélie',d=dayN(),pick=[...MPOOL].sort((a,b)=>HSH(d,a.length*31+a.charCodeAt(1))-HSH(d,b.length*31+b.charCodeAt(1))).slice(0,5),PR={hypercapsule:1500,elixir:1800};
+ if(!f().zel){f().zel=1;await say('Zélie, marchande itinérante ! Chaque jour une ville, chaque jour un stock. Ce que je vends, tu ne le trouveras dans aucune boutique.',Z,0,'vendor')}
+ else await say(['Tu me retrouves toujours, toi ! Regarde ce que j\'ai déniché aujourd\'hui.','Demain, je serai ailleurs. Profites-en !','Des objets rares, à prix… rares.'][d%3],Z,0,'vendor');
+ const v=(f().zelN=(f().zelN||0)+(f().zelD!==d?1:0));f().zelD=d;if(v===5&&!f().zelG){f().zelG=1;give('amulette');jingle('item');await say(`Cinq jours que tu me rends visite ! Tiens, un cadeau de fidélité : ${IT.amulette[0]}.`,Z,0,'vendor')}
+ await buyMenu(pick,Object.fromEntries(pick.map(k=>[k,PR[k]||(IT[k][4]==='evo'?3000:IT[k][1]||4500)])),Z)}
+
+// --- Photographe des liens (Port-Miroir) : photographie ta créature de tête quand votre lien est fort
+MAPS.port.npcs.push({x:9,y:7,t:'girl',d:0,name:'Photographe Lise',fn:photoTalk,qm:()=>{const m=G.party[0];return m&&bondLv(m)>=4&&!(G.photos?.[m.sp]>=bondLv(m))}});
+async function photoTalk(){const P='Photographe Lise',m=G.party[0];if(!m)return;const b=bondLv(m);G.photos??={};
+ if(b<3)return say(`Ton ${nm(m)} est un peu raide devant l'objectif… Le lien, ça ne se force pas. Voyagez ensemble, nourrissez-le, et revenez me voir.`,P,0,'girl');
+ if(G.photos[m.sp]>=b)return say(`J'ai déjà une très belle photo de ${nm(m)} ! Elle est accrochée dans mon atelier. ${b<5?'Si votre lien grandit encore, je referai un portrait.':''}`,P,0,'girl');
+ await say(b>=5?`Regarde-moi ce regard ! ${nm(m)} ne voit que toi. Ne bougez plus…`:`${nm(m)} a l'air bien avec toi. Un sourire… Ne bougez plus !`,P,0,'girl');
+ sfx('shard');ui.flash=1;ui.flashC='#ffffff';await wait(300);G.photos[m.sp]=b;bondUp(m,3);await emote('fol','♪',600);
+ const n4=Object.values(G.photos).filter(v=>v>=4).length,n5=Object.values(G.photos).filter(v=>v>=5).length;await say(`Clic ! Lise a pris en photo ${nm(m)}. (Photos de lien fort : ${n4} · inséparables : ${n5})`);
+ if(n4>=1&&!f().ph1){f().ph1=1;give('biscuit',3);await say('Pour ta première photo, Lise t\'offre 3 Biscuits Pixémon. "Ils adorent ça !"')}
+ if(n5>=3&&!f().ph3){f().ph3=1;give('grelot');await say('Trois créatures inséparables ! Lise t\'offre un GRELOT ÉCHO.')}
+ if(n5>=6&&!G.keys.coeur){G.keys.coeur=1;jingle('item');await say('Six portraits d\'inséparables… Lise t\'offre son plus beau cliché, glissé dans un médaillon : le COEUR DU CYCLE. Tes liens se renforceront plus vite.')}save()}
+
+// --- Carnet de voyage (Touriste de Volterre)
+const VISIT=['bourg','ville','foret','mont','route2','port','grotte','volterre','coteaux','lunevie'];
+{const t=MAPS.volterre.npcs.find(n=>n.name==='Touriste');if(t){delete t.say;delete t.time;t.fn=touristTalk}}
+async function touristTalk(){const T='Touriste',v=VISIT.filter(k=>G.seen?.[k]).length;if(f().carnet)return say('Mon carnet est plein, grâce à toi ! Je suis devenu guide touristique. Bon, je me perds encore, mais avec style.',T,0,'scout');
+ if(v<VISIT.length)return say(`Je fais le tour d'Aurélys avec mon carnet de voyage ! Toi, tu as visité ${v} lieux sur ${VISIT.length}. Il te manque : ${VISIT.filter(k=>!G.seen?.[k]).map(k=>MAPS[k].name.split(' · ')[0]).join(', ')}.`,T,0,'scout');
+ f().carnet=1;give('hypercapsule',5);give('poussiere',3);jingle('item');await say('Tu as tout visité ! Incroyable. Prends ça, je n\'en aurai plus besoin : 5 Hyper Capsules et 3 Poussières d\'Étoile.',T,0,'scout');save()}
+
+// --- Orages de Volterre : sous la pluie, des éclairs, et un Orageon sauvage peut se montrer
+MAPS.volterre.enc.push(['orageon',30,32,3,'r']);
+setInterval(()=>{if(G&&mode==='world'&&G.map==='volterre'&&rain()&&Math.random()<.07){ui.flash=.35;ui.flashC='#e8f0ff';sfx('hit')}},1500);
+
+// --- Le défi ultime d'Elias : quand Aurélys n'a presque plus de secrets pour toi
+const ELIASOK=()=>f().balance&&f().badge4&&f().legC&&caught()>=60;
+const DAD0=dadTalk,dadTalk2=async function(){const P='Papa';if(f().eliasWin)return say(['Je regarde encore le ciel, la nuit. Mais maintenant, c\'est pour le plaisir.','Ambroise m\'a écrit. Il veut te revoir en combat. Moi aussi, d\'ailleurs. Mais pas trop vite : mes créatures boudent encore.'][(G.t>>4)%2],P,0,'dad');
+ if(ELIASOK()&&!f().eliasQ){f().eliasQ=1;await say('Tu as presque rempli ton Pixédex… et tu as même parlé à Crépuscel. Tu as fait tout ce que je n\'ai jamais réussi à faire.',P,0,'dad');
+  await say('Il me reste une chose à t\'apprendre. Ou plutôt, à apprendre de toi. Rejoins-moi sous le dôme de l\'Observatoire, une nuit. Amène tes meilleures créatures.',P,0,'dad');return save()}
+ if(f().eliasQ)return say('Sous le dôme, une nuit. Je t\'attendrai.',P,0,'dad');return DAD0()};
+for(const M of Object.values(MAPS))for(const n of M.npcs||[])if(n.fn===DAD0)n.fn=dadTalk2;
+MAPS.dome.npcs.push({x:9,y:2,t:'dad',d:0,name:'Papa',time:'n',cond:()=>f().eliasQ&&!f().eliasWin,fn:eliasBattle});
+async function eliasBattle(n){const P='Papa';await cine(1);faceTo(n,G.x,G.y);await say('C\'est ici que j\'ai compris que le Cycle boitait. Ici que je suis parti. Ici que tu l\'as réparé.',P,0,'dad');
+ await say('Mes créatures ont vu les nuits du Nord, les étoiles qui ne se couchent jamais. Montre-moi les tiennes. Sans retenue.',P,0,'dad');await cine(0);if(!await ask('Affronter Papa ?'))return;
+ const r=await battle([mon('hiboulume',72,{item:'baiesoin'}),mon('sphinxor',73,{item:'poudretoile'}),mon('quetzaroc',73,{item:'pierredure'}),mon('orageon',74,{item:'aimant'}),mon('astrafelin',74,{item:'miettes'}),mon('novarium',76,{item:'orbe'})],{tr:{name:'Elias, astronome',look:'dad',money:12000,vs:1,boss:1,items:3,ev:1,after:'Tu as gagné. Évidemment.'}});
+ if(r!=='win'){await say('Pas encore, hein ? Reviens une autre nuit. Je ne bougerai pas d\'ici.',P,0,'dad');return}
+ f().eliasWin=1;await cine(1);sfx('roar');rays(n.x,n.y,C.goldL,2000);await wait(600);await say('Tu as gagné. Évidemment. Je l\'ai su le jour où ta mère m\'a écrit que tu étais parti avec ton premier Pixémon.',P,0,'dad');
+ await say('Tiens. C\'est l\'étoile que j\'ai suivie jusqu\'au Nord. Je l\'ai fait tailler dans une Pierre Lunaire. Elle est à toi, maintenant.',P,0,'dad');G.keys.etoile=1;give('orbe');give('cyclecapsule');jingle('badge');
+ await say(`Tu reçois l'ÉTOILE D'ELIAS, ${IT.orbe[0]} et une Capsule Cycle ! Ta Carte de Dresseur porte désormais l'Étoile.`);await say('Rentrons. Lou va vouloir tout savoir. Et ta mère a sûrement fait un gâteau.',P,0,'dad');await cine(0);save()}
+
 function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
-const mapMus=M=>act2()&&(M.mus==='route'||M.mus==='foret')?'ecl':M.mus;
+const mapMus=M=>ecl()&&(M.mus==='route'||M.mus==='foret'||M.mus==='town')?'ecl':M.mus==='town'&&night()?'nuit':M.mus;
 function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;faunaSpawn(map);folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
  if(ch&&!G.wx&&RAINY.has(map)&&f().starter&&Math.random()<.16){G.wx={k:'rain',n:rnd(70,150)};ui.note={s:'Averse',t0:now()+900}}const sw=swarm();if(ch&&sw&&sw[0]===map)setTimeout(()=>{ui.note={s:'Essaim : '+SP[sw[1]].name,t0:now()}},1600)}
 async function warp(map,x,y,d){sfx('door');await fadeTo(1,200);loadMap(map,x,y,d);await fadeTo(0,200);save();if(MAPS[map].enter)await MAPS[map].enter()}
@@ -1121,11 +1331,11 @@ async function pushRock(n,d){const M=MAPS[G.map],bx=n.x+DX[d],by=n.y+DY[d],c=M.r
 async function valve(){const hi=f().tide;if(!await ask(`Une grosse vanne marine. Marée ${hi?'haute':'basse'}. La tourner ?`))return;sfx('splash');ui.shake=8;for(let i=0;i<3;i++){ui.flash=.25;ui.flashC='#7ac8ff';await wait(140)}f().tide=hi?0:1;refreshMap(G.map);sfx('splash');
  await say(hi?'L\'eau redescend… La marée est BASSE : les ponts de marée basse émergent.':'L\'eau monte ! La marée est HAUTE : les ponts de marée haute émergent, les autres sont submergés.')}
 async function forceStep(d){G.dir=d;move={fx:G.x,fy:G.y,tx:G.x+DX[d],ty:G.y+DY[d],t:0,sil:1};folFollow(G.x,G.y);while(move)await frame()}
-const RAINY=new Set(['bourg','route1','ville','foret','route2','port','coteaux','lunevie']),rain=()=>G.wx?.k==='rain'&&RAINY.has(G.map);
+const RAINY=new Set(['bourg','route1','ville','foret','route2','port','coteaux','lunevie','volterre']),rain=()=>G.wx?.k==='rain'&&RAINY.has(G.map);
 const SWARMS=[['route1','volticelle',4,7],['route1','lumignon',4,7],['foret','larvigne',10,13],['foret','nocturelle',10,13],['mont','magmor',15,18],['mont','nocturelle',15,18],['route2','tetardin',18,22],['route2','lumignon',19,22],['grotte','rocaroc',24,27],['route2','papivigne',20,23]];
 function swarm(){const day=Math.floor(G.t/CYC),L=SWARMS.filter(([m])=>G.seen?.[m]&&(m!=='route2'&&m!=='grotte'||f().r2));return L.length&&f().badge?L[(day*7919+13)%L.length]:null}
 function encTable(M,k){let T=[...(M.enc||[])];const sw=swarm();if(sw&&sw[0]===k)T.push([sw[1],sw[2],sw[3],60]);if(rain()&&M.fish&&T.length){const lv=T.map(e=>e[1]);T.push([M.fish[0][0],Math.min(...lv),Math.max(...T.map(e=>e[2])),28])}return T}
-const encW=e=>e[3]*(act2()&&SP[e[0]].t==='OMB'?2:1)*(e[0]==='meteosaur'&&stars()?4:1),encOk=e=>!e[4]||(e[4]==='r'?rain():e[4]==='e'?act2():e[4]==='s'?stars():(e[4]==='n')===night());
+const encW=e=>e[3]*(ecl()&&SP[e[0]].t==='OMB'?2:1)*(e[0]==='meteosaur'&&stars()?4:1),encOk=e=>!e[4]||(e[4]==='r'?rain():e[4]==='e'?ecl():e[4]==='s'?stars():(e[4]==='n')===night());
 const pickEnc=T=>{const L=T.filter(encOk);let r=Math.random()*L.reduce((a,e)=>a+encW(e),0);return L.find(e=>(r-=encW(e))<0)||L[0]};
 async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;const ld=G.party[0];if(ld&&ld.hp>0&&G.t%8===0)bondUp(ld,1);if(G.t%48===0)G.party.forEach(m=>m.hp>0&&bondUp(m,1));
  if(G.t%160===0&&folMon()&&bondLv(ld)>=3&&!['in','tech'].includes(M.amb)&&Math.random()<.4){const k=['baiesoin','biscuit','potion','capsule','superpotion','baieprisme'][rnd(0,5)];await emote('fol','!',500);give(k);await say(`${nm(ld)} a déniché quelque chose ! Tu reçois ${IT[k][0]} !`);tip('flair','Quand le lien est fort, ta créature de tête déniche parfois des objets en chemin.')}if(night()&&!act2()&&M.amb!=='in')tip('nuit','C\'est la nuit ! D\'autres créatures sortent des herbes (Lumignon, Ombrelin…), et certains talents changent. Le lit de la maison permet de choisir l\'heure.');if(rain())tip('pluie','Une averse ! Pendant la pluie, les combats commencent sous la PLUIE (EAU x1,5, FEU x0,5) et des créatures d\'eau sortent des herbes.');if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
@@ -1198,7 +1408,7 @@ const PAGES=['Jour 1. Brume ne s\'est pas réveillé ce matin. Le soleil était 
 async function ruinsDoor(){if(!f().balance)return say('Une porte de pierre scellée, gravée d\'un soleil et d\'une lune entrelacés. Elle ne bouge pas d\'un pouce.');if(!f().ruinsOpen){f().ruinsOpen=1;await cine(1);ui.shake=10;sfx('roar');rays(11,1,C.goldL,2200);await say('Le soleil et la lune gravés sur la porte s\'illuminent… La pierre glisse dans un grondement !');await cine(0)}await warp('ruines',9,13,1)}
 async function sablierGet(){await cine(1);rays(9,1,C.goldL,2600);await say('Sur l\'autel repose un sablier de cristal. Une moitié brille comme le jour, l\'autre comme la nuit.');G.keys.sablier=1;jingle('item');ui.pop={ic:ICO.sablier,t0:now()};
  await say('Tu obtiens le SABLIER DU CYCLE ! Depuis le menu, il permet de choisir le moment de la journée.');await cine(0);save()}
-async function useSablier(){const M=MAPS[G.map];if(['in','cave','tech'].includes(M.amb))return say('Le sable reste immobile… Il faut être à ciel ouvert.');const i=await choose(['AUBE','JOUR','CRÉPUSCULE','NUIT'],{x:W-200,y:8,w:192,title:'Sablier du Cycle'});if(i<0)return;
+async function useSablier(){const M=MAPS[G.map];if(['in','cave','tech'].includes(M.amb))return say('Le sable reste immobile… Il faut être à ciel ouvert.');const O=['AUBE','JOUR','CRÉPUSCULE','NUIT',...(f().legC?['ÉCLIPSE']:[])],i=await choose(O,{x:W-200,y:8,w:192,title:'Sablier du Cycle'});if(i<0)return;if(i===4)return callEclipse();
  const n=f().balance?180:120,b=Math.ceil((G.t+1)/CYC)*CYC;G.t=b+[5,45,CYC-n-35,CYC-n+5][i];await fadeTo(.8,300);sfx('shard');await fadeTo(0,300);await say(`Le sable s'écoule… ${['L\'aube','Le jour','Le crépuscule','La nuit'][i]} tombe sur ${M.name.split(' · ')[0]}.`)}
 async function getPage(i){f()['pg_'+i]=1;const n=G.keys.pages=(G.keys.pages||0)+1;jingle('item');ui.pop={ic:ICO.book,t0:now()};await say(`Tu trouves une page déchirée… le journal de Valen ! (${n}/4)`);await say(PAGES[i-1],'Valen')}
 async function readPages(){const L=[1,2,3,4].filter(i=>f()['pg_'+i]);if(!L.length)return;for(;;){const i=await choose(L.map(i=>`Page ${i}`),{x:W-170,y:8,w:162,title:'Journal'});if(i<0)return;await say(PAGES[L[i]-1],'Valen')}}
@@ -1236,11 +1446,11 @@ async function shop(){await say('Bienvenue à la Boutique ! Fais ton choix !','V
  for(;;){show('Que désires-tu ?','Vendeur');const c=await choose(['ACHETER','VENDRE','QUITTER'],{w:180,icons:[ICO.coin,ICO.bag,ICO.close]});ui.text=null;if(c===0)await buyMenu();else if(c===1)await sellMenu();else break}
  await say('Reviens quand tu veux !','Vendeur')}
 const moneyPanel=()=>{panel(8,8,170,46);X.drawImage(ICO.coin,24,22,16,16);txt(G.money,48,38)};
-async function buyMenu(){const ks=['potion','superpotion','totalsoin','repousse','rappel','capsule','supercapsule','biscuit','baiesoin',...(f().badge?['hypercapsule','crepuscapsule','baieprisme']:[]),...(f().badge2?['hyperpotion','elixir']:[]),...(f().badge3?['pierrelune','pierreorage']:[])];
+async function buyMenu(list,price,who='Vendeur'){const P=k=>price?.[k]??IT[k][1],ks=list||['potion','superpotion','totalsoin','repousse','rappel','capsule','supercapsule','biscuit','baiesoin',...(f().badge?['hypercapsule','crepuscapsule','baieprisme']:[]),...(f().badge2?['hyperpotion','elixir']:[]),...(f().badge3?['pierrelune','pierreorage']:[])];
  ui.panel=moneyPanel;
- for(;;){const i=await choose(ks.map(k=>IT[k][0]),{x:W-298,y:8,w:290,vis:7,title:'Acheter (A) · Retour (B)',icons:ks.map(k=>ICO[k]),info:i=>({icon:bigIco(ks[i]),s:`${IT[ks[i]][2]} Tu en as ${G.bag[ks[i]]||0}.`}),dis:i=>G.money<IT[ks[i]][1],
-  draw:(i,x,y,sel,pr)=>{const c=pr?'#ffffff':G.money<IT[ks[i]][1]?C.mute:C.ink,o={sh:pr?0:undefined};txt(IT[ks[i]][0],x,y+19,c,o);txt(IT[ks[i]][1],x+222,y+19,c,{...o,al:'r'})}});
-  if(i<0)break;const k=ks[i];if(G.money<IT[k][1]){await say('Tu n\'as pas assez d\'argent !','Vendeur');continue}G.money-=IT[k][1];G.bag[k]=(G.bag[k]||0)+1;sfx('lv');if(IT[k][4]==='held')tip('held',HELDTIP)}
+ for(;;){const i=await choose(ks.map(k=>IT[k][0]),{x:W-298,y:8,w:290,vis:7,title:'Acheter (A) · Retour (B)',icons:ks.map(k=>ICO[k]),info:i=>({icon:bigIco(ks[i]),s:`${IT[ks[i]][2]} Tu en as ${G.bag[ks[i]]||0}.`}),dis:i=>G.money<P(ks[i]),
+  draw:(i,x,y,sel,pr)=>{const c=pr?'#ffffff':G.money<P(ks[i])?C.mute:C.ink,o={sh:pr?0:undefined};txt(IT[ks[i]][0],x,y+19,c,o);txt(P(ks[i]),x+222,y+19,c,{...o,al:'r'})}});
+  if(i<0)break;const k=ks[i];if(G.money<P(k)){await say('Tu n\'as pas assez d\'argent !',who);continue}G.money-=P(k);G.bag[k]=(G.bag[k]||0)+1;sfx('lv');if(IT[k][4]==='held')tip('held',HELDTIP)}
  ui.panel=null}
 async function sellMenu(){ui.panel=moneyPanel;
  for(;;){const ks=Object.keys(G.bag).filter(k=>G.bag[k]>0&&IT[k]&&sellOf(k)>0).sort((a,b)=>CATO.indexOf(IT[a][4])-CATO.indexOf(IT[b][4]));if(!ks.length){ui.panel=null;await say('Tu n\'as rien à vendre.','Vendeur');return}
@@ -1356,7 +1566,7 @@ async function finalBattle(){const D='dome',v=MAPS.dome.npcs.find(n=>n.t==='vex'
  await say('Valen ! Arrête ! Et toutes les autres créatures ? Les récoltes, les gens… Maman ? Tu veux tout éteindre pour sauver la nuit ?','Kael');
  await emote(v,'…',900);await say('Kael… Tu as grandi.','Vex');await say('Si c\'est le prix, je le paierai. Nocturion ! Montre-leur ce qu\'est une vraie ÉCLIPSE !','Vex');sfx('roar');ui.shake=16;ui.flash=.5;ui.flashC='#3a1a5a';
  await camBack(300);await cine(0);
- const r=await battle([mon('nocturelle',29,{moves:['hypnose','nuit','clairlune','ombrefurtive']}),mon('magmor',30,{moves:['feufollet','lanceflam','jetpierre','durcir']}),mon('noctyrex',30,{moves:['cri','nuit','morsure','ombrefurtive']}),mon('nocturion',31,{moves:['lunenoire','rayonnoir','ombrefurtive','grondement']})],
+ const r=await battle([mon('nocturelle',34,{moves:['hypnose','nuit','clairlune','ombrefurtive']}),mon('magmor',35,{moves:['feufollet','lanceflam','jetpierre','durcir']}),mon('noctyrex',35,{moves:['cri','nuit','morsure','ombrefurtive']}),mon('nocturion',38,{moves:['lunenoire','rayonnoir','ombrefurtive','grondement']})],
   {tr:{name:'Vex',look:'vex',money:6000,vs:1,boss:1,items:2,ev:1,after:'Nocturion… Non…'},legend:1});
  if(r!=='win'){rmN(D,k);return}await ending(k)}
 async function ending(k){const D='dome',v=MAPS.dome.npcs.find(n=>n.t==='vex'&&n.fix),nc=MAPS.dome.npcs.find(n=>n.sp==='nocturion'&&!n.fn);musStop();await cine(1);await camTo(5,2,600);
@@ -1437,13 +1647,14 @@ async function braceletScene(){const b='Brasia';if(G.keys.bracelet)return;await 
  await say('Plus ton lien avec ta créature est fort, plus la jauge se remplit vite. Et méfie-toi : la Team Éclipse a volé des éclats, elle aussi…',b)}
 // --- Revanches d'arène et Tournoi du Cycle (après l'Équilibre) ---
 const topLv=()=>Math.max(40,Math.min(70,...G.party.map(m=>m.lv)));
-const REM={brasia:L=>[['rocaroc',L-2,null,'baiesoin'],['magmor',L-1,null,'charbon'],['rocaroc',L+1,null,'pierredure']],orane:L=>[['brumelle',L-1,null,'baiesoin'],['anubrume',L,null,'encensnoir'],['eclipsoeil',L,null,'grelot'],['astrafelin',L+1,null,'poudretoile']],maelle:L=>[['crapaflot',L-1,null,'miettes'],['torrentor',L,null,'eaumystique'],['crapaflot',L+1,null,'baiesoin']]};
+const LDR={brasia:['','Toujours aussi solide… La roche s\'incline !','pierredure'],maelle:['Le port a retrouvé ses marées. Une revanche, sous la pluie ?','La marée t\'obéit, maintenant ? Bravo.','eaumystique'],ambroise:['Mes turbines tournent jour et nuit, maintenant. Une revanche, pour tester mes nouveaux réglages ?','Encore un court-circuit ! Je retourne à mon atelier.','aimant']};
+const REM={ambroise:L=>[['volticelle',L-2,['cageclair','dardeclair','hate','viveatk'],'baiesoin'],['bourdonnerre',L-1,null,'aimant'],['etincelot',L-1,null,'baiesoin'],['orageon',L+1,['tonnerre','cageclair','dansepluie','hate'],'miettes']],brasia:L=>[['rocaroc',L-2,null,'baiesoin'],['magmor',L-1,null,'charbon'],['rocaroc',L+1,null,'pierredure']],orane:L=>[['brumelle',L-1,null,'baiesoin'],['anubrume',L,null,'encensnoir'],['eclipsoeil',L,null,'grelot'],['astrafelin',L+1,null,'poudretoile']],maelle:L=>[['crapaflot',L-1,null,'miettes'],['torrentor',L,null,'eaumystique'],['crapaflot',L+1,null,'baiesoin']]};
 async function leaderTalk(n,k){const tr=n.tr;if(!f()['t_'+tr.id])return trainerBattle(n);if(!f().balance)return say(typeof tr.post==='function'?tr.post():tr.post||tr.after,tr.name,0,n.t);
- const tour=k==='brasia',O=['REVANCHE',...(tour?['TOURNOI DU CYCLE']:[]),'AU REVOIR'];show(tour?'Le Cycle est rétabli, et mon arène accueille le Tournoi du Cycle ! Une revanche, ou le grand tournoi ?':'Le port a retrouvé ses marées. Une revanche, sous la pluie ?',tr.name);
+ const tour=k==='brasia',O=['REVANCHE',...(tour?['TOURNOI DU CYCLE']:[]),'AU REVOIR'];show(tour?'Le Cycle est rétabli, et mon arène accueille le Tournoi du Cycle ! Une revanche, ou le grand tournoi ?':LDR[k][0],tr.name);
  const c=await choose(O,{w:240});ui.text=null;if(c<0||O[c]==='AU REVOIR')return;if(O[c]==='TOURNOI DU CYCLE')return tournament();
  const d=dayN();if(f()['rm_'+k]===d)return say('Mes créatures se reposent. Reviens demain !',tr.name,0,n.t);
- const r=await battle(team(REM[k](topLv())),{tr:{name:tr.name,look:n.t,money:tr.money*2,vs:1,boss:1,items:2,ev:1,after:k==='brasia'?'Toujours aussi solide… La roche s\'incline !':'La marée t\'obéit, maintenant ? Bravo.'}});
- if(r==='win'){f()['rm_'+k]=d;if(!f()['rmg_'+k]){f()['rmg_'+k]=1;const it=k==='brasia'?'pierredure':'eaumystique';give(it);await say(`${tr.name} te remet ${IT[it][0]} en souvenir de ce combat !`)}}save()}
+ const r=await battle(team(REM[k](topLv())),{tr:{name:tr.name,look:n.t,money:tr.money*2,vs:1,boss:1,items:2,ev:1,after:LDR[k][1]}});
+ if(r==='win'){f()['rm_'+k]=d;if(!f()['rmg_'+k]){f()['rmg_'+k]=1;const it=LDR[k][2];give(it);await say(`${tr.name} te remet ${IT[it][0]} en souvenir de ce combat !`)}}save()}
 function freeNear(){const M=MAPS[G.map];for(const d of[1,2,3,0]){const x=G.x+DX[d],y=G.y+DY[d],c=M.rows[y]?.[x];if(c&&!SOLID.has(c)&&!npcs(M).some(n=>n.x===x&&n.y===y)&&!(folMon()&&FOL.x===x&&FOL.y===y))return[x,y,d]}return[G.x,G.y-1,1]}
 async function tournament(){const B2='Brasia',d=dayN();if(f().tourDay===d)return say('Le Tournoi reprendra demain : les champions se reposent !',B2);
  await say('Quatre combats d\'affilée contre les meilleurs dresseurs d\'Aurélys, sans passer par le Centre de Soins. Seuls tes objets pourront t\'aider.',B2);
@@ -1472,7 +1683,7 @@ async function hallOfFame(i){const h=G.hof[i];ui.panel=()=>{const t=now();panel(
 const MSK={cap:'CAPTURE',ko:'CHASSE',fish:'PÊCHE',ev:'ÉVEIL'};
 const msTxt=q=>q.k==='cap'?`capturer ${SP[q.v].name}`:q.k==='ko'?`vaincre ${q.need} créatures ${TY[q.v][0]} sauvages`:q.k==='ev'?`éveiller ${q.need} fois une créature en combat`:`pêcher ${q.need} créatures`;
 const msShort=q=>q.k==='cap'?`Capturer ${SP[q.v].name}`:q.k==='ko'?`Vaincre ${q.need} ${TY[q.v][0]}`:q.k==='ev'?`Éveiller ${q.need} fois`:`Pêcher ${q.need} créatures`;
-function msNew(){const L=G.ms?.L||[],tier=(f().badge?1:0)+(f().eclipse?1:0)+(f().badge2?1:0)+(f().badge3?1:0)+(f().balance?1:0),pk=a=>a[Math.floor(Math.random()*a.length)],zone=k=>MAPS[k].name.split(' · ')[0];
+function msNew(){const L=G.ms?.L||[],tier=(f().badge?1:0)+(f().eclipse?1:0)+(f().badge2?1:0)+(f().badge3?1:0)+(f().badge4?1:0)+(f().balance?1:0),pk=a=>a[Math.floor(Math.random()*a.length)],zone=k=>MAPS[k].name.split(' · ')[0];
  const E=Object.keys(MAPS).filter(k=>G.seen?.[k]&&MAPS[k].enc).flatMap(k=>MAPS[k].enc.map(e=>({m:k,sp:e[0],tm:e[4]})));
  const kinds=['cap','cap','ko','ko',...(G.keys.rod?['fish']:[]),...(G.keys.bracelet?['ev']:[])];let q=null;
  for(let n=0;n<24&&!q;n++){const k=pk(kinds);
@@ -1524,9 +1735,9 @@ async function guide(){let pg=0;const TT=Object.keys(TY),AB={NOR:'NOR',FEU:'FEU'
 const fmtT=ms=>{const m=Math.floor(ms/60000);return`${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}`};
 function goal(){const g=f();return!g.starter?'Va voir le Prof. Saule dans son labo (toit vert).':!g.badge?'Rejoins Cendreville au nord et bats Brasia, la championne d\'arène.':!g.mine&&!g.rival2?'Sauve Tito, l\'apprenti mineur coincé dans la Mine de Cendreville, au nord de la ville.':!g.rival2?'Traverse la Forêt Murmure, à l\'est de Cendreville.':!g.boss?'Gravis le Mont Braise et arrête Vex, le chef de la Team Éclipse.':
  !g.r2?'Retourne à Cendreville : Brasia peut dégager la route de l\'ouest.':!g.portScene?'Suis la Route 2 vers l\'ouest jusqu\'à Port-Miroir.':!g.badge2?'Bats Maëlle, la championne de Port-Miroir, pour accéder à la Grotte Écho.':!g.kael3?'Rejoins la sortie nord de Port-Miroir.':
- !g.obsScene?'Traverse la Grotte Écho jusqu\'à l\'Observatoire.':!g.bar?'Désactive la barrière : trouve l\'ordre des consoles.':!g.selene2done?'Affronte Sélène devant le dôme.':!g.vex2?'Arrête Vex sous le dôme de l\'Observatoire.':
+ !g.obsScene&&!g.volArr?'Traverse la Grotte Écho jusqu\'au plateau de Volterre.':!g.obsScene&&!g.baseDone?'Libère la Centrale de Volterre (au sud-est de la ville), occupée par la Team Éclipse.':!g.obsScene&&!g.badge4?'Bats Ambroise, le Champion de l\'Arène Volt de Volterre.':!g.obsScene?'Prends le téléphérique au nord de Volterre jusqu\'à l\'Observatoire.':!g.bar?'Désactive la barrière : trouve l\'ordre des consoles.':!g.selene2done?'Affronte Sélène devant le dôme.':!g.vex2?'Arrête Vex sous le dôme de l\'Observatoire.':
  postGoal(g)}
-function postGoal(g){const L=[[!g.legS||!g.legN,'Défie Solarion (Mont Braise, le jour) et Nocturion (Observatoire, la nuit).'],[!g.failleDone,'Sélène t\'attend sur les Coteaux d\'Aurore : Caïus creuse la Faille sous le Sanctuaire.'],[!g.badge3,'Bats Orane, la Championne de Lunévie. Son arène n\'ouvre que la nuit.'],[!g.tourWins,'Remporte le Tournoi du Cycle de Brasia, à Cendreville.'],[!g.legC,'Monte au Sanctuaire du Cycle, en haut des Coteaux d\'Aurore, avec Solarion et Nocturion.'],[g.legC&&(!g.legH||!g.legL),'Les jumeaux Héliote et Séléniote veillent sur le Sanctuaire, l\'un le jour, l\'autre la nuit.'],[!g.tower7,'Relève le Défi du Crépuscule d\'Orane, à Lunévie : sept victoires d\'affilée.'],[caught()<DEX.length,'Complète le Pixédex. Les nuits d\'étoiles filantes cachent des créatures rares.']].find(x=>x[0]);
+function postGoal(g){const L=[[!g.legS||!g.legN,'Défie Solarion (Mont Braise, le jour) et Nocturion (Observatoire, la nuit).'],[!g.failleDone,'Sélène t\'attend sur les Coteaux d\'Aurore : Caïus creuse la Faille sous le Sanctuaire.'],[!g.badge3,'Bats Orane, la Championne de Lunévie. Son arène n\'ouvre que la nuit.'],[!g.tourWins,'Remporte le Tournoi du Cycle de Brasia, à Cendreville.'],[!g.legC,'Monte au Sanctuaire du Cycle, en haut des Coteaux d\'Aurore, avec Solarion et Nocturion.'],[g.legC&&(!g.legH||!g.legL),'Les jumeaux Héliote et Séléniote veillent sur le Sanctuaire, l\'un le jour, l\'autre la nuit.'],[ELIASOK()&&!g.eliasWin,g.eliasQ?'Papa t\'attend sous le dôme de l\'Observatoire, la nuit.':'Rentre voir Papa à Bourg-Lueur : il a quelque chose à te demander.'],[!g.tower7,'Relève le Défi du Crépuscule d\'Orane, à Lunévie : sept victoires d\'affilée.'],[caught()<60,'Complète le Pixédex (60 espèces), un dernier défi t\'attendra.'],[caught()<DEX.length,'Complète le Pixédex. Les nuits d\'étoiles filantes cachent des créatures rares.']].find(x=>x[0]);
  return L?L[1]:'Tu as tout accompli. Aurélys te doit son Cycle… Défends ton titre au Tournoi et bats ton record au Défi du Crépuscule !'}
 
 // =====================================================================
@@ -1577,13 +1788,25 @@ function rarity(k){if(['solarion','nocturion','crepuscel'].includes(k))return'L�
 function activ(k){const o={heliote:'Diurne',solarion:'Diurne',seleniote:'Nocturne',nocturion:'Nocturne',presagelle:'Nocturne',crepuscel:'Crépuscule'}[k];if(o)return o;const s=new Set();for(const M of Object.values(MAPS))for(const e of M.enc||[])if(e[0]===k)s.add(e[4]||'t');return s.has('t')||s.has('j')&&s.has('n')?'Jour et nuit':s.has('n')?'Nocturne':s.has('j')?'Diurne':s.has('e')?'Pendant l\'éclipse':s.has('r')?'Par temps de pluie':Object.values(MAPS).some(M=>[...(M.fish||[]),...(M.fish2||[])].some(e=>e[0]===k))?'Aquatique':'Inconnue'}
 function habitat(sp){const out=[];for(const M of Object.values(MAPS)){const T=[...(M.enc||[]).filter(e=>e[0]===sp).map(e=>({n:'nuit',j:'jour',r:'pluie',e:'éclipse'})[e[4]]||'tout'),...(M.fish||[]).filter(e=>e[0]===sp).map(()=>'pêche'),...(M.fish2||[]).filter(e=>e[0]===sp).map(e=>e[4]==='s'?'Super Canne, nuits d\'étoiles filantes':'Super Canne')];if(!T.length)continue;const u=[...new Set(T)];out.push(M.name.split(' · ')[0]+(u.length===1&&u[0]!=='tout'?` (${u[0]})`:''))}
  return out.join(', ')||{solarion:'Mont Braise, au sommet. Le jour seulement.',nocturion:'Observatoire, sous le dôme. La nuit seulement.',crepuscel:'Sanctuaire du Cycle, quand le jour et la nuit marchent à tes côtés.',presagelle:'Une clairière secrète, par les nuits claires… dit la légende.',heliote:'Sanctuaire du Cycle, au grand jour, une fois Crépuscel apaisé.',seleniote:'Sanctuaire du Cycle, la nuit, une fois Crépuscel apaisé.',fossilame:'Un fossile, ranimé par un scientifique.'}[sp]||(SP[sp].base!==sp?'Évolution de '+SP[SP[sp].base].name+'.':'')||'Introuvable à l\'état sauvage.'}
-async function dexMenu(){const seen=k=>G.dex[k]>0,got=k=>G.dex[k]===2;
- await choose(DEX.map(k=>k),{x:W-218,y:8,w:210,vis:10,rh:26,title:`Pixédex ${caught()}/${DEX.length}`,ib:[8,8,252,304],
+async function dexMenu(){const seen=k=>G.dex[k]>0,got=k=>G.dex[k]===2;let last=0;tip('dexd','Pixédex : A ouvre la fiche détaillée d\'une créature déjà vue. GAUCHE / DROITE font défiler la liste plus vite.');
+ for(;;){const s=await choose(DEX.map(k=>k),{i:last,jump:10,x:W-218,y:8,w:210,vis:10,rh:26,title:`Pixédex ${caught()}/${DEX.length}`,ib:[8,8,252,304],
   draw:(i,x,y,sel,pr)=>{const k=DEX[i],c=pr?'#ffffff':seen(k)?C.ink:C.mute;txt(String(i+1).padStart(2,'0'),x,y+19,c,{mini:1,sh:0});txt(seen(k)?SP[k].name:'?????',x+18,y+19,c,{sh:pr?0:undefined});if(got(k))X.drawImage(ICO.capsule,x+146,y+5,14,14)},
   infoDraw:(i,x,y,w)=>{const k=DEX[i],sp=SP[k];rr(x+12,y+12,w-24,116,4,'#efe6d2');pell(X,x+w/2,y+116,42,6,'#d8cbb0');if(seen(k))X.drawImage(got(k)?monSpr(k,0,128):silh(monSpr(k,0,128),'#8a80a6'),x+w/2-64,y+4-(now()/400|0)%2*2,128,128);else txt('?',x+w/2,y+96,C.mute,{s:5,al:'c',sh:0});
    txt(seen(k)?sp.name:'?????',x+16,y+152);if(seen(k))chip(sp.t,x+w-16-tw(TY[sp.t][0],2,1)-12,y+138);
    if(got(k)){wrap(sp.desc,w-32,1).slice(0,4).forEach((l,j)=>txt(l,x+16,y+170+j*11,C.ink,{s:1,sh:0}));txt(dims(k)+' · '+activ(k),x+16,y+222,C.ink2,{s:1,sh:0});wrap('Évol. : '+evoInfo(k),w-32,1).slice(0,2).forEach((l,j)=>txt(l,x+16,y+234+j*10,'#6a4a8a',{s:1,sh:0}))}else txt(seen(k)?'Capture-le pour en savoir plus.':'Aucune donnée.',x+16,y+176,C.mute,{s:1,sh:0});
-   R(X,C.paper2,x+14,y+252,w-28,2);txt('HABITAT',x+16,y+264,C.mute,{mini:1});if(seen(k))txt(rarity(k),x+w-16,y+264,{COMMUNE:C.mute,RARE:'#c06a2a',LÉGENDAIRE:'#c8902a',MYTHIQUE:'#8a5ad0'}[rarity(k)]||C.ink2,{mini:1,al:'r'});wrap(seen(k)?habitat(k):'Inconnu',w-32,1).slice(0,3).forEach((l,j)=>txt(l,x+16,y+276+j*10,C.ink2,{s:1,sh:0}))}})}
+   R(X,C.paper2,x+14,y+252,w-28,2);txt('HABITAT',x+16,y+264,C.mute,{mini:1});if(seen(k))txt(rarity(k),x+w-16,y+264,{COMMUNE:C.mute,RARE:'#c06a2a',LÉGENDAIRE:'#c8902a',MYTHIQUE:'#8a5ad0'}[rarity(k)]||C.ink2,{mini:1,al:'r'});wrap(seen(k)?habitat(k):'Inconnu',w-32,1).slice(0,3).forEach((l,j)=>txt(l,x+16,y+276+j*10,C.ink2,{s:1,sh:0}))}});
+  if(s<0)return;last=s;if(!seen(DEX[s])){sfx('bump');continue}last=await dexDetail(s)}}
+// Fiche détaillée : statistiques, talent, chaîne d'évolution, attaques apprises, statut de capture
+function evoChain(k){const b=SP[k].base,out=[[b,null]];const walk=s=>{const e=SP[s].evo;if(!e)return;for(const[lv,to,c]of Array.isArray(e[0])?e:[e]){out.push([to,c?.item?IT[c.item][0]:c?.bond?'lien '+c.bond:'niv. '+lv+(c?.time==='j'?' jour':c?.time==='n'?' nuit':'')+(c?.eclipse?' éclipse':''),s]);walk(to)}};walk(b);return out}
+async function dexDetail(i){const seenK=k=>G.dex[k]>0;for(;;){const k=DEX[i],sp=SP[k],got=G.dex[k]===2,ch=evoChain(k);
+ ui.panel=()=>{panel(8,8,464,304);txt(`N. ${String(i+1).padStart(2,'0')}`,24,32,C.mute,{mini:1});txt(sp.name,24,50);chip(sp.t,30+tw(sp.name,2,0)+10,37);txt(got?'CAPTURÉ':'VU',456,32,got?C.green:C.mute,{mini:1,al:'r'});txt(rarity(k),456,48,C.ink2,{mini:1,al:'r'});
+  rr(20,60,112,104,4,'#efe6d2');X.drawImage(got?monSpr(k,0,96):silh(monSpr(k,0,96),'#8a80a6'),28,64,96,96);
+  ['PV','ATTAQUE','DÉFENSE','VITESSE'].forEach((l,j)=>{const v=sp.bs[j],y=72+j*20;txt(l,146,y+8,C.ink2,{mini:1});R(X,C.ink,212,y,122,8);R(X,'#3a3456',213,y+1,120,6);R(X,v>=100?'#4cc46a':v>=70?'#f6c445':'#e8702e',213,y+1,Math.min(120,v*120/150|0),6);txt(got?v:'?',346,y+8,C.ink,{mini:1})});
+  const ta=TAL[sp.tal];txt('TALENT',146,166,C.mute,{mini:1});txt(got&&ta?ta[0]:'?',214,166,C.ink,{mini:1});if(got&&ta)wrap(ta[1],300,1).slice(0,1).forEach(l=>txt(l,146,178,C.ink2,{s:1,sh:0}));
+  R(X,C.paper2,20,188,440,2);txt('ÉVOLUTION',24,202,C.mute,{mini:1});ch.slice(0,4).forEach(([s,c,pa],j)=>{const x=30+j*108,sn=seenK(s);if(j){const pa=ch[j][2],lb=(pa!==ch[j-1][0]?'de '+SP[pa].name+' ':'')+(c||'');wrap(lb,58,1).slice(0,3).forEach((l,q)=>txt(l,x-22,218+q*10,C.ink2,{s:1,sh:0,al:'c'}))}rr(x+10,206,44,40,3,s===k?'#f6e2a8':'#efe6d2');X.drawImage(G.dex[s]===2?monSpr(s,0,48):silh(monSpr(s,0,48),'#8a80a6'),x+12,204,40,40);txt(sn?SP[s].name:'?????',x+32,258,C.ink,{s:1,sh:0,al:'c'})});
+  if(ch.length>4)txt('+'+(ch.length-4),452,232,C.mute,{mini:1,al:'r'});
+  R(X,C.paper2,20,264,440,2);txt('ATTAQUES',24,278,C.mute,{mini:1});sp.learn.slice(-6).forEach(([l,mv],j)=>{const x=24+(j%3)*148,y=292+(j/3|0)*11;txt(got?`Nv ${l} · ${MV[mv].n}`:'?',x,y,got?C.ink:C.mute,{s:1,sh:0})})};
+ const kk=await key();if(kk==='left'||kk==='right'){let j=i;do j=(j+(kk==='left'?-1:1)+DEX.length)%DEX.length;while(!seenK(DEX[j]));i=j;sfx('sel');continue}if(kk==='a'||kk==='b'){ui.panel=null;sfx('back');return i}}}
 function quests(){const g=f(),n=G.keys.shards||0,nx=DXR.find(r=>caught()<r[0]);return[
  ['Objectif',goal().startsWith('Tu as tout')?2:1,goal()],
  g.starter&&['La vieille canne',G.keys.rod?2:1,G.keys.rod?'Gus t\'a confié sa canne. Face à l\'eau : A, puis A quand ça mord.':'Le Vieux Gus, près de la mare de Bourg-Lueur, veut te parler.'],
@@ -1603,6 +1826,9 @@ function quests(){const g=f(),n=G.keys.shards||0,nx=DXR.find(r=>caught()<r[0]);r
  (G.bag.fossile||ownSp('fossilame'))&&['Le Fossile Ancien',ownSp('fossilame')?2:1,ownSp('fossilame')?'Le Prof. Saule a ranimé Fossilame.':'Montre le Fossile Ancien au Prof. Saule, à Bourg-Lueur.'],
  g.lysQ&&['Un morceau de ciel',g.lysQ===2?2:1,g.lysQ===2?'L\'Astronome Lys a vu un Météosaur. Elle t\'a offert deux pierres tombées du ciel.':'Montre un Météosaur à l\'Astronome Lys, à Lunévie, la nuit. On en trouve sur les Coteaux d\'Aurore.'],
  stars()&&['Nuit d\'étoiles filantes',1,'Ce soir, le ciel pleut de la lumière : Météosaur plus nombreux sur les Coteaux, Nébulin au bout de la Super Canne à Lunévie, poussières d\'étoile à ramasser sur les Coteaux.'],
+ (G.keys.larmes||G.keys.larmeS||G.keys.larmesDone)&&['Les larmes du Cycle',g.amuC?2:1,g.amuC?'L\'autel du Sanctuaire a uni les larmes : tu portes l\'Amulette du Cycle.':`Larme de Solarion : ${G.keys.larmeS?'trouvée':'?'} · Larmes de Nocturion : ${G.keys.larmes||0}/6. Elles ne brillent que pendant une éclipse.${g.legC?' Le Sablier peut la rappeler.':''}`],
+ g.eliasQ&&['Le défi d\'Elias',g.eliasWin?2:1,g.eliasWin?'Tu as battu ton père sous le dôme. Tu portes l\'Étoile d\'Elias.':'Papa t\'attend sous le dôme de l\'Observatoire, la nuit, pour un dernier combat.'],
+ G.photos&&['Photos de lien',G.keys.coeur?2:1,`${Object.values(G.photos).filter(v=>v>=5).length}/6 portraits d'inséparables chez la Photographe Lise (Port-Miroir).`],
  g.balance&&['La Faille',g.failleDone?2:1,g.failleDone?'Caïus a renoncé. Il a accepté une soupe chez Ysolde. Sélène t\'a confié la Capsule Cycle.':g.failleQ?'Caïus creuse sous le Sanctuaire. Baisse les deux leviers de la Faille pour couper la barrière, puis va le trouver au fond.':'Sélène t\'attend sur les Coteaux d\'Aurore, près d\'une galerie fraîchement creusée.'],
  g.legC&&['Les jumeaux du Sanctuaire',g.legH&&g.legL?2:1,`Héliote ${g.legH?'capturé':'(le jour)'} · Séléniote ${g.legL?'capturée':'(la nuit)'}. Ils veillent sur l'autel du Sanctuaire.`],
  g.balance&&['Le Sanctuaire du Cycle',g.legC?2:1,g.legC?'Crépuscel, gardien du Cycle, a rejoint ton équipe.':g.sanct?'Le sanctuaire attend que Solarion et Nocturion soient à tes côtés.':'Une porte de pierre, en haut des Coteaux d\'Aurore, s\'est ouverte avec le retour du Cycle.'],
@@ -1610,7 +1836,7 @@ function quests(){const g=f(),n=G.keys.shards||0,nx=DXR.find(r=>caught()<r[0]);r
  g.balance&&['Les gardiens',g.legS&&g.legN?2:1,`Solarion ${g.legS?'capturé':'au Mont Braise (jour)'} · Nocturion ${g.legN?'capturé':'à l\'Observatoire (nuit)'}`],
  g.balance&&['Le Tournoi du Cycle',g.tourWins?2:1,g.tourWins?`Remporté ${g.tourWins} fois. Brasia te réinvite chaque jour à Cendreville pour défendre ton titre.`:'Brasia organise un tournoi dans l\'Arène de Cendreville : quatre combats d\'affilée contre les meilleurs dresseurs d\'Aurélys.'],
  G.ms&&['Tableau des Missions',1,`${G.ms.L.filter(q=>q.done).length} récompense(s) à toucher · ${G.ms.done||0} mission(s) réussie(s). Les Centres de Soins affichent les missions.`]].filter(Boolean)}
-const RMAP={bourg:[300,262,'BOURG-LUEUR',12,3],route1:[300,214,'ROUTE 1',12,3],ville:[300,166,'CENDREVILLE',0,-12],foret:[384,166,'FORÊT MURMURE',0,20],mont:[384,82,'MONT BRAISE',0,20],route2:[216,166,'RIVE BRUMEUSE',0,-12],port:[132,190,'PORT-MIROIR',0,20],grotte:[132,122,'GROTTE ÉCHO',12,3],obs:[132,58,'OBSERVATOIRE',12,3],coteaux:[300,118,'COTEAUX D\'AURORE',12,3],lunevie:[300,70,'LUNÉVIE',12,3],sanctuaire:[370,40,'SANCTUAIRE',12,3]},RPAR={lab:'bourg',gym:'ville',gym2:'port',dome:'obs',ruines:'mont',mine:'ville',maisonY:'lunevie',maisonP:'lunevie',gym3:'lunevie',chambre:'bourg',salon:'bourg',clairiere:'foret',faille:'coteaux'},RLINK=[['bourg','route1'],['route1','ville'],['ville','foret'],['foret','mont'],['ville','route2'],['route2','port'],['port','grotte'],['grotte','obs'],['ville','coteaux'],['coteaux','lunevie'],['coteaux','sanctuaire']];
+const RMAP={bourg:[300,262,'BOURG-LUEUR',12,3],route1:[300,214,'ROUTE 1',12,3],ville:[300,166,'CENDREVILLE',0,-12],foret:[384,166,'FORÊT MURMURE',0,20],mont:[384,82,'MONT BRAISE',0,20],route2:[216,166,'RIVE BRUMEUSE',0,-12],port:[132,190,'PORT-MIROIR',0,20],grotte:[132,122,'GROTTE ÉCHO',12,3],obs:[132,26,'OBSERVATOIRE',12,3],volterre:[132,74,'VOLTERRE',12,3],coteaux:[300,118,'COTEAUX D\'AURORE',12,3],lunevie:[300,70,'LUNÉVIE',12,3],sanctuaire:[370,40,'SANCTUAIRE',12,3]},RPAR={centrale:'volterre',centrale2:'volterre',gym4:'volterre',maisonA:'volterre',lab:'bourg',gym:'ville',gym2:'port',dome:'obs',ruines:'mont',mine:'ville',maisonY:'lunevie',maisonP:'lunevie',gym3:'lunevie',chambre:'bourg',salon:'bourg',clairiere:'foret',faille:'coteaux'},RLINK=[['bourg','route1'],['route1','ville'],['ville','foret'],['foret','mont'],['ville','route2'],['route2','port'],['port','grotte'],['grotte','volterre'],['volterre','obs'],['ville','coteaux'],['coteaux','lunevie'],['coteaux','sanctuaire']];
 async function regionMap(){const cur=RPAR[G.map]||G.map,seen=k=>G.seen?.[k]||Object.entries(RPAR).some(([a,b])=>b===k&&G.seen?.[a]);
  ui.panel=()=>{panel(8,8,464,304,{fill:'#efe2bf'});const t=now(),p=(c,x,y,w,h)=>R(X,c,x,y,w,h);
   pell(X,150,214,92,46,'#7ab0c8');pell(X,150,212,86,42,'#8ac8e0');for(let i=0;i<9;i++)p('#b8e4f0',100+(i*23)%100,196+(i*7)%30,8,2);
@@ -1636,7 +1862,7 @@ async function journal(){const Q0=quests(),Q=[Q0[0],...Q0.slice(1).sort((a,b)=>(
 function drawCard(){panel(8,8,302,214);X.drawImage(ICO.flag,24,24,16,16);txt('OBJECTIF',46,38,C.acc,{sh:0});wrap(goal(),270).slice(0,3).forEach((l,i)=>txt(l,24,66+i*24));
  R(X,C.paper2,20,128,278,2);X.drawImage(ICO.pin,24,138,16,16);txt(MAPS[G.map].name.split(' · ')[0],46,152);const ph=phase(),pi=ph===4?ICO.ecl:ph===3?ICO.moon:ICO.sun;X.drawImage(pi,284,138,16,16);txt(PHN[ph].toUpperCase(),278,150,C.ink2,{mini:1,al:'r'});
  G.party.forEach((m,i)=>{const x=22+i*48;rr(x,160,46,46,2,'#efe6d2');X.drawImage(m.hp>0?monSpr(m.sp,0,48,m.sh):silh(monSpr(m.sp,0,48),'#9a92aa'),x-1,159,48,48)});
- rr(8,226,302,34,4,C.ink);rr(10,228,298,30,2,C.frameD);[['badge',ICO.bRoc],['badge2',ICO.bMir]].forEach(([k,ic],i)=>X.drawImage(f()[k]?ic:silh(ic,'#6a5f8f'),20+i*20,234,16,16));
+ rr(8,226,302,34,4,C.ink);rr(10,228,298,30,2,C.frameD);[['badge',ICO.bRoc],['badge2',ICO.bMir],['badge3',ICO.bCre],['badge4',ICO.bVol]].forEach(([k,ic],i)=>X.drawImage(f()[k]?ic:silh(ic,'#6a5f8f'),20+i*20,234,16,16));if(G.keys.etoile)X.drawImage(ICO.star,104,234,16,16);
  X.drawImage(ICO.shard,72,234,16,16);txt(G.keys.shards||0,92,248,'#ffffff',{sh:C.ink});if(G.keys.bracelet)X.drawImage(ICO.bracelet,132,234,16,16);if(G.keys.trophy)X.drawImage(ICO.trophy,154,234,16,16);X.drawImage(ICO.coin,186,234,16,16);txt(G.money,208,248,'#ffffff',{sh:C.ink})}
 async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),['JOURNAL',ICO.book],['GUIDE',ICO.guide],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
  const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:O.length>9?24:26,vis:10,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
@@ -1650,11 +1876,11 @@ async function pauseMenu(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.tea
 const FOE=[360,70],ME=[120,168];
 const sm=v=>v>=0?(2+v)/2:2/(2-v),who=s=>s?nm(B.foe)+(B.tr?' ennemi':' sauvage'):nm(B.me);
 const tal=m=>SP[m.sp].tal,isN=()=>night()||B?.sky?.k==='eclipse',side=s=>s?B.foe:B.me;
-const immune=(m,k)=>k==='brn'&&SP[m.sp].t==='FEU'||k==='par'&&SP[m.sp].t==='ELE'||k==='psn'&&SP[m.sp].t==='ROC'||k==='slp'&&tal(m)==='vigilant';
+const immune=(m,k)=>k==='brn'&&SP[m.sp].t==='FEU'||k==='par'&&SP[m.sp].t==='ELE'||k==='psn'&&SP[m.sp].t==='ROC'||k==='slp'&&(tal(m)==='vigilant'||m.item==='amucycle');
 function spdOf(m,s){let v=st(m).spd*sm(B.stg[s].spd);if(m.st==='par')v*=.5;if(tal(m)==='glissade'&&B.sky?.k==='rain')v*=2;return v}
 function power(a,v){let k=1;const t=v.t,sk=B.sky?.k;if(a.hp<=st(a).hp/3&&{brasier:'FEU',torrent:'EAU',engrais:'PLA'}[tal(a)]===t)k*=1.5;
  if(isN()&&(tal(a)==='noctambule'&&t==='OMB'||tal(a)==='lueur'&&t==='LUM'))k*=1.2;
- if(sk==='rain'){if(t==='EAU')k*=1.5;if(t==='FEU')k*=.5}if(sk==='sun'){if(t==='FEU'||t==='LUM')k*=1.5;if(t==='EAU')k*=.5}if(sk==='eclipse'&&t==='OMB')k*=1.5;const it=a.item&&IT[a.item];if(it&&it[4]==='held'&&it[3]===t)k*=1.2;if(a.item==='orbe')k*=1.3;return k}
+ if(sk==='rain'){if(t==='EAU')k*=1.5;if(t==='FEU')k*=.5}if(sk==='sun'){if(t==='FEU'||t==='LUM')k*=1.5;if(t==='EAU')k*=.5}if(sk==='eclipse'&&t==='OMB')k*=1.5;const it=a.item&&IT[a.item];if(it&&it[4]==='held'&&it[3]===t)k*=1.2;if(a.item==='orbe')k*=1.3;if(a.item==='amucycle')k*=1.15;return k}
 function dmg(a,d,v,sa,sd,avg){const A=st(a).atk*sm(sa.atk)*(a.st==='brn'?.75:1),D=st(d).def*sm(sd.def),ef=eff(v.t,SP[d.sp].t),cr=!avg&&Math.random()<.0625*(mine(a)&&bondLv(a)>=5?2:1);
  return{ef,cr,n:Math.max(1,Math.floor(((2*a.lv/5+2)*bp(a,v)*A/D/50+2)*(v.t===SP[a.sp].t?1.5:1)*ef*power(a,v)*(cr?1.5:1)*(avg?.92:.85+Math.random()*.15)))}}
 // IA : 0 sauvage (instinct), 1 dresseur (vise juste), 2 boss (planifie : statuts, ciel, soins, objets)
@@ -1704,7 +1930,7 @@ async function setSky(k,s){if(B.sky?.k===k){B.sky.n=5;return say('Le ciel est d�
 // Éveil du Cycle : la jauge se remplit en frappant et en encaissant ; une fois par combat, la créature s'éveille (Solaire le jour, Lunaire la nuit)
 const lunar=()=>B.sky?.k==='sun'?false:isN()||phase()===2;
 const canEv=s=>!!B.evOn[s]&&B.ev[s]>=100&&!B.evUsed[s]&&side(s).hp>0&&!B.awk.has(side(s));
-function evGain(s,n){if(!B.evOn[s]||B.evUsed[s]||B.ev[s]>=100)return;const b=s?0:bondLv(side(s));B.ev[s]=Math.min(100,B.ev[s]+Math.round(n*(b>=5?1.5:b>=3?1.25:1)));if(B.ev[s]>=100){B.evF[s]=now();sfx('shard')}}
+function evGain(s,n){if(!B.evOn[s]||B.evUsed[s]||B.ev[s]>=100)return;const b=s?0:bondLv(side(s));B.ev[s]=Math.min(100,B.ev[s]+Math.round(n*(b>=5?1.5:b>=3?1.25:1)*(!s&&G.keys.brv2?1.25:1)));if(B.ev[s]>=100){B.evF[s]=now();sfx('shard')}}
 async function awaken(s){const m=side(s),T=s?FOE:ME,lu=lunar(),col=lu?'#b89aff':C.goldL,S=st(m);B.evUsed[s]=1;B.ev[s]=0;
  await say(s?(B.tr?B.tr.name+' active son bracelet ! '+nm(m)+' s\'éveille !':nm(m)+' libère la puissance du Cycle !'):'Le Bracelet du Cycle s\'illumine ! '+nm(m)+' s\'éveille !',0,1);
  sfx('roar');B.awk.add(m);B.awkC.set(m,lu?'#b89aff':'#ffd23a');B.zoom=1.1;ui.flash=.8;ui.flashC=col;B.evB={k:lu,t0:now()};
@@ -1720,7 +1946,7 @@ async function pickMove(){const ms=B.me.moves;for(;;){const L=canEv(0)&&!B.arm?[
  const i=await choose(L.map(j=>j==='ev'?'ÉVEIL':MV[ms[j]].n),{x:4,y,w:296,rh:21,ib:[302,y,174,hh],title:B.arm?'Éveil prêt : attaque !':undefined,dis:i=>L[i]!=='ev'&&B.me.pp[L[i]]<=0,
   infoDraw:(i,x,yy,w)=>L[i]==='ev'?evInfo(x,yy,w):moveInfo(L[i],x,yy,w),
   draw:(i,x,yy,sel,pr)=>{const j=L[i];if(j==='ev'){X.drawImage(ICO.star,x,yy+3,14,14);txt('ÉVEIL DU CYCLE',x+18,yy+17,pr?'#ffffff':'#c8902a',{sh:pr?0:C.goldL});return}
-   const no=B.me.pp[j]<=0,col=pr?'#ffffff':no?C.mute:C.ink;txt(MV[ms[j]].n,x,yy+17,col,{sh:pr||no?0:undefined});txt(`${B.me.pp[j]}/${MV[ms[j]].pp}`,x+250,yy+15,pr?'#ffffff':no?C.red:C.ink2,{mini:1,al:'r'})}});
+   const no=B.me.pp[j]<=0,col=pr?'#ffffff':no?C.mute:C.ink;txt(MV[ms[j]].n,x,yy+17,col,{sh:pr||no?0:undefined});{const v=MV[ms[j]],e=v.p&&G.dex[B.foe.sp]?eff(v.t,SP[B.foe.sp].t):1;if(e!==1){R(X,C.ink,x+197,yy+6,8,8);R(X,e>1?'#f6c445':'#8a8498',x+198,yy+7,6,6);if(e>1)R(X,'#ffffff',x+198,yy+7,2,2)}}txt(`${B.me.pp[j]}/${MV[ms[j]].pp}`,x+250,yy+15,pr?'#ffffff':no?C.red:C.ink2,{mini:1,al:'r'})}});
  if(i<0){if(B.arm){B.arm=0;continue}return -1}if(L[i]==='ev'){B.arm=1;sfx('shard');continue}if(B.me.pp[L[i]]<=0){await say('Plus de PP pour cette capacité !',0,1);continue}return L[i]}}
 async function berry(s){const m=side(s),S=st(m);if(hold(m,'baiesoin')&&m.hp>0&&m.hp<=S.hp/2){m.item=null;m.hp=Math.min(S.hp,m.hp+Math.max(1,S.hp>>2));healFx(s);sfx('lv');await tween(B.dh,s,m.hp,350);await say(`${who(s)} mange sa Baie Sève et récupère des PV !`,0,1)}}
 // IA : créature suivante choisie selon le duel de types (l'atout d'un boss passe en dernier) ; un boss en mauvaise posture peut rappeler sa créature
@@ -1747,7 +1973,7 @@ async function entryTal(s){const m=side(s),t=tal(m);if(t==='levejour'||t==='ecli
 async function throwArc(b,x0,y0,x1,y1,ms,hgt){const t0=now();for(;;){const t=Math.min(1,(now()-t0)/ms);b.x=x0+(x1-x0)*t;b.y=y0+(y1-y0)*t-hgt*Math.sin(Math.PI*t);b.r=t*14;if(Math.random()<.6)spawn({x:b.x,y:b.y,l:10,c:'#ffffff',s:2});if(t>=1)return;await frame()}}
 async function popOut(o,T,m){sfx('ball');spawn({k:'ring',x:T[0],y:T[1]+10,r0:4,r1:44,l:16,c:'#ffffff'});burstAt(T,14,['#ffffff',TY[SP[m.sp].t][1]],3.5,{k:'star'});o.v=1;o.b=1;o.s=0;await tween(o,'s',1,240,1);o.b=0;sfx('cry')}
 async function sendFoe(){B.showFoe=1;B.fo={x:0,y:0,v:0,s:0,b:0};B.dh[1]=B.foe.hp;B.part=new Set(B.me&&B.me.hp>0?[B.me]:[]);dex(B.foe.sp,1);await say(`${B.tr.name} envoie ${nm(B.foe)} !`,0,1);const b=B.ball={x:W+20,y:40,r:0};await throwArc(b,W+20,40,FOE[0],FOE[1]+10,320,30);B.ball=null;await popOut(B.fo,FOE,B.foe);tween(B,'hf',1,300,1);await entryTal(1)}
-async function sendOut(){B.hm=0;B.mo={x:0,y:0,v:0,s:0,b:0};B.dh[0]=B.me.hp;B.part.add(B.me);show(`En avant, ${nm(B.me)} !`);const b=B.ball={x:-20,y:260,r:0};await throwArc(b,-20,260,ME[0],ME[1]+30,340,90);B.ball=null;await popOut(B.mo,ME,B.me);tween(B,'hm',1,300,1);await wait(350);ui.text=null;await entryTal(0)}
+async function sendOut(){B.hm=0;B.mo={x:0,y:0,v:0,s:0,b:0};B.dh[0]=B.me.hp;B.part.add(B.me);show(`En avant, ${nm(B.me)} !`);const b=B.ball={x:-20,y:260,r:0};await throwArc(b,-20,260,ME[0],ME[1]+30,340,90);B.ball=null;await popOut(B.mo,ME,B.me);tween(B,'hm',1,300,1);await wait(350);ui.text=null;if(B.tr?.vs&&bondLv(B.me)>=4&&!B.bondMsg?.has(B.me)){(B.bondMsg||=new Set()).add(B.me);burstAt(ME,10,['#ff7aa8','#ffffff'],2,{k:'star',g:-.05});await say(bondLv(B.me)>=5?`${nm(B.me)} te lance un regard plein de confiance. Vous êtes inséparables.`:`${nm(B.me)} se retourne vers toi, prêt à tout donner.`,0,1)}await entryTal(0)}
 async function battleLoop(){for(;;){if(canEv(0)&&!f().tip_evr){f().tip_evr=1;await say('Le Bracelet du Cycle brille ! Ta jauge d\'Éveil est pleine : choisis ATTAQUE, puis ÉVEIL DU CYCLE avant ton attaque.')}show(`Que doit faire ${nm(B.me)} ?`,0,262);const c=await choose(['ATTAQUE','SAC','ÉQUIPE','FUITE'],{x:270,y:H-90,w:206,rh:33,cols:2,cancel:false,dis:i=>i===3&&!!B.tr});let act={};
  if(c===0){ui.text=null;const ms=B.me.moves;if(B.me.pp.every(p=>p<=0)){await say(`${nm(B.me)} n'a plus de PP ! Il se débat…`,0,1);act={mv:'lutte'}}
   else{const i=await pickMove();if(i<0)continue;act={mv:ms[i]}}}
@@ -1866,6 +2092,7 @@ function ambient(M,cx,cy){const k=M.amb,cnt={};AMB.forEach(p=>cnt[p.k]=(cnt[p.k]
  if(k==='foret'){if(Math.random()<(nt?.14:.05))add('ff',nt?18:8,{});if(Math.random()<.02)add('leaf',5,{y:cy-8,vx:.3,vy:.5})}
  if(k==='mont'){if(Math.random()<.25)add('em',22,{y:cy+H+4,vy:-.6-Math.random()*.8,vx:(Math.random()-.5)*.4,l:260});if(Math.random()<.05)add('ash',10,{y:cy-4,vy:.35,vx:.2})}
  if(k==='in'&&Math.random()<.05)add('dust',8,{vx:(Math.random()-.5)*.1,vy:-.06});
+ if(ecl()&&!['in','cave','tech'].includes(k)&&Math.random()<.08)add('ecm',14,{y:cy+H+4,vy:-.25-Math.random()*.35,vx:(Math.random()-.5)*.3,l:420});
  if(k==='day'&&!nt&&!cnt.bird&&Math.random()<.0018){const y0=cy+20+Math.random()*H*.5;for(let i=0;i<3+(Math.random()*3|0);i++)AMB.push({k:'bird',x:cx-30-i*14-Math.random()*8,y:y0+(i%2?10:0)+i*4,vx:1.3,vy:.18,l:600,ph:i})}
  if(!nt&&Math.random()<.006&&k!=='in'&&k!=='cave'&&k!=='tech'){const tx=(cx/TS|0)+(Math.random()*W/TS|0),ty=(cy/TS|0)+(Math.random()*H/TS|0);if(M.rows[ty]?.[tx]==='~'&&M.rows[ty-1]?.[tx]==='~')AMB.push({k:'fishj',x:tx*TS+16,y:ty*TS+20,vx:(Math.random()<.5?-1:1)*.5,l:36,ml:36})}
  (M.smk||[]).forEach(([sx,sy])=>{if(Math.random()<.04)AMB.push({k:'smk',x:sx+Math.random()*4-2,y:sy,vx:.15,vy:-.35,l:110,ml:110})});
@@ -1874,7 +2101,7 @@ function ambient(M,cx,cy){const k=M.amb,cnt={};AMB.forEach(p=>cnt[p.k]=(cnt[p.k]
   if(p.k==='fly'){const fl=(p.ph*4|0)%2;R(X,p.c,sx-4,sy-(fl?2:0),4,fl?2:4);R(X,p.c,sx+2,sy-(fl?2:0),4,fl?2:4);R(X,C.ink,sx,sy,2,4)}
   else if(p.k==='ff'){X.globalAlpha=.45+.45*Math.sin(p.ph*2);R(X,'#f6e27a',sx-2,sy-2,6,6);X.globalAlpha=1;R(X,'#fffbd0',sx,sy,2,2)}
   else if(p.k==='leaf')R(X,'#4fae4a',sx,sy,(p.ph*3|0)%2?4:2,(p.ph*3|0)%2?2:4);
-  else if(p.k==='em')R(X,p.l%20<10?'#ffd23a':'#ff7a2a',sx,sy,2,2);else if(p.k==='ash')R(X,'#a8999a',sx,sy,2,2);
+  else if(p.k==='em')R(X,p.l%20<10?'#ffd23a':'#ff7a2a',sx,sy,2,2);else if(p.k==='ash')R(X,'#a8999a',sx,sy,2,2);else if(p.k==='ecm'){X.globalAlpha=Math.min(1,p.l/80)*.7;R(X,p.l%40<20?'#c060ff':'#5a2a8a',ev(sx+Math.sin(p.ph)*3),sy,2,2);X.globalAlpha=1}
   else if(p.k==='dust'){X.globalAlpha=.35;R(X,'#fff5dc',sx,sy,2,2);X.globalAlpha=1}
   else if(p.k==='st'){X.globalAlpha=Math.min(1,p.l/20);R(X,p.c,sx-1,sy-1,4,4);R(X,'#ffffff',sx,sy,2,2);X.globalAlpha=1}
   else if(p.k==='pf'){const k2=1-p.l/p.ml,z=ev(4+k2*14);X.globalAlpha=.75*(1-k2);R(X,p.c,sx-z/2,sy-z/2,z,z);X.globalAlpha=1}
@@ -1918,6 +2145,7 @@ function drawObj(k,sx,sy,t,n){
  if(k==='berry'){X.drawImage(SHD2,sx+4,sy+24,26,8);X.drawImage(T2('bush')||BUSH,sx,sy-2);if(n&&berryRipe(n)){const c=n.bk==='baieprisme'?['#9a7ae8','#6a4ab8']:['#e8484f','#a8303a'];for(const[bx,by]of[[7,8],[18,6],[12,15],[22,14],[16,21]]){R(X,C.ink,sx+bx-1,sy+by-3,5,5);R(X,c[0],sx+bx,sy+by-2,3,3);R(X,c[1],sx+bx+1,sy+by,2,1);R(X,'#ffffff',sx+bx,sy+by-2,1,1)}}return}
  if(k==='boulder'){X.drawImage(SHD2,sx+4,sy+24,26,8);X.drawImage(T2('boulder')||AIMG.rock1,sx,sy);return}
  if(k==='valve')return;
+ if(k==='tear'){const b=Math.sin(t/260+(n?.x||0))*2;glowAt(sx+16,sy+16,22,.3+.12*Math.sin(t/200));R(X,'#3a1a5a',sx+13,sy+10+b,6,9);R(X,'#c060ff',sx+14,sy+11+b,4,7);R(X,'#e8b8ff',sx+14,sy+12+b,2,2);R(X,'#c060ff',sx+15,sy+8+b,2,3);if(((t/150)|0)%9===0)R(X,'#ffffff',sx+20,sy+6,2,2);return}
  if(k==='lever'){const on=n&&f()[n.lv];X.drawImage(SHD2,sx+6,sy+25,20,6);R(X,C.ink,sx+8,sy+18,16,12);R(X,'#5a5a6a',sx+9,sy+19,14,10);R(X,'#8a8a9a',sx+9,sy+19,14,2);R(X,C.ink,on?sx+16:sx+14,on?sy+14:sy+4,3,on?6:16);R(X,on?'#4cc46a':'#e8484f',on?sx+19:sx+12,on?sy+20:sy+1,6,5);R(X,C.ink,sx+15,sy+22,3,3);return}
  if(k==='stardust'){const p=(t/140+(n?.x||0))%6|0;glowAt(sx+16,sy+18,20,.35+.15*Math.sin(t/200));R(X,'#fff6c0',sx+15,sy+12,2,10);R(X,'#fff6c0',sx+11,sy+16,10,2);R(X,'#ffffff',sx+15,sy+16,2,2);if(p<3)R(X,'#ffe8a0',sx+8+p*7,sy+8+p*3,2,2);return}
  if(k==='sablier'){glowAt(sx+16,sy+10,40,.35+.15*Math.sin(t/220));X.drawImage(SHD2,sx+6,sy+25,22,7);X.drawImage(AIMG.sablier,sx+4,sy-6+Math.round(Math.sin(t/300)*2));return}
@@ -2092,7 +2320,7 @@ let last=0;function loop(t){const dt=Math.min(50,t-last);last=t;if(ui.text&&ui.t
 // TITRE
 // =====================================================================
 const INTRO=['Bienvenue dans la région d\'Aurélys ! Ici vivent d\'étranges créatures : les Pixémons. Moi, je suis le Prof. Saule.','Aurélys vit au rythme du Cycle. Le jour, Solarion veille sur nous. La nuit, d\'autres créatures s\'éveillent… même si nos nuits sont bien courtes.','Mais une ombre plane : la Team Éclipse rôde, et veut s\'emparer de la lumière de Solarion.','Ton aventure commence aujourd\'hui, à Bourg-Lueur. Viens me voir au labo !'];
-function svInfo(sv,x,y,w){const F=sv.flags,nb=(F.badge?1:0)+(F.badge2?1:0)+(F.badge3?1:0);txt(MAPS[sv.map]?.name.split(' · ')[0]||'',x+16,y+28);txt(fmtT(sv.play||0),x+w-16,y+28,C.ink2,{al:'r'});[ICO.bRoc,ICO.bMir,ICO.bCre].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+34,14,14));X.drawImage(ICO.dex,x+80,y+34,14,14);txt(DEX.filter(k=>sv.dex?.[k]===2).length,x+98,y+46,C.ink,{mini:1});X.drawImage(ICO.shard,x+128,y+34,14,14);txt(sv.keys?.shards||0,x+146,y+46,C.ink,{mini:1});sv.party.slice(0,6).forEach((m,j)=>X.drawImage(monSpr(m.sp,0,48),x+w-140+j*22,y+28,24,24))}
+function svInfo(sv,x,y,w){const F=sv.flags,nb=(F.badge?1:0)+(F.badge2?1:0)+(F.badge4?1:0)+(F.badge3?1:0);txt(MAPS[sv.map]?.name.split(' · ')[0]||'',x+16,y+28);txt(fmtT(sv.play||0),x+w-16,y+28,C.ink2,{al:'r'});[ICO.bRoc,ICO.bMir,ICO.bVol,ICO.bCre].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+34,14,14));X.drawImage(ICO.dex,x+80,y+34,14,14);txt(DEX.filter(k=>sv.dex?.[k]===2).length,x+98,y+46,C.ink,{mini:1});X.drawImage(ICO.shard,x+128,y+34,14,14);txt(sv.keys?.shards||0,x+146,y+46,C.ink,{mini:1});sv.party.slice(0,6).forEach((m,j)=>X.drawImage(monSpr(m.sp,0,48),x+w-140+j*22,y+28,24,24))}
 async function slotPick(title){return choose([1,2,3].map(s=>`PARTIE ${s}${load(s)?'':' · VIDE'}`),{x:W/2-120,y:210,w:240,rh:22,title,ib:[W/2-160,148,320,58],infoShow:()=>true,infoDraw:(i,x,y,w)=>{const sv=load(i+1);if(sv)svInfo(sv,x,y,w);else txt('Emplacement libre',x+w/2,y+36,C.mute,{al:'c'})}})}
 async function titleScreen(){mode='title';B=null;move=null;ui.menus=[];ui.text=null;ui.panel=null;ui.dim=null;G=null;musPlay('title');await fadeTo(0,400);
  for(;;){const sv=load(),any=[1,2,3].some(s=>load(s)),opts=[...(sv?['CONTINUER']:[]),...(any?['CHARGER']:[]),'NOUVELLE PARTIE','NOUVEAUTÉS'],i=await choose(opts,{x:W/2-120,y:300-opts.length*22,w:240,rh:22,cancel:false,ib:[W/2-160,148,320,58],infoShow:i=>opts[i]==='CONTINUER',infoDraw:sv?(i,x,y,w)=>{if(opts[i]==='CONTINUER')svInfo(sv,x,y,w)}:null});
