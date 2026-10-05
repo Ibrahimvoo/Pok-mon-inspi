@@ -40,6 +40,21 @@ dessinée par les contributeurs du projet et publiée sous CC BY-SA 4.0 sauf men
 | Racinou | sprightly | Racinaile | uprout |
 | Hérissou | tumblequill | Armaroc | tumbledillo |
 | Étincelot | joulraton | Lapilune | chibiro |
+| Lueurette | seirein | Flammèche | loliferno |
+| Brumelle | spirain | Tornalis | tornicane |
+| Relicat | memnomnom | Sphinxor | pyraminx |
+| Anubrume | mauai | Peluchon | fuzzlet |
+| Peluchine | fuzzina | Astrafélin | jemuar |
+| Œillombre | uneye | Éclipsœil | lendos |
+| Fossilame | shammer | Lumipêche | fluoresfin |
+| Lanterfin | incandesfin | Abyssombre | lightmare |
+| Météosaur | metesaur | Quetzaroc | qetzlrokilus |
+| Nuageon | bumbulus | Orageon | nimbulex |
+| Crépuscel | yiinaang | Présagelle | mystikapi |
+| Grumeroc | glombroc | Conglolem | conglolem |
+| Nébulin | nebufin | Galaxelle | galasces |
+| Novarium | novaquarius | Héliote | solight |
+| Séléniote | lunight |  |  |
 
 Auteurs connus :
 

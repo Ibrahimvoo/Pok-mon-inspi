@@ -40,6 +40,32 @@ Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits anim�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 8.0 : la Faille et les nuits d'étoiles
+
+- **La Faille** (après l'aventure) :
+  - L'Admin Caïus refuse la paix et creuse sous le Sanctuaire.
+  - Un donjon avec deux leviers à baisser (derrière un rocher fissuré et un brasier), un rocher à pousser dans un trou, et cinq dresseurs de la Team Éclipse aux stratégies différentes (sbire, foreurs, éclaireuse, sbire d'élite).
+  - Boss : Caïus avec 5 créatures équipées d'objets tenus.
+  - Récompense : la Capsule Cycle, une capture garantie.
+- **7 nouveaux Pixémons** (70 au total) :
+  - La lignée stellaire Nébulin → Galaxelle → Novarium.
+  - Grumeroc et Conglolem, propres à la Faille.
+  - Les jumeaux mythiques Héliote (le jour) et Séléniote (la nuit) au Sanctuaire.
+- **Nuits d'étoiles filantes** (une nuit sur trois) :
+  - Étoiles filantes dans le ciel.
+  - Météosaur quatre fois plus fréquents.
+  - Nébulin à pêcher avec la Super Canne.
+  - Poussières d'étoile à ramasser, à échanger chez l'Astronome Lys contre des pierres et des objets rares.
+- **Progression** :
+  - L'objectif du journal guide aussi après la fin de l'histoire, étape par étape.
+  - Revanche quotidienne contre Orane.
+  - Récompenses du Pixédex jusqu'à 60 espèces, et une Capsule Cycle pour le Pixédex complet.
+  - Rareté affichée dans le Pixédex.
+- **Confort** :
+  - 3 emplacements de sauvegarde, chacun avec sa copie de secours.
+  - Volumes séparés pour la musique et les effets.
+  - Correction : la pluie tombe maintenant aussi sur les Coteaux et à Lunévie, ce qui fait apparaître Nuageon.
+
 ## Version 7.0 : le Nord et le Crépuscule
 
 - **Nouvelle région** :

@@ -221,7 +221,8 @@ MONS = [('flamiot', 'pantherafira'), ('brasilion', 'criniotherme'), ('goutelin',
         ('lueurette', 'seirein'), ('flammeche', 'loliferno'), ('brumelle', 'spirain'), ('tornalis', 'tornicane'), ('relicat', 'memnomnom'), ('sphinxor', 'pyraminx'),
         ('anubrume', 'mauai'), ('peluchon', 'fuzzlet'), ('peluchine', 'fuzzina'), ('astrafelin', 'jemuar'), ('oeillombre', 'uneye'), ('eclipsoeil', 'lendos'),
         ('fossilame', 'shammer'), ('lumipeche', 'fluoresfin'), ('lanterfin', 'incandesfin'), ('abyssombre', 'lightmare'), ('meteosaur', 'metesaur'),
-        ('quetzaroc', 'qetzlrokilus'), ('nuageon', 'bumbulus'), ('orageon', 'nimbulex'), ('crepuscel', 'yiinaang'), ('presagelle', 'mystikapi')]
+        ('quetzaroc', 'qetzlrokilus'), ('nuageon', 'bumbulus'), ('orageon', 'nimbulex'), ('crepuscel', 'yiinaang'), ('presagelle', 'mystikapi'),
+        ('grumeroc', 'glombroc'), ('conglolem', 'conglolem'), ('nebulin', 'nebufin'), ('galaxelle', 'galasces'), ('novarium', 'novaquarius'), ('heliote', 'solight'), ('seleniote', 'lunight')]
 def sharp(im):  # alpha binaire : pixel art net
     im = im.copy(); px = im.load()
     for y in range(im.height):
