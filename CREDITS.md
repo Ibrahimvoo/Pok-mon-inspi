@@ -56,6 +56,49 @@ dessinée par les contributeurs du projet et publiée sous CC BY-SA 4.0 sauf men
 | Novarium | novaquarius | Héliote | solight |
 | Séléniote | lunight |  |  |
 
+**Version 10.0** (76 créatures) :
+
+| Pixémon | Sprite Tuxemon | Pixémon | Sprite Tuxemon |
+|---|---|---|---|
+| Tisonnet | agnite | Tisonard | agnidon |
+| Pyronox | agnigon | Pinsoflamme | cardiling |
+| Cardiflamme | cardiwing | Cardinova | cardinale |
+| Axoluce | axolightl | Ampystorme | ampystoma |
+| Dauphinou | dollfin | Aileronde | bigfin |
+| Squalame | sharpfin | Guppyre | gupphish |
+| Gupflamme | gupphire | Dragonagi | golnagi |
+| Calmarin | squink | Hectapieuvre | hectapod |
+| Frétillon | nostray | Requinuit | shnark |
+| Médulune | jeluna | Flocelin | waysprite |
+| Angeflocon | angesnow | Démoniflocon | demosnow |
+| Séraphivre | seraphice | Lucifrimas | lucifice |
+| Feuilézard | anoleaf | Gecktile | gectile |
+| Vélocisylve | velocitile | Pousslin | banling |
+| Spectronce | bansaken | Vengeronce | banvengeance |
+| Fougeron | fordin | Stégofeuille | stegofor |
+| Brachisylve | brachifor | Navounet | turnipper |
+| Tigeronce | beenstalker | Wendigrave | wendigger |
+| Rosarine | rosarin | Toxiris | toxiris |
+| Ninjasmin | ninjasmine | Filserp | pythwire |
+| Ouroborelec | ouroboutlet | Prisaserpent | sockeserp |
+| Ventiloon | fancair | Éoloeil | windeye |
+| Pionsable | pawsand | Cavalsable | knightsand |
+| Fousable | bishosand | Toursable | rooksand |
+| Pierrouche | stonifly | Runocon | cocrune |
+| Runestique | runesquito | Claymoroc | claymorior |
+| Régalance | regalance | Potagheist | potturmeist |
+| Amphorombre | potturney | Pipistrel | pipis |
+| Strellune | strella | Serpillou | snock |
+| Pythombre | pythock | Brisillon | elofly |
+| Ventaile | elowind | Tempestaile | elostorm |
+| Médichiot | medipup | Doctoutou | doctsky |
+| Nounoursol | teddisun | Chérubat | cherubat |
+| Vivipère | vivipere | Vivicendre | vivicinder |
+| Viviphyte | viviphyta | Vivitron | vivitron |
+| Vividactyle | vividactil | Vivisource | vivisource |
+| Aurorelle | altie | Éclipsar | snarlon |
+| Errenard | anu | Masquaserp | masknake |
+
 Auteurs connus :
 
 - **Nocturion** — « Drokoro », contributeurs du projet Tuxemon (Sanglorian et al.), CC BY-SA 4.0 / CC BY 3.0.
