@@ -19,9 +19,9 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const bad=[];
  // évolutions conditionnelles
  const ev=(sp,lv,o={})=>{const m=mon(sp,lv,o);return evoTarget(m)};
  G.t=CYC*3+60;L('day',night(),ev('flocelin',25),ev('tigeronce',36));G.t=CYC*3+300;L('night',night(),ev('flocelin',25),ev('tigeronce',36),ev('fretillon',28));
- G.wx={k:'rain',n:50};G.map='route1';L('rain',ev('axoluce',26),ev('ventaile',36));G.wx=null;L('norain',ev('axoluce',26),ev('ventaile',36),ev('ventaile',42));
+ G.wx={k:'rain',n:50};loadMap('route1',10,8,0);L('rain',ev('axoluce',26),ev('ventaile',36));G.wx=null;L('norain',ev('axoluce',26),ev('ventaile',36),ev('ventaile',42));
  L('held',ev('spectronce',36),ev('spectronce',36,{item:'encensnoir'}));L('move',ev('toxiris',30),ev('toxiris',30,{moves:['lamefeuille']}));
- G.map='mont';L('map',ev('vivipere',20),ev('cavalsable',36));G.map='bois';L('bois',ev('vivipere',20));
+ loadMap('mont',9,19,1);L('map',ev('vivipere',20),ev('cavalsable',36));loadMap('bois',22,7,2);L('bois',ev('vivipere',20));
  f().eclD=dayN();L('ecl',ecl(),ev('tisonard',36),ev('serpillou',25));delete f().eclD;
  L('items',evoTarget(mon('flocelin',5),'pierresoleil'),evoTarget(mon('cavalsable',5),'pierreaube'));
  // disques et capsules
