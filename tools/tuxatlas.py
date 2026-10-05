@@ -172,6 +172,8 @@ gf = building('spyder_paper_town.tmx', 6, 9, 6, 4)
 T['bGymF'] = cols(gf, [0, 2, 3, 4, 3, 5])                   # porte ramenée en 4e colonne
 T['bGymW'] = building('classic_steamshore_city.tmx', 29, 1, 5, 4)
 T['bHouse2'] = building('cotton_town.tmx', 11, 5, 5, 4)
+T['bHouse3'] = building('classic_hearthrock_city.tmx', 2, 0, 5, 6); T['bHouse4'] = building('classic_hearthrock_city.tmx', 7, 0, 5, 6)
+T['bGymN'] = recolor(T['bGymF'], hshift=0.62, sat=.9, val=.85)
 
 # ---------------------------------------------------------------- personnages
 PEOPLE = [('hero', 'adventurer', 'adventurer_alt1'), ('rival', 'cooldude_red', 'cooldude_red'), ('prof', 'scientist', 'scientist'),
@@ -185,7 +187,8 @@ PEOPLE = [('hero', 'adventurer', 'adventurer_alt1'), ('rival', 'cooldude_red', '
           ('sailor', 'soldier', 'soldier'), ('captain', 'riverboatcaptain', 'riverboatcaptain'), ('nurse', 'nurse', 'nurse'),
           ('astro', 'professor_lapi', 'professor_lapi'), ('lili', 'florist_rose', 'florist_rose'), ('fisher', 'fisher_fiery', 'fisher_red'),
           ('gus', 'fisher', 'fisher'), ('vendor', 'shopassistant', 'shopassistant'),
-          ('sis', 'catgirl_blonde', 'catgirl_alt1'), ('dad', 'professor_brown', 'professor_brown')]
+          ('sis', 'catgirl_blonde', 'catgirl_alt1'), ('dad', 'professor_brown', 'professor_brown'),
+          ('caius', 'spyderboss_fiery', 'spyder_boss_fiery'), ('ysolde', 'granny_lapi', 'granny'), ('orane', 'goth_green', 'goth_green')]
 OW = Image.new('RGBA', (48, 128 * len(PEOPLE))); BT = Image.new('RGBA', (64, 64 * len(PEOPLE)))
 for i, (k, ow, bt) in enumerate(PEOPLE):
     OW.alpha_composite(Image.open(os.path.join(MOD, 'sprites', ow + '.png')).convert('RGBA'), (0, 128 * i))
@@ -214,7 +217,11 @@ MONS = [('flamiot', 'pantherafira'), ('brasilion', 'criniotherme'), ('goutelin',
         ('ombrelin', 'cackleen'), ('noctyrex', 'bewhich'), ('nocturelle', 'noctalo'), ('solarion', 'mingdyn'), ('nocturion', 'drokoro'),
         ('faucaube', 'gryfix'), ('pissenlou', 'dandicub'), ('pissenlion', 'dandylion'), ('rocaton', 'rockitten'), ('granifelin', 'rockat'), ('fumenard', 'foxfire'),
         ('pyrenard', 'vulpyre'), ('hiboulume', 'ambuwl'), ('ricanoir', 'ghosteeth'), ('miroitruite', 'shimmerain'), ('racinou', 'sprightly'), ('racinaile', 'uprout'),
-        ('herissou', 'tumblequill'), ('armaroc', 'tumbledillo'), ('etincelot', 'joulraton'), ('lapilune', 'chibiro')]
+        ('herissou', 'tumblequill'), ('armaroc', 'tumbledillo'), ('etincelot', 'joulraton'), ('lapilune', 'chibiro'),
+        ('lueurette', 'seirein'), ('flammeche', 'loliferno'), ('brumelle', 'spirain'), ('tornalis', 'tornicane'), ('relicat', 'memnomnom'), ('sphinxor', 'pyraminx'),
+        ('anubrume', 'mauai'), ('peluchon', 'fuzzlet'), ('peluchine', 'fuzzina'), ('astrafelin', 'jemuar'), ('oeillombre', 'uneye'), ('eclipsoeil', 'lendos'),
+        ('fossilame', 'shammer'), ('lumipeche', 'fluoresfin'), ('lanterfin', 'incandesfin'), ('abyssombre', 'lightmare'), ('meteosaur', 'metesaur'),
+        ('quetzaroc', 'qetzlrokilus'), ('nuageon', 'bumbulus'), ('orageon', 'nimbulex'), ('crepuscel', 'yiinaang'), ('presagelle', 'mystikapi')]
 def sharp(im):  # alpha binaire : pixel art net
     im = im.copy(); px = im.load()
     for y in range(im.height):

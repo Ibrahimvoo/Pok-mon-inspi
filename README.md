@@ -40,6 +40,31 @@ Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits anim�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 7.0 : le Nord et le Crépuscule
+
+- **Nouvelle région** :
+  - Les Coteaux d'Aurore, au nord de Cendreville : vignes, cratères de météores, l'autel des fondateurs.
+  - Lunévie, un village qui dort le jour et vit la nuit.
+  - Le Sanctuaire du Cycle, ouvert après la fin.
+- **22 nouveaux Pixémons** (63 au total), avec un vrai moteur d'évolution :
+  - Évolutions selon le niveau, l'heure (jour ou nuit), le lien, l'éclipse ou une pierre (Pierre Lunaire, Pierre Orage).
+  - Familles à 3 stades et évolutions à embranchement.
+  - Un fossile à faire ranimer par le Prof. Saule.
+  - Deux nouveaux légendaires : Crépuscel et Présagelle.
+- **Histoire** :
+  - L'Admin Caïus défie Sélène et Vex se montre à l'autel.
+  - Sélène confie le Médaillon de Brume.
+  - Chez Grand-mère Ysolde, on apprend que Valen est le grand frère de Kael. Kael livre un combat de rival, puis le médaillon revient à Valen.
+- **Arène Crépuscule** : la Championne Orane ne combat que la nuit, dans une salle plongée dans le noir.
+- **Après l'aventure** : le Défi du Crépuscule, 7 combats d'affilée avec paliers de récompenses et record.
+- **Super Canne** : pêche en eaux profondes (Lunévie, Port-Miroir, Rive Brumeuse).
+- **Boutique** : elle vend les pierres d'évolution après le 3e badge.
+- **Pixédex encyclopédique** : taille, poids, activité (diurne ou nocturne), évolutions détaillées, habitat (pluie, éclipse, Super Canne).
+- **Sauvegarde** :
+  - Sauvegarde automatique toutes les 90 secondes en exploration.
+  - Copie de secours en cas de fichier corrompu.
+  - Migration des anciennes parties.
+
 ## Version 6.0 : une aventure complète
 
 - **Introduction jouable** : un rêve étrange, puis le réveil le matin de tes 12 ans. Lou, ta petite sœur, a caché ta casquette ; il faut préparer ton sac, ta Carte de Dresseur, parler à Maman. Les objets de la maison (photos, carnet, télescope, manteau…) racontent l'histoire d'Elias, ton père astronome disparu, avec des gros plans illustrés.
