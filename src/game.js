@@ -155,7 +155,7 @@ S('pousseron','Pousseron','PLA',[45,49,49,45],64,45,['#6ac85a','#eef8c8','#e8506
 S('sylvorne','Sylvorne','PLA',[70,76,72,66],150,45,['#3a9a4a','#e0f0b8','#f06a8a'],LP,null,'pousseron',2,'engrais','Un vrai petit arbre pousse sur sa tête et fleurit au printemps. Les anciens le croyaient messager de Solarion.');
 S('ratounet','Ratounet','NOR',[30,56,35,72],51,255,['#a88a6a','#f0e0c8','#e8a0a0'],LR,[14,'ratoroi'],0,1,'chapardeur','Un petit chapardeur qui collectionne tout ce qui brille. Ses poches semblent sans fond.');
 S('ratoroi','Ratoroi','NOR',[60,81,62,97],127,127,['#8a6a4a','#f0dcc0','#f0b0b0'],LR,null,'ratounet',2,'chapardeur','Il règne sur les ratounets du quartier. Son masque de bandit ne trompe personne… sauf les gardes.');
-S('piafou','Piafou','NOR',[45,50,40,62],55,255,['#c8a070','#f8f0d8','#f0a030'],[[1,'picpic'],[1,'grondement'],[6,'vent'],[11,'viveatk'],[17,'aeropique'],[24,'hate'],[30,'belier']],null,0,1,'vigilant','Il piaille dès l\'aube pour réveiller Bourg-Lueur. Personne ne le lui a jamais demandé.');
+S('piafou','Piafou','NOR',[45,50,40,62],55,255,['#c8a070','#f8f0d8','#f0a030'],[[1,'picpic'],[1,'grondement'],[6,'vent'],[11,'viveatk'],[17,'aeropique'],[24,'hate'],[30,'belier']],[20,'faucaube'],0,1,'vigilant','Il piaille dès l\'aube pour réveiller Bourg-Lueur. Personne ne le lui a jamais demandé.');
 S('volticelle','Volticelle','ELE',[40,55,40,90],66,120,['#f2d23a','#fff4b8','#3a3a5a'],LV,[24,'bourdonnerre'],0,1,'electrise','Elle butine l\'électricité des orages. Son miel crépite sur la langue.');
 S('bourdonnerre','Bourdonnerre','ELE',[70,92,66,104],165,45,['#f2c82a','#fff2c0','#2e2a5a'],LV,null,'volticelle',2,'electrise','Elle défend sa ruche avec un dard chargé de foudre. Son bourdonnement fait vibrer l\'air.');
 S('rocaillon','Rocaillon','ROC',[50,70,90,25],60,190,['#9a9088','#c8c0b0','#6a5a50'],LC,[22,'rocaroc'],0,1,'fermete','Il se roule en boule au moindre bruit. Les mineurs le confondent souvent avec un caillou.');
@@ -172,8 +172,28 @@ S('phalumine','Phalumine','LUM',[72,80,66,96],160,60,['#f2b448','#fff2d0','#5a3a
 S('nocturelle','Nocturelle','OMB',[55,64,52,88],95,120,['#4a3a8a','#8a78c8','#e85a9a'],[[1,'vent'],[1,'ombrefurtive'],[10,'morsure'],[16,'hypnose'],[22,'clairlune'],[28,'nuit'],[34,'rayonnoir']],null,0,1,'echo','Elle se guide au son dans les grottes les plus noires. Ses ailes battent sans le moindre bruit.');
 S('solarion','Solarion','LUM',[100,105,95,100],270,25,['#ffe890','#ffffff','#f0a020'],[[1,'aube'],[1,'soin'],[1,'zenith'],[30,'prisme'],[38,'aubeeternelle']],null,0,2,'levejour','Gardien du jour d\'Aurélys. Sa lumière fait mûrir les récoltes et chasse les cauchemars.');
 S('nocturion','Nocturion','OMB',[100,108,90,100],270,25,['#2e2458','#c8bff0','#ff4a9a'],[[1,'nuit'],[1,'clairlune'],[1,'eclipse'],[30,'rayonnoir'],[34,'lunenoire']],null,0,2,'eclipsetot','Gardien de la nuit, scellé jadis par les fondateurs d\'Aurélys. Sans lui, le Cycle boite.');
-const FLY=new Set(['piafou','volticelle','bourdonnerre','phalumine','papivigne','nocturelle','ombrelin']);
-const DEX=['flamiot','brasilion','goutelin','torrentor','pousseron','sylvorne','ratounet','ratoroi','piafou','tetardin','crapaflot','larvigne','papivigne','volticelle','bourdonnerre','lumignon','phalumine','rocaillon','rocaroc','magmor','ombrelin','noctyrex','nocturelle','solarion','nocturion'];
+
+// --- Nouvelles espèces 5.1 : chacune a un habitat, un horaire ou une météo (voir les tables de rencontres)
+const LPI=[[1,'picpic'],[1,'grondement'],[6,'vent'],[11,'viveatk'],[17,'aeropique'],[24,'hate'],[30,'belier'],[36,'plaquage']];
+S('faucaube','Faucaube','NOR',[75,85,65,100],155,45,['#8a6a9a','#e8dcc0','#f0c040'],LPI,null,'piafou',2,'vigilant','Il plane au-dessus d\'Aurélys dès la première lueur. Rien de ce qui bouge dans l\'herbe n\'échappe à ses yeux d\'or.');
+S('pissenlou','Pissenlou','PLA',[45,40,45,60],58,200,['#f2e6b0','#ffffff','#8a6a3a'],LP,[17,'pissenlion'],0,1,'engrais','Une boule de duvet portée par le vent. Elle se pose là où le soleil tape le plus fort, et s\'y endort aussitôt.');
+S('pissenlion','Pissenlion','PLA',[72,82,64,84],150,60,['#f07a8a','#ffe080','#4aa83e'],LP,null,'pissenlou',2,'engrais','Sa crinière de pétales se referme au coucher du soleil. Il rugit pour chasser les nuages.');
+S('rocaton','Rocaton','ROC',[45,55,70,40],58,190,['#8a8a92','#c8c8d0','#4a4a52'],LC,[20,'granifelin'],0,1,'fermete','Il dort roulé en boule dans les galeries et ronronne quand on le caresse. Les mineurs le gardent comme porte-bonheur.');
+S('granifelin','Granifélin','ROC',[70,92,90,88],150,75,['#7a7a82','#b8b8c0','#3a8ad8'],LC,null,'rocaton',2,'fermete','Souple comme un chat, dur comme le granit. Il chasse les Rocaillon… mais seulement pour jouer.');
+S('fumenard','Fumenard','FEU',[42,56,40,70],62,120,['#a89890','#f07a3a','#5a4a44'],LF,[22,'pyrenard'],0,1,'corpsardent','Il se cache dans les fumerolles du Mont Braise. La nuit, on ne voit de lui que le bout rougeoyant de sa queue.');
+S('pyrenard','Pyrénard','FEU',[72,90,62,104],160,45,['#f6c070','#ff8a3a','#ffffff'],LF,null,'fumenard',2,'brasier','Sa queue de flammes laisse une traînée d\'étincelles. On dit qu\'il guide les voyageurs perdus sur le volcan.');
+S('hiboulume','Hiboulume','LUM',[80,50,70,60],140,45,['#e8f0e8','#a8d8b0','#f6c445'],[[1,'lueur'],[1,'soin'],[8,'picpic'],[14,'hypnose'],[20,'aube'],[26,'vent'],[32,'prisme']],null,0,1,'lueur','La nuit, il soigne en silence les créatures blessées de la forêt. Ses yeux éclairent comme deux lanternes.');
+S('ricanoir','Ricanoir','OMB',[60,95,55,90],150,45,['#1a1420','#ffffff','#e84a8a'],LO,null,0,1,'noctambule','On n\'entend que son rire, entre les colonnes des ruines. Personne n\'a jamais vu son corps : seulement ses dents.');
+S('miroitruite','Miroitruite','EAU',[55,65,55,85],90,150,['#3a9ab8','#e84a5a','#f6f0d0'],LT,null,0,1,'glissade','Ses écailles reflètent le ciel comme un miroir. Les pêcheurs de Port-Miroir y lisent le temps du lendemain.');
+S('racinou','Racinou','PLA',[50,52,58,38],60,180,['#4aa83e','#c8e86a','#6a4a2a'],LG,[21,'racinaile'],0,1,'seve','Il se plante dans la terre humide pour dormir et se déterre au moindre bruit. Il adore les jours de pluie.');
+S('racinaile','Racinaile','PLA',[75,78,72,80],150,60,['#3a9a4a','#a8d8f0','#6a4a2a'],LG,null,'racinou',2,'seve','Ses feuilles battent comme des ailes. Ses racines pendent sous lui et goûtent la terre avant qu\'il ne se pose.');
+S('herissou','Hérissou','ROC',[48,58,72,42],62,180,['#8a6a4a','#e8d0a8','#4a3a2a'],LC,[24,'armaroc'],0,1,'fermete','Ses piquants sont de petits cailloux. Sur la Rive Brumeuse, il roule jusqu\'à l\'eau pour boire.');
+S('armaroc','Armaroc','ROC',[78,88,100,60],155,60,['#8a7050','#c8b090','#3a2a1a'],LC,null,'herissou',2,'fermete','Il traverse la région en roulant. Sa queue lui sert de lasso pour se hisser en haut des falaises.');
+S('etincelot','Étincelot','ELE',[40,58,38,96],70,90,['#c88a3a','#ffe060','#e84a4a'],LV,null,0,1,'electrise','Il n\'apparaît que sous l\'orage, quand l\'air crépite. Ses joues stockent la foudre pour les jours de beau temps.');
+S('lapilune','Lapilune','LUM',[60,48,52,84],110,75,['#e8e8f0','#c8b8e8','#8ac8f0'],LL,null,0,1,'lueur','Les nuits claires, il danse sur les rives au clair de lune. Le jour, personne ne sait où il se cache.');
+const FLY=new Set(['faucaube','racinaile','hiboulume','piafou','volticelle','bourdonnerre','phalumine','papivigne','nocturelle','ombrelin']);
+const DEX=['flamiot','brasilion','goutelin','torrentor','pousseron','sylvorne','ratounet','ratoroi','piafou','faucaube','tetardin','crapaflot','larvigne','papivigne','volticelle','bourdonnerre','lumignon','phalumine','rocaillon','rocaroc','magmor','ombrelin','noctyrex','nocturelle',
+ 'pissenlou','pissenlion','racinou','racinaile','rocaton','granifelin','herissou','armaroc','fumenard','pyrenard','etincelot','miroitruite','lapilune','hiboulume','ricanoir','solarion','nocturion'];
 // Objets : [nom, prix, description, valeur, catégorie]
 const IT={potion:['Potion',200,'Soigne 20 PV.',20,'heal'],superpotion:['Super Potion',600,'Soigne 60 PV.',60,'heal'],hyperpotion:['Hyper Potion',1200,'Soigne 150 PV.',150,'heal'],rappel:['Rappel',1500,'Ranime une créature K.O. avec la moitié de ses PV.',0,'revive'],
  totalsoin:['Total Soin',300,'Guérit brûlure, poison, paralysie et sommeil.',0,'cure'],elixir:['Élixir',900,'Rend 10 PP à chaque capacité d\'une créature.',10,'pp'],repousse:['Repousse',350,'Éloigne les créatures sauvages plus faibles pendant 150 pas.',150,'repel'],
@@ -292,7 +312,7 @@ function ground(g,M,at,x,y){const ch=at(x,y),p=tp(g,x*16,y*16),h=HSH(x,y),a=2+(h
 // ÉTAT, SAUVEGARDE & CYCLE JOUR/NUIT
 // =====================================================================
 let G=null,mode='load',busy=false,B=null,move=null,lastBump=0,steps=0,AMB=[];
-const ui={text:null,menus:[],panel:null,dim:null,fade:1,flash:0,flashC:'#ffffff',banner:null,evo:null,wipe:0,vs:null,toast:null,pop:null,shake:0,note:null,emo:[],lb:0,wfx:[],badge:null,ring:null,slide:0};
+const ui={wz:1,wzx:0,wzy:0,text:null,menus:[],panel:null,dim:null,fade:1,flash:0,flashC:'#ffffff',banner:null,evo:null,wipe:0,vs:null,toast:null,pop:null,shake:0,note:null,emo:[],lb:0,wfx:[],badge:null,ring:null,slide:0};
 const DX=[0,0,-1,1],DY=[1,-1,0,0],OPP=[1,0,3,2];
 const xpFor=l=>Math.floor(.6*l**3);
 function st(m){const b=SP[m.sp].bs,l=m.lv,f=v=>Math.floor(v*2*l/100)+5;return{hp:Math.floor(b[0]*2*l/100)+l+10,atk:f(b[1]),def:f(b[2]),spd:f(b[3])}}
@@ -305,6 +325,7 @@ const SK='pixemon-eclipse-v1';
 // Remet à niveau une sauvegarde (y compris celles de la version précédente) : PP, statuts, Pixédex, horloge…
 function normalize(g){g.dex??={};g.keys??={};g.repel??=0;g.t??=70;g.play??=0;g.opt??={snd:1};const F=g.flags;
  for(const m of[...g.party,...g.box]){m.moves=m.moves.filter(id=>MV[id]);if(!m.moves.length)m.moves=['charge'];if(!m.pp||m.pp.length!==m.moves.length)m.pp=m.moves.map(id=>MV[id].pp);m.st??=null;m.aff??=Math.min(200,70+m.lv*3);m.item??=null;g.dex[m.sp]=2}
+ if(F.intro==null){F.intro=3;F.intro3=F.hSac=F.hCarte=F.hCap=1}
  if(!g.v){if(F.starter)g.keys.dex=1;if(F.boss){F.eclipse=1;F.r2=1}delete F.legend;g.v=3}
  for(const m of[...g.party,...g.box]){if(m.sp==='solarion')F.legS=1;if(m.sp==='nocturion')F.legN=1}
  for(const k in g.bag)if(!IT[k])delete g.bag[k];if(F.badge&&!g.keys.bracelet){g.keys.bracelet=1;g.brRetro=1}if(g.v<4){g.wn=1;g.v=4}return g}
@@ -327,7 +348,8 @@ async function theoTalk(n){const T='Petit Théo',q=f().theoQ||0;
 async function rosaTalk(n){const R='Mémé Rosa',q=f().rosaQ||0;await say(n.say(),R);
  if(q===0){f().rosaQ=1;return say('Dis, mon petit… Mes vieilles jambes me font souffrir. Une tisane de Baies Prisme me ferait tant de bien. Il m\'en faudrait trois. Les arbres à baies en donnent chaque jour.',R)}
  if(q===1){const nb=G.bag.baieprisme||0;if(nb<3)return say(`Trois Baies Prisme, mon petit. Tu en as ${nb}.`,R);G.bag.baieprisme-=3;f().rosaQ=2;await say('Merci, mon petit ! Avec ça, je pourrai danser au mariage de Maëlle… si elle se décide un jour.',R);
-  give('ruban');return say('Tiens, le ruban de mon propre mariage. Celui qui le tient ne tombe jamais au premier coup. Tu reçois le RUBAN TÉNACITÉ !',R)}}
+  give('ruban');return say('Tiens, le ruban de mon propre mariage. Celui qui le tient ne tombe jamais au premier coup. Tu reçois le RUBAN TÉNACITÉ !',R)}
+ if(q===2)return rosaLapilune()}
 // Maman : ses conseils, et RETOUR pour une créature qui t'aime vraiment (lien de 3 cœurs ou plus)
 async function momTalk(n){const M='Maman';await say(n.say(),M,0,'mom');if(!f().starter)return;const ok=G.party.some(m=>bondLv(m)>=3&&!m.moves.includes('retour'));
  if(!ok){if(!f().momHint){f().momHint=1;await say('Tu sais, quand une créature t\'aime vraiment, elle peut apprendre RETOUR : une attaque qui puise sa force dans votre lien. Reviens me voir quand l\'une d\'elles sera vraiment complice avec toi !',M,0,'mom')}return}
@@ -406,7 +428,7 @@ function bar(x,y,w,k,col,h=10){k=Math.max(0,Math.min(1,k||0));rr(x,y,w,h,2,C.ink
 const hpCol=k=>k>.5?C.green:k>.2?C.yel:C.red;
 function hpBar(x,y,w,k){rr(x-26,y-2,26,14,2,C.ink);txt('PV',x-22,y+9,C.gold,{mini:1});const lo=k<=.2&&k>0&&(now()/240|0)%2;bar(x,y,w,k,lo?'#ff8a8a':hpCol(k))}
 function pages(s,w=W-8){const L=wrap(s,w-44),P=[];for(let i=0;i<L.length;i+=2)P.push(L.slice(i,i+2));return P}
-const WHO={'Prof. Saule':'prof',Kael:'rival',Maman:'mom','Vieux Gus':'gus','Petit Théo':'kid',Lili:'lili',Brasia:'leader','Championne Brasia':'leader',Vex:'vex','Chef Vex':'vex',Valen:'valen',Sélène:'selene','Admin Sélène':'selene',Maëlle:'maelle','Championne Maëlle':'maelle','Ermite Lumen':'lumen',Infirmière:'nurse',Vendeur:'vendor','Campeuse Sacha':'camper','Randonneur Gaspard':'mountaineer','Capitaine Loup':'captain','Mémé Rosa':'granny','Mousse Timéo':'kid','Assistante Lucie':'assistant','Garde-côte':'sailor',Mineur:'miner',Tito:'kid','Lieutenant Corvin':'grunt','Sbire Éclipse':'grunt',Ancien:'old',Randonneuse:'girl'};
+const WHO={Lou:'sis',Papa:'dad','Prof. Saule':'prof',Kael:'rival',Maman:'mom','Vieux Gus':'gus','Petit Théo':'kid',Lili:'lili',Brasia:'leader','Championne Brasia':'leader',Vex:'vex','Chef Vex':'vex',Valen:'valen',Sélène:'selene','Admin Sélène':'selene',Maëlle:'maelle','Championne Maëlle':'maelle','Ermite Lumen':'lumen',Infirmière:'nurse',Vendeur:'vendor','Campeuse Sacha':'camper','Randonneur Gaspard':'mountaineer','Capitaine Loup':'captain','Mémé Rosa':'granny','Mousse Timéo':'kid','Assistante Lucie':'assistant','Garde-côte':'sailor',Mineur:'miner',Tito:'kid','Lieutenant Corvin':'grunt','Sbire Éclipse':'grunt',Ancien:'old',Randonneuse:'girl'};
 const portrait=(k,talk)=>PEO[k]?.pt[talk?1:0];
 async function say(s,who,auto,look){const pt=look&&PEO[look]?look:WHO[who];for(const pg of pages(s)){ui.text={s:pg,t:0,who,auto,pt,t0:ui.text?0:now()};const len=pg.join('\n').length;for(;;){const done=ui.text.t>=len,k=await key(done?(auto?(mode==='battle'&&G?.opt?.fast?450:1000):0):40);if(k==='a'||k==='b'){if(!done)ui.text.t=len;else{sfx('sel');break}}else if(k==='t'&&done&&auto)break}}ui.text=null}
 const show=(s,who,w)=>ui.text={s:pages(s,w)[0],t:1e9,who,w,pt:WHO[who],t0:ui.text?0:now()};
@@ -446,9 +468,8 @@ const MAPS={
 bourg:{name:'Bourg-Lueur',bg:'plaine',amb:'day',mus:'town',edges:{n:['route1',0]},fish:[['tetardin',4,7,100]],
  rows:["TTTTTTTTT==TTTTTTTTT","TT.......==.......TT","TT.......==.......TT","TT.RRRR..==..GGGGGTT","TT.RRRR..==..GGGGGTT","TT.WnDW..==..WnDnWTT","TT...=..l==....=..TT","TT...===========..TT","TT.......==.....S.TT","TT.f.....==l......TT","TT~~~~...==...ffffTT","TT~~~~...==.......TT","TT~~~~...==...f...TT","TTTTTTTTTTTTTTTTTTTT"],
  deco:[{x:15,y:3.5,k:'potion'},{x:4,y:3,k:'chim'}],smoke:[[71,42]],hidden:[{x:17,y:10,sh:'b1'}],
- doors:{'5,5':homeRest,'15,5':['lab',4,6,1]},signs:{'16,8':'BOURG-LUEUR\nLà où chaque aventure s\'allume.'},
- npcs:[{x:3,y:6,t:'mom',d:3,name:'Maman',fn:momTalk,qm:()=>f().starter&&G.party.some(m=>bondLv(m)>=3&&!m.moves.includes('retour')),say:()=>!f().starter?"Le Prof. Saule t'attend dans son labo, la maison au toit vert !":f().balance?"Regarde le ciel… Les nuits sont redevenues longues et belles. Ton père aurait adoré voir ça.":act2()?"Le soleil ne se lève plus depuis des jours… Fais attention à toi, d'accord ? Et rentre dormir de temps en temps !":night()?"Il se fait tard ! La nuit, d'autres créatures sortent des hautes herbes. Rentre dormir si ton équipe est fatiguée.":"Si ton équipe est fatiguée, rentre te reposer à la maison !"},
-  {x:6,y:11,t:'gus',d:2,name:'Vieux Gus',fn:gusTalk,qm:()=>G.keys.rod&&(!f().gusQ&&f().badge||f().gusQ===1&&ownSp('crapaflot'))},
+ doors:{'5,5':['salon',5,6,1],'15,5':['lab',4,6,1]},signs:{'16,8':'BOURG-LUEUR\nLà où chaque aventure s\'allume.'},
+ npcs:[{x:6,y:11,t:'gus',d:2,name:'Vieux Gus',fn:gusTalk,qm:()=>G.keys.rod&&(!f().gusQ&&f().badge||f().gusQ===1&&ownSp('crapaflot'))},
   {x:13,y:9,t:'kid',d:0,name:'Petit Théo',time:'j',wan:1,fn:theoTalk,qm:()=>f().starter&&(!f().theoQ||f().theoQ===1&&(ownSp('lumignon')||ownSp('phalumine'))),say:()=>["L'EAU bat le FEU, le FEU bat la PLANTE, et la PLANTE bat l'EAU ! Et la ROCHE ? Elle craint l'EAU et la PLANTE.","Tu savais ? La LUMIÈRE et l'OMBRE sont super efficaces l'une contre l'autre ! Et l'OMBRE effraie les créatures NORMAL.","Ma sœur dit que si une créature dort ou est paralysée, il faut lui donner un Total Soin. Elle sait tout, ma sœur.","Mon Piafou m'adore ! Plus on se balade ensemble, plus notre lien grandit. Avec un lien très fort, il tient bon même face à un coup fatal !","Tu as vu l'arbre à baies près de la mare ? Ses baies repoussent chaque jour. Fais-en tenir une à ta créature : elle la mangera toute seule en combat !"][(G.t>>4)%5]},
   {x:12,y:1,t:'rival',d:0,name:'Kael',cond:()=>f().balance,fn:kaelRematch},BT(17,11,'bourg','baiesoin')],
  step:async()=>{if(G.y<=1&&!f().starter){await say('Hé, petit ! Pas dans les hautes herbes sans créature ! Va d\'abord voir le Prof. Saule.','Vieux Gus');await forceStep(0);return true}}},
@@ -457,8 +478,8 @@ lab:{name:'Labo du Prof. Saule',bg:'plaine',amb:'in',dark:1,mus:'town',rows:["XX
  npcs:[{x:7,y:2,t:'prof',d:0,name:'Prof. Saule',cond:()=>!act2(),fn:profTalk},
   ...['flamiot','goutelin','pousseron'].map((sp,i)=>({x:3+i,y:3,t:'ball',fn:()=>pickStarter(sp),cond:()=>!f().starter||sp!==f().starter&&sp!==f().rs&&!f().gift3||sp===f().rs&&!f().kaelPick})),
   {x:2,y:5,t:'rival',d:3,name:'Kael',cond:()=>!f().rival1,say:'Pfff… Le Prof m\'a dit de te laisser choisir en premier. Dépêche-toi, je n\'ai pas toute la journée.'},
-  {x:1,y:6,t:'assistant',d:3,name:'Assistante Lucie',wan:1,say:()=>f().keys?.dex?`Ton Pixédex compte ${caught()} créature${caught()>1?'s':''} capturée${caught()>1?'s':''}. Le Prof. récompense chaque palier : 4, 8, 12 et 18 !`:'Le Prof. a passé sa vie à étudier le Cycle d\'Aurélys : le jour, la nuit… et les créatures qui en dépendent.'}]},
-route1:{name:'Route 1',bg:'plaine',amb:'day',mus:'route',edges:{s:['bourg',0],n:['ville',0]},enc:[['ratounet',2,4,35],['piafou',2,4,35],['larvigne',3,4,18],['volticelle',3,5,10,'j'],['ombrelin',3,5,14,'n'],['lumignon',3,5,10,'n']],
+  {x:1,y:6,t:'assistant',d:3,name:'Assistante Lucie',wan:1,fn:lucieTalk,qm:()=>f().starter&&(!f().stormQ||f().stormQ===1&&ownSp('etincelot')||OBSR.some(([n])=>nObs()>=n&&!f()['ob'+n])),say:()=>f().keys?.dex?`Ton Pixédex compte ${caught()} créature${caught()>1?'s':''} capturée${caught()>1?'s':''}. Le Prof. récompense chaque palier : 4, 8, 12 et 18 !`:'Le Prof. a passé sa vie à étudier le Cycle d\'Aurélys : le jour, la nuit… et les créatures qui en dépendent.'}]},
+route1:{name:'Route 1',bg:'plaine',amb:'day',mus:'route',edges:{s:['bourg',0],n:['ville',0]},enc:[['ratounet',2,4,35],['piafou',2,4,35],['pissenlou',3,5,12,'j'],['etincelot',4,6,16,'r'],['larvigne',3,4,18],['volticelle',3,5,10,'j'],['ombrelin',3,5,14,'n'],['lumignon',3,5,10,'n']],
  rows:["TTTTTTTTT==TTTTTTTTT","TT,,,,...==...,,,,TT","TT,,,,...==...,,,,TT","TT.......==.......TT","TT..TT...==..o....TT","TT..TT...==.......TT","TT,,,,,,,==,,,,,..TT","TT,,,,,,,==,,,,,..TT","TT,,,,,,,==,,,,,..TT","TT.......==.....S.TT","TTTTTT...==...TTTTTT","TT.......==.......TT","TT.,,,,,.==.,,,,,.TT","TT.,,,,,.==.,,,,,.TT","TT.,,,,,.==.,,,,,.TT","TT.......==.....TTTT","TT..f....==....fb.TT","TTTTTTTTT==TTTTTTTTT"],
  signs:{'16,9':'ROUTE 1\nNord : Cendreville · Sud : Bourg-Lueur'},
  npcs:[{x:12,y:3,t:'kid',d:2,tr:TR('leo','Gamin Léo',[['ratounet',4],['piafou',5]],120,'Nos regards se sont croisés ! Ça veut dire COMBAT !','Ouah, t\'es super fort !',{post:'Astuce : les ronces se tranchent avec une créature PLANTE dans ton équipe. Il y en a une près de l\'entrée sud !'})},
@@ -477,7 +498,7 @@ ville:{name:'Cendreville',bg:'plaine',amb:'day',mus:'town',edges:{s:['route1',0]
  enter:async()=>{if(f().eclipse&&!f().r2)await brasiaClears();else if(f().badge&&!f().mineAlert&&!f().mine&&!f().rival2)await mineAlert()},
  step:async()=>{if(G.x>=19&&(G.y===8||G.y===9)&&(!f().badge||!f().mine&&!f().rival2)){await say(f().badge?'Halte ! Personne ne passe tant que nos gars sont dans la mine ! Va donc jouer ailleurs… hé hé !':'Halte ! La forêt appartient à la Team Éclipse ! Reviens quand tu auras un badge… hé hé !','Sbire Éclipse');await forceStep(2);return true}}},
 mine:{name:'Mine de Cendreville',bg:'grotte',amb:'cave',mus:'mont',cave:1,under:'g',encAll:1,
- enc:[['rocaillon',12,14,32],['ratounet',11,13,22],['magmor',13,14,10],['nocturelle',12,14,14,'n'],['ombrelin',12,13,12,'n'],['lumignon',12,13,10,'n']],
+ enc:[['rocaillon',12,14,32],['ratounet',11,13,22],['rocaton',11,13,18],['magmor',13,14,10],['nocturelle',12,14,14,'n'],['ombrelin',12,13,12,'n'],['lumignon',12,13,10,'n']],
  rows:["^^^^^^^^^^^^^^^^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^^^g^^^^^^^^^^^^^","^^^^^^gggggggggggggg^^^^^","^^^^^^g^^^^gg^^^^^^g^^^^^","^^gggggg^^^gg^^^vvvggg^g^","^^gvvvvg^^^gg^^^vvvvvgxg^","^^gvvvvg^^^gg^^^gggg^g^^^",
   "^^ggg^^^^^^gg^^^^^^^^g^^^","^^^^g^^^^ggggggg^^^^^g^^^","^^^^g^^^^g^^^^^g^^^^^g^^^","^^ggggg^^g^^^^^g^^gggggg^","^^gvvvg^^g^^^^^g^^gvvvvg^","^^gggggggggggggggggggggg^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^EE^^^^^^^^^^^^"],
  doors:{'11,17':['ville',17,1,0],'12,17':['ville',17,1,0]},signs:{},hidden:[{x:7,y:6,it:'biscuit',q:2,id:'mh1'}],
@@ -501,7 +522,7 @@ gym:{name:'Arène de Cendreville',bg:'salle',amb:'in',floor:'stone',cstyle:'stat
   {x:2,y:7,t:'mountaineer',d:3,tr:TR('bob','Montagnard Bob',[['rocaillon',9],['ratounet',10]],300,'Tu veux affronter Brasia ? Passe d\'abord sur mon corps !','Aïe… solide.',{post:'Mes Rocaillon ont tenu bon à 1 PV ? C\'est leur Fermeté ! Il faut deux coups pour les faire tomber depuis leurs PV max. Et pour atteindre Brasia, pousse un rocher dans une faille !'})},
   {x:8,y:2,t:'climber',d:2,tr:TR('zoe','Grimpeuse Zoé',[['rocaillon',10],['piafou',10]],300,'Brasia est la meilleure ! Je ne te laisserai pas passer !','Bon… tu es prêt pour Brasia. Peut-être.',{post:'Quand Brasia utilise Mur de Roc, sa défense grimpe en flèche. Grimace la fait redescendre !'})}]},
 foret:{name:'Forêt Murmure',bg:'foret',amb:'foret',tree:'pine',mus:'foret',edges:{w:['ville',0],n:['mont',-9]},fish:[['tetardin',9,12,100]],
- enc:[['larvigne',8,11,26],['piafou',9,11,16],['ratounet',9,11,12],['ombrelin',9,12,14,'n'],['volticelle',10,12,16,'j'],['lumignon',9,12,14,'n'],['nocturelle',10,12,8,'n']],
+ enc:[['larvigne',8,11,26],['piafou',9,11,16],['racinou',9,11,16],['pissenlou',9,11,8,'j'],['hiboulume',11,13,4,'n'],['ratounet',9,11,12],['ombrelin',9,12,14,'n'],['volticelle',10,12,16,'j'],['lumignon',9,12,14,'n'],['nocturelle',10,12,8,'n']],
  rows:["TTTTTTTTTTTTTTTTTT==TTTTTTTT","TTT,,,,,TTTTTT,,,,==,TTTTTTT","TTT,,,,,TTTTTT,,,,==,TTT...T","TT.......TTTT.....==...b...T","TT.TTT.,,,,,,,,,..==.TTT...T","TT.TTT.,,,,,,,,,......TTTTTT","TT.....TTTTTTT...TT...TTTTTT","TT,,,,,TTTTTTT...TT...,,TTTT","==.....,,,,,,,...,,,..,,,.TT","==.....,,,,,,,...,,,.....fTT","TT.TTT.,,,,,,,........TT..TT","TT.TTT.......TTTT.o...TT..TT","TT,,,,,,,,...TTTT.........TT","TT,,,,,,,,...~~~~..f.....TTT","TT,,,,,,,,...~~~~.......TTTT","TTTTTTTTTTTTTTTTTTTTTTTTTTTT"],
  hidden:[{x:25,y:9,sh:'f2'}],
  npcs:[{x:6,y:3,t:'scout',d:0,tr:TR('nina','Scout Nina',[['larvigne',10],['lumignon',11],['piafou',11]],400,'Chut ! La forêt murmure… Elle dit que tu vas perdre !','La forêt avait tort…',{post:'Il paraît qu\'un ermite vit derrière les ronces, au nord-est. Il parle aux éclats de lumière…'})},
@@ -514,7 +535,7 @@ foret:{name:'Forêt Murmure',bg:'foret',amb:'foret',tree:'pine',mus:'foret',edge
   {x:2,y:14,t:'mon',sp:'ombrelin',time:'n',cond:()=>f().lili===1,fn:mimoFound},
   I(3,1,'superpotion',2,'f1i'),I(21,13,'rappel',1,'f2i'),I(20,11,'supercapsule',3,'f3i'),I(23,14,'repousse',2,'f4i'),BT(13,3,'f1','baiesoin'),BT(26,4,'f2','baieprisme')],
  step:async()=>{if(G.x>=18&&G.y<=4&&!f().rival2){await rival2();return true}}},
-mont:{name:'Mont Braise',bg:'mont',amb:'mont',mus:'mont',under:'g',edges:{s:['foret',9]},enc:[['rocaillon',14,17,32],['magmor',15,17,24],['ratoroi',15,17,16],['ombrelin',15,17,14,'n'],['nocturelle',15,17,12,'n']],
+mont:{name:'Mont Braise',bg:'mont',amb:'mont',mus:'mont',under:'g',edges:{s:['foret',9]},enc:[['rocaillon',14,17,32],['magmor',15,17,24],['fumenard',15,17,12,'n'],['fumenard',15,17,4,'j'],['ratoroi',15,17,16],['ombrelin',15,17,14,'n'],['nocturelle',15,17,12,'n']],
  rows:["^^^^^^^^^^^^^^^^^^^^","^^^^^^^gggg@^^^^^^^^","^^^^^^gggggggS^^^^^^","^^^LL^ggggggg^LL^^^^","^^LLLggggggggggLL^^^","^^LLggvvggggvvggLL^^","^^gggvvvvggvvvvggg^^","^^gggvvvvggvvvvggg^^","^^gg^^^^ggg^^^^^gg^^","^^gg^LL^ggg^LL^ggg^^","^^gggggggggggggggv^^","^^vvvvvgggggvvvvvv^^","^^vvvvvggggvvvvvvv^^","^^^^^^^^^^g^^^^^^^^^","^^^^gggggggggggg^^^^","^^gg^ggvvvvggvvg^^^^","^^gg^ggvvvvggvvggg^^","^^gxggggggg^^ggggg^^","^^^^^ggggLLLLvvvgg^^","^^vvvvggggggggvvvg^^","^^vvvvgggggggggggg^^","^^^^^^^^^gg^^^^^^^^^"],
  doors:{'11,1':ruinsDoor},signs:{'13,2':'STÈLE ANCIENNE\n"Le jour chante, la nuit répond. Que l\'un se taise, et le Cycle se brise."'},hidden:[{x:7,y:1,sh:'m2'},{x:17,y:7,it:'hyperpotion',q:1,id:'mh1'}],
  npcs:[{x:9,y:8,t:'grunt',d:0,tr:TR('g3','Sbire Éclipse',[['magmor',15],['ombrelin',16]],700,'Le chef est en plein rituel ! Tu ne passeras pas !','Chef… pardon…')},
@@ -527,8 +548,8 @@ mont:{name:'Mont Braise',bg:'mont',amb:'mont',mus:'mont',under:'g',edges:{s:['fo
   {x:9,y:1,t:'mon',sp:'solarion',time:'j',cond:()=>f().balance&&!f().legS,fn:()=>legend('solarion')},
   SH(2,15,'m1'),I(17,16,'elixir',1,'m3i'),I(16,6,'totalsoin',2,'m4i')],
  step:async()=>{if(G.y<=4&&!f().boss){await bossFight();return true}}},
-route2:{name:'Route 2 · Rive Brumeuse',bg:'lac',amb:'day',fog:1,mus:'route',under:'.',edges:{e:['ville',0],w:['port',4]},fish:[['tetardin',17,20,80],['crapaflot',21,23,20]],
- enc:[['ratoroi',18,21,18],['piafou',18,20,14],['volticelle',18,21,18,'j'],['larvigne',17,19,14,'j'],['nocturelle',18,21,20,'n'],['ombrelin',18,21,18,'n'],['lumignon',18,20,16,'n']],
+route2:{name:'Route 2 · Rive Brumeuse',bg:'lac',amb:'day',fog:1,mus:'route',under:'.',edges:{e:['ville',0],w:['port',4]},fish:[['tetardin',17,20,60],['miroitruite',17,20,25],['crapaflot',21,23,15]],
+ enc:[['ratoroi',18,21,18],['piafou',18,20,14],['herissou',17,19,16,'j'],['lapilune',18,20,10,'n'],['etincelot',18,20,14,'r'],['racinou',17,19,10,'r'],['volticelle',18,21,18,'j'],['larvigne',17,19,14,'j'],['nocturelle',18,21,20,'n'],['ombrelin',18,21,18,'n'],['lumignon',18,20,16,'n']],
  rows:["TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT","TT,,,,,..TTTTT,,,,,,,..TTTTTTT","TT,,,,,..TTTTT,,,,,,,......TTT","TT....=============.....,,,TTT","======.....TT.....=.....,,,TTT","======.....TT.....=..o..,,,TTT","TT.,,,,,...TT.....=........TTT","TT.,,,,,..~~~~~~~~H~~~~~~...TT","TT........~~~~~~~~H~~~~~~~..TT","TTT..S....~~~~~~~~H~~~~~~~..TT","TTT.......~~~ggk..H..~~~~~..TT","TT,,,,,...~~~ggg~~~~~~~~~...TT","TT,,,,,....~~~~~~~~~~~~..,,,==","TT,,,,,.....=============,,,==","TT...........,,,,,..TTT..,,,TT","TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"],
  signs:{'5,9':'ROUTE 2 · RIVE BRUMEUSE\nOuest : Port-Miroir · Est : Cendreville'},hidden:[{x:26,y:2,it:'hyperpotion',q:1,id:'r2h'},{x:2,y:14,pg:1}],
  npcs:[{x:4,y:8,t:'camper',d:3,tr:TR('hugo','Campeur Hugo',[['ratoroi',19],['piafou',20]],600,'Depuis l\'éclipse, je campe ici pour observer le ciel. Et pour me battre, aussi !','Ton équipe est rodée…')},
@@ -536,14 +557,14 @@ route2:{name:'Route 2 · Rive Brumeuse',bg:'lac',amb:'day',fog:1,mus:'route',und
   {x:24,y:2,t:'astro',d:0,time:'n',tr:TR('celeste','Astronome Céleste',[['lumignon',20],['nocturelle',21]],700,'Le soleil est caché depuis des jours… et pourtant, les étoiles n\'ont jamais été aussi belles. Combattons sous elles !','Fascinant…',{post:'Les étoiles bougent bizarrement. Comme si quelque chose de très ancien se réveillait du côté de l\'Observatoire.'})},
   {x:13,y:13,t:'grunt',d:3,tr:TR('g5','Sbire Éclipse',[['ombrelin',20],['magmor',21]],800,'Le chef a fait de toi une priorité ! Rien ne passe vers Port-Miroir !','Vex avait raison de se méfier de toi…')},
   I(2,1,'superpotion',2,'r2a'),I(26,6,'elixir',1,'r2b'),SH(13,11,'r2'),BT(3,10,'r2','baieprisme')]},
-port:{name:'Port-Miroir',bg:'lac',amb:'day',mus:'town',edges:{e:['route2',-4],n:['grotte',1]},fish:[['tetardin',18,22,70],['crapaflot',22,25,30]],
+port:{name:'Port-Miroir',bg:'lac',amb:'day',mus:'town',edges:{e:['route2',-4],n:['grotte',1]},fish:[['tetardin',18,22,45],['miroitruite',18,22,30],['crapaflot',22,25,25]],
  rows:["TTTTTTTTTTT^gg^TTTTTTTTT","TT.........^gg^.......TT","TT..AAAAA..=..=..RRRRRTT","TT..AAAAA..=..=..RRRRRTT","TT..WnDnW..=..=..WnDnWTT","TT....=....=..=....=..TT","TT....==============..TT","TT.....l...=.......l..TT","TTBBBBB....=.........S==","TTBBBBB....=============","TTWnDnW....=..........TT","TT..=......=...f..ff..TT","TT..========..........TT","TT....................TT","~~~~~~~H~~~~~H~~~~~~~~~~","~~~~~~~H~~~~~HHHH~~~~~~~","~~~~~~~~~~~~~~~~~~~~~~~~","~~~~~~~~~~~~~~~~~~~~~~~~"],
  deco:[{x:17.5,y:2.5,k:'heal'},{x:4.5,y:8.5,k:'bag'},{x:5.5,y:2.5,k:'star'}],hidden:[{x:7,y:15,sh:'p1'},{x:21,y:13,pg:2}],
  doors:{'19,4':()=>center('Port-Miroir',['port',19,5]),'4,10':shop,'6,4':['gym2',5,8,1]},signs:{'21,8':'PORT-MIROIR\nNord : Grotte Écho (accès réservé) · Est : Route 2'},
  npcs:[{x:13,y:7,t:'prof',d:0,name:'Prof. Saule',cond:act2,fn:profTalk},
   {x:16,y:15,t:'captain',d:2,name:'Capitaine Loup',say:()=>f().balance?'La mer retrouve ses marées. Les marées suivent la lune, tu sais.':'Le lac est noir comme de l\'encre depuis l\'éclipse. Avant, l\'Observatoire brillait comme un phare, là-haut sur la falaise. On disait que ses bâtisseurs y avaient enfermé quelque chose…'},
   {x:16,y:11,t:'kid',d:2,name:'Mousse Timéo',wan:1,say:()=>swarm()&&G.t%2?`Les pêcheurs disent qu'un essaim de ${SP[swarm()[1]].name} traîne du côté de ${MAPS[swarm()[0]].name.split(' · ')[0]} aujourd'hui !`:f().badge2?'Maëlle t\'a donné sa Lanterne ? Dans la Grotte Écho, sans lumière, on ne voit même pas ses pieds !':'Maëlle, c\'est la plus forte ! Sous la pluie, ses Crapaflot nagent deux fois plus vite !'},
-  {x:20,y:12,t:'granny',d:2,name:'Mémé Rosa',fn:rosaTalk,qm:()=>!f().rosaQ||f().rosaQ===1&&(G.bag.baieprisme||0)>=3,say:()=>f().balance?'J\'ai revu une vraie nuit étoilée. Merci, petit.':'Valen ? Le gamin qui passait ses nuits sur le ponton avec son Ombrelin ? Il était si gentil… jusqu\'à ce que son Ombrelin s\'éteigne. Il a quitté le port après ça.'},BT(2,13,'port','baiesoin')],
+  {x:20,y:12,t:'granny',d:2,name:'Mémé Rosa',fn:rosaTalk,qm:()=>!f().rosaQ||f().rosaQ===1&&(G.bag.baieprisme||0)>=3||f().rosaQ===2&&ownSp('lapilune'),say:()=>f().balance?'J\'ai revu une vraie nuit étoilée. Merci, petit.':'Valen ? Le gamin qui passait ses nuits sur le ponton avec son Ombrelin ? Il était si gentil… jusqu\'à ce que son Ombrelin s\'éteigne. Il a quitté le port après ça.'},BT(2,13,'port','baiesoin')],
  enter:async()=>{if(act2()&&!f().portScene)await portScene();else if(f().balance&&!f().ponton)await pontonScene()},
  step:async()=>{if(G.y<=1&&act2()){if(!f().badge2){await say('La Grotte Écho est trop dangereuse sans lumière. La championne Maëlle seule peut t\'en ouvrir l\'accès !','Garde-côte');await forceStep(0);return true}if(!f().kael3){await kael3();return true}}}},
 gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'gym',rows:["XXXXXXXXXXXX","XFFFFrrFFFFX","XFFFFrrFFFFX","X~~Q~~~~J~~X","XFFFF~~FFFCX","XFFFF~~FFFFX","X~~J~~~~Q~~X","XCFFFrrFFFFX","XFFFFrrFFFFX","XXXXXEEXXXXX"],
@@ -559,7 +580,7 @@ gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'gym',rows
   {x:2,y:5,t:'sailor',d:3,tr:TR('loic','Marin Loïc',[['tetardin',22],['crapaflot',23]],800,'Prêt à te faire tremper ?','Coulé…',{post:'La Danse Pluie dure cinq tours. Tiens bon, ou change la météo avec un Zénith ! Ah, et cet îlot est un cul-de-sac à marée basse…'})},
   {x:10,y:5,t:'sailor',d:2,tr:TR('ana','Matelote Ana',[['volticelle',23],['crapaflot',23]],800,'L\'ÉLEC contre l\'EAU ? Je connais la parade !','Bien joué, moussaillon.')}]},
 grotte:{name:'Grotte Écho',bg:'grotte',amb:'cave',mus:'mont',cave:1,dark2:1,under:'g',encAll:1,edges:{s:['port',-1]},
- enc:[['nocturelle',23,26,36],['rocaillon',23,26,26],['rocaroc',25,27,8],['magmor',24,26,12],['ombrelin',23,26,18]],
+ enc:[['nocturelle',23,26,36],['rocaillon',23,26,26],['rocaton',23,25,14],['granifelin',25,27,4],['rocaroc',25,27,8],['magmor',24,26,12],['ombrelin',23,26,18]],
  rows:["^^^^^^^^^^^^^EE^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^ggggggggg^^^^^^^","^^^^^^^^^^g^^^^^^gg^^^^^^^","^^^^^^^^^^gvvvvvvggggg^^^^","^^^^^^^^^^^^^^^^^^^^^g^^^^","^^^^gggg^^^^^^^^^^^^^g^^^^","^^^^ggggkgggg^^^^^^^^g^^^^","^^^^gggg^^^^g^^^^^^^^gggg^","^^g^^^^^^^^^g^^^^^^^^g^^g^","^^gvgvvvv^^^g^^^^^^^^g^gg^","^^^^g^^^^^^^g^^^^^^^^g^^^^","^^^^gggggggggggggggggg^^^^","^^^^g^^^^^^^^^^^^^^^^^^^^^","^^^^g^^^vvvvv^^^^^^^^^^^^^","^^^^ggggvvvvvgggg^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^"],
  doors:{'13,0':['obs',8,9,1],'14,0':['obs',9,9,1]},signs:{},hidden:[{x:24,y:8,pg:3}],
  npcs:[{x:24,y:9,t:'caver',d:1,tr:TR('remi','Spéléologue Rémi',[['rocaillon',24],['nocturelle',25]],900,'Chut ! Tu entends l\'écho ? Mes créatures, elles, voient avec leurs oreilles !','L\'écho m\'a trahi…',{post:'Les Nocturelle ne ratent jamais leur cible : elles se guident au son. Pratique, dans le noir !'})},
@@ -567,7 +588,7 @@ grotte:{name:'Grotte Écho',bg:'grotte',amb:'cave',mus:'mont',cave:1,dark2:1,und
   SH(4,6,'g1'),I(2,9,'hyperpotion',1,'gr1'),I(10,3,'totalsoin',2,'gr2'),I(23,10,'elixir',1,'gr3')]},
 obs:{name:'Observatoire Éclipse',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech',dark:1,mus:'ecl',rows:["XXXXXXXXXXXXXXXXXX","XCFFFFFFEEFFFFFFCX","XFFFFFFFFFFFFFFFFX","XXXXXXXZZZZXXXXXXX","XFFFFFFFFFFFFFFFFX","XCCFFCCFFFFCCFFCCX","XFFFFFFFFFFFFFFFFX","XFFCFFFFFFFFFFCFFX","XFFFFFFFFFFFFFFFFX","XFFFFFFFFFFFFFFFFX","XXXXXXXXEEXXXXXXXX"],
  hidden:[{x:16,y:9,pg:4}],doors:{'8,10':['grotte',13,1,0],'9,10':['grotte',14,1,0],'8,0':['dome',5,6,1],'9,0':['dome',6,6,1],'8,1':['dome',5,6,1],'9,1':['dome',6,6,1]},opens:{Z:['bar','F']},
- acts:{'3,7':()=>consoleAct(0),'14,7':()=>consoleAct(1),'6,5':()=>consoleAct(2),'12,5':()=>say('Une note froissée, coincée sous un clavier :\n"Ordre de la barrière : LUNE, puis ÉTOILE, puis SOLEIL. Ne l\'oubliez plus ! — S."'),'1,1':()=>say('Un écran affiche une courbe : "Niveau du sceau : 3 %. Réveil imminent."'),'16,1':()=>say('Un journal de bord : "Jour 1 de l\'éclipse. Valen ne dort plus. Il parle à la chose sous le dôme."')},
+ acts:{'15,5':dadDrawer,'3,7':()=>consoleAct(0),'14,7':()=>consoleAct(1),'6,5':()=>consoleAct(2),'12,5':()=>say('Une note froissée, coincée sous un clavier :\n"Ordre de la barrière : LUNE, puis ÉTOILE, puis SOLEIL. Ne l\'oubliez plus ! — S."'),'1,1':()=>say('Un écran affiche une courbe : "Niveau du sceau : 3 %. Réveil imminent."'),'16,1':()=>say('Un journal de bord : "Jour 1 de l\'éclipse. Valen ne dort plus. Il parle à la chose sous le dôme."')},
  npcs:[{x:10,y:9,t:'rival',d:1,name:'Kael',cond:()=>f().obsScene&&!f().vex2,fn:()=>campHeal('Kael','Besoin d\'une pause ? J\'ai de quoi soigner ton équipe. Vas-y, je tiens l\'entrée.')},
   {x:3,y:8,t:'grunt',d:3,tr:TR('g7','Sbire Éclipse',[['noctyrex',26],['nocturelle',26]],1000,'Personne n\'entre dans l\'Observatoire !','J\'ai… échoué…')},
   {x:14,y:6,t:'grunt',d:2,tr:TR('g8','Sbire Éclipse',[['magmor',27],['ombrelin',26]],1000,'La barrière ne s\'ouvrira jamais pour toi !','Elle s\'ouvre avec les consoles… mais je ne te dirai pas l\'ordre !')},
@@ -576,7 +597,7 @@ obs:{name:'Observatoire Éclipse',bg:'tech',amb:'tech',floor:'tech',cstyle:'tech
    '…C\'est fini. Écoute-moi, maintenant.',{vs:1,boss:1,items:1,win:seleneTruth})}],
  enter:async()=>{if(!f().obsScene)await obsScene()}},
 ruines:{name:'Ruines de l\'Aube',bg:'grotte',amb:'cave',mus:'ruines',cave:1,under:'g',cstyle:'stele',
- enc:[['noctyrex',40,44,18],['rocaroc',40,44,18],['phalumine',40,43,14],['bourdonnerre',40,43,14],['magmor',40,44,18],['crapaflot',40,43,10],['papivigne',40,43,8]],
+ enc:[['noctyrex',40,44,18],['rocaroc',40,44,18],['ricanoir',40,43,8,'n'],['pyrenard',40,43,6],['armaroc',40,43,8],['pissenlion',40,43,6,'j'],['granifelin',40,43,6],['faucaube',40,43,6,'j'],['phalumine',40,43,14],['bourdonnerre',40,43,14],['magmor',40,44,18],['crapaflot',40,43,10],['papivigne',40,43,8]],
  rows:["^^^^^^^^^^^^^^^^^^^^","^^^^^^^CgggC^^^^^^^^","^^^^^^^ggggg^^^^^^^^","^^^^^^^ggggg^^^^^^^^","^^^^^^^^^h^^^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^gggg^^^^^^^^","^^^^^^^^^^g^^^^^^^^^","^^Cgvvvggggggvvvgg^^","^^ggvvvggggggvvvgC^^","^^ggggg^^gg^^ggggg^^","^^vvggg^^gg^^gggvv^^","^^vvggggggggggggvv^^","^^^^^^^^^EE^^^^^^^^^"],
  doors:{'9,14':['mont',10,1,2],'10,14':['mont',10,1,2]},
  acts:{'2,9':()=>say('Une tablette usée : "Nous, fondateurs d\'Aurélys, avions faim. Les nuits étaient longues, les récoltes maigres. Nous voulions le jour, toujours plus de jour."'),
@@ -601,10 +622,214 @@ const npcs=M=>M.npcs.filter(n=>!n.hid&&(!n.cond||n.cond())&&(!n.time||(n.time===
 // Affinités : une créature du bon type, en forme, dans l'équipe ouvre le passage
 const AFF0={b:['PLA','Des ronces épaisses bloquent le passage.','trancher les ronces','tranche les ronces','PLANTE','#5a9a48'],k:['ROC','Un rocher fissuré barre le chemin.','briser le rocher','brise le rocher','ROCHE','#a08a78'],x:['EAU','Un brasier ardent bloque le chemin.','éteindre le brasier','éteint le brasier','EAU','#ff9a2a']};
 const AFF=new Proxy(AFF0,{get:(o,c)=>c==='k'&&G&&MAPS[G.map]?.opens?.k?undefined:o[c]});
+// =====================================================================
+// MAISON DU HÉROS — introduction jouable : le rêve, le réveil du douzième anniversaire, le sac à préparer,
+// Maman, Lou, et les affaires d'Elias (le père, astronome disparu) qui racontent l'histoire par le décor.
+// =====================================================================
+const hf=k=>!!f()[k],HM='Maman',LOU='Lou';
+MAPS.chambre={name:'Ta chambre',bg:'plaine',amb:'in',style:'home',dark:1,mus:'town',
+ rows:["XXXXXXXXXX","XCCFCCCsCX","XCFFFFFFFX","XFFrrrrFFX","XFFrrrrFFX","XCFFFFFFCX","XXXXXXXXXX"],
+ furn:[{x:1,y:1,h:2,k:'bed'},{x:2,y:1,k:'nightLamp'},{x:4,y:1,k:'shelf1'},{x:5,y:1,w:2,k:'oldPc'},{x:7,y:1,k:'stairsUp'},{x:8,y:1,k:'telescope'},{x:1,y:5,k:'dresser'},{x:8,y:5,k:'plantPot'}],
+ wdeco:[{x:1,k:'poster2',dx:2},{x:3,k:'calendar',dx:3,y:2},{x:8,k:'window'}],
+ doors:{'7,1':['salon',1,2,0]},
+ acts:{'1,1':bedAct,'1,2':bedAct,'2,1':()=>closeUp('photo1',2,1),'4,1':()=>closeUp('carnet',4,1),'5,1':pcAct,'6,1':pcAct,'8,1':telescopeAct,'1,5':dresserAct,'8,5':plantAct,'3,0':()=>closeUp('calendrier',3,0),'8,0':telescopeAct},npcs:[]};
+MAPS.salon={name:'Maison',bg:'plaine',amb:'in',style:'home',dark:1,mus:'town',
+ rows:["XXXXXXXXXXXX","XsCCCFFFCCCX","XFFFFFFFFFFX","XFFCCFFFFFFX","XFFCCFFrrrFX","XFFFFFFrrrCX","XCFFFFFFFFFX","XXXXXEXXXXXX"],
+ furn:[{x:1,y:1,k:'stairsUp'},{x:2,y:1,w:2,k:'kitchen'},{x:4,y:1,k:'fridge'},{x:8,y:1,w:3,k:'tv'},{x:3,y:3,w:2,h:2,k:'bigTable'},{x:3,y:3,k:'cake',dy:-14,row:4,z:60},{x:4,y:3,k:'letter',dy:-10,row:4,z:61},{x:10,y:5,k:'coat'},{x:1,y:6,k:'plantPot'}],
+ wdeco:[{x:6,k:'window'},{x:7,k:'frameB',y:1}],
+ doors:{'1,1':['chambre',7,2,0],'5,7':leaveHome},
+ acts:{'2,1':kitchenAct,'3,1':kitchenAct,'4,1':()=>say('Un dessin de Lou est aimanté sur le frigo : toi, en géant, combattant un Pixémon en forme de crêpe. Le Pixémon a l\'air de gagner.'),
+  '8,1':tvAct,'9,1':tvAct,'10,1':tvAct,'3,3':tableAct,'4,3':tableAct,'3,4':tableAct,'4,4':tableAct,'10,5':coatAct,'7,0':()=>closeUp('photo2',7,0),'6,0':()=>say(act2()?'Le ciel est d\'un violet malade. Le soleil ne s\'est pas levé.':night()?'La nuit sur Bourg-Lueur. Courte, comme toujours.':hf('intro3')?'Bourg-Lueur sous le soleil. Les lanternes de la Fête de l\'Aube se balancent encore.':'Dehors, Bourg-Lueur est décoré de lanternes pour la Fête de l\'Aube. Tout le village est déjà debout.'),
+  '1,6':gerardAct},
+ npcs:[{x:3,y:2,t:'mom',d:1,name:'Maman',fn:momHome,qm:()=>f().starter&&G.party.some(m=>bondLv(m)>=3&&!m.moves.includes('retour'))},
+  {x:8,y:4,t:'sis',d:0,name:'Lou',fn:louTalk,wan:1,qm:()=>hf('intro3')&&f().louQ===1&&ownSp('piafou')},
+  {x:6,y:3,t:'dad',d:0,name:'Papa',cond:()=>hf('dadHome'),fn:dadTalk}],
+ enter:homeEnter};
+
+// --- liste des affaires à préparer
+const PREP=[['hSac','Sac de voyage'],['hCarte','Carte de Dresseur'],['hCap','Casquette']];
+function drawChecklist(){if(!G||f().intro!==1||ui.tip||ui.text||ui.menus.length||ui.panel||!['chambre','salon'].includes(G.map))return;const x=W-158,y=8;rr(x,y,150,64,4,C.ink);rr(x+2,y+2,146,60,2,C.paper);txt('Préparer le départ',x+10,y+16,C.acc,{s:1,sh:0});
+ PREP.forEach(([k,n],i)=>{const ok=hf(k),yy=y+26+i*12;rr(x+10,yy-6,8,8,1,ok?C.ok||'#3a9a5a':C.paper2);if(ok)R(X,'#ffffff',x+12,yy-4,4,4);txt(n,x+24,yy+1,ok?C.mute:C.ink,{s:1,sh:0})})}
+const missing=()=>PREP.filter(([k])=>!hf(k)).map(p=>p[1]);
+function prepCheck(){if(!missing().length&&f().intro===1&&!hf('prepOk')){f().prepOk=1;tip('prep','Tout est prêt ! Descends dire au revoir à Maman et Lou, puis sors par la porte du bas.')}}
+
+// --- gros plan : petit zoom caméra sur l'objet, puis illustration encadrée et pensées du héros
+async function closeUp(k,tx,ty){const C0=CAM||[0,0];ui.wzx=tx*TS+16-C0[0];ui.wzy=ty*TS+16-C0[1];sfx('sel');await tween(ui,'wz',1.45,320,1);
+ const lines=CUL[k]?.()||[];ui.panel=()=>{X.globalAlpha=.55;R(X,'#0c0818',0,0,W,H);X.globalAlpha=1;CUD[k]?.(now())};await wait(120);
+ if(!f()['cu_'+k]){f()['cu_'+k]=1;if(['photo1','carnet','photo2','telescope'].includes(k))f().mem=(f().mem||0)+1}
+ for(const l of lines)await say(l);if(!lines.length)for(;;){const kk=await key();if(kk==='a'||kk==='b')break}ui.panel=null;await tween(ui,'wz',1,260,1)}
+function card(x,y,w,h,col='#f4ead2'){rr(x+4,y+5,w,h,3,'rgba(0,0,0,.35)');rr(x,y,w,h,3,C.ink);rr(x+3,y+3,w-6,h-6,2,col)}
+function people(list,x,y,sc=1){list.forEach(([k,dx,dy=0,d=0])=>{const im=chr(k,d,0);X.drawImage(im,x+dx,y+dy-64*sc+8,32*sc,64*sc)})}
+function sepia(x,y,w,h,a=.55){X.save();X.globalCompositeOperation='color';X.globalAlpha=a;R(X,'#9a7a4a',x,y,w,h);X.restore();X.globalAlpha=.12;R(X,'#f6e0b0',x,y,w,h);X.globalAlpha=1}
+const CUD={
+ photo1:t=>{card(130,22,220,178,'#fbf6ea');const x=142,y=34,w=196,h=132;for(let i=0;i<8;i++)R(X,mix('#f6b26b','#fde6b8',i/7),x,y+i*7,w,7);R(X,'#fde6b8',x,y+56,w,6);
+  R(X,'#3a78a8',x,y+62,w,h-62);for(let i=0;i<10;i++)R(X,'#8ac0e0',x+(i*37)%180,y+70+(i*13)%50,10,1);R(X,'#7a5434',x+20,y+98,176,10);R(X,'#a8784a',x+20,y+98,176,3);for(const px of[30,90,150,186])R(X,'#5a3a22',x+px,y+106,4,26);
+  pell(X,x+150,y+40,14,14,'#ffe8a0');X.globalAlpha=.65;people([['kid',0,0]],x+150,y+100,.55);X.drawImage(monSpr('ombrelin',0,48),x+166,y+78,20,20);X.globalAlpha=1;
+  people([['dad',30,0],['hero',62,8],['mom',90,0]],x,y+104,1);sepia(x,y,w,h);txt('Port-Miroir, été',240,186,'#6a5a48',{s:1,al:'c',sh:0})},
+ photo2:t=>{card(130,22,220,178,'#fbf6ea');const x=142,y=34,w=196,h=132;R(X,'#141836',x,y,w,h);for(let i=0;i<40;i++)R(X,i%5?'#c8c8f0':'#ffe8a0',x+(i*53)%w,y+(i*29)%70,1,1);
+  R(X,'#2a2440',x,y+96,w,36);pell(X,x+98,y+92,46,34,'#5a5878');pell(X,x+98,y+92,42,30,'#7a7898');R(X,'#2a2440',x+52,y+92,92,40);R(X,'#3a3456',x+70,y+70,8,22);R(X,'#ffe8a0',x+94,y+78,8,6);
+  people([['dad',48,0],['prof',108,0]],x,y+130,.8);sepia(x,y,w,h,.25);txt('Observatoire, nuit de recherche',240,186,'#6a5a48',{s:1,al:'c',sh:0})},
+ carnet:t=>{card(90,18,300,190,'#efe2c0');for(let i=0;i<9;i++)R(X,'#d8c8a0',100,44+i*16,280,1);R(X,'#c83a3a',118,24,1,178);
+  const P=[[290,60],[310,52],[332,58],[340,76],[326,92],[304,98],[286,90],[272,104],[258,96],[346,46],[356,40]];X.strokeStyle='#4a5a8a';X.lineWidth=1;X.beginPath();P.forEach(([a,b],i)=>i?X.lineTo(a,b):X.moveTo(a,b));X.stroke();P.forEach(([a,b])=>R(X,'#2a3a6a',a-1,b-1,3,3));
+  txt('Les nuits raccourcissent :',128,58,'#3a2a2a',{s:1,sh:0});txt('3 minutes de moins chaque année.',128,74,'#3a2a2a',{s:1,sh:0});txt('Le Cycle boite. Ce qui a été',128,106,'#3a2a2a',{s:1,sh:0});txt('scellé doit-il le rester ?',128,122,'#3a2a2a',{s:1,sh:0});
+  txt('Pour mes enfants : un jour, je',128,154,'#5a3a6a',{s:1,sh:0});txt('vous montrerai le vrai ciel. - E.',128,170,'#5a3a6a',{s:1,sh:0});txt('dragon ?',300,118,'#4a5a8a',{s:1,sh:0})},
+ lettre:t=>{card(100,20,280,188,'#f8f0dc');R(X,'#c83a3a',220,30,40,6);const L=['Cher voisin,','','Pour la Fête de l\'Aube et tes douze','ans, je t\'attends au labo ce matin.','Un Pixémon t\'y attend.','','Prof. Saule','','PS : Kael a déjà demandé l\'heure','trois fois.'];L.forEach((l,i)=>txt(l,120,56+i*14,i>=8?'#7a6a58':'#3a2a2a',{s:1,sh:0}))},
+ carte:t=>{card(110,40,260,150,'#4a7ab8');R(X,'#3a64a0',113,43,254,26);txt('CARTE DE DRESSEUR',240,61,'#ffffff',{al:'c',sh:0});rr(124,80,80,80,3,'#efe6d2');if(PEO.hero)X.drawImage(PEO.hero.pt[0],128,84,72,72);
+  [['Bourg-Lueur',92],['12 ans aujourd\'hui',110],['Badges : '+((f().badge?1:0)+(f().badge2?1:0)),128],['Pixédex : '+DEX.filter(k=>G.dex[k]===2).length,146]].forEach(([s,y])=>txt(s,216,y,'#ffffff',{s:1,sh:0}))},
+ calendrier:t=>{card(150,30,180,170,'#f4ead2');R(X,'#c83a3a',153,33,174,26);txt('AUJOURD\'HUI',240,52,'#ffffff',{al:'c',sh:0});txt('FÊTE DE L\'AUBE',240,96,'#3a2a2a',{al:'c',sh:0});
+  X.strokeStyle='#e8484f';X.lineWidth=3;X.beginPath();X.ellipse(240,132,46,22,0,0,7);X.stroke();X.lineWidth=1;txt('MES 12 ANS !',240,138,'#c83a3a',{al:'c',sh:0})},
+ telescope:t=>{card(110,20,260,186,'#141836');for(let i=0;i<60;i++)R(X,i%6?'#c8c8f0':'#ffe8a0',118+(i*61)%240,28+(i*37)%160,i%9?1:2,i%9?1:2);X.globalAlpha=.5+.2*Math.sin(t/400);pell(X,300,70,10,10,'#e8e0ff');X.globalAlpha=1;
+  X.strokeStyle='rgba(180,170,255,.35)';X.beginPath();[[150,150],[180,130],[214,138],[236,116],[262,124]].forEach(([a,b],i)=>i?X.lineTo(a,b):X.moveTo(a,b));X.stroke()},
+ lastpage:t=>{card(80,14,320,196,'#efe2c0');const L=['Dernière page.','','Je sais où dort la nuit : sous le dôme.','Je pourrais briser le sceau… mais un ciel','sans jour serait aussi injuste qu\'un ciel','sans nuit. Il doit exister un autre moyen.','','Je pars vers le Nord, où les nuits sont','encore entières, chercher l\'autre moitié','du Cycle. Je reviendrai avec les nuits.','','Pour Lou, pour mon grand, pour toi. - Elias'];L.forEach((l,i)=>txt(l,98,40+i*14,i>=11?'#5a3a6a':'#3a2a2a',{s:1,sh:0}))},
+ tv:t=>{card(100,24,280,170,'#22223a');R(X,'#2e6a8a',112,36,256,120);R(X,'#c83a3a',112,136,256,20);txt('FLASH INFO',122,150,'#ffffff',{mini:1});const n=news();n.forEach((l,i)=>txt(l,124,60+i*16,'#ffffff',{s:1,sh:0}))}};
+const CUL={photo1:()=>['Une photo, au ponton de Port-Miroir. Papa, Maman et toi, six ans à peine.','Au fond, sur le ponton, un garçon que tu ne connais pas, avec une petite créature sous un grand chapeau. Il a l\'air seul.','Tu ne l\'avais jamais remarqué.'],
+ photo2:()=>['Papa et le Prof. Saule devant l\'Observatoire, une nuit de recherche.','Papa tient un carnet sous le bras. Le même que celui de ta chambre.',hf('dadNote')?'Tu sais maintenant ce qu\'il cherchait, cette nuit-là.':'C\'est la dernière photo de lui. Il est parti quelques semaines plus tard.'],
+ carnet:()=>['Le carnet de Papa. Elias, astronome. Ses notes sur le ciel d\'Aurélys.','Il dessinait des étoiles reliées entre elles… On dirait un dragon.',hf('legN')?'Nocturion. Il l\'avait vu, lui aussi.':'Le sceau ? Le Cycle qui boite ? Tu n\'as jamais compris ces pages.'],
+ lettre:()=>hf('cu_lettre')?['L\'invitation du Prof. Saule.']:['Une lettre du Prof. Saule, posée à côté du gâteau.'],
+ carte:()=>['Ta CARTE DE DRESSEUR. La photo date un peu. Tu avais les cheveux en pétard.'],
+ calendrier:()=>['Le calendrier. Aujourd\'hui est entouré en rouge, trois fois. Par Lou, sûrement.'],
+ telescope:()=>['Le télescope de Papa. Il disait que les étoiles d\'Aurélys se couchaient trop tôt.','Certaines nuits, tu crois voir une ombre bouger entre elles. Comme dans ton rêve.'],
+ lastpage:()=>['Papa… Il savait tout. Il a préféré partir plutôt que de tout briser.',hf('balance')?'Les nuits sont revenues. Est-ce qu\'il les voit, là où il est ? Est-ce qu\'il va rentrer ?':'Si les nuits reviennent… il reviendra.'],
+ tv:()=>[]};
+function news(){const F=f();return F.balance?['Les nuits ont retrouvé leur durée','normale ! Les Pixémons nocturnes','reviennent dans toute la région.','Le Prof. Saule parle de miracle.']:act2()?['ÉCLIPSE : le soleil ne s\'est','pas levé ce matin. Restez chez vous.','La Team Éclipse revendique','l\'événement.']:F.badge?['La Team Éclipse aperçue près','de la mine de Cendreville.','Des mineurs parlent de vols','d\'Éclats d\'Aube.']:F.starter?['Fête de l\'Aube : trois jeunes de','Bourg-Lueur ont reçu leur premier','Pixémon ! La nuit dernière n\'a','duré que 5 heures. Inquiétant ?']:['Fête de l\'Aube ce matin à','Bourg-Lueur ! Et toujours ce mystère :','la nuit dernière n\'a duré que','5 heures, un nouveau record.']}
+
+// --- objets de la chambre
+async function bedAct(){if(f().intro<3)return say(hf('cu_bed')?'Non. Pas de "encore cinq minutes". Pas aujourd\'hui.':(f().cu_bed=1,'Ton lit. Encore chaud. Il t\'appelle… Non ! Pas aujourd\'hui !'));return homeRest()}
+async function pcAct(){if(f().intro===1&&!hf('hCarte')){if(!hf('mails')){f().mails=1;await say('Ton ordinateur. Deux nouveaux messages.');await say('De : Kael. "Je serai le premier au labo. Le Pixémon FEU est à moi. Bon anniv quand même. -K."');await say('De : inconnu. "VOUS AVEZ GAGNÉ UNE HYPER CAPSULE !!! Cliquez ici." C\'est sûrement une arnaque.')}
+  await say('Dans le tiroir du bureau… ta CARTE DE DRESSEUR, toute neuve !');f().hCarte=1;jingle('item');await closeUp('carte',5,1);prepCheck();return}
+ if(f().intro<3)return say('Pas le temps de jouer. Le Prof. t\'attend !');await say('Ton ordinateur est relié à la Boîte du Prof. Saule.');return boxMenu()}
+async function telescopeAct(){await closeUp('telescope',8,1)}
+async function dresserAct(){if(!hf('hSac')){f().hSac=1;await say('Dans le tiroir du bas : ton SAC DE VOYAGE. Maman l\'a déjà rempli de chaussettes. Évidemment.');jingle('item');prepCheck();return}
+ return say('Tes vêtements, bien pliés. Pas par toi.')}
+async function plantAct(){if(!hf('hCap')){await say('Il y a quelque chose de coincé dans le pot de fleurs…');f().hCap=1;jingle('item');await say('TA CASQUETTE ! Avec un mot : "Trouvée ! T\'es nul à cache-cache. - Lou"');prepCheck();return}
+ return say('Une plante. Elle a gardé ta casquette toute la nuit. Merci, la plante.')}
+
+// --- objets du salon
+async function kitchenAct(){return say(f().intro<3?'Une montagne de crêpes. Maman en a fait pour tout le village. Littéralement.':night()?'La cuisine sent la soupe aux légumes. Il en reste pour toi, évidemment.':'La cuisine. Maman a laissé un mot : "Les crêpes, c\'est pour le goûter. Lou, c\'est pour TOUT LE MONDE."')}
+async function tvAct(){return closeUp('tv',9,1)}
+async function tableAct(){if(!hf('cu_lettre'))return closeUp('lettre',3,3);return say(f().intro<3?'Le gâteau d\'anniversaire. Douze bougies… Lou en a déjà mangé une.':'La table de la cuisine. Ta place est toujours mise.')}
+async function coatAct(){if(!G.keys.cleE){await say('Le manteau de Papa. Maman ne l\'a jamais rangé. Il sent encore la pluie et l\'huile de télescope.');await say('Dans la poche… une petite clé en laiton, gravée E.L.');G.keys.cleE=1;jingle('item');return say('Tu prends la PETITE CLÉ. Peut-être qu\'elle ouvre quelque chose, quelque part.')}
+ return say(hf('dadHome')?'Le manteau de Papa. Il est de nouveau porté.':'Le manteau de Papa. La poche est vide maintenant : la petite clé est avec toi.')}
+
+// --- Maman, Lou, Papa
+async function momHome(n){if(f().intro<3){if(!missing().length)return say('Tu as tout ? Alors file, ils t\'attendent ! Passe par la porte, je te rejoins pour te dire au revoir.',HM,0,'mom');
+  return say(`Il te manque encore : ${missing().join(', ')}. Ton père disait toujours : "Un bon explorateur vérifie trois fois son sac."`,HM,0,'mom')}
+ if(G.party.length&&G.party.some(m=>m.hp<st(m).hp||m.st)){await say('Tu as l\'air épuisé ! Laisse-moi m\'occuper de ton équipe.',HM,0,'mom');await fadeTo(1,250);healAll();await fadeTo(0,250);jingle('heal');await say('Voilà ! Tout le monde est en pleine forme.',HM,0,'mom')}
+ return momTalk({say:()=>hf('dadHome')?'Ton père répare son télescope depuis trois jours. Je crois qu\'il fait exprès de ne pas le finir, pour rester à la maison.':f().balance?'Regarde le ciel… Les nuits sont redevenues longues et belles. Où qu\'il soit, ton père le voit aussi.':act2()?'Le soleil ne se lève plus depuis des jours… Fais attention à toi, d\'accord ? Et rentre dormir de temps en temps !':night()?'Il se fait tard ! La nuit, d\'autres créatures sortent des hautes herbes. Ton lit t\'attend, là-haut.':'Si ton équipe est fatiguée, reviens : je m\'en occupe. Et ton lit, là-haut, te permet de choisir l\'heure du réveil.'})}
+async function louTalk(n){if(f().intro<3){if(!hf('hCap'))return say(hf('louHint')?'Froid… froid… Indice : elle est avec quelqu\'un qui ne parle jamais. Et qui est vert. Hihi !':(f().louHint=1,'Ta casquette ? Quelle casquette ? Hihi ! Indice : elle est avec quelqu\'un qui ne parle jamais. Et qui est vert.'),LOU,0,'sis');return say('Tu vas avoir un Pixémon ! Moi aussi, j\'en veux un… Encore cinq ans. CINQ ANS.',LOU,0,'sis')}
+ const q=f().louQ||0;
+ if(q===0&&f().starter){f().louQ=1;await say('Tu as un Pixémon ! Il est trop beau ! Dis, tu peux me montrer un Piafou ? Un vrai ? Ceux qui chantent le matin ?',LOU,0,'sis');return say('Maman dit que je suis trop petite pour aller dans les hautes herbes. Alors ramène-en un dans ton équipe, juste pour que je le voie !',LOU,0,'sis')}
+ if(q===1&&ownSp('piafou')){f().louQ=2;await emote(n,'♥',700);await say('UN PIAFOU ! Il est tout doux ! Bonjour, toi ! Tu chantes ? Chante !',LOU,0,'sis');await say('Tiens, c\'est pour toi. Je l\'ai trouvé dans le jardin. Papa disait que ça porte bonheur.',LOU,0,'sis');give('baieprisme',1);await say('Tu reçois une Baie Prisme !');return save()}
+ if(q===1)return say('Alors, ce Piafou ? Ils chantent sur la Route 1 le matin, à ce qu\'il paraît.',LOU,0,'sis');
+ return say(hf('dadHome')?'Papa m\'apprend les constellations ! Celle-là, c\'est le Dragon. Celle-là… aussi le Dragon. Il y a beaucoup de dragons.':f().balance?'Les nuits sont longues maintenant ! J\'ai vu une étoile filante. J\'ai fait un vœu. C\'est un secret.':act2()?'J\'ai pas peur du noir. J\'ai PAS peur. Tu rentres bientôt, hein ?':['Quand je serai grande, j\'aurai douze Pixémons. Et un dragon.','Maman parle à Papa le soir, devant la fenêtre. Je fais semblant de dormir.','Tu as battu une championne ? En vrai ? Raconte !'][(G.t>>4)%3],LOU,0,'sis')}
+async function dadTalk(){return say(['Douze ans, déjà… J\'ai manqué tant de choses. Mais tu m\'as ramené les nuits. Merci.','Le ciel d\'Aurélys est entier, maintenant. Regarde le Dragon, là-haut : il ne se couche plus avant l\'aube.','Ta mère m\'a raconté pour ta casquette. Lou cachait déjà la mienne, à ton âge… enfin, à son âge à elle.'][(G.t>>4)%3],'Papa',0,'dad')}
+
+// --- entrées et sortie de la maison
+async function homeEnter(){if(G.map==='salon'&&f().intro===1&&!hf('salon1')){f().salon1=1;const m=MAPS.salon.npcs[0];await cine(1);await emote(m,'!',500);faceTo(m,G.x,G.y);
+  await say('Ah ! Le voilà, notre grand de douze ans ! Joyeux anniversaire, mon chéri.',HM,0,'mom');await emote(m,'♥',700);
+  await say('Je sais, je sais, le Prof. t\'attend. Mais prends au moins des crêpes pour la route.',HM,0,'mom');give('biscuit',2);await say('Tu reçois 2 Biscuits d\'Aube ! Ta future créature va adorer.');
+  await say('Tu as bien tout ? Ton sac, ta carte, ta casquette ? Lou avait l\'air très contente d\'elle, ce matin…',HM,0,'mom');await cine(0);prepCheck()}
+ if(G.map==='salon'&&f().balance&&hf('dadNote')&&!hf('dadHome'))await dadReturns()}
+async function dadDrawer(){if(!G.keys.cleE)return say('Sous une console, un vieux tiroir en bois, fermé à clé. Deux initiales sont gravées dessus : E.L.');
+ if(hf('dadNote'))return say('Le tiroir d\'Elias. Vide, maintenant : sa dernière page est avec toi.');
+ await say('La petite clé du manteau de Papa… Elle tourne ! Le tiroir s\'ouvre.');f().dadNote=1;sfx('shard');await closeUp('lastpage',15,5);save()}
+async function leaveHome(){if(f().intro>=3)return warp('bourg',5,6,0);const m=MAPS.salon.npcs[0];
+ if(missing().length){await emote(m,'!',500);return say(`Hop hop hop ! Tu n'oublies rien ? Il te manque : ${missing().join(', ')}.`,HM,0,'mom')}
+ await cine(1);const l=MAPS.salon.npcs[1];await walk(m,'rrddd',170);m.d=0;G.dir=1;
+ await say('Mon grand… Ton père aurait voulu être là ce matin. Il avait tout prévu, tu sais : t\'emmener à l\'Observatoire pour tes douze ans, te montrer le ciel.',HM,0,'mom');await emote(m,'…',800);
+ await say('Il n\'est jamais revenu de sa dernière nuit là-bas. Mais je suis sûre qu\'il te regarde partir, d\'une façon ou d\'une autre.',HM,0,'mom');
+ await say('Allez ! Pas de larmes un jour d\'anniversaire. Tiens, de quoi soigner ta future créature.',HM,0,'mom');give('potion',3);await say('Tu reçois 3 Potions !');
+ if((f().mem||0)>=3&&!G.keys.boussole){await say('Tu as regardé les affaires de ton père, hein ? Je l\'ai vu à ta tête. Alors prends ça aussi.',HM,0,'mom');G.keys.boussole=1;jingle('item');await say('Tu reçois la BOUSSOLE D\'ELIAS ! Les objets cachés scintilleront bien plus souvent autour de toi.')}
+ faceTo(l,G.x,G.y);await emote(l,'!',400);await say('Attends ! Ramène-moi un Piafou un jour ! Un tout doux ! Et… reviens, hein.',LOU,0,'sis');
+ await say('Reviens dormir de temps en temps. Ta chambre, ton lit et mes crêpes t\'attendront.',HM,0,'mom');f().intro=3;f().intro3=1;await cine(0);
+tip('home','Ta maison : Maman soigne ton équipe, le lit de ta chambre choisit l\'heure du réveil et ton ordinateur ouvre la Boîte.');return warp('bourg',5,6,0)}
+
+// --- le rêve d'ouverture, puis le réveil
+const DREAM=['…Encore ce rêve. Un ciel immense, plus grand que tous les ciels.','Entre les étoiles, une ombre se déplie. Un dragon de nuit. Il n\'a pas l\'air méchant. Il a l\'air triste.','"Les nuits… sont trop courtes…"'];
+async function dreamIntro(){mode='intro';ui.slide=3;musStop();await fadeTo(0,900);for(const s of DREAM)await say(s);ui.flash=.9;ui.flashC='#ffffff';sfx('alert');await fadeTo(1,500);
+ mode='world';ui.banner=null;f().intro=0;loadMap('chambre',2,2,2);musStop();await fadeTo(0,700);await wakeUp()}
+async function wakeUp(){await wait(300);for(let i=0;i<3;i++){sfx('alert');await wait(220)}await emote('me','!',500);await say('DRIIIING ! …Le réveil. Tu as encore rêvé du dragon.');
+ const l=tmpN('chambre',{x:7,y:1,t:'sis',d:0,name:'Lou'});sfx('door');await wait(200);await cine(1);await walk(l,'dllll',150);faceTo(l,G.x,G.y);G.dir=3;
+ await say('DEBOUT ! Joyeux anniversaire, grand frère ! Douze ans ! T\'es VIEUX !',LOU,0,'sis');await emote(l,'♪',600);
+ await say('Maman a fait des crêpes. Plein. Genre, BEAUCOUP trop. Et le Prof. Saule a dit que tu dois aller au labo pour la Fête de l\'Aube !',LOU,0,'sis');
+ await say('Tu vas avoir ton premier Pixémon ! C\'est pas juste, moi j\'ai que sept ans…',LOU,0,'sis');await emote(l,'…',500);
+ await say('Ah, et… j\'ai peut-être caché un truc à toi. Mais je dirai pas quoi ! Hihi !',LOU,0,'sis');await walk(l,'rrrru',130);rmN('chambre',l);sfx('door');await cine(0);
+ musPlay('town');await say('Bon. Il te faut ton sac, ta Carte de Dresseur… et ta casquette. Où est-ce qu\'elle l\'a mise ?');f().intro=1;save();
+ tip('look','Approche-toi d\'un objet et appuie sur A pour l\'examiner. Certains objets racontent des choses…')}
+async function dadReturns(){f().dadHome=1;const d=MAPS.salon.npcs.find(n=>n.t==='dad');await cine(1);musStop();await camTo(6,3,700);await wait(400);
+ await say('…','Papa',0,'dad');faceTo(d,G.x,G.y);await emote(d,'!',700);await say('Tu as trouvé mes notes. Et tu as rendu les nuits au ciel. Je les ai vues revenir, depuis le Nord.','Papa',0,'dad');
+ await say('Je suis parti pour chercher un moyen doux de réparer le Cycle. Tu l\'as trouvé avant moi.','Papa',0,'dad');await emote(MAPS.salon.npcs[0],'♥',900);await emote(MAPS.salon.npcs[1],'♥',700);
+ await say('Bon anniversaire en retard, champion. Je te dois une nuit à l\'Observatoire.','Papa',0,'dad');await camBack(600);await cine(0);musPlay('town');save()}
+
+// =====================================================================
+// ÉCOSYSTÈME VIVANT — des Pixémons sauvages visibles dans le monde. Ils dorment, mangent, jouent, observent
+// ou fuient selon l'heure et leur caractère ; certains en chassent d'autres. Les surprendre endormis donne
+// un combat où ils sont encore assoupis (capture plus facile). Les espèces suivent les tables de rencontres.
+// =====================================================================
+const SHY=new Set(['piafou','lapilune','pissenlou','herissou','etincelot','racinou','larvigne','fumenard','miroitruite','tetardin']),
+ CURIOUS=new Set(['ratounet','ratoroi','rocaton','volticelle','lumignon','ombrelin','hiboulume']),
+ PREY={granifelin:['rocaillon','rocaton'],faucaube:['piafou','larvigne'],pyrenard:['ratounet','ratoroi'],noctyrex:['lumignon','ombrelin'],nocturelle:['larvigne','volticelle']};
+function faunaSpawn(k){const M=MAPS[k];for(const m of Object.values(MAPS))m.npcs=m.npcs.filter(n=>!n.fauna);
+ if(!M.enc||isInt(M)||!G?.party.length||k==='ruines'&&!f().balance)return;const L=M.enc.filter(e=>!e[4]||(e[4]==='r'?rain():(e[4]==='n')===night()));if(!L.length)return;
+ const mw=M.rows[0].length,mh=M.rows.length,n0=mw*mh>420?3:2,taken=new Set(M.npcs.map(n=>n.x+','+n.y));
+ for(let i=0;i<n0;i++){const e=L[(Math.random()*L.length)|0];for(let tries=0;tries<40;tries++){const x=1+(Math.random()*(mw-2)|0),y=1+(Math.random()*(mh-2)|0),c=M.rows[y][x];
+   if(SOLID.has(c)||'~wHLhE='.includes(c)||M.doors?.[x+','+y]||taken.has(x+','+y)||Math.abs(x-G.x)+Math.abs(y-G.y)<5)continue;taken.add(x+','+y);
+   const nocturnal=e[4]==='n'||['OMB','LUM'].includes(SP[e[0]].t),slp=Math.random()<(night()!==nocturnal?.55:.15);
+   M.npcs.push({x,y,x0:x,y0:y,d:rnd(0,3),t:'mon',sp:e[0],lv:rnd(e[1],e[2]),fauna:1,wild:1,slp,tt:800+Math.random()*2000,fn:faunaMeet});break}}}
+async function faunaMeet(n){if(n.gone)return;n.gone=1;const sp=SP[n.sp].name;
+ if(n.slp){await say(`Le ${sp} sauvage dort profondément… Tu t'approches sans bruit.`);tip('dodo','Surprendre une créature endormie : le combat commence alors qu\'elle dort encore. Capture bien plus facile !')}
+ else{await emote(n,'!',450);if(SHY.has(n.sp)&&Math.random()<.35){await say(`Le ${sp} sauvage prend peur et s'enfuit !`);puff(n.x,n.y,'#ffffff',10);rmFauna(n);return}}
+ const m=mon(n.sp,n.lv,{wild:1});if(n.slp){m.st='slp';m.slp=3}rmFauna(n);await battle([m])}
+const rmFauna=n=>{for(const M of Object.values(MAPS)){const i=M.npcs.indexOf(n);if(i>=0)M.npcs.splice(i,1)}};
+function faunaTick(dt){const M=MAPS[G.map],NM=npcs(M),busyAt=(x,y)=>x===G.x&&y===G.y||NM.some(o=>o.x===x&&o.y===y||o.rx===x&&o.ry===y)||x===FOL.x&&y===FOL.y;
+ const free=(x,y)=>{const c=M.rows[y]?.[x];return c&&!SOLID.has(c)&&!'~wHL'.includes(c)&&!M.doors?.[x+','+y]&&!busyAt(x,y)};
+ for(const n of NM){if(!n.fauna||n.walk||n.gone)continue;n.tt-=dt;if(n.tt>0)continue;n.tt=900+Math.random()*1800;
+  if(n.slp){if(Math.abs(n.x-G.x)+Math.abs(n.y-G.y)<=4)logObs(n.sp,'dodo');if(Math.random()<.5){const e={n,k:'…',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),900)}continue}
+  const dP=Math.abs(n.x-G.x)+Math.abs(n.y-G.y);let away=null;
+  const hunter=NM.find(o=>o.fauna&&!o.slp&&PREY[o.sp]?.includes(n.sp)&&Math.abs(o.x-n.x)+Math.abs(o.y-n.y)<=3);
+  if(hunter){away=hunter;if(Math.abs(hunter.x-G.x)+Math.abs(hunter.y-G.y)<=5)logObs(hunter.sp,'chasse');if(Math.random()<.5){const e={n:hunter,k:'!',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),600)}}
+  else if(dP<=2&&SHY.has(n.sp))away={x:G.x,y:G.y};
+  else if(dP<=3&&CURIOUS.has(n.sp)){faceTo(n,G.x,G.y);if(!n.saw){n.saw=1;const e={n,k:'?',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),700)}continue}
+  let d;if(away){const opts=[0,1,2,3].filter(k=>free(n.x+DX[k],n.y+DY[k])).sort((a,b)=>(Math.abs(n.x+DX[b]-away.x)+Math.abs(n.y+DY[b]-away.y))-(Math.abs(n.x+DX[a]-away.x)+Math.abs(n.y+DY[a]-away.y)));d=opts[0]}
+  else{const c=M.rows[n.y][n.x];if((c==='f'||c===',')&&Math.random()<.3){if(dP<=4)logObs(n.sp,'repas');const e={n,k:'♪',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),700);continue}
+   if(Math.random()<.45)continue;d=rnd(0,3);if(Math.abs(n.x+DX[d]-n.x0)>3||Math.abs(n.y+DY[d]-n.y0)>3)d=OPP[d]}
+  if(d==null||!free(n.x+DX[d],n.y+DY[d])){if(d!=null)n.d=d;continue}n.walk=1;n.rx=n.x+DX[d];n.ry=n.y+DY[d];npcStep(n,d,away?190:340).then(()=>{n.walk=0;n.rx=n.ry=null})}}
+
+// =====================================================================
+// SECRETS, CARNET D'OBSERVATION ET QUÊTES ANNEXES 5.1
+// =====================================================================
+// Clairière secrète : derrière l'ermitage de Lumen, un arbre n'en est pas un…
+MAPS.clairiere={name:'Clairière Secrète',bg:'foret',amb:'foret',mus:'foret',
+ rows:["TTTTTTTTTTTTTT","TT,,,TT..ff.TT","T,,,,...f...,T","T..ff..~~~..,T","...S...~~~...T","T,..f..~~~.f.T","T,,......o..,T","T,,,.f....,,,T","TT,,,,TT..,,TT","TTTTTTTTTTTTTT"],
+ enc:[['lapilune',12,15,24,'n'],['hiboulume',12,15,18,'n'],['pissenlou',11,13,24,'j'],['pissenlion',14,16,8,'j'],['faucaube',15,17,6,'j'],['racinou',11,13,18]],
+ doors:{'0,4':['foret',26,3,2]},signs:{'3,4':'STÈLE ANCIENNE\n"Ici, les fondateurs endormirent la nuit. Ils jurèrent de la réveiller le jour où le ciel serait de nouveau partagé."'},
+ hidden:[{x:12,y:2,it:'hypercapsule',q:3,id:'clr1'}],npcs:[BT(11,7,'clr','baieprisme')],enter:async()=>{if(!f().clr){f().clr=1;await say('Les arbres s\'écartent… Une clairière que personne ne semble connaître. L\'air y est plus frais, plus calme.');save()}}};
+MAPS.foret.doors={...(MAPS.foret.doors||{}),'27,3':['clairiere',1,4,3]};
+
+// Carnet d'observation : regarder vivre les Pixémons sauvages (sommeil, repas, chasse) remplit le carnet de Lucie.
+const OBSK={dodo:'dort',repas:'se régale',chasse:'chasse'};
+function logObs(sp,k){if(!G||!f().starter)return;const key=sp+':'+k;G.obs??={};if(G.obs[key])return;G.obs[key]=1;ui.note={s:`Carnet : ${SP[sp].name} ${OBSK[k]}`,t0:now()};sfx('sel');tip('carnet','Nouvelle note dans le carnet d\'observation ! Regarde vivre les Pixémons sauvages (sommeil, repas, chasse), puis va voir l\'Assistante Lucie au labo.')}
+const nObs=()=>Object.keys(G.obs||{}).length,OBSR=[[3,'capsule',5],[8,'supercapsule',5],[15,'hypercapsule',4],[24,'biscuit',6]];
+async function lucieTalk(){const L='Assistante Lucie';let got=0;
+ for(const[n,it,q]of OBSR)if(nObs()>=n&&!f()['ob'+n]){f()['ob'+n]=1;got=1;await say(`${n} observations dans ton carnet ? Formidable ! Les vraies découvertes commencent toujours par regarder.`,L);give(it,q);await say(`Tu reçois ${IT[it][0]} x${q} !`)}
+ if(f().starter&&!f().stormQ){f().stormQ=1;return say('Tu sais ce qui me fascine ? Les Étincelot. Ils n\'apparaissent que sous l\'orage, dans les hautes herbes. Si tu en captures un, montre-le-moi !',L)}
+ if(f().stormQ===1&&ownSp('etincelot')){f().stormQ=2;await say('Un Étincelot ! Ses joues crépitent encore… Merci ! Ça confirme ma théorie : certaines créatures suivent la météo, pas l\'heure.',L);give('supercapsule',4);await say('Tu reçois 4 Super Capsules !');return say('Autre secret : les Racinou sortent de terre quand il pleut. Et sur la Rive Brumeuse, les nuits claires… regarde bien les rives.',L)}
+ if(got)return save();const nx=OBSR.find(r=>nObs()<r[0]);
+ return say(f().starter?`Ton carnet d'observation compte ${nObs()} note${nObs()>1?'s':''}.${nx?` Prochaine récompense à ${nx[0]}.`:' Tu as tout vu ! Enfin… presque.'} Approche-toi des Pixémons sauvages sans les effrayer : regarde-les dormir, manger, chasser.`:'Le Prof. a passé sa vie à étudier le Cycle d\'Aurélys : le jour, la nuit… et les créatures qui en dépendent.',L)}
+// Gérard, la plante de Lou. Il paraît qu'il écoute.
+async function gerardAct(){f().ger=(f().ger||0)+1;const g=f().ger;if(g<7)return say(['Une plante verte. Lou lui parle tous les matins. Elle s\'appelle Gérard.','Gérard ne dit rien. Gérard est une plante.','Tu as l\'impression que Gérard t\'écoute.','Gérard bouge une feuille. Sûrement un courant d\'air.','…Gérard ?','Tu dis bonjour à Gérard. Gérard ne répond pas. Évidemment.'][g-1]);
+ if(g===7){await say('…Une baie tombe de la plante et roule à tes pieds. Merci, Gérard.');give('baieprisme',2);return say('Tu reçois 2 Baies Prisme ! (Ne le dis pas à Lou.)')}return say('Gérard a l\'air satisfait.')}
+// Mémé Rosa se souvient de la danse des Lapilune
+async function rosaLapilune(){const R='Mémé Rosa';if(ownSp('lapilune')){f().rosaQ=3;await say('Oh… un Lapilune ! Je n\'en avais plus vu depuis mes quinze ans…',R);
+  await say('Quand j\'étais petite, les nuits duraient jusqu\'à l\'aube. Les Lapilune dansaient sur la Rive Brumeuse, et on dansait avec eux.',R);
+  await say('Ma grand-mère disait que les fondateurs avaient endormi la nuit pour que les récoltes ne gèlent plus. Ils avaient promis de la réveiller un jour… Ils ont oublié, je crois.',R);
+  give('crepuscapsule',5);return say('Tiens, mon petit. Pour les créatures de la nuit. Tu reçois 5 Crépuscapsules !',R)}
+ return say('Tu sais, les nuits claires, il paraît qu\'on voit encore des Lapilune danser sur la Rive Brumeuse. Si tu en vois un, montre-le-moi, veux-tu ?',R)}
+
 function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
 const mapMus=M=>act2()&&(M.mus==='route'||M.mus==='foret')?'ecl':M.mus;
-function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
+function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;faunaSpawn(map);folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
  if(ch&&!G.wx&&RAINY.has(map)&&f().starter&&Math.random()<.16){G.wx={k:'rain',n:rnd(70,150)};ui.note={s:'Averse',t0:now()+900}}const sw=swarm();if(ch&&sw&&sw[0]===map)setTimeout(()=>{ui.note={s:'Essaim : '+SP[sw[1]].name,t0:now()}},1600)}
 async function warp(map,x,y,d){sfx('door');await fadeTo(1,200);loadMap(map,x,y,d);await fadeTo(0,200);save();if(MAPS[map].enter)await MAPS[map].enter()}
 function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G.y+DY[d],mw=M.rows[0].length,mh=M.rows.length;
@@ -612,11 +837,12 @@ function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G
  if(tx<0||ty<0||tx>=mw||ty>=mh){const e=M.edges?.['snwe'[d]];if(!e)return;const N=MAPS[e[0]];let nx,ny;if(d<2){nx=G.x+e[1];ny=d?N.rows.length-1:0}else{ny=G.y+e[1];nx=d===2?N.rows[0].length-1:0}run(()=>warp(e[0],nx,ny,d));return}
  const dr=M.doors?.[tx+','+ty];if(dr){run(typeof dr==='function'?dr:()=>warp(...dr));return}
  const bo=npcs(M).find(n=>n.push&&n.x===tx&&n.y===ty);if(bo){if(now()-lastBump>260){lastBump=now();run(()=>pushRock(bo,d))}return}
+ const fa=npcs(M).find(n=>n.fauna&&!n.gone&&n.x===tx&&n.y===ty);if(fa){run(()=>faunaMeet(fa));return}
  if(SOLID.has(M.rows[ty][tx])||npcs(M).some(n=>n.x===tx&&n.y===ty||n.rx===tx&&n.ry===ty)){if(now()-lastBump>350){sfx('bump');lastBump=now()}return}
  move={fx:G.x,fy:G.y,tx,ty,t:0};folFollow(G.x,G.y);if(held.b)AMB.push({k:'dst',x:G.x*TS+16,y:G.y*TS+28,l:18,ml:18})}
 function updWorld(dt){G.play+=dt;if(move){move.t+=dt/(held.b?95:170);if(move.t>=1){G.x=move.tx;G.y=move.ty;steps++;const s=move.sil;move=null;if(!s)run(onStep)}return}
  if(busy)return;if((FOL.tt-=dt)<=0){FOL.tt=4500;const M=MAPS[G.map];if(folMon()&&(M.hidden||[]).some(h=>!f()[hk(h)]&&Math.abs(h.x-G.x)+Math.abs(h.y-G.y)<=3)){const e={n:'fol',k:'!',t0:now()};ui.emo.push(e);sfx('sel');setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),700)}}
- const NM=npcs(MAPS[G.map]);for(const n of NM)if((n.say||n.fn)&&!n.fix&&!n.tr&&!n.walk&&!['ball','mon','shard','obj'].includes(n.t)){n.tt=(n.tt??Math.random()*3000)-dt;if(n.tt<=0){n.tt=2200+Math.random()*3000;const d=[0,0,2,3,1][Math.random()*5|0];n.d=d;
+ faunaTick(dt);const NM=npcs(MAPS[G.map]);for(const n of NM)if((n.say||n.fn)&&!n.fix&&!n.tr&&!n.walk&&!['ball','mon','shard','obj'].includes(n.t)){n.tt=(n.tt??Math.random()*3000)-dt;if(n.tt<=0){n.tt=2200+Math.random()*3000;const d=[0,0,2,3,1][Math.random()*5|0];n.d=d;
   if(n.wan&&Math.random()<.6){const M=MAPS[G.map],tx=n.x+DX[d],ty=n.y+DY[d],c=M.rows[ty]?.[tx];if(c&&!SOLID.has(c)&&Math.abs(tx-n.x0)<=2&&Math.abs(ty-n.y0)<=2&&!(tx===G.x&&ty===G.y)&&!(move&&tx===move.tx&&ty===move.ty)&&!(tx===FOL.x&&ty===FOL.y)&&!NM.some(o=>o!==n&&(o.x===tx&&o.y===ty||o.rx===tx&&o.ry===ty))&&!M.doors?.[tx+','+ty]){n.walk=1;n.rx=tx;n.ry=ty;npcStep(n,d,320).then(()=>{n.walk=0;n.rx=n.ry=null})}}}}
  const d=['down','up','left','right'].findIndex(k=>held[k]);if(d>=0)tryMove(d)}
 async function pushRock(n,d){const M=MAPS[G.map],bx=n.x+DX[d],by=n.y+DY[d],c=M.rows[by]?.[bx];
@@ -629,7 +855,7 @@ const RAINY=new Set(['bourg','route1','ville','foret','route2','port']),rain=()=
 const SWARMS=[['route1','volticelle',4,7],['route1','lumignon',4,7],['foret','larvigne',10,13],['foret','nocturelle',10,13],['mont','magmor',15,18],['mont','nocturelle',15,18],['route2','tetardin',18,22],['route2','lumignon',19,22],['grotte','rocaroc',24,27],['route2','papivigne',20,23]];
 function swarm(){const day=Math.floor(G.t/CYC),L=SWARMS.filter(([m])=>G.seen?.[m]&&(m!=='route2'&&m!=='grotte'||f().r2));return L.length&&f().badge?L[(day*7919+13)%L.length]:null}
 function encTable(M,k){let T=[...(M.enc||[])];const sw=swarm();if(sw&&sw[0]===k)T.push([sw[1],sw[2],sw[3],60]);if(rain()&&M.fish&&T.length){const lv=T.map(e=>e[1]);T.push([M.fish[0][0],Math.min(...lv),Math.max(...T.map(e=>e[2])),28])}return T}
-const pickEnc=T=>{const L=T.filter(e=>!e[4]||(e[4]==='n')===night());let r=Math.random()*L.reduce((a,e)=>a+e[3],0);return L.find(e=>(r-=e[3])<0)||L[0]};
+const pickEnc=T=>{const L=T.filter(e=>!e[4]||(e[4]==='r'?rain():(e[4]==='n')===night()));let r=Math.random()*L.reduce((a,e)=>a+e[3],0);return L.find(e=>(r-=e[3])<0)||L[0]};
 async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++;const ld=G.party[0];if(ld&&ld.hp>0&&G.t%8===0)bondUp(ld,1);if(G.t%48===0)G.party.forEach(m=>m.hp>0&&bondUp(m,1));
  if(G.t%160===0&&folMon()&&bondLv(ld)>=3&&!['in','tech'].includes(M.amb)&&Math.random()<.4){const k=['baiesoin','biscuit','potion','capsule','superpotion','baieprisme'][rnd(0,5)];await emote('fol','!',500);give(k);await say(`${nm(ld)} a déniché quelque chose ! Tu reçois ${IT[k][0]} !`);tip('flair','Quand le lien est fort, ta créature de tête déniche parfois des objets en chemin.')}if(night()&&!act2()&&M.amb!=='in')tip('nuit','C\'est la nuit ! D\'autres créatures sortent des herbes (Lumignon, Ombrelin…), et certains talents changent. Le lit de la maison permet de choisir l\'heure.');if(rain())tip('pluie','Une averse ! Pendant la pluie, les combats commencent sous la PLUIE (EAU x1,5, FEU x0,5) et des créatures d\'eau sortent des herbes.');if(G.wx&&--G.wx.n<=0){G.wx=null;if(RAINY.has(G.map))ui.note={s:'Éclaircie',t0:now()}}if(phase()!==ph&&M.amb!=='in'&&M.amb!=='cave'&&M.amb!=='tech')ui.note={s:PHN[phase()],t0:now()};
  if(ch===','||ch==='v'){sfx('grass');for(let i=0;i<4;i++)AMB.push({k:'rl',x:G.x*TS+8+Math.random()*16,y:G.y*TS+18,vx:(Math.random()-.5)*1.6,vy:-1.5-Math.random(),l:22,c:ch===','?'#7fd05a':M.cave?'#6a7a8a':'#d8743a'})}
@@ -772,7 +998,11 @@ async function pickStarter(sp){if(f().starter){if(!f().balance||f().gift3)return
  await say('Rejoins Cendreville au nord par la Route 1 et affronte Brasia, la championne d\'arène. Ah, et le Vieux Gus, près de la mare, aime bien les jeunes dresseurs…','Prof. Saule');
  const kk=MAPS.lab.npcs.find(n=>n.t==='rival');if(kk){await emote(kk,'♪',500);await say('À plus ! Je serai toujours un pas devant toi !','Kael')}save()}
 const DXR=[[4,'supercapsule',5],[8,'elixir',3],[12,'hypercapsule',3],[18,'hyperpotion',5]];
-async function profTalk(){const P='Prof. Saule';if(!f().starter)return say('Ah, te voilà ! Choisis l\'une des trois capsules sur la table. Chacune contient un Pixémon !',P);
+async function profTalk(){const P='Prof. Saule';if(!f().starter){if(!f().profMet){f().profMet=1;await say('Ah, te voilà ! Joyeux anniversaire ! Douze ans… Le temps file aussi vite que nos nuits.',P);
+  await say('Bienvenue dans le monde des Pixémons. Ici, à Aurélys, tout vit au rythme du Cycle : le jour, Solarion veille sur nous. La nuit, d\'autres créatures s\'éveillent.',P);
+  await say('Mais les nuits raccourcissent, année après année. Ton père, Elias, a été le premier à le mesurer. Il était mon assistant… et mon ami.',P);
+  await say('Il aurait voulu être là aujourd\'hui. Alors je vais faire de mon mieux pour le remplacer, rien que ce matin.',P);await emote('me','…',600)}
+  return say('Choisis l\'une des trois capsules sur la table. Chacune contient un Pixémon !',P)}
  let got=0;for(const[n,it,q]of DXR)if(caught()>=n&&!f()['dx'+n]){f()['dx'+n]=1;got=1;await say(`${n} espèces capturées ? Formidable ! Tiens, voici de quoi continuer.`,P);give(it,q);await say(`Tu reçois ${IT[it][0]} x${q} !`)}
  if(caught()>=DEX.length&&!f().dxAll){f().dxAll=1;got=1;give('hypercapsule',10);await say('Tu… tu as complété le Pixédex ? Toutes les créatures d\'Aurélys ! Voici 10 Hyper Capsules, et toute mon admiration.',P)}
  if(got)return save();const nx=DXR.find(r=>caught()<r[0]);
@@ -787,7 +1017,7 @@ async function liliTalk(){const L='Lili',s=f().lili||0;
 async function mimoFound(n){await say('Un petit Ombrelin tremble sous son ombrelle. Il porte un ruban rose… C\'est Mimo !');await say('Tu lui parles doucement. Il se blottit contre toi.');f().lili=2;sfx('lv');await say('Ramène Mimo à Lili, à Cendreville.')}
 const TUT=[[1,'lueur'],[2,'aube'],[4,'zenith'],[6,'prisme'],[10,'aubeeternelle']];
 async function lumenTalk(){const L='Ermite Lumen',n=G.keys.shards||0;
- if(!f().lumen){f().lumen=1;await say('Oh ! Un visiteur… Je suis Lumen. Je recueille les Éclats d\'Aube : des larmes de Solarion, tombées au fil des siècles.',L);await say('Chaque éclat réveille un savoir oublié. Je peux enseigner les techniques de LUMIÈRE à tes créatures… sauf à celles d\'OMBRE.',L)}
+ if(!f().lumen){f().lumen=1;await say('Oh ! Un visiteur… Je suis Lumen. Je recueille les Éclats d\'Aube : des larmes de Solarion, tombées au fil des siècles.',L);await say('Chaque éclat réveille un savoir oublié. Je peux enseigner les techniques de LUMIÈRE à tes créatures… sauf à celles d\'OMBRE.',L);await say('Un conseil, en passant : les arbres de l\'est ne sont pas tous des arbres. Les Lapilune le savent bien.',L)}
  if(n>=12&&!f().lumen12){f().lumen12=1;G.keys.charme=1;sfx('shard');ui.pop={ic:ICO.shard,t0:now()};await say('Les douze éclats… réunis. Tu es un véritable Porteur d\'Aube. Prends ce CHARME CHROMA : les créatures aux couleurs rares viendront trois fois plus souvent à toi.',L)}
  const av=TUT.filter(([k])=>n>=k),nx=TUT.find(([k])=>n<k);await say(`Tu as trouvé ${n} éclat${n>1?'s':''} sur 12.${nx?` Au prochain palier (${nx[0]} éclat${nx[0]>1?'s':''}), j'enseignerai ${MV[nx[1]].n}.`:''}`,L);
  if(!av.length)return say('Reviens quand tu auras trouvé un éclat. Ils scintillent dans l\'herbe… ou derrière des obstacles que seul un bon type peut franchir.',L);
@@ -989,14 +1219,14 @@ function drawMission(q,[x,y,w,h],sel,pr){rr(x+4,y+4,w,h,4,'rgba(8,6,20,.45)');rr
  bar(x+66,y+64,170,q.n/q.need,q.done?C.green:C.blue,8);txt(`${q.n}/${q.need}`,x+244,y+72,C.ink2,{mini:1});
  X.drawImage(ICO[q.rw[0]],x+w-118,y+16,16,16);txt('x'+q.rw[1],x+w-96,y+29,C.ink,{mini:1});X.drawImage(ICO.coin,x+w-118,y+38,16,16);txt(q.gold,x+w-96,y+51,C.ink,{mini:1});
  if(q.done&&(now()/400|0)%2)txt('RÉCOMPENSE !',x+w-14,y+74,'#c8902a',{mini:1,al:'r'})}
-// --- Nouveautés de la version 5.0 : refonte graphique complète ---
-const NEWS=[[()=>monSpr('flamiot',0,48),'Nouveaux designs','Les 25 Pixémons sont redessinés en vrai pixel art, de face et de dos, avec des icônes animées dans l\'équipe.'],
- [()=>ICO.pin,'Monde redessiné','Villes, routes, forêt, volcan, grottes et intérieurs refaits tuile par tuile : chemins, rives, maisons, Centres, Boutiques et Arènes.'],
- [()=>ICO.flag,'Personnages','Chaque personnage a son sprite de marche, son sprite de combat et son portrait dans les dialogues.'],
- [()=>ICO.star,'Combats illustrés','Fonds de combat peints (prairie, forêt, lac, grotte, volcan), avec leur version de nuit.'],
- [()=>ICO.board,'Graphismes libres','Graphismes du projet libre Tuxemon et de leurs auteurs (licences CC BY-SA, CC BY, CC0) : appuie sur A pour les crédits.'],
- [()=>ICO.hrt,'Rappel 4.0','Éveil du Cycle, Lien et Retour, objets tenus, Missions, chapitre de la Mine et quêtes annexes.'],
- [()=>ICO.trophy,'Après l\'aventure','Tournoi du Cycle à Cendreville, revanches d\'arène et Panthéon des champions.']];
+// --- Nouveautés de la version 6.0 : une aventure complète ---
+const NEWS=[[()=>ICO.star,'Une vraie introduction','Réveille-toi le matin de tes 12 ans, prépare ton sac, découvre ta famille… et les affaires de ton père, Elias.'],
+ [()=>monSpr('faucaube',0,48),'16 nouveaux Pixémons','41 espèces : Faucaube, Pissenlion, Granifélin, Pyrénard… certaines ne sortent que la nuit ou sous l\'orage.'],
+ [()=>ICO.pin,'Un monde vivant','Les Pixémons sauvages se promènent, dorment, mangent, fuient ou chassent. Surprends-les endormis !'],
+ [()=>ICO.dex,'Carnet d\'observation','Regarde vivre les Pixémons sauvages et rapporte tes notes à l\'Assistante Lucie, au labo.'],
+ [()=>ICO.flag,'Quêtes et secrets','Lou, Mémé Rosa, Lucie… une clairière que personne ne connaît, une petite clé, et une plante très spéciale.'],
+ [()=>ICO.hrt,'Le fil d\'Elias','Les souvenirs de ton père se dénouent jusqu\'à la toute fin de l\'aventure. Regarde bien autour de toi.'],
+ [()=>ICO.board,'Graphismes libres','Projet libre Tuxemon et ses artistes : appuie sur A pour les crédits.']];
 const newsBody=()=>NEWS.forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))});
 // Crédits graphiques (détail complet dans CREDITS.md)
 const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','github.com/Tuxemon/Tuxemon','',
@@ -1004,7 +1234,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 5.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 6.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -1403,12 +1633,14 @@ function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R
   if(n.t==='ball'){const onT=M.rows[n.y]?.[n.x]==='C',oy=onT?-10:12;if(!onT)X.drawImage(SHD2,sx+6,sy+24,18,6);X.drawImage(AIMG.orbS_capsule,sx+8,sy+oy);if(((t/180|0)+n.x*3)%14===0){R(X,'#ffffff',sx+19,sy+oy+1,1,5);R(X,'#ffffff',sx+17,sy+oy+3,5,1)}}
   else if(n.t==='shard'){const bob=Math.round(Math.sin(t/300+n.x)*2);X.drawImage(SHD2,sx+5,sy+24,22,7);glowAt(sx+16,sy+10,38,.3+.15*Math.sin(t/250));X.drawImage(AIMG.shard,sx+6,sy-2+bob);if(((t/140|0)+n.x)%10===0)R(X,'#ffffff',sx+22,sy,2,2)}
   else if(n.t==='obj'){drawObj(n.k,sx,sy,t,n)}
+  else if(n.t==='mon'&&n.fauna){const bob=n.slp?0:(t/(n.walk?140:460)|0)%2*2;X.drawImage(SHD,sx-2,sy+20,36,12);X.drawImage(monOW(n.sp,n.d),sx-16,sy-34-bob,64,64);grassOver(n.x,n.y,sx,sy);
+   if(n.slp&&((t/500|0)+n.x)%3)txt('z',sx+30+((t/500|0)%3)*3,sy-10-((t/500|0)%3)*6,'#e8e4f6',{s:1})}
   else if(n.t==='mon'){const al=n.a??1;X.globalAlpha=al;X.drawImage(SHD,sx-4,sy+20-(n.oy||0),40,12);const bob=(t/420|0)%2*2;X.globalCompositeOperation='lighter';X.globalAlpha=(.3+.1*Math.sin(t/300))*al;X.drawImage(GLOWY,sx-32,sy-40);X.globalAlpha=al;X.globalCompositeOperation='source-over';X.drawImage(monOW(n.sp,n.d),sx-16,sy-34-bob,64,64);X.globalAlpha=1}
   else{X.drawImage(SHD2,sx+5,sy+25);X.drawImage(chr(n.t,n.d,(n.ox||n.oy)?1+(t/130|0)%2:0),sx,sy-32);grassOver(n.x,n.y,sx,sy);if(n.qm?.())X.drawImage(ICO.qmark,sx+8,sy-44-(t/320|0)%2*2,16,22)}}}));
  const fm=folMon();if(fm&&!(FOL.x===G.x&&FOL.y===G.y&&!move)){const k=move?Math.min(1,move.t):1,fx=Math.round((FOL.fx+(FOL.x-FOL.fx)*k)*TS),fy=Math.round((FOL.fy+(FOL.y-FOL.fy)*k)*TS),fly=FLY.has(fm.sp);
   ents.push({y:fy-1,d:()=>{const sx=fx-cx,sy=fy-cy,hop=move?Math.round(Math.sin(k*Math.PI)*3):fly?Math.round(Math.sin(t/260)*3+3):(t/480|0)%2;X.drawImage(SHD,sx+2,sy+22,28,10);X.drawImage(monOW(fm.sp,FOL.d,fm.sh),sx-16,sy-32-hop-(fly?6:0),64,64);grassOver(FOL.x,FOL.y,sx,sy)}})}
  ents.push({y:py,me:1,d:()=>{const sx=px-cx,sy=py-cy,fr=move&&move.t>.15&&move.t<.7?1+steps%2:0;X.drawImage(SHD2,sx+5,sy+25);X.drawImage(chr('hero',G.dir,fr),sx,sy-32);const gx=move?(move.t>.5?move.tx:move.fx):G.x,gy=move?(move.t>.5?move.ty:move.fy):G.y;grassOver(gx,gy,sx,sy)}});
- for(const h of M.hidden||[])if(!f()[hk(h)]&&((t/150|0)+h.x*7+h.y*3)%(night()||M.dark2?12:26)===0){const sx=h.x*TS-cx+12,sy=h.y*TS-cy+10;R(X,'#ffffff',sx,sy-4,2,10);R(X,'#ffffff',sx-4,sy,10,2);R(X,C.goldL,sx,sy,2,2)}
+ for(const h of M.hidden||[])if(!f()[hk(h)]&&((t/150|0)+h.x*7+h.y*3)%(G.keys.boussole?7:night()||M.dark2?12:26)===0){const sx=h.x*TS-cx+12,sy=h.y*TS-cy+10;R(X,'#ffffff',sx,sy-4,2,10);R(X,'#ffffff',sx-4,sy,10,2);R(X,C.goldL,sx,sy,2,2)}
  if(ui.bob){const b=ui.bob,sx=b.x*TS-cx+12,sy=b.y*TS-cy+12+(b.bite?6:Math.round(Math.sin(t/220)*2));R(X,C.ink,sx-1,sy-1,10,10);R(X,'#ffffff',sx,sy+4,8,4);R(X,C.acc,sx,sy,8,4);X.globalAlpha=.5;R(X,'#eef9ff',sx-6,sy+9,20,2);X.globalAlpha=1;R(X,'#ece6d6',px-cx+16,py-cy+4,1,1)}
  // rangées : décors posés sur la rangée r, puis personnages de cette rangée (du fond vers l'avant)
  const rows=new Map();for(const e of ents){const r=Math.floor((e.y+16)/TS);if(!rows.has(r))rows.set(r,[]);rows.get(r).push(e)}
@@ -1520,8 +1752,11 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V5.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
-function drawIntro(t){const sl=ui.slide;
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V6.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
+  const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
+  X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
+  X.globalAlpha=.08;R(X,'#4a2a8a',0,0,W,H);X.globalAlpha=1;return}
  if(sl===1){const gr=X.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#7cc4ec');gr.addColorStop(.62,'#c8ecf4');gr.addColorStop(.63,'#6aaa5a');gr.addColorStop(1,'#3e7a3a');X.fillStyle=gr;X.fillRect(0,0,W,H);
   X.globalCompositeOperation='lighter';X.globalAlpha=.6;X.drawImage(GLOWY,240-110,70-110,220,220);X.globalAlpha=1;X.globalCompositeOperation='source-over';X.drawImage(monSpr('solarion',0,128),176,6+Math.round(Math.sin(t/500)*4),128,128);
   for(let i=0;i<5;i++){const x=ev(((t*.03+i*110)%560)-40);X.drawImage(monSpr(['piafou','volticelle','lumignon','larvigne','ratounet'][i],i%2,48),x,236+((t/300|0)+i)%2*2,48,48)}
@@ -1545,9 +1780,9 @@ function drawWipe(){if(ui.wipe<=0)return;const p=ui.wipe,st2=ui.wst||'bars';
  if(st2==='wave'){for(let x=0;x<W;x+=8){const h=ev(H*Math.min(1,p*1.4-Math.sin(x/40)*.12));R(X,C.ink,x,0,8,h);if(h>4)R(X,'#4a8ad8',x,h-4,8,4)}return}
  for(let i=0;i<10;i++){const w=ev(W*p),y=i*32;R(X,C.ink,i%2?W-w:0,y,w,32);if(w>4)R(X,C.frame,i%2?W-w:w-4,y,4,32)}}
 function draw(t){X.imageSmoothingEnabled=false;
- if(mode==='credits')drawCredits(t);else if(mode==='title')drawTitle(t);else if(mode==='world')drawWorld(t);else if(mode==='battle'&&B)drawBattle(t);else if(mode==='evo')drawEvo();else if(mode==='intro')drawIntro(t);else if(mode==='end')drawEnd(t);else R(X,'#000000',0,0,W,H);
+ if(mode==='credits')drawCredits(t);else if(mode==='title')drawTitle(t);else if(mode==='world'){if(ui.wz>1.001){X.save();X.translate(ui.wzx,ui.wzy);X.scale(ui.wz,ui.wz);X.translate(-ui.wzx,-ui.wzy);drawWorld(t);X.restore()}else drawWorld(t)}else if(mode==='battle'&&B)drawBattle(t);else if(mode==='evo')drawEvo();else if(mode==='intro')drawIntro(t);else if(mode==='end')drawEnd(t);else R(X,'#000000',0,0,W,H);
  if(ui.lb>0){const h=ev(30*ui.lb);R(X,'#000000',0,0,W,h);R(X,'#000000',0,H-h,W,h)}
- if(ui.ring)drawRing();if(ui.tip&&mode==='world'&&!ui.text&&!ui.menus.length&&!ui.panel)drawTip();drawDim();ui.panel?.();if(ui.badge)drawBadge();drawText();ui.menus.forEach(drawMenu);drawToast();if(ui.vs)drawVs();
+ if(ui.ring)drawRing();if(mode==='world')drawChecklist();if(ui.tip&&mode==='world'&&!ui.text&&!ui.menus.length&&!ui.panel)drawTip();drawDim();ui.panel?.();if(ui.badge)drawBadge();drawText();ui.menus.forEach(drawMenu);drawToast();if(ui.vs)drawVs();
  if(ui.flash>0){X.globalAlpha=ui.flash;R(X,ui.flashC,0,0,W,H);X.globalAlpha=1;ui.flash=Math.max(0,ui.flash-.05)}drawWipe();
  if(ui.fade>0){X.globalAlpha=Math.round(ui.fade*5)/5;R(X,'#000000',0,0,W,H);X.globalAlpha=1}}
 let last=0;function loop(t){const dt=Math.min(50,t-last);last=t;if(ui.text&&ui.text.t<1e8){const o=ui.text.t|0;ui.text.t+=dt*(G?.opt?.txt===2?.11:.055);if(ui.text.who&&(ui.text.t|0)>o&&(ui.text.t|0)%3===0&&(ui.text.t|0)<ui.text.s.join(' ').length)sfx('blip')}if(mode==='world')updWorld(dt);draw(t);requestAnimationFrame(loop)}
@@ -1562,6 +1797,5 @@ async function titleScreen(){mode='title';B=null;move=null;ui.menus=[];ui.text=n
   if(sv&&i===0){G=sv;await fadeTo(1,300);mode='world';ui.banner=null;loadMap(G.map,G.x,G.y,G.dir);await fadeTo(0,300);
    if(G.wn){delete G.wn;await whatsNew()}if(G.brRetro){delete G.brRetro;tip('bracelet','Nouveau : Brasia t\'a fait parvenir le BRACELET DU CYCLE ! En combat, remplis sa jauge, puis choisis ÉVEIL DU CYCLE parmi tes attaques.')}return}
   if(sv&&!await ask('Une sauvegarde existe. Une nouvelle partie l\'effacera. Continuer ?'))continue;
-  G=newGame();await fadeTo(1,400);mode='intro';ui.slide=0;await fadeTo(0,300);for(const[i,s]of INTRO.entries()){if(i&&[0,1,2,0][i]!==ui.slide){ui.text=null;await fadeTo(1,220);ui.slide=[0,1,2,0][i];await fadeTo(0,220)}await say(s,'Prof. Saule')}
-  await fadeTo(1,400);mode='world';ui.banner=null;loadMap('bourg',5,6,0);save();await fadeTo(0,400);return}}
+  G=newGame();await fadeTo(1,400);await dreamIntro();return}}
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});

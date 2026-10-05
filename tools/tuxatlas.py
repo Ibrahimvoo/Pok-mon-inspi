@@ -124,6 +124,15 @@ T['plant'] = tid(SP, 951); T['plant2'] = tid(SP, 920); T['trash'] = tid(SP, 254)
 T['sofaL'] = tid(SP, 1226); T['sofaM'] = tid(SP, 1227); T['sofaR'] = tid(SP, 1228)
 T['poster'] = tid(SP, 414); T['stool'] = tid(SP, 79)
 T['pipeV'] = reg(SP, 10, 7, 3, 3)
+# maison du héros
+IS = 'core_indoor_stairs.png'; COLS[IS] = 45
+T['bed'] = reg(SP, 10, 3, 1, 2); T['bedR'] = reg(SP, 6, 14, 1, 2); T['nightLamp'] = reg(SP, 8, 3, 1, 2); T['plantPot'] = reg(SP, 9, 3, 1, 2)
+T['dresser'] = reg(SP, 0, 5, 1, 2); T['oldPc'] = reg(SP, 1, 5, 2, 2); T['tv'] = reg(SP, 14, 0, 3, 2); T['fridge'] = reg(SP, 5, 7, 1, 2)
+T['kitchen'] = reg(SP, 0, 14, 2, 2); T['sink'] = reg(SP, 1, 3, 2, 2); T['bigTable'] = reg(SP, 20, 5, 2, 2); T['sofaB'] = reg(SP, 22, 5, 2, 2)
+T['stairsUp'] = stack(tid(IS, 2270), tid(IS, 2315)); T['lampFloor'] = reg(SP, 16, 3, 1, 2)
+T['flHome'] = tid(IF, 1123); T['flHome2'] = tid(IF, 1169); T['flPlank'] = tid(IF, 47); T['flPlank2'] = tid(IF, 93); T['wallHome'] = wallface(960, 1006, 1052)
+T['frameA'] = reg(SP, 21, 34, 1, 1); T['frameB'] = reg(SP, 22, 34, 1, 1); T['frameC'] = reg(SP, 24, 35, 1, 1)
+T['windowW'] = reg(IW, 28, 2, 2, 2)
 
 # ---------------------------------------------------------------- bâtiments (extraits des villes Tuxemon, composés tuile par tuile)
 MD = os.path.join(MOD, 'maps')
@@ -175,7 +184,8 @@ PEOPLE = [('hero', 'adventurer', 'adventurer_alt1'), ('rival', 'cooldude_red', '
           ('mountaineer', 'adventurer_green', 'adventurer_green'), ('caver', 'miner_blue', 'miner_blue'), ('miner', 'miner', 'miner'),
           ('sailor', 'soldier', 'soldier'), ('captain', 'riverboatcaptain', 'riverboatcaptain'), ('nurse', 'nurse', 'nurse'),
           ('astro', 'professor_lapi', 'professor_lapi'), ('lili', 'florist_rose', 'florist_rose'), ('fisher', 'fisher_fiery', 'fisher_red'),
-          ('gus', 'fisher', 'fisher'), ('vendor', 'shopassistant', 'shopassistant')]
+          ('gus', 'fisher', 'fisher'), ('vendor', 'shopassistant', 'shopassistant'),
+          ('sis', 'catgirl_blonde', 'catgirl_alt1'), ('dad', 'professor_brown', 'professor_brown')]
 OW = Image.new('RGBA', (48, 128 * len(PEOPLE))); BT = Image.new('RGBA', (64, 64 * len(PEOPLE)))
 for i, (k, ow, bt) in enumerate(PEOPLE):
     OW.alpha_composite(Image.open(os.path.join(MOD, 'sprites', ow + '.png')).convert('RGBA'), (0, 128 * i))
@@ -201,7 +211,10 @@ MONS = [('flamiot', 'pantherafira'), ('brasilion', 'criniotherme'), ('goutelin',
         ('sylvorne', 'baobaraffe'), ('ratounet', 'pickoon'), ('ratoroi', 'raccscal'), ('piafou', 'birdee'), ('tetardin', 'tadcool'),
         ('crapaflot', 'fribbit'), ('larvigne', 'fruitera'), ('papivigne', 'megafruitera'), ('volticelle', 'tumblebee'), ('bourdonnerre', 'weavifly'),
         ('lumignon', 'merlicun'), ('phalumine', 'firomenis'), ('rocaillon', 'grintot'), ('rocaroc', 'grinflare'), ('magmor', 'ignibus'),
-        ('ombrelin', 'cackleen'), ('noctyrex', 'bewhich'), ('nocturelle', 'noctalo'), ('solarion', 'mingdyn'), ('nocturion', 'drokoro')]
+        ('ombrelin', 'cackleen'), ('noctyrex', 'bewhich'), ('nocturelle', 'noctalo'), ('solarion', 'mingdyn'), ('nocturion', 'drokoro'),
+        ('faucaube', 'gryfix'), ('pissenlou', 'dandicub'), ('pissenlion', 'dandylion'), ('rocaton', 'rockitten'), ('granifelin', 'rockat'), ('fumenard', 'foxfire'),
+        ('pyrenard', 'vulpyre'), ('hiboulume', 'ambuwl'), ('ricanoir', 'ghosteeth'), ('miroitruite', 'shimmerain'), ('racinou', 'sprightly'), ('racinaile', 'uprout'),
+        ('herissou', 'tumblequill'), ('armaroc', 'tumbledillo'), ('etincelot', 'joulraton'), ('lapilune', 'chibiro')]
 def sharp(im):  # alpha binaire : pixel art net
     im = im.copy(); px = im.load()
     for y in range(im.height):
