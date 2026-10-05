@@ -64,6 +64,11 @@ Le menu contient la carte de la région, le journal des quêtes (sur plusieurs p
   - La Photographe Lise de Port-Miroir photographie tes créatures les plus proches, avec des récompenses et le Coeur du Cycle (liens plus rapides).
   - Message de confiance en combat important.
 - **Combat** : indicateur d'efficacité directement dans la liste des attaques.
+- **Terrains d'arène** : chaque Champion impose un terrain, affiché pendant le combat (revanches comprises).
+  - Brasia : Terrain Roc, attaques ROCHE x1,2.
+  - Maëlle : Marée, pluie permanente.
+  - Orane : Crépuscule, le ciel bascule entre soleil et éclipse à chaque tour.
+  - Ambroise : Terrain Volt, les attaques ÉLEC ne ratent jamais.
 - **Défi ultime** : avec 60 espèces capturées et Crépuscel, Papa t'attend sous le dôme, la nuit. Équipe niveau 72 à 76. Récompense : l'Étoile d'Elias sur la Carte de Dresseur.
 - **Audio** : thème de la Team Éclipse, musique des villes la nuit, thème du Sanctuaire. La musique suit le passage du jour à la nuit.
 
