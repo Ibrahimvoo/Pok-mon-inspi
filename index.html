@@ -1088,11 +1088,23 @@ MAPS.lunevie={name:'Lunévie',bg:'plaine',amb:'day',mus:'town',edges:{s:['coteau
  signs:{'16,14':'SANCTUAIRE DE LUNE\n"Que la nuit soit longue pour ceux qui en ont besoin, et le jour clair pour ceux qui l\'attendent."'},
  doors:{'6,5':['maisonY',4,5,1],'15,5':['maisonP',4,5,1],'5,11':gym3Door,'15,11':()=>center('Lunévie',['lunevie',15,12]),'11,18':shop},
  npcs:[{x:9,y:7,t:'old',d:0,name:'Veilleur Anselme',say:tod('Chut… Lunévie dort le jour. Ici, on vit la nuit : elles sont si courtes qu\'on n\'en perd pas une miette.','Bienvenue à Lunévie ! Le marché ouvre à minuit, l\'Arène aussi. Profite, la nuit file vite.','L\'éclipse… Les jeunes dansent dans les rues. Moi, j\'ai peur. Une nuit qui ne finit pas, ce n\'est plus une nuit.','Les nuits durent jusqu\'à l\'aube, maintenant. On fait la fête… et on dort enfin le matin !')},
-  {x:17,y:13,t:'astro',d:0,name:'Astronome Lys',time:'n',say:()=>f().balance?'Solarion et Nocturion… Le jour est une phrase, la nuit est sa respiration. L\'un sans l\'autre, rien n\'a de sens.':'Les fondateurs ont endormi Nocturion pour que les récoltes ne gèlent plus. Mais un monde sans vraie nuit, c\'est une phrase sans point.'},
+  {x:17,y:13,t:'astro',d:0,name:'Astronome Lys',time:'n',fn:lysTalk,qm:()=>f().lysQ===1&&ownSp('meteosaur')},
+  {x:6,y:14,t:'valen',d:2,name:'Valen',time:'n',cond:()=>f().medGiven,say:()=>'Brume aimait ce genre de nuit. Longue, calme… Je crois qu\'il aurait aimé te connaître.'},
+  {x:7,y:14,t:'rival',d:2,name:'Kael',time:'n',cond:()=>f().medGiven,fn:kaelPonton},
   {x:4,y:12,t:'girlkid',d:1,name:'Petite Mila',time:'n',wan:1,say:tod('','Les Lapilune viennent boire au lac quand la lune est ronde. Il faut pas faire de bruit !','Maman dit que c\'est la nuit pour toujours. C\'est génial ! …Hein, c\'est génial ?','Les Lapilune dansent toute la nuit, maintenant. Moi aussi !')},
   {x:13,y:8,t:'girl',d:2,name:'Marchande endormie',time:'j',say:'Zzz… Revenez ce soir… Zzz… Les Pierres Lunaires sont… à la Boutique… Zzz…'},
   {x:6,y:15,t:'fisher',d:2,name:'Pêcheur Jo',say:()=>G.keys.rod2?'Avec la Super Canne, lance ta ligne au bout du ponton. Ça mord plus profond !':'Le lac de Lunévie est profond. Ma Super Canne y attrape des merveilles. Passe chez moi, la maison au toit rouge.'},
   {x:17,y:15,t:'selene',d:2,name:'Sélène',cond:()=>f().cot&&!f().obsScene&&night(),fn:seleneLune}]};
+async function lysTalk(){const A='Astronome Lys';if(f().lysQ===2)return say(f().balance?'Solarion et Nocturion… Le jour est une phrase, la nuit est sa respiration.':'Mon Météosaur vient de ton ciel. Chaque nuit, je regarde la même étoile. Merci encore.',A,0,'astro');
+ if(!f().lysQ){f().lysQ=1;await say('Les fondateurs ont endormi Nocturion pour que les récoltes ne gèlent plus. Mais un monde sans vraie nuit, c\'est une phrase sans point.',A,0,'astro');
+  return say('Dis… tu as déjà vu un Météosaur ? Ils tombent avec les étoiles filantes, sur les Coteaux. Montre-m\'en un, et je te donnerai un morceau de ciel.',A,0,'astro')}
+ if(!ownSp('meteosaur'))return say('Un Météosaur, sur les Coteaux d\'Aurore. Ils sont rares… regarde près des cratères.',A,0,'astro');
+ f().lysQ=2;await say('Un Météosaur ! Regarde sa carapace : on dirait une carte des étoiles. Tiens, c\'est tombé du ciel la même nuit que lui.',A,0,'astro');give('pierrelune',1);give('pierreorage',1);jingle('item');await say('Tu reçois une PIERRE LUNAIRE et une PIERRE ORAGE !');save()}
+async function kaelPonton(){const K='Kael',d=Math.floor(G.t/CYC);if(!f().kp){f().kp=1;await say('Tu sais quoi ? Valen m\'a appris à pêcher, cette nuit. Il est nul. Il fait fuir tous les poissons.',K);
+  await say('…Merci. Je n\'aurais pas pu le ramener tout seul.',K);await emote('me','♪',600)}
+ if(f().kpDay===d)return say('Demain soir, revanche ! Valen arbitrera. Il dit qu\'il sera impartial. Menteur.',K);if(!await ask('Kael propose un combat. Accepter ?'))return;
+ const rs=f().rs||'goutelin',lv=Math.min(70,Math.max(45,...G.party.map(m=>m.lv)));const r=await battle([mon('faucaube',lv-2),mon('pissenlion',lv-2),mon('orageon',lv-1),mon(SP[rs].evo[1],lv)],{tr:{name:'Kael',look:'rival',money:3000,vs:1,boss:1,items:1,ev:1,after:'Encore ! Valen, t\'as vu ça ?!'}});
+ if(r==='win'){f().kpDay=d;give('biscuit',2);await say(['Valen rigole. Ça fait des années que Kael ne l\'avait pas entendu rire.','Valen applaudit doucement. Kael fait semblant de ne pas être fier.'][d%2])}save()}
 async function seleneLune(){if(f().selL)return say('La nuit est belle, ici. Valen aurait aimé ce village.','Sélène',0,'selene');f().selL=1;await cine(1);
  await say('Oh… toi. Je viens ici quand je n\'arrive plus à penser. La Team ne connaît pas cet endroit.','Sélène',0,'selene');
  await say('Tu sais pourquoi je l\'ai suivi ? Parce qu\'il était le seul à pleurer pour une créature que personne ne connaissait.','Sélène',0,'selene');
@@ -1682,6 +1694,7 @@ function quests(){const g=f(),n=G.keys.shards||0,nx=DXR.find(r=>caught()<r[0]);r
  g.cot&&['L\'Arène Crépuscule',g.badge3?2:1,g.badge3?'Orane t\'a remis le Badge Crépuscule. La Boutique de Lunévie vend désormais des pierres d\'évolution.':'L\'Arène de Lunévie n\'ouvre qu\'à la nuit tombée. La Championne Orane y combat dans le noir : une créature FEU, ÉLEC ou LUMIÈRE éclaire la salle.'],
  G.keys.rod&&g.cot&&['La Super Canne',G.keys.rod2?2:1,G.keys.rod2?'Avec la Super Canne, de nouvelles créatures mordent dans les eaux profondes (Lunévie, Port-Miroir, Rive Brumeuse).':'Le Pêcheur Jo de Lunévie veut voir un Miroitruite.'],
  (G.bag.fossile||ownSp('fossilame'))&&['Le Fossile Ancien',ownSp('fossilame')?2:1,ownSp('fossilame')?'Le Prof. Saule a ranimé Fossilame.':'Montre le Fossile Ancien au Prof. Saule, à Bourg-Lueur.'],
+ g.lysQ&&['Un morceau de ciel',g.lysQ===2?2:1,g.lysQ===2?'L\'Astronome Lys a vu un Météosaur. Elle t\'a offert deux pierres tombées du ciel.':'Montre un Météosaur à l\'Astronome Lys, à Lunévie, la nuit. On en trouve sur les Coteaux d\'Aurore.'],
  g.balance&&['Le Sanctuaire du Cycle',g.legC?2:1,g.legC?'Crépuscel, gardien du Cycle, a rejoint ton équipe.':g.sanct?'Le sanctuaire attend que Solarion et Nocturion soient à tes côtés.':'Une porte de pierre, en haut des Coteaux d\'Aurore, s\'est ouverte avec le retour du Cycle.'],
  g.balance&&g.badge3&&['Le Défi du Crépuscule',g.tower7?2:1,`Orane propose sept combats d'affilée à Lunévie, la nuit. Record : ${g.towerBest||0}/7.`],
  g.balance&&['Les gardiens',g.legS&&g.legN?2:1,`Solarion ${g.legS?'capturé':'au Mont Braise (jour)'} · Nocturion ${g.legN?'capturé':'à l\'Observatoire (nuit)'}`],
