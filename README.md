@@ -36,9 +36,24 @@ Aurélys vit au rythme du Cycle : le jour, Solarion veille ; la nuit, les créat
 
 ## Mise en scène
 
-Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits animés dans les dialogues ; intro illustrée ; écran de badge ; générique de fin. En combat : vol stationnaire des créatures ailées, élan des attaques, effets propres à chaque type et à chaque capacité de soutien, zoom sur les critiques, barre d'EXP animée, transitions selon la situation. Dans le monde : lumières de nuit, brume, nuages, oiseaux, poissons, pluie. Musique chiptune par lieu (villes, routes, forêt, montagne, arènes, éclipse, ruines, combats, finale).
+Cinématiques plein écran (décors peints, caméra, particules, effets de lumière) aux grands moments, et scènes en jeu avec bandes noires, caméra et bulles d'émotion ; portraits animés dans les dialogues ; intro illustrée ; écran de badge ; générique de fin. En combat : vol stationnaire des créatures ailées, élan des attaques, effets propres à chaque type et à chaque capacité de soutien, zoom sur les critiques, barre d'EXP animée, transitions selon la situation. Dans le monde : lumières de nuit, brume, nuages, oiseaux, poissons, pluie. Musique chiptune par lieu (villes, routes, forêt, montagne, arènes, éclipse, ruines, combats, finale).
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
+
+## Version 13.0 : le Grand Écran
+
+![Aperçu de la version 13.0](apercus/v13-grand-ecran.png)
+
+- **Six cinématiques plein écran**, avec décors peints, caméra (travellings, zooms), secousses, particules et effets de lumière, aux grands moments de l'histoire :
+  - **La légende du Cycle** (nouvelle partie) : Solarion se lève avec le soleil, Nocturion naît de la lune, leur danse dans le ciel, puis les fondateurs enchaînent Nocturion avec la lumière volée ; il riposte d'un rayon d'ombre qui se brise sur le sceau.
+  - **L'effondrement de la mine** : Corvin pose une charge, l'explosion souffle la galerie, la poutre cède, les lanternes tombent, les rochers et la poussière bouchent le passage.
+  - **Le vol du Cœur d'Aube** : Solarion jaillit du cratère, gros plan sur Vex, le rayon de lumière aspiré dans son bracelet, puis l'éclipse qui recouvre Aurélys.
+  - **Volterre se rallume** : les turbines s'arrêtent, repartent à l'envers dans les arcs électriques, l'onde file le long du câble et la ville s'allume fenêtre par fenêtre.
+  - **Nocturion libéré** : le vortex d'ombre, le cri, et les vitres du dôme qui volent en éclats.
+  - **Le retour du Cycle** : Solarion revient, les deux gardiens s'inclinent, tournent l'un autour de l'autre, et l'éclipse se dissipe sur l'aube.
+- **Passer** une cinématique : B deux fois. A accélère les sous-titres. Le menu **CINÉMAS** (Cinémathèque) permet de revoir celles déjà vues ; les sauvegardes existantes débloquent celles des étapes déjà franchies.
+- **Atlas d'Aurélys** : la carte du menu est redessinée (côtes, mer animée, forêts, montagnes enneigées, volcan, lacs, villages et villes, chemins, rose des vents). Les lieux inconnus sont sous le brouillard. Les flèches déplacent un curseur de lieu en lieu ; la fiche affiche le type du lieu, une description, le badge de l'arène et les Pixémons qu'on y trouve (capturés / total).
+- **Éveil en gros plan** : en combat, l'Éveil du Cycle déclenche un plan de coupe plein écran (bandeau solaire ou lunaire, lignes de vitesse, créature en gros plan).
 
 ## Version 12.0 : les Héritiers du Cycle
 

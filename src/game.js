@@ -800,7 +800,7 @@ tip('home','Ta maison : Maman soigne ton équipe, le lit de ta chambre choisit l
 
 // --- le rêve d'ouverture, puis le réveil
 const DREAM=['…Encore ce rêve. Un ciel immense, plus grand que tous les ciels.','Entre les étoiles, une ombre se déplie. Un dragon de nuit. Il n\'a pas l\'air méchant. Il a l\'air triste.','"Les nuits… sont trop courtes…"'];
-async function dreamIntro(){mode='intro';ui.slide=3;musStop();await fadeTo(0,900);for(const s of DREAM)await say(s);ui.flash=.9;ui.flashC='#ffffff';sfx('alert');await fadeTo(1,500);
+async function dreamIntro(){mode='intro';ui.slide=3;musStop();await cinema('prologue',{dark:1});await fadeTo(0,900);for(const s of DREAM)await say(s);ui.flash=.9;ui.flashC='#ffffff';sfx('alert');await fadeTo(1,500);
  mode='world';ui.banner=null;f().intro=0;loadMap('chambre',2,2,2);musStop();await fadeTo(0,700);await wakeUp()}
 async function wakeUp(){await wait(300);for(let i=0;i<3;i++){sfx('alert');await wait(220)}await emote('me','!',500);await say('DRIIIING ! …Le réveil. Tu as encore rêvé du dragon.');
  const l=tmpN('chambre',{x:7,y:1,t:'sis',d:0,name:'Lou'});sfx('door');await wait(200);await cine(1);await walk(l,'dllll',150);faceTo(l,G.x,G.y);G.dir=3;
@@ -1192,8 +1192,7 @@ async function orsoTalk(n){const O='Commandant Orso';await cine(1);faceTo(n,G.x,
  const r=await battle([mon('noctyrex',29,{item:'encensnoir'}),mon('magmor',29,{item:'charbon'}),mon('eclipsoeil',31,{moves:['hypnose','rayonnoir','morsure','nuit'],item:'baiesoin'})],{tr:{name:'Commandant Orso',look:'orso',money:3500,vs:1,boss:1,items:1,after:'Bon. Ça ne tournera pas.'}});
  if(r!=='win')return;await cine(1);await say('Bon. Ça ne tournera pas. Je vais devoir me trouver un vrai travail.',O,0,'orso');
  await say('Tu veux un conseil ? Là-haut, Vex ne se bat pas pour l\'argent. Ce genre de type, on ne le bat pas. On le convainc. Ou pas.',O,0,'orso');
- puff(n.x,n.y,'#c060ff',12);f().baseDone=1;await wait(300);ui.shake=10;sfx('roar');for(let i=0;i<4;i++){ui.flash=.4;ui.flashC='#fff4a0';await wait(160)}
- await say('Tu abaisses le grand levier. Les turbines ralentissent… puis repartent dans l\'autre sens. Le courant revient à Volterre !');
+ puff(n.x,n.y,'#c060ff',12);f().baseDone=1;await wait(300);await cinema('centrale');
  const k=tmpN('centrale2',{x:8,y:8,t:'rival',d:1,name:'Kael'});puff(8,8,'#ffffff',8);await walk(k,'uu');
  await say('Hé ! J\'ai vu les lumières se rallumer de la grotte. Bien joué. …Attends, c\'est quoi, ça ?','Kael');await emote(k,'!',600);
  await say('Kael ramasse un dossier tombé du bureau d\'Orso : "Dossier personnel — VEX. Vrai nom : Valen. Ancien du ponton de Port-Miroir."');await emote(k,'…',1100);
@@ -1524,12 +1523,7 @@ async function bossFight(){const M=MAPS.mont,v=M.npcs.find(n=>n.t==='vex');await
  await say('Et ce Bracelet du Cycle à ton poignet… Les éclats que j\'ai pris aux mines de Cendreville en valent bien un.','Vex');
  await say('Solarion garde la clé de leur prison. Ce soir, je la lui prends. Écarte-toi !','Vex');await cine(0);
  const r=await battle([mon('ombrelin',17,{moves:['hypnose','morsure','ombrefurtive','grondement']}),mon('magmor',18,{moves:['feufollet','crocsfeu','durcir','braise']}),mon('noctyrex',20,{moves:['cri','morsure','ombrefurtive','grimace']})],{tr:{name:'Chef Vex',look:'vex',money:3000,vs:1,boss:1,items:1,ev:1,after:'…Battu. Mais tu arrives trop tard.'}});if(r!=='win')return;
- musStop();await cine(1);v.d=1;await camTo(9,2,800);ui.shake=12;sfx('roar');await wait(500);
- const sol=tmpN('mont',{x:9,y:1,t:'mon',sp:'solarion',oy:48,a:0});rays(9,1,C.goldL,4200);tween(sol,'a',1,700);await tween(sol,'oy',0,1100,1);sfx('cry');ui.flash=.7;ui.flashC=C.goldL;
- await say('Le sommet tremble… Solarion jaillit du cratère dans un éclat doré !');await emote(v,'…',600);await say('Gardien du jour… Pardonne-moi. Cœur d\'Aube, à moi !','Vex');
- stream([9,1],[9,2],[C.gold,'#ffffff',C.goldL],60);for(let i=0;i<7;i++){sfx('shard');ui.shake=4;await wait(240)}await emote(sol,'!',500);
- ui.flash=1;ui.flashC='#3a1a5a';f().eclipse=1;sfx('roar');ui.shake=18;tween(sol,'a',0,1200);await tween(sol,'oy',-140,1200);rmN('mont',sol);
- await say('Solarion pousse un cri déchirant et disparaît dans le ciel… Le soleil s\'assombrit. Une ÉCLIPSE recouvre Aurélys !');
+ musStop();await cine(1);v.d=1;await cinema('eclipse');f().eclipse=1;
  faceTo(v,G.x,G.y);await say('Avec le Cœur d\'Aube, le sceau de l\'Observatoire cédera enfin. Adieu, gamin.','Vex');puff(9,2,'#9a5ad0',26);sfx('door');f().boss=1;await wait(500);musPlay('ecl');
  const k=tmpN('mont',{x:10,y:7,t:'rival',d:1,name:'Kael'});await camTo(G.x,G.y+1,500);await approach(k,5);await emote(k,'!');
  await say('J\'ai tout vu… Ce masque. Cette voix…','Kael');await emote(k,'…',800);await say('C\'était Valen. Mon grand frère. Il a disparu il y a trois ans… C\'est lui que je cherchais.','Kael');
@@ -1574,20 +1568,14 @@ async function finalBattle(){const D='dome',v=MAPS.dome.npcs.find(n=>n.t==='vex'
  faceTo(v,G.x,G.y);await say('Tu es venu jusqu\'ici… Regarde. Nocturion est libre. Plus jamais une créature d\'ombre ne s\'éteindra au soleil.','Vex');
  const k=tmpN(D,{x:6,y:7,t:'rival',d:1,name:'Kael'});await camTo(5,4,500);await approach(k,4);await emote(k,'!',500);
  await say('Valen ! Arrête ! Et toutes les autres créatures ? Les récoltes, les gens… Maman ? Tu veux tout éteindre pour sauver la nuit ?','Kael');
- await emote(v,'…',900);await say('Kael… Tu as grandi.','Vex');await say('Si c\'est le prix, je le paierai. Nocturion ! Montre-leur ce qu\'est une vraie ÉCLIPSE !','Vex');sfx('roar');ui.shake=16;ui.flash=.5;ui.flashC='#3a1a5a';
+ await emote(v,'…',900);await say('Kael… Tu as grandi.','Vex');await say('Si c\'est le prix, je le paierai.','Vex');await cinema('dome');
  await camBack(300);await cine(0);
  const r=await battle([mon('nocturelle',34,{moves:['hypnose','nuit','clairlune','ombrefurtive']}),mon('magmor',35,{moves:['feufollet','lanceflam','jetpierre','durcir']}),mon('noctyrex',35,{moves:['cri','nuit','morsure','ombrefurtive']}),mon('nocturion',38,{moves:['lunenoire','rayonnoir','ombrefurtive','grondement']})],
   {tr:{name:'Vex',look:'vex',money:6000,vs:1,boss:1,items:2,ev:1,after:'Nocturion… Non…'},legend:1});
  if(r!=='win'){rmN(D,k);return}await ending(k)}
 async function ending(k){const D='dome',v=MAPS.dome.npcs.find(n=>n.t==='vex'&&n.fix),nc=MAPS.dome.npcs.find(n=>n.sp==='nocturion'&&!n.fn);musStop();await cine(1);await camTo(5,2,600);
  ui.shake=12;sfx('roar');await emote(nc,'…',800);await say('Nocturion vacille… Le Cœur d\'Aube s\'échappe des mains de Vex et s\'élève sous le dôme !');
- const h=tmpN(D,{x:5,y:3,t:'obj',k:'heart',oy:0});sfx('shard');rays(5,2,C.goldL,6500);await tween(h,'oy',-44,1400,1);
- const so=tmpN(D,{x:4,y:1,t:'mon',sp:'solarion',d:3,oy:-150,a:0});tween(so,'a',1,900);await tween(so,'oy',0,1400,1);sfx('cry');ui.flash=.8;ui.flashC=C.goldL;
- await say('Une lumière dorée envahit l\'Observatoire. Solarion est revenu !');stream([5,2],[4,1],[C.gold,'#ffffff'],40);rmN(D,h);await wait(1000);
- await say('Solarion et Nocturion se font face… Mais ils ne se battent pas. Lentement, ils s\'inclinent l\'un devant l\'autre.');
- for(let i=0;i<2;i++){await Promise.all([tween(so,'oy',6,260),tween(nc,'oy',6,260)]);await Promise.all([tween(so,'oy',0,260),tween(nc,'oy',0,260)])}
- await Promise.all([emote(so,'♥',800),emote(nc,'♥',800)]);ui.flash=1;ui.flashC='#ffffff';sfx('lv');await wait(500);
- await say('Le jour et la nuit se retrouvent. L\'éclipse se dissipe !');
+ await cinema('aube');const so=tmpN(D,{x:4,y:1,t:'mon',sp:'solarion',d:3});
  await emote(v,'…',900);puff(v.x,v.y-1,'#ece6d6',10);v.t='valen';sfx('sel');await wait(400);
  await say('…Ils n\'avaient pas besoin que l\'un écrase l\'autre. Juste… d\'exister ensemble. J\'ai failli tout détruire pour le comprendre.','Valen');
  if(k){faceTo(k,v.x,v.y);await say('Rentre à la maison, Valen. Maëlle t\'attend sur le ponton.','Kael')}await emote(v,'♥',700);await say('…D\'accord, petit frère. Et toi — merci de m\'avoir arrêté.','Valen');
@@ -1629,7 +1617,7 @@ async function mineAlert(){f().mineAlert=1;const V='ville',[mx,my]=nearSpot(3),m
  await fadeTo(1,250);rmN(V,mi);rmN(V,br);await cine(0);await fadeTo(0,250);save()}
 async function corvinFlees(){const n=MAPS.mine.npcs.find(x=>x.tr?.id==='corvin'),c=tmpN('mine',{x:n.x,y:n.y,t:'grunt',d:n.d,name:'Lieutenant Corvin'});faceTo(c,G.x,G.y);await cine(1);
  await say('Peu importe… On a déjà assez d\'éclats pour le bracelet du chef. Et pour le sceau de l\'Observatoire.','Lieutenant Corvin');await emote(c,'!',500);
- await say('Oups. Oublie ce que je viens de dire ! Repli !','Lieutenant Corvin');sfx('door');puff(c.x,c.y,'#9a5ad0',22);rmN('mine',c);await say('Le lieutenant disparaît dans un nuage de fumée violette !');await cine(0)}
+ await say('Oups. Oublie ce que je viens de dire ! Repli !','Lieutenant Corvin');await cinema('mine');rmN('mine',c);await say('Quand la poussière retombe, le lieutenant a disparu derrière les éboulis.');await cine(0)}
 async function titoTalk(n){if(!f().t_corvin)return say('Au secours ! Un sbire garde le passage, je ne peux pas sortir !','Tito');await cine(1);await emote(n,'!',500);
  await say('Tu… tu es venu me chercher ? Merci ! Le plafond s\'est effondré derrière moi, j\'ai cru que j\'allais rester ici pour toujours.','Tito');
  await say('Les sbires creusaient pour trouver des Éclats d\'Aube. Ils disaient que leur chef en avait besoin pour un bracelet… et pour briser un sceau.','Tito');
@@ -1731,7 +1719,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 12.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 13.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2331,7 +2319,7 @@ function drawWipe(){if(ui.wipe<=0)return;const p=ui.wipe,st2=ui.wst||'bars';
  if(st2==='wave'){for(let x=0;x<W;x+=8){const h=ev(H*Math.min(1,p*1.4-Math.sin(x/40)*.12));R(X,C.ink,x,0,8,h);if(h>4)R(X,'#4a8ad8',x,h-4,8,4)}return}
  for(let i=0;i<10;i++){const w=ev(W*p),y=i*32;R(X,C.ink,i%2?W-w:0,y,w,32);if(w>4)R(X,C.frame,i%2?W-w:w-4,y,4,32)}}
 function draw(t){X.imageSmoothingEnabled=false;
- if(mode==='credits')drawCredits(t);else if(mode==='title')drawTitle(t);else if(mode==='world'){if(ui.wz>1.001){X.save();X.translate(ui.wzx,ui.wzy);X.scale(ui.wz,ui.wz);X.translate(-ui.wzx,-ui.wzy);drawWorld(t);X.restore()}else drawWorld(t)}else if(mode==='battle'&&B)drawBattle(t);else if(mode==='evo')drawEvo();else if(mode==='intro')drawIntro(t);else if(mode==='end')drawEnd(t);else R(X,'#000000',0,0,W,H);
+ if(mode==='credits')drawCredits(t);else if(mode==='title')drawTitle(t);else if(mode==='world'){if(ui.wz>1.001){X.save();X.translate(ui.wzx,ui.wzy);X.scale(ui.wz,ui.wz);X.translate(-ui.wzx,-ui.wzy);drawWorld(t);X.restore()}else drawWorld(t)}else if(mode==='battle'&&B)drawBattle(t);else if(mode==='evo')drawEvo();else if(mode==='intro')drawIntro(t);else if(mode==='end')drawEnd(t);else if(mode==='cine')drawCine();else R(X,'#000000',0,0,W,H);
  if(ui.lb>0){const h=ev(30*ui.lb);R(X,'#000000',0,0,W,h);R(X,'#000000',0,H-h,W,h)}
  if(ui.ring)drawRing();if(mode==='world')drawChecklist();if(ui.tip&&mode==='world'&&!ui.text&&!ui.menus.length&&!ui.panel)drawTip();drawDim();ui.panel?.();if(ui.badge)drawBadge();drawText();ui.menus.forEach(drawMenu);drawToast();if(ui.vs)drawVs();
  if(ui.flash>0){X.globalAlpha=ui.flash;R(X,ui.flashC,0,0,W,H);X.globalAlpha=1;ui.flash=Math.max(0,ui.flash-.05)}drawWipe();

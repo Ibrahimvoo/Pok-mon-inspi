@@ -42,7 +42,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const F=f(),AP=AUTO.pick,ok=(c
  ok(F.memoP&&G.bag.jeton===4&&G.bag.rubanher>=1,`partie parfaite : 16 jetons, Ruban acheté (reste ${G.bag.jeton})`);
  // Sauvegarde et migration
  save();const g2=load();ok(g2.pen.length===1&&g2.flags.trd_malo&&g2.flags.hatched===2,'sauvegarde : pension, échanges, éclosions');
- const old=JSON.parse(JSON.stringify(G));old.v=11;delete old.pen;delete old.eggs;const n2=normalize(old);ok(n2.v===12&&Array.isArray(n2.pen)&&Array.isArray(n2.eggs),'migration 11 -> 12');
+ const old=JSON.parse(JSON.stringify(G));old.v=11;delete old.pen;delete old.eggs;const n2=normalize(old);ok(n2.v>=12&&Array.isArray(n2.pen)&&Array.isArray(n2.eggs),'migration 11 -> 12');
  achCheck();ok(G.ach.egg1&&G.ach.elias&&G.ach.memo,'succès 12.0');
  AUTO.off=1;const jp=journal();await wait(400);await SNAP('journal');press('b');await jp;const wp=whatsNew();await wait(400);await SNAP('news');press('b');await wp;AUTO.off=0;
  L('done')}
