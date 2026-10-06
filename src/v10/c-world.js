@@ -137,7 +137,7 @@ MAPS.ville.npcs.push({x:15,y:12,t:'granny',d:2,name:'Huguette',fn:async()=>{cons
 // ---------------------------------------------------------------- RÉCIF DES MARÉES (en bateau depuis Port-Miroir)
 MAPS.port.npcs.push({x:13,y:13,t:'sailor',d:0,name:'Passeur Marius',fn:async()=>{const P='Passeur Marius';if(!f().badge2)return say('Mon bateau va au Récif des Marées, au large. Mais la mer est rude : reviens avec le Badge Miroir !',P,0,'sailor');
  if(!await ask('Embarquer pour le Récif des Marées ?',P))return;sfx('splash');await fadeTo(1,500);loadMap('recif',11,15,0);await fadeTo(0,500);if(!f().recifV){f().recifV=1;await say('Le bateau accoste sur un récif de sable blanc. Au loin, au milieu des rochers, une grande porte de pierre émerge des flots.')}}});
-MAPS.recif={name:'Récif des Marées',bg:'lac',amb:'day',mus:'route',
+MAPS.recif={name:'Récif des Marées',bg:'lac',amb:'day',mus:'route',sand:1,
  rows:["~~~~~~~~~~~~~~~~~~~~~~~~~~",
        "~~~^^^^^^^^@^^^^^^~~~~~~~~",
        "~~~^.......=.....^~~,,,,~~",

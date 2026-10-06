@@ -430,7 +430,7 @@ function buildOutdoor(M){M.glo=null;M.blink=null;const mw=M.rows[0].length,mh=M.
     for(const[s,f]of[['S',isWt],['P',isP]]){const a=f(x,y+dy),b=f(x+dx,y),d=f(x+dx,y+dy),V=dy<0?'U':'D',Hh=dx<0?'L':'R';
      const k=a&&b?s+'_i'+V+Hh:a?s+'_'+V:b?s+'_'+Hh:d?s+'_n'+V+Hh:null;if(k){pc=k;break}}
     g.drawImage(TL[pc],qx,qy,8,8,ox+qx,oy+qy,8,8)}}
-  else{put(base==='cf'&&h%11===0?'cf2':base==='sn'&&h%5===0?'sn2':base,ox,oy);if(base==='sn'&&h%3===0){g.fillStyle='#ffffff';g.fillRect(ox+(h>>>3)%14,oy+(h>>>7)%14,1,1);g.fillStyle='#b8c8e0';g.fillRect(ox+(h>>>11)%14,oy+(h>>>15)%13,2,1)}if(c==='.'||c==='g')groundDeco(g,M,base,ox,oy,x,y)}
+  else{put(base==='cf'&&h%11===0?'cf2':base==='sn'&&h%5===0?'sn2':base,ox,oy);if(base==='sn'&&h%3===0){g.fillStyle='#ffffff';g.fillRect(ox+(h>>>3)%14,oy+(h>>>7)%14,1,1);g.fillStyle='#b8c8e0';g.fillRect(ox+(h>>>11)%14,oy+(h>>>15)%13,2,1)}if(c==='.'||c==='g'){if(M.sand)sandDeco(g,M,ox,oy,x,y);else groundDeco(g,M,base,ox,oy,x,y)}}
   if(cliffs){const wb=isWl(x,y+1),wl=isWl(x-1,y),wr=isWl(x+1,y);
    if(wb&&wl&&!wr)put(cl+'riDL',ox,oy);else if(wb&&wr&&!wl)put(cl+'riDR',ox,oy);else{if(wb)put(cl+'rD',ox,oy);if(wl)put(cl+'rL',ox,oy);if(wr)put(cl+'rR',ox,oy)}
    if(!wb&&!wl&&isWl(x-1,y+1))put(cl+'rcDL',ox,oy);if(!wb&&!wr&&isWl(x+1,y+1))put(cl+'rcDR',ox,oy)}
@@ -567,6 +567,8 @@ function groundDeco(g,M,base,ox,oy,x,y){const h=HSH(x*13+5,y*7+11)>>>0,r=h%100,p
  else if(base==='dirt'){if(r<10)pebble(g,px,py,'#8a5a42','#b8846a','#4a2a1e');else if(r<16){g.fillStyle='#8a7a3a';g.fillRect(px,py+1,1,3);g.fillRect(px+2,py,1,4);g.fillRect(px+4,py+1,1,3);g.fillStyle='#c8b060';g.fillRect(px+2,py,1,1)}}}
 function pathDeco(g,ox,oy,x,y,at){const h=HSH(x*19+3,y*23+7)>>>0,r=h%100;if(r>=18)return;const px=ox+3+(h>>>7)%9,py=oy+3+(h>>>11)%9;
  if(r<9)pebble(g,px,py,'#b08a52','#f0dcaa','#7a5a32');else{g.fillStyle='#c4a46c';g.fillRect(px,py,2,1);g.fillRect(px+4,py+2,2,1);g.fillRect(px+1,py+4,2,1)}}
+function sandDeco(g,M,ox,oy,x,y){const h=HSH(x*17+7,y*11+13)>>>0,r=h%100,px=ox+2+(h>>>7)%10,py=oy+3+(h>>>11)%9;
+ if(r<16)pebble(g,px,py,'#d8c4a0','#f8f0d8','#b0a080');else if(r<28)pebble(g,px,py,'#e8dcc4','#fffef8','#c8b8a0');else if(r<38){g.fillStyle='#d4c0a4';g.fillRect(px,py,3,2);g.fillRect(px+5,py+1,2,1);g.fillStyle='#f0e4c8';g.fillRect(px+1,py,2,1);g.fillRect(px+5,py+1,1,1)}}
 // Éléments posés au sol (clôtures auto-raccordées, buissons fleuris, potagers, bancs, jardinières, tonneaux)
 function decoLayer(M,g,at,bio){const mh=M.rows.length,mw=M.rows[0].length,put=(k,x,y)=>{const t=TL[k];if(t)g.drawImage(t,x,y)};
  for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){const c=M.rows[y][x],ox=x*16,oy=y*16,h=HSH(x*5+2,y*9+1)>>>0;
@@ -2989,7 +2991,7 @@ MAPS.ville.npcs.push({x:15,y:12,t:'granny',d:2,name:'Huguette',fn:async()=>{cons
 // ---------------------------------------------------------------- RÉCIF DES MARÉES (en bateau depuis Port-Miroir)
 MAPS.port.npcs.push({x:13,y:13,t:'sailor',d:0,name:'Passeur Marius',fn:async()=>{const P='Passeur Marius';if(!f().badge2)return say('Mon bateau va au Récif des Marées, au large. Mais la mer est rude : reviens avec le Badge Miroir !',P,0,'sailor');
  if(!await ask('Embarquer pour le Récif des Marées ?',P))return;sfx('splash');await fadeTo(1,500);loadMap('recif',11,15,0);await fadeTo(0,500);if(!f().recifV){f().recifV=1;await say('Le bateau accoste sur un récif de sable blanc. Au loin, au milieu des rochers, une grande porte de pierre émerge des flots.')}}});
-MAPS.recif={name:'Récif des Marées',bg:'lac',amb:'day',mus:'route',
+MAPS.recif={name:'Récif des Marées',bg:'lac',amb:'day',mus:'route',sand:1,
  rows:["~~~~~~~~~~~~~~~~~~~~~~~~~~",
        "~~~^^^^^^^^@^^^^^^~~~~~~~~",
        "~~~^.......=.....^~~,,,,~~",
