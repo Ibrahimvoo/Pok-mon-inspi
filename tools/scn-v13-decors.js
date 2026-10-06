@@ -1,6 +1,6 @@
 // Test 13.1 : décors — rien de ce qui était accessible ne doit devenir inaccessible, rendu sans erreur de chaque lieu, biome neige
 async()=>{const L=(...a)=>console.log('LOG',...a);const ok=(c,m)=>{if(!c)throw new Error('ÉCHEC '+m);L('ok',m)};
- const DECO='|+PpN*&mMVO%',walk=c=>c!==undefined&&!SOLID.has(c)&&!'~wL'.includes(c);
+ const DECO='|+PpN*&mMVO%t',walk=c=>c!==undefined&&!SOLID.has(c)&&!'~wL'.includes(c);
  const reach=rows=>{const h=rows.length,w=rows[0].length,seen=new Set(),q=[];
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if((x===0||y===0||x===w-1||y===h-1)&&walk(rows[y][x])){seen.add(x+','+y);q.push([x,y])}
   while(q.length){const[x,y]=q.pop();for(const[a,b]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+a,ny=y+b,k=nx+','+ny;if(!seen.has(k)&&walk(rows[ny]?.[nx])){seen.add(k);q.push([nx,ny])}}}return seen};

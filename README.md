@@ -40,6 +40,16 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 13.2 : intérieurs et ambiances
+
+![Aperçu de la version 13.2](apercus/v13-2-interieurs.png)
+
+- **Salles techniques refaites** (Observatoire, Dôme, Centrale, arènes Crépuscule et Volt) : dalles de métal rivetées, grilles d'aération, spots lumineux qui pulsent dans le sol, murs à écrans, tuyaux et voyants qui clignotent, bandes de sécurité devant les sorties.
+- **Maisons meublées** : lits, commodes, lampes, plantes, caisses, tapis d'entrée, cadres et calendriers chez Jo, Rosette, Ondine, l'Ermite du Récif et Ysolde. Le Dôme a son télescope et ses fenêtres étoilées ; la Citadelle du Cycle devient un sanctuaire de pierre éclairé de torches.
+- **Sols vivants** : cailloux et fissures dans les grottes, mousse et gravats dans les ruines, touffes sèches au Mont Braise, gravillons sur les chemins. Des cristaux violets et bleus luisent dans la Grotte Écho, les Galeries Oubliées et la Faille.
+- **Bois Sépulcral hanté** : arbres morts aux teintes violacées, pierres tombales, brume qui dérive et feux follets à la place des lucioles.
+- Un test vérifie que chaque PNJ et chaque objet à examiner des intérieurs modifiés reste accessible depuis la porte, et que tous les lieux se construisent sans erreur.
+
 ## Version 13.1 : des lieux plus vivants
 
 ![Aperçu de la version 13.1](apercus/v13-1-decors.png)

@@ -18,3 +18,18 @@ deco('route1',[[2,9,'||||||'],[14,9,'||']]);
 deco('foret',[[2,3,'P'],[2,6,'P'],[14,6,'P'],[21,6,'P'],[12,12,'P'],[20,12,'P']]);
 deco('lac',[[19,2,'PP'],[10,11,'NN'],[2,13,'P']]);
 deco('route2',[[2,14,'P'],[7,9,'NN'],[21,6,'P']]);
+// 13.2 — la Citadelle est un sanctuaire de pierre, pas une salle technique
+if(MAPS.citadelle)MAPS.citadelle.style='cit';
+// 13.2 — maisons meublées : lit, commode, tapis d'entrée, cadres et fenêtres (les meubles ne se posent que sur des cases 'C')
+function furnish(k,rows,furn,wdeco){const M=MAPS[k];if(!M)return;rows.forEach((r,y)=>{if(r)M.rows[y]=r});M.rows0=null;M.furn=[...(M.furn||[]),...furn];M.wdeco=[...(M.wdeco||[]),...wdeco]}
+furnish('maisonP',[,'XCCFFFCCX',,'XCFFCCFFX','XCFFCCFFX','XFFrrrFCX'],[{x:7,y:1,k:'plantPot'},{x:1,y:3,h:2,k:'bed'},{x:7,y:5,k:'crate2'}],[{x:3,k:'calendar'},{x:5,k:'frameB'}]);
+furnish('maisonA',[,'XCCFFFCCX',,'XCFFCCFFX',,'XCFrrrFCX'],[{x:7,y:1,k:'potPlant'},{x:1,y:3,k:'dresser'},{x:1,y:5,k:'lampFloor'},{x:7,y:5,k:'vase'}],[{x:3,k:'frameA'},{x:5,k:'frameC'}]);
+furnish('lacH',[,'XCCFFFCCX',,'XCFFCCFFX','XCFFCCFFX','XFFrrrFCX'],[{x:1,y:3,h:2,k:'bed'},{x:7,y:5,k:'potPlant'}],[{x:3,k:'frameB'},{x:5,k:'calendar'}]);
+furnish('recifH',[,,,'XCFFCCFFX','XCFFCCFFX','XFFrrrFCX'],[{x:1,y:3,k:'crate'},{x:1,y:4,k:'crate2'},{x:7,y:5,k:'barrel'}],[{x:3,k:'frameC'},{x:5,k:'windowN'}]);
+furnish('maisonY',[,,,,,'XCFFFFFCX'],[{x:7,y:5,k:'lampFloor'}],[{x:5,k:'calendar'}]);
+furnish('dome',[],[{x:1,y:1,k:'telescope'}],[3,4,7,8].map(x=>({x,k:'windowN'})));
+furnish('citadelle',[],[],[2,4,8,10].map(x=>({x,k:'torch',y:0})));
+// 13.2 — ambiances : bois hanté (brume, feux follets, tombes), cristaux luisants dans les grottes profondes
+if(MAPS.bois){MAPS.bois.spooky=1;MAPS.bois.fog=1}
+for(const k of['grotte','galeries','faille'])if(MAPS[k])MAPS[k].crys=1;
+deco('bois',[[8,1,'t'],[11,1,'t'],[19,4,'t'],[21,4,'t'],[8,12,'t'],[14,12,'t'],[2,3,'t']]);
