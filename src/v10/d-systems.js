@@ -152,7 +152,7 @@ pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.tea
  if(k==='CARTE')await regionMap();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
  if(k==='TITRE'&&await ask('Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}};
 // Options : animations réduites (accessibilité)
-{const OP0=options;options=async function(){const o=G.opt;const i=await choose([`ANIMATIONS : ${o.calm?'RÉDUITES':'NORMALES'}`,'AUTRES OPTIONS…','RETOUR'],{x:W-252,y:8,w:244,title:'Options'});if(i===0){o.calm=o.calm?0:1;save();return options()}if(i===1)return OP0()}}
+{const OP0=options;options=async function(){const o=G.opt;const i=await choose([`DIFFICULTÉ : ${f().expert?'EXPERT':'NORMALE'}`,`ANIMATIONS : ${o.calm?'RÉDUITES':'NORMALES'}`,'AUTRES OPTIONS…','RETOUR'],{x:W-252,y:8,w:244,title:'Options'});if(i===0){await difficulty();return options()}if(i===1){o.calm=o.calm?0:1;save();return options()}if(i===2)return OP0()}}
 
 // --- Sauvegardes : migration vers la 10.0 (aucune donnée perdue, nouveaux champs créés à la volée)
 const norm0=normalize;normalize=function(g){g=norm0(g);if(!g)return g;g.rep??={};g.ach??={};g.album??={};g.fishSp??={};g.stat??={cap:0,capN:0,capR:0,capE:0,capS:0,shiny:0,evo:0,fish:0,berry:0,win:0,trW:0};g.mail??=[];

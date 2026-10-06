@@ -36,9 +36,9 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const F=f(),AP=AUTO.pick,ok=(c
  // Après-histoire : dresseurs équipés
  F.balance=1;const foes=[mon('flamiot',30)];const bp=battle(foes,{tr:{name:'Test',money:1,team:[]}});await wait(100);ok(!!foes[0].eq,'dresseur équipé après l\'histoire : '+foes[0].eq);AUTO.off=0;await bp;F.balance=0;
  // Sauvegarde / chargement
- save();const g2=load();ok(g2.party[0].eq===m0.eq&&g2.party[0].nat===m0.nat&&g2.brqLv.croc===bqLv('croc')&&g2.brq.lanterne===1,'sauvegarde : breloques, niveaux, tempéraments');
+ save();const g2=load();ok(g2.party[0].eq===m0.eq&&g2.party[0].nat===m0.nat&&g2.brqLv.croc===bqLv('croc')&&g2.brq.lanterne>=1,'sauvegarde : breloques, niveaux, tempéraments');
  // vieille sauvegarde sans tempérament
- const old=JSON.parse(JSON.stringify(G));old.v=10;for(const m of old.party){delete m.nat;delete m.eq}delete old.brq;delete old.brqLv;const n2=normalize(old);ok(n2.party.every(m=>NAT[m.nat])&&n2.brq&&n2.v===11,'migration 10 -> 11');
+ const old=JSON.parse(JSON.stringify(G));old.v=10;for(const m of old.party){delete m.nat;delete m.eq}delete old.brq;delete old.brqLv;const n2=normalize(old);ok(n2.party.every(m=>NAT[m.nat])&&n2.brq&&n2.v>=11,'migration 10 -> 11');
  // Journal, nouveautés, succès
  achCheck();ok(G.ach.bq1&&G.ach.bqRes,'succès breloques');AUTO.off=1;const jp=journal();await wait(400);await SNAP('journal');press('b');await jp;const wp=whatsNew();await wait(400);await SNAP('news');press('b');await wp;
  const ep=eqMenu(G.party[0]);await wait(400);await SNAP('eqmenu');press('b');await ep;AUTO.off=0;

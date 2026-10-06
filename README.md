@@ -40,6 +40,19 @@ Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits anim�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 12.0 : les Héritiers du Cycle
+
+- **Pension des Coteaux** : Mamie Odette garde deux créatures, qui gagnent de l'EXP à chaque pas (les nouvelles capacités sont apprises au retrait, payé selon les niveaux gagnés). Papi Firmin prévient quand un **œuf** apparaît près de la clôture.
+- **Compatibilité** : même famille, très bonne ; même type, correcte ; les **Vivipère** s'entendent avec tout le monde (le petit est alors de l'espèce de l'autre parent). Les légendaires ne pondent pas.
+- **Couveuse** (3 œufs) : les œufs éclosent en marchant, deux fois plus vite avec une créature au talent Corps Ardent ou Torche. Progression visible sur la carte de dresseur du menu, éclosion mise en scène.
+- **Hérédité** : le petit naît au niveau 1 avec un lien déjà tissé, hérite du tempérament d'un parent (à coup sûr avec le nouveau **Ruban d'Héritage**), de jusqu'à deux capacités de ses parents que sa famille peut apprendre, et a plus de chances d'être chromatique (encore plus si un parent l'est).
+- **L'œuf d'Elias** : une fois le Cycle rétabli, Papi Firmin remet un œuf que ton père lui avait confié, avec une dernière lettre.
+- **Échanges** : cinq habitants (Cendreville, Port-Miroir, Coteaux, Lunévie, Volterre) proposent un échange, dont les deux starters que tu n'as pas choisis. Une créature échangée gagne 50 % d'EXP en plus ; son origine s'affiche sur la page PROFIL.
+- **Mode Expert** (Options > Difficulté, réversible) : dresseurs environ 8 % plus forts, baies pour les boss, niveau maximum selon les badges (15, 30, 34, 46, puis libre), primes +25 %.
+- **Salle de jeux de Volterre** : le Mémo du Cycle (huit paires de Pixémons, dix erreurs au plus), une partie offerte par jour, des jetons à échanger contre des lots (Ruban d'Héritage, Pierre d'Aube, Étoile du Berger…).
+- Six nouveaux succès, trois entrées dans le journal, migration automatique des sauvegardes.
+- Test dédié : `node tools/play.mjs tools/scn-v12-heritiers.js`.
+
 ## Version 11.0 : l'Atelier du Cycle
 
 - **Breloques** : un second emplacement d'équipement, distinct de l'objet tenu (l'objet tenu reste une tactique de combat, la breloque façonne le profil de la créature). 31 breloques en 4 raretés : Communes (une stat), Rares (stat + effet : premier coup amorti, soin sous la pluie, EXP, pièces, lien…), Épiques (gros bonus contre un malus, ou effet fort) et Uniques.

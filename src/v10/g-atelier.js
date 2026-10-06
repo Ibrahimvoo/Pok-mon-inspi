@@ -114,7 +114,8 @@ summary=async function(m){let pg=0;const pIco=()=>X.drawImage(monSpr(m.sp,0,128,
    const S=bqStats(k,m),L=Object.entries(S).map(([s,v])=>`${v>0?'+':''}${v} % ${STN11[s]}`);wrap((L.length?L.join(', ')+'. ':'')+(b[3]?BQFX[b[3]]:''),244,1).slice(0,3).forEach((l,i)=>txt(l,212,y+12+i*10,C.ink2,{s:1,sh:0}))}
   y=176;txt('OBJET TENU',212,y,C.mute,{sh:0});if(!m.item)txt('Aucun',456,y,C.ink2,{al:'r',sh:0});else{txt(IT[m.item][0],456,y,C.ink,{al:'r',sh:0});wrap(IT[m.item][2],244,1).slice(0,2).forEach((l,i)=>txt(l,212,y+12+i*10,C.ink2,{s:1,sh:0}))}
   R(X,C.paper2,20,210,440,2);const S=st(m);[['PV',S.hp],['ATTAQUE',S.atk],['DÉFENSE',S.def],['VITESSE',S.spd]].forEach(([a,v],i)=>{const x=20+i*110;rr(x,218,104,40,2,'#efe6d2');txt(a,x+8,234,C.mute,{mini:1});txt(v,x+96,252,C.ink,{al:'r'})});
-  wrap('Stats finales : niveau, tempérament et breloque. La breloque reste attachée à la créature, même dans la Boîte.',440,1).slice(0,2).forEach((l,i)=>txt(l,20,276+i*10,C.ink2,{s:1,sh:0}))};
+  const org=m.egg==='elias'?'Origine : sorti de l\'œuf confié par Elias.':m.egg?'Origine : né à la Pension des Coteaux.':m.ot?`Origine : échangé avec ${m.ot} (EXP x1,5).`:'';
+  wrap((org?org+' ':'')+'Stats finales : niveau, tempérament et breloque. La breloque reste attachée à la créature, même dans la Boîte.',440,1).slice(0,2).forEach((l,i)=>txt(l,20,276+i*10,C.ink2,{s:1,sh:0}))};
  ui.panel=()=>pg?p2():p1();for(;;){const k=await key();if(k==='a'||k==='b')break;if(k==='left'||k==='right'){pg^=1;sfx('sel')}}ui.panel=null};
 teamMenu=async function(){if(!G.party.length)return say('Tu n\'as pas encore de créature.');for(;;){const i=await partyMenu('Équipe');if(i<0)return;ui.dim='Équipe';
  const j=await choose(['RÉSUMÉ','EN TÊTE','OBJET',...(f().bqIntro?['BRELOQUE']:[]),'RETOUR'],{w:160});ui.dim=null;const m=G.party[i];
