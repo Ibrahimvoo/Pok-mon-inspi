@@ -275,7 +275,7 @@ function chroma(c){const g=c.getContext('2d'),d=g.getImageData(0,0,c.width,c.hei
 // =====================================================================
 // TUILES & CONSTRUCTION DES CARTES (couche statique + avant-plan + tuiles animées)
 // =====================================================================
-const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZhwJQ@'),SC={};
+const SOLID=new Set('T~RBYGWn#SoXC^LbkxlZhwJQ@|+PpN*&mMVO%'),SC={};
 function shapeSpr(key,w,h,mark,pal){if(SC[key])return SC[key];const g=[...Array(h)].map(()=>Array(w).fill(0));mark(g);const src=g.map(r=>r.slice());
  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!src[y][x]&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(src[y+b]?.[x+a]||0)>0))g[y][x]=9;
  const o=(x,y)=>g[y]?.[x]===9,out=g.map(r=>r.slice());
@@ -2139,7 +2139,8 @@ function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='mul
  X.globalAlpha=1;X.globalCompositeOperation='source-over';
  if(M.dark2){const g=DARK.getContext('2d'),r=lightR()+Math.sin(t/300)*2,lx=px-cx+16,ly=py-cy+10;g.globalCompositeOperation='source-over';g.clearRect(0,0,W,H);g.fillStyle='rgba(6,4,16,.97)';g.fillRect(0,0,W,H);g.globalCompositeOperation='destination-out';
   for(let k=0;k<4;k++)pell(g,lx,ly,ev(r*(1-k*.2)),ev(r*(1-k*.2)*.85),'rgba(0,0,0,.38)');X.drawImage(DARK,0,0)}
- if(rain()){mul('#b4c0d8');X.globalAlpha=.55;for(let i=0;i<70;i++){const rx=ev(((i*137+t*.35)%(W+40))-20),ry=ev(((i*71+t*.75)%(H+40))-20);R(X,'#c8e0ff',rx,ry,2,8)}X.globalAlpha=1;if(Math.random()<.3){const tx=(cx/TS|0)+(Math.random()*W/TS|0),ty=(cy/TS|0)+(Math.random()*H/TS|0);if(!SOLID.has(M.rows[ty]?.[tx]??'T'))AMB.push({k:'spl',x:tx*TS+Math.random()*32,y:ty*TS+Math.random()*32,l:14,ml:14})}}
+ if(M.snow){X.globalAlpha=.85;for(let i=0;i<60;i++){const s=i%3?2:4,sx=ev(((i*137+t*.03*(1+i%3)+Math.sin(t/900+i)*18)%(W+40))-20),sy=ev(((i*71+t*.05*(1+i%3))%(H+40))-20);R(X,i%4?'#ffffff':'#dce6f8',sx,sy,s,s)}X.globalAlpha=1}
+ if(rain()&&!M.snow){mul('#b4c0d8');X.globalAlpha=.55;for(let i=0;i<70;i++){const rx=ev(((i*137+t*.35)%(W+40))-20),ry=ev(((i*71+t*.75)%(H+40))-20);R(X,'#c8e0ff',rx,ry,2,8)}X.globalAlpha=1;if(Math.random()<.3){const tx=(cx/TS|0)+(Math.random()*W/TS|0),ty=(cy/TS|0)+(Math.random()*H/TS|0);if(!SOLID.has(M.rows[ty]?.[tx]??'T'))AMB.push({k:'spl',x:tx*TS+Math.random()*32,y:ty*TS+Math.random()*32,l:14,ml:14})}}
  if(M.fog){X.globalAlpha=.32+.25*TC[0]/255;for(let i=0;i<2;i++){const o=((t*(i?.012:.02)+cx*(i?.5:.8))%W+W)%W,oy=i*24-(cy*.1)%40;X.drawImage(FOG,-o,oy);X.drawImage(FOG,W-o,oy)}X.globalAlpha=1}
  X.drawImage(VIG,0,0)}
 let CAM=[0,0];const cxw=()=>CAM[0],cyw=()=>CAM[1];

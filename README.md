@@ -40,6 +40,16 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 13.1 : des lieux plus vivants
+
+![Aperçu de la version 13.1](apercus/v13-1-decors.png)
+
+- **Herbe plus franche** et vivante : vert-jaune à la Pokémon, fleurs, petites fleurs blanches et touffes semées dans les prairies (jamais au bord des chemins ni de l'eau).
+- **Villes à la Pokémon** : boîte aux lettres devant la maison, clôture blanche devant le labo, potager clôturé à Lunévie, jardinières devant les Centres de Soins, puits à Cendreville, distributeurs et bancs à Volterre, caisses et tonneaux sur les quais de Port-Miroir, enclos de la Pension et potager sur les Coteaux, clôtures le long de la Route 1.
+- **Nature** : nénuphars sur les étangs et les lacs, champignons et buissons fleuris en forêt, bancs au bord de l'eau.
+- **Pic Céleste enneigé** : sol de neige scintillant, falaises givrées, herbes hautes gelées et chute de neige.
+- Toutes les nouveautés graphiques viennent des tilesets libres de Tuxemon (voir `CREDITS.md`). Un test vérifie qu'aucun décor ne bloque l'accès à une porte, un PNJ, un panneau, un objet caché ou une sortie.
+
 ## Version 13.0 : le Grand Écran
 
 ![Aperçu de la version 13.0](apercus/v13-grand-ecran.png)

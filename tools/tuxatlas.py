@@ -99,6 +99,38 @@ T['bush'] = tid(SP, 102); T['potPlant'] = tid(SP, 133)
 T['crate'] = tid(SP, 1054); T['crate2'] = tid(SP, 1085); T['vase'] = tid(SP, 1061)
 T['torch'] = reg(SP, 11, 26, 1, 1)
 
+# ---------------------------------------------------------------- 13.1 : décors façon Pokémon (neige, clôtures, jardins, mobilier urbain)
+VG = 'Vegetation_and_Outdoor_Fittings_by_George.png'; OD = 'Outdoor_odds_and_ends_by_Isaiah658.png'; COLS[VG] = 15; COLS[OD] = 10
+def snowify(im):  # roche brune -> roche bleutée, herbe -> neige
+    out = im.copy(); px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            if not a: continue
+            h, sv, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if .18 < h < .55 and sv > .2: r2, g2, b2 = colorsys.hsv_to_rgb(.6, .08 + (1 - v) * .2, min(1, .78 + v * .3))
+            else: r2, g2, b2 = colorsys.hsv_to_rgb(.62, sv * .35, min(1, v * 1.12))
+            px[x, y] = (round(r2 * 255), round(g2 * 255), round(b2 * 255), a)
+    return out
+for k, i in CW.items(): T['N_' + k] = snowify(tid(CC, i))
+T['sn'] = reg(CO, 9, 18); T['sn2'] = reg(CO, 10, 18)
+T['tgs'] = recolor(T['tg'], hue=.58, sat=.3, val=1.15)
+for n, (c, r) in enumerate([(3, 2), (6, 0), (7, 0), (4, 2), (6, 1), (7, 1)]): T[f'gfl{n}'] = reg(CO, c, r)   # herbe fleurie
+for n, (c, r) in enumerate([(28, 26), (29, 26), (28, 28), (29, 28), (28, 27), (30, 26)]): T[f'fbush{n}'] = reg(CO, c, r)   # buissons fleuris
+T['mush0'] = reg(CO, 29, 29); T['mush1'] = reg(CO, 28, 29); T['lily0'] = reg(CO, 24, 30); T['lily1'] = reg(CO, 26, 30)
+def clip(im, x0, x1):
+    out = im.copy(); px = out.load()
+    for y in range(16):
+        for x in range(x0, x1): px[x, y] = (0, 0, 0, 0)
+    return out
+for pre, c0 in (('fw', 16), ('fp', 21)):   # clôtures : bois / blanche — anneau 3x3 + bouts de rangée
+    for k, (dc, dr) in dict(TL=(0, 0), T=(1, 0), TR=(2, 0), L=(0, 1), P=(1, 1), R=(2, 1), BL=(0, 2), B=(1, 2), BR=(2, 2)).items(): T[f'{pre}{k}'] = reg(CO, c0 + dc, 26 + dr)
+    T[pre + 'EL'] = clip(T[pre + 'B'], 0, 3); T[pre + 'ER'] = clip(T[pre + 'B'], 13, 16)
+T['well'] = reg(VG, 0, 2, 2, 2); T['sprout0'] = reg(VG, 13, 0); T['sprout1'] = reg(VG, 13, 1); T['wfl0'] = reg(VG, 3, 0); T['wfl1'] = reg(VG, 3, 1)
+T['fountain'] = reg(OD, 0, 2, 4, 3); T['bench'] = reg(OD, 7, 0, 2, 1); T['planter'] = reg(OD, 7, 1, 2, 1); T['planter2'] = reg(OD, 7, 2, 2, 1); T['potFl'] = reg(OD, 9, 0)
+T['vend'] = reg(OD, 0, 0, 1, 2); T['vend2'] = reg(OD, 1, 0, 1, 2); T['vend3'] = reg(OD, 6, 0, 1, 2)
+T['barrel'] = reg(CC, 33, 0); T['crates'] = reg(CC, 32, 0)
+
 # ---------------------------------------------------------------- intérieurs
 def wallface(top, mid, bot):  # mur de 3 tuiles compressé en 1 tuile : moulure haute + plinthe
     a, b, c = tid(IW, top), tid(IW, mid), tid(IW, bot)
@@ -238,8 +270,22 @@ mons = {}
 for pid, tux in MONS:
     sh = sharp(Image.open(os.path.join(MOD, 'gfx/sprites/battle', tux + '-sheet.png')).convert('RGBA'))
     mons[pid] = {'f': b64png(sh.crop((0, 0, 64, 64))), 'b': b64png(sh.crop((64, 0, 128, 64))), 'i': b64png(sh.crop((0, 64, 48, 88))), 'src': tux}
-json.dump(mons, open(os.path.join(ROOT, 'src/sprites.json'), 'w'), separators=(',', ':'))
+if os.environ.get('SPRITES'): json.dump(mons, open(os.path.join(ROOT, 'src/sprites.json'), 'w'), separators=(',', ':'))  # les créatures ajoutées depuis la 10.0 viennent d'ailleurs
 
+# herbe plus franche (vert-jaune, à la Pokémon) : seuls les pixels vert-bleu des tuiles de sol sont retouchés
+def greenify(im):
+    out = im.copy(); px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            if not a: continue
+            h, sv, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if .36 < h < .52 and sv > .25:
+                r2, g2, b2 = colorsys.hsv_to_rgb(h - .12, min(1, sv * 1.05), min(1, v * 1.06)); px[x, y] = (round(r2 * 255), round(g2 * 255), round(b2 * 255), a)
+    return out
+if not os.environ.get('TEAL'):
+    for k in list(T):
+        if k == 'g' or k.startswith(('P_', 'S_', 'gfl', 'fl', 'C_')) or k in ('tg', 'wfl0', 'wfl1', 'fbush0', 'fbush1', 'fbush2', 'fbush3', 'fbush4', 'fbush5', 'sprout0', 'sprout1'): T[k] = greenify(T[k])
 atlas, pos = pack(T)
 old = json.load(open(os.path.join(ROOT, 'src/art.json')))
 keep = ['heart', 'logs', 'orbS_capsule', 'sablier', 'shard', 'tent', 'rock1', 'brazier']

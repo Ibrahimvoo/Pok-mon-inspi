@@ -21,7 +21,7 @@ const ARTREADY=(async()=>{const P=ART.props;if(P){const im=await imgOf(P.img);if
   Q.keys.forEach((k,i)=>{const b1=cut(bt,0,i*64,64,64),b2=up2(b1);
    PEO[k]={ow:[...Array(12)].map((_,j)=>mkc(32,64,g=>g.drawImage(ow,COL[j%3]*16,i*128+ROW[j/3|0]*32,16,32,0,0,32,64))),bt:b2,vs:b2,pt:[portraitOf(b1,0),portraitOf(b1,2)]}})}})();
 
-function biomeOf(M){return M===MAPS.ruines?'ruins':M.cave?'cave':M.amb==='mont'?'mont':M.amb==='foret'?'forest':'plain'}
+function biomeOf(M){return M.snow?'snow':M===MAPS.ruines?'ruins':M.cave?'cave':M.amb==='mont'?'mont':M.amb==='foret'?'forest':'plain'}
 const isInt=M=>!!(M.floor||M.amb==='in'||M.amb==='tech');
 function sprAt(M,img,x,y,row){if(!img)return;const r=row??Math.max(0,(y-1)>>5);(M.S[r]||=[]).push({img,x,y:y-img.height,by:y})}
 function buildMap(M){if(M.L)return;M.S=[];if(isInt(M))buildInterior(M);else buildOutdoor(M);for(const r of M.S)if(r)r.sort((a,b)=>a.by-b.by||a.x-b.x);M.F=null}
@@ -36,7 +36,7 @@ function buildOutdoor(M){const mw=M.rows[0].length,mh=M.rows.length,bio=biomeOf(
  isWt=(x,y)=>WATC.has(at(x,y)),isP=(x,y)=>at(x,y)==='=',isWl=(x,y)=>{const c=at(x,y);return c==='^'||c==='@'},
  C1=mkc(mw*16,mh*16),g=C1.getContext('2d'),put=(k,x,y)=>{const t=TL[k];if(t)g.drawImage(t,x,y)},
  half=(k,x,y,side)=>{const t=TL[k];if(t)g.drawImage(t,side*8,0,8,16,x+side*8,y,8,16)},
- cl=bio==='mont'?'V_':bio==='ruins'?'R_':'C_',floorK=bio==='mont'?'dirt':bio==='ruins'?'stone':bio==='cave'?'cf':'g',grassy=floorK==='g',cliffs=!grassy||M.rows.some(r=>r.includes('^'));
+ cl=bio==='mont'?'V_':bio==='ruins'?'R_':bio==='snow'?'N_':'C_',floorK=bio==='mont'?'dirt':bio==='ruins'?'stone':bio==='cave'?'cf':bio==='snow'?'sn':'g',grassy=floorK==='g',cliffs=!grassy||M.rows.some(r=>r.includes('^'));
  for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){const c=M.rows[y][x],ox=x*16,oy=y*16,h=HSH(x*3+1,y*5+2);
   if(WATC.has(c)){put('W0',ox,oy);if(c==='H'){const v=at(x,y-1)==='H'||at(x,y+1)==='H'||at(x-1,y)!=='H'&&at(x+1,y)!=='H'&&(isWt(x-1,y)||isWt(x+1,y));
     if(v){put(at(x,y-1)!=='H'&&!isWt(x,y-1)?'pierV':at(x,y-1)==='H'?'pierV':'pierT',ox,oy);if(at(x,y+1)!=='H'&&isWt(x,y+1))put('pierB',ox,oy)}
@@ -50,13 +50,15 @@ function buildOutdoor(M){const mw=M.rows[0].length,mh=M.rows.length,bio=biomeOf(
     for(const[s,f]of[['S',isWt],['P',isP]]){const a=f(x,y+dy),b=f(x+dx,y),d=f(x+dx,y+dy),V=dy<0?'U':'D',Hh=dx<0?'L':'R';
      const k=a&&b?s+'_i'+V+Hh:a?s+'_'+V:b?s+'_'+Hh:d?s+'_n'+V+Hh:null;if(k){pc=k;break}}
     g.drawImage(TL[pc],qx,qy,8,8,ox+qx,oy+qy,8,8)}}
-  else put(base==='cf'&&h%11===0?'cf2':base,ox,oy);
+  else{put(base==='cf'&&h%11===0?'cf2':base==='sn'&&h%5===0?'sn2':base,ox,oy);if(base==='sn'&&h%3===0){g.fillStyle='#ffffff';g.fillRect(ox+(h>>>3)%14,oy+(h>>>7)%14,1,1);g.fillStyle='#b8c8e0';g.fillRect(ox+(h>>>11)%14,oy+(h>>>15)%13,2,1)}}
   if(cliffs){const wb=isWl(x,y+1),wl=isWl(x-1,y),wr=isWl(x+1,y);
    if(wb&&wl&&!wr)put(cl+'riDL',ox,oy);else if(wb&&wr&&!wl)put(cl+'riDR',ox,oy);else{if(wb)put(cl+'rD',ox,oy);if(wl)put(cl+'rL',ox,oy);if(wr)put(cl+'rR',ox,oy)}
    if(!wb&&!wl&&isWl(x-1,y+1))put(cl+'rcDL',ox,oy);if(!wb&&!wr&&isWl(x+1,y+1))put(cl+'rcDR',ox,oy)}
-  if(c===',')put('tg',ox,oy);else if(c==='v')put(grassy?'tg':bio==='mont'?'tgr':'tgv',ox,oy);
+  if(c===',')put(bio==='snow'?'tgs':'tg',ox,oy);else if(c==='v')put(grassy?'tg':bio==='mont'?'tgr':bio==='snow'?'tgs':'tgv',ox,oy);
+  else if(c==='.'&&grassy)grassDeco(g,M,ox,oy,x,y,at);
   else if(c==='h'){g.fillStyle='#1a1216';g.beginPath();g.ellipse(ox+8,oy+9,6.5,5.5,0,0,7);g.fill();g.fillStyle='#0a0608';g.beginPath();g.ellipse(ox+8,oy+10,5,4,0,0,7);g.fill()}
   else if(c==='E'&&!grassy){g.fillStyle='rgba(255,236,190,.16)';g.fillRect(ox+2,oy+2,12,12)}}
+ decoLayer(M,g,at,bio);
  M.L=up2(C1);
  // arbres : couverture des zones 'T' par des arbres de 2x2 tuiles (3 de haut), du bas vers le haut
  const cov=new Set(),TK=bio==='forest'?['tP1','tP2','tP1','tT1','tP2']:key==='route2'?['tT1','tT2','tT1','tR2']:['tR1','tR2','tP1','tR1','tP2','tR2'];
@@ -74,7 +76,8 @@ function buildOutdoor(M){const mw=M.rows[0].length,mh=M.rows.length,bio=biomeOf(
   else if(c==='u')sprAt(M,T2('rockS'),ox,by);
   else if(c==='C')sprAt(M,T2(bio==='ruins'?'statue':'stoneStatue'),bio==='ruins'?ox:ox-16,by);
   else if(c==='@')sprAt(M,T2('gate'),ox-48,by);
-  else if(c==='^'&&M.doors?.[x+','+y])sprAt(M,T2('caveDoor'),ox,by)}
+  else if(c==='^'&&M.doors?.[x+','+y])sprAt(M,T2('caveDoor'),ox,by);
+  else decoSprite(M,c,x,y,ox,by,at0)}
  // bâtiments : bloc de toit (R B Y G A) + rangée de murs (W n D), alignés sur leur porte
  const seen=new Set();
  for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){const c=M.rows[y][x];if(!'RBYGA'.includes(c)||seen.has(x+','+y))continue;
@@ -133,7 +136,7 @@ function PROC2(k){const key='2'+k;if(PROCC[key])return PROCC[key];const P=(g,c,x
 function animTiles(M,cx,cy,t){const mh=M.rows.length,mw=M.rows[0].length,x0=Math.max(0,cx>>5),y0=Math.max(0,cy>>5),x1=Math.min(mw-1,(cx+W)>>5),y1=Math.min(mh-1,(cy+H)>>5),
  wf=T2('W'+((t/200|0)%3)),lf=T2('LV'+((t/150|0)%3)),ff=(t/250|0)%5,at=(x,y)=>M.rows[y]?.[x];
  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const ch=M.rows[y][x],sx=x*32-cx,sy=y*32-cy,h=HSH(x,y);
-  if(ch==='~'||ch==='w'){X.drawImage(wf,sx,sy);if(ch==='w'){X.globalAlpha=.22;R(X,'#0a1a40',sx,sy,32,32);X.globalAlpha=1}
+  if(ch==='~'||ch==='w'){X.drawImage(wf,sx,sy);if(M.lily&&ch==='~'&&h%11===0&&at(x,y-1)!=='H'&&at(x,y+1)!=='H')X.drawImage(T2('lily'+((h>>>5)&1)),sx,sy+((t/900+h)%2|0)*2);if(ch==='w'){X.globalAlpha=.22;R(X,'#0a1a40',sx,sy,32,32);X.globalAlpha=1}
    if(at(x+1,y)==='H')X.drawImage(T2('pierEL'),sx,sy);if(at(x-1,y)==='H')X.drawImage(T2('pierER'),sx,sy);if(at(x,y+1)==='H'&&at(x,y+2)!=='H'&&at(x+1,y+1)==='H')X.drawImage(T2('pierEU'),sx,sy);if(at(x,y-1)==='H'&&at(x+1,y-1)==='H')X.drawImage(T2('pierED'),sx,sy)
    if(isInt(M)&&!WATC.has(at(x,y-1)||'X'))R(X,'rgba(10,20,40,.4)',sx,sy,32,6)}
   else if(ch==='L'){X.drawImage(lf,sx,sy);const e=(dx,dy)=>at(x+dx,y+dy)!=='L';
@@ -143,5 +146,31 @@ function animTiles(M,cx,cy,t){const mh=M.rows.length,mw=M.rows[0].length,x0=Math
   else if(ch==='x'){for(let i=0;i<3;i++){const fh=8+((t/90+i*3+h)%5|0)*2,fx=sx+10+i*5;R(X,'#ff5a1e',fx-1,sy+12-fh,5,fh);R(X,'#ff9a2a',fx,sy+14-fh,3,fh-3);R(X,'#ffe27a',fx+1,sy+8,1,3)}}
   else if(ch==='Z'){X.globalAlpha=.55+.25*Math.sin(t/110+x*1.7);for(let i=0;i<4;i++)R(X,i%2?'#e84aff':'#9a5ad0',sx+2+i*8,sy,4,32);R(X,'#ffffff',sx+((t/40+x*13)%28|0),sy+((t/70+x*7)%30|0),4,2);X.globalAlpha=1}}}
 // Herbes hautes devant les pieds d'un personnage (moitié basse de la tuile d'herbe haute)
-const FRONT={};function frontGrass(bio,f){const k=bio+f;if(FRONT[k])return FRONT[k];const src=TL[bio==='mont'?'tgr':bio==='cave'||bio==='ruins'?'tgv':'tg'];
+const FRONT={};function frontGrass(bio,f){const k=bio+f;if(FRONT[k])return FRONT[k];const src=TL[bio==='snow'?'tgs':bio==='mont'?'tgr':bio==='cave'||bio==='ruins'?'tgv':'tg'];
  return FRONT[k]=mkc(32,18,g=>{if(src)g.drawImage(src,0,7,16,9,0,0,32,18)})}
+
+// ---------------------------------------------------------------- 13.1 : décors façon Pokémon
+// Herbe vivante : fleurs, petites fleurs blanches et touffes, posées au hasard (déterministe) loin des chemins
+function grassDeco(g,M,ox,oy,x,y,at){const h=HSH(x*11+7,y*17+3)>>>0,near=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>'=~wH'.includes(at(x+a,y+b)));if(near)return;const r=h%100;
+ if(r<4){const t=TL['gfl'+(h>>>8)%6];if(t)g.drawImage(t,ox,oy)}else if(r<9){const t=TL['wfl'+(h>>>8)%2];if(t)g.drawImage(t,ox,oy)}
+ else if(r<24){const tx=ox+2+(h>>>6)%10,ty=oy+4+(h>>>10)%9;g.fillStyle='#2e7a58';g.fillRect(tx,ty+1,1,3);g.fillRect(tx+2,ty,1,4);g.fillRect(tx+4,ty+1,1,3);g.fillStyle='#5cbf8a';g.fillRect(tx+2,ty,1,1);g.fillRect(tx,ty+1,1,1)}}
+// Éléments posés au sol (clôtures auto-raccordées, buissons fleuris, potagers, bancs, jardinières, tonneaux)
+function decoLayer(M,g,at,bio){const mh=M.rows.length,mw=M.rows[0].length,put=(k,x,y)=>{const t=TL[k];if(t)g.drawImage(t,x,y)};
+ for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){const c=M.rows[y][x],ox=x*16,oy=y*16,h=HSH(x*5+2,y*9+1)>>>0;
+  if(c==='|'||c==='+'){const p=c==='|'?'fw':'fp',f=(a,b)=>at(x+a,y+b)===c,u=f(0,-1),d=f(0,1),l=f(-1,0),r=f(1,0);let k;
+   if(r&&d&&!l&&!u)k='TL';else if(l&&d&&!r&&!u)k='TR';else if(r&&u&&!l&&!d)k='BL';else if(l&&u&&!r&&!d)k='BR';
+   else if(u||d){if(l||r)k='B';else{let yy=y;while(f(0,yy-y-1))yy--;k=at(x-1,yy)===c?'R':'L'}}else if(l&&r)k='B';else if(r)k='EL';else if(l)k='ER';else k='P';put(p+k,ox,oy)}
+  else if(c==='P')put(bio==='forest'&&h%3!==0?'mush'+(h>>>4)%2:'fbush'+(h>>>4)%6,ox,oy);
+  else if(c==='p')put('sprout'+(h>>>4)%2,ox,oy);
+  else if(c==='N'&&at(x-1,y)!=='N')put('bench',ox,oy);
+  else if(c==='*'&&at(x-1,y)!=='*')put(h%2?'planter':'planter2',ox,oy);
+  else if(c==='&')put(h%2?'barrel':'crates',ox,oy);
+  else if(c==='m')put('potFl',ox,oy)}}
+// Éléments hauts (triés en profondeur avec les personnages) : boîtes aux lettres, puits, fontaine, distributeurs
+let MBOX=null;function mailboxSpr(){return MBOX||(MBOX=mkc(32,44,g=>{const P=(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};P('rgba(0,0,0,.18)',8,40,18,4);P('#5a3a22',14,22,4,20);P('#7a5434',14,22,2,20);
+ P('#2a2a44',6,6,20,18);P('#d8484a',8,8,16,14);P('#f07a6a',8,8,16,3);P('#9a2a30',8,19,16,3);P('#f4ead2',12,12,8,5);P('#2a2a44',12,12,8,1);P('#ffd23a',24,8,3,7);P('#2a2a44',24,15,3,1)}))}
+function decoSprite(M,c,x,y,ox,by,at0){
+ if(c==='M')sprAt(M,mailboxSpr(),ox,by);
+ else if(c==='V')sprAt(M,T2(['vend','vend2','vend3'][(HSH(x,y)>>>0)%3]),ox,by);
+ else if(c==='O'&&at0(x-1,y)!=='O'&&at0(x,y+1)!=='O')sprAt(M,T2('well'),ox,by);
+ else if(c==='%'&&at0(x-1,y)!=='%'&&at0(x,y+1)!=='%')sprAt(M,T2('fountain'),ox,by)}

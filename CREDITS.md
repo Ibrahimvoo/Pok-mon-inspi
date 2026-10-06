@@ -340,6 +340,19 @@ Les bâtiments (maison, labo, Centre de Soins, Boutique, Arènes) sont recompos�
 villes de Tuxemon (cartes `cotton_town`, `spyder_paper_town`, `spyder_leather_town`, `spyder_timber_town`,
 `classic_steamshore_city`).
 
+### Décors ajoutés en 13.1
+
+Les éléments suivants viennent aussi du dépôt Tuxemon (`mods/tuxemon/gfx/tilesets`) et sont découpés par `tools/tuxatlas.py` :
+
+* Neige, clôtures en bois et blanches, buissons fleuris, champignons, nénuphars, herbe fleurie : tileset « Core Outdoor » de Tuxemon (voir plus haut).
+  Les falaises enneigées sont une recoloration des falaises existantes ; l'herbe a été légèrement recolorée vers un vert plus franc.
+* Puits, petites fleurs, pousses de potager : ["Vegetation and outdoor fittings"](https://wiki.tuxemon.org/index.php?title=File:Vegetation_and_Outdoor_Fittings_by_George.png)
+  by George_, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+* Fontaine, bancs, jardinières, pot de fleurs, distributeurs : ["Outdoor odds and ends"](https://wiki.tuxemon.org/index.php?title=File:Outdoor_odds_and_ends_by_Isaiah658.png)
+  by Isaiah658, licensed under [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/)
+* Tonneau et caisses : tileset « Core City and Country » de Tuxemon (voir plus haut).
+* La boîte aux lettres est dessinée à la main dans le code du jeu.
+
 ## Code
 
 Le code du jeu (dossier `src/`, outils `tools/`) est propre à Pixémon Éclipse. Aucune ligne de code de Tuxemon

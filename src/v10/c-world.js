@@ -240,7 +240,7 @@ async function valenVision(){f().visionV=1;await cine(1);musStop();await fadeTo(
 // ---------------------------------------------------------------- PIC CÉLESTE (téléphérique de Volterre, après l'Équilibre) : les quatre feux, Aurorelle
 {const VG0=volGate;volGate=async function(){if(!f().balance)return VG0();const c=await choose(['OBSERVATOIRE','PIC CÉLESTE','RESTER'],{w:220,title:'Téléphérique'});if(c===0)return VG0();if(c===1){sfx('door');await say('La cabine grimpe au-dessus des nuages, plus haut que l\'Observatoire, jusqu\'aux neiges éternelles…');await warp('pic',10,18,1)}};
  for(const k in MAPS.volterre.doors)if(MAPS.volterre.doors[k]===VG0)MAPS.volterre.doors[k]=volGate}
-MAPS.pic={name:'Pic Céleste',bg:'mont',amb:'mont',mus:'mont',
+MAPS.pic={name:'Pic Céleste',bg:'mont',amb:'mont',snow:1,mus:'mont',
  rows:["^^^^^^^^^^@^^^^^^^^^",
        "^^^^^^gggggggg^^^^^^",
        "^^^^ggggvvvvgggg^^^^",
