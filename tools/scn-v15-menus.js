@@ -17,7 +17,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  const A={me:0,D:[[pvpMon(pvpSnap(pvpCopy(G.party[0],1)),1)],[mon('goutelin',50),mon('flamiot',50),mon('noctyrex',50)].map(m=>pvpMon(pvpSnap(pvpCopy(m,1)),1))],act:[0,0],nm:['Ibra','Léo'],lk:['kid','scout']};A.D[1][1].hp=0;
  await snapUI('adverse',()=>pvpFoeTeam(A));
  // Sauvegarde d'une version précédente : profil en ligne créé, nouveautés annoncées, pseudo nettoyé
- {const old=JSON.parse(JSON.stringify(G));old.v=14;delete old.net;const n2=normalize(old);ok(n2.v===15&&n2.wn&&n2.net&&n2.net.lk==='hero'&&(n2.net.w|0)===0,'migration 14 -> 15');
+ {const old=JSON.parse(JSON.stringify(G));old.v=14;delete old.net;const n2=normalize(old);ok(n2.v>=15&&n2.wn&&n2.net&&n2.net.lk==='hero'&&(n2.net.w|0)===0,'migration 14 -> 15');
   const o2=JSON.parse(JSON.stringify(G));o2.net={n:'<b>Léo</b>!!',lk:'dragon',w:'x',room:'zz'};const n3=normalize(o2);ok(n3.net.n==='bLéob'&&n3.net.lk==='hero'&&n3.net.w===0&&!n3.net.room,'profil en ligne nettoyé : '+n3.net.n)}
  NET.peers.clear();for(const n of[...MAPS.ville.npcs])if(n.net)MAPS.ville.npcs.splice(MAPS.ville.npcs.indexOf(n),1);NET.on=false;NET.code='';NET.R=[];AUTO.off=0;await wait(200);ok(!npcs(MAPS.ville).some(n=>n.net),'amis retirés');
  // Écran titre : JOUER EN LIGNE reprend la partie et ouvre directement le menu en ligne ; EN LIGNE est dans le menu pause

@@ -40,6 +40,18 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 16.0 : Combats en groupe
+
+![Aperçu de la version 16.0](apercus/v16-groupe.png)
+
+- **Faire équipe** : dans un salon, parle à un ami (ou passe par EN LIGNE, AMIS) et choisis FAIRE ÉQUIPE. Un groupe compte jusqu'à 4 joueurs. Les membres ont une étoile à côté de leur nom, sur la carte et dans les listes ; EN LIGNE, GROUPE montre le groupe et permet de le quitter.
+- **Venir aider** : quand un membre du groupe affronte une créature sauvage (hautes herbes, créature visible ou pêche), ceux qui sont sur la même carte reçoivent un appel : « Alice affronte un Rocaillon sauvage ! Aller l'aider ? ». On peut aussi la rejoindre plus tard, en plein combat : un « ! » clignote au-dessus d'elle, on s'approche, A, puis AIDER. On entre dans le combat au début du tour suivant.
+- **Une créature plus forte à plusieurs** : à chaque joueur qui arrive, la créature sauvage se renforce (aura rouge et badge x2, x3, x4). Par rapport à un combat seul : PV x2,6 / x4,2 / x5,8, Attaque +15 % / +30 % / +45 %, Défense et Vitesse +10 % / +20 % / +30 %, et elle attaque une fois par joueur à chaque tour, en visant chacun à son tour. Si un joueur part ou n'a plus de créature, elle s'affaiblit d'autant. Sur des centaines de combats simulés, chaque joueur perd en moyenne environ 20 % de ses PV seul, 32 % à deux, 44 % à trois et 52 % à quatre.
+- **Avec ses vraies créatures** : PV, PP, statuts, baies mangées et objets utilisés sont conservés après le combat ; on peut changer de créature, utiliser le sac (soins, rappels, capsules) et l'Éveil. L'EXP est gagnée par chacun, avec un bonus de groupe (x1,4 à deux, x1,8 à trois, x2,2 à quatre). Celui qui réussit à capturer la créature la garde ; les autres gagnent quand même l'EXP.
+- **Partir, fuir, perdre** : un invité peut PARTIR à tout moment (ses amis continuent sans lui). Celui qui a trouvé la créature peut FUIR, ce qui arrête le combat pour tout le monde. Un joueur dont toutes les créatures sont K.O. regarde la suite ; si le groupe gagne, il rentre se soigner sans rien perdre.
+- **Sous le capot** : celui qui a trouvé la créature calcule chaque tour avec les formules du jeu (talents, objets tenus, breloques, ciels, lien, Éveil) et envoie à chacun la même suite d'événements ; chaque écran la rejoue avec ses propres animations, sa créature au premier plan et celles des amis plus petites autour. Les joueurs qui tardent à choisir (45 s) attaquent automatiquement. Les créatures envoyées sur le réseau sont vérifiées à l'arrivée.
+- Deux succès et une ligne dans le journal. Tests : `node tools/play.mjs tools/scn-v16-groupe.js` (300 combats aléatoires à 1-4 joueurs avec arrivées et départs, équilibrage, relecture visuelle) et à trois navigateurs : `SIDES=A,B,C node tools/net2.mjs tools/scn-v16-trio.js` (groupe formé par les menus, appel à l'aide, arrivée en plein combat, même fin sur les trois écrans, départ en cours de combat ; aussi avec `DROP=0.2`).
+
 ## Version 15.0 : En ligne entre amis
 
 ![Aperçu de la version 15.0](apercus/v15-en-ligne.png)
@@ -258,7 +270,7 @@ tools/play.mjs      parcours automatique (Playwright) → node tools/play.mjs to
 tools/scn-v4.js     teste les mécaniques 4.0         → node tools/play.mjs tools/scn-v4.js
 tools/scn-intro.js  teste l'introduction jouable     → node tools/play.mjs tools/scn-intro.js
 tools/fontcheck.mjs vérifie que chaque caractère existe dans la police bitmap
-tools/net2.mjs      deux joueurs en ligne + relais locaux → node tools/net2.mjs tools/scn-v15-duo.js   (npm i aedes ws ; DROP=0.2 : pertes)
+tools/net2.mjs      deux joueurs en ligne + relais locaux → node tools/net2.mjs tools/scn-v15-duo.js   (npm i aedes ws ; DROP=0.2 : pertes ; SIDES=A,B,C : trois joueurs)
 src/v10/m-reseau.js relais MQTT, salon, présence, amis sur la carte
 src/v10/n-enligne.js menu EN LIGNE, clavier, invitations, échanges
 src/v10/o-arene.js  combats en ligne (moteur de l'hôte, relecture sur les deux écrans)
