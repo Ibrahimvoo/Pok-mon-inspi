@@ -1731,7 +1731,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 10.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 11.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2266,7 +2266,7 @@ function drawBattle(t){const b=B;let sx=0,sy=0;if(b.shake>0){sx=ev((Math.random(
  drawFx(b);if(b.tint){X.globalAlpha=Math.max(0,b.tint.a);R(X,b.tint.c,0,0,W,H);X.globalAlpha=1;b.tint.a-=.02;if(b.tint.a<=0)b.tint=null}X.restore();
  if(b.showFoe&&b.hf>0)hud(ev(8-(1-b.hf)*260),10,236,52,b.foe,1,b.dh[1],t);
  if(b.sky){const[n,c]=SKY[b.sky.k],s2=b.sky.n>=99?n:`${n} ${b.sky.n}`;tag(8,88,s2,c)}if(b.field){const F={volt:['TERRAIN VOLT','#c8a018'],maree:['MARÉE','#2f6fb0'],crep:['CRÉPUSCULE','#7050a0'],roc:['TERRAIN ROC','#8a6a40']}[b.field];if(F)tag(8,b.sky?108:88,F[0],F[1])}
- if(b.tp){const k=now()-b.tp.t0;if(k>1300)b.tp=null;else{X.globalAlpha=k>1000?(1300-k)/300:1;const s2='TALENT : '+b.tp.t.toUpperCase(),tw2=tw(s2)+20;tag(b.tp.s?8:W-tw2-8,b.tp.s?112:106,s2,C.acc);X.globalAlpha=1}}if(b.hm>0)hud(ev(236+(1-b.hm)*260),132,240,78,b.me,0,b.dh[0],t);
+ if(b.tp){const k=now()-b.tp.t0;if(k>1300)b.tp=null;else{X.globalAlpha=k>1000?(1300-k)/300:1;const s2=(b.tp.pre||'TALENT : ')+b.tp.t.toUpperCase(),tw2=tw(s2)+20;tag(b.tp.s?8:W-tw2-8,b.tp.s?112:106,s2,C.acc);X.globalAlpha=1}}if(b.hm>0)hud(ev(236+(1-b.hm)*260),132,240,78,b.me,0,b.dh[0],t);
  if(b.evOn[0]&&b.hm>=1)evOrb(206,160,0,t);if(b.evOn[1]&&b.showFoe&&b.hf>=1)evOrb(262,32,1,t);
  if(b.evB){const k=now()-b.evB.t0;if(k>1800)b.evB=null;else{X.globalAlpha=Math.max(0,Math.min(1,k/150,(1800-k)/300));const y=ev(126-Math.max(0,200-k)/6);R(X,'rgba(12,8,28,.6)',0,y-34,W,44);txt(b.evB.k?'ÉVEIL LUNAIRE':'ÉVEIL SOLAIRE',W/2,y,b.evB.k?'#e0d4ff':C.gold,{s:3,al:'c',ol:C.ink,olw:2});X.globalAlpha=1}}}
 // Orbe d'Éveil : se remplit de bas en haut, brille quand il est plein

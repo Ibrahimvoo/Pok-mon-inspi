@@ -40,6 +40,17 @@ Cinématiques avec bandes noires, caméra et bulles d'émotion ; portraits anim�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 11.0 : l'Atelier du Cycle
+
+- **Breloques** : un second emplacement d'équipement, distinct de l'objet tenu (l'objet tenu reste une tactique de combat, la breloque façonne le profil de la créature). 31 breloques en 4 raretés : Communes (une stat), Rares (stat + effet : premier coup amorti, soin sous la pluie, EXP, pièces, lien…), Épiques (gros bonus contre un malus, ou effet fort) et Uniques.
+- **Résonance** : une breloque qui partage le type ou la lignée de son porteur voit ses bonus augmenter de moitié. Une breloque reste excellente sur la bonne créature sans jamais être obligatoire.
+- **Breloques uniques** : chaque starter, Vivipère, les légendaires et Errenard ont la leur, et certaines modifient un mécanisme existant (Brasier/Torrent/Engrais dès la moitié des PV, bonus sur les attaques d'un autre type…). Anselme les forge quand on les mérite (lien, lignée, exploit).
+- **Étincelles de Forge** : laissées par les combats (dresseurs, Champions, Conseil). L'orfèvre Anselme, à Cendreville, améliore les breloques jusqu'au +3, palier par palier (Badge Miroir, Badge Volt, Cycle rétabli).
+- **Tempéraments** : chaque créature a désormais une personnalité (+10 % / -10 %), annoncée à la capture et visible sur la nouvelle page PROFIL du résumé.
+- **Mélisse**, herboriste de Port-Miroir : fait revenir les capacités oubliées et change le tempérament d'une créature.
+- Huit breloques cachées dans le monde, butin de combat, cinq nouveaux succès, une quête dans le journal, et des dresseurs eux aussi équipés après l'histoire.
+- Test dédié : `node tools/play.mjs tools/scn-v11-atelier.js`.
+
 ## Version 10.0 : Édition Ultime
 
 La plus grosse mise à jour du jeu : le bestiaire double, la carte s'agrandit de six lieux, et l'après-histoire devient une aventure à part entière.
