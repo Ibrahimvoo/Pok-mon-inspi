@@ -19,4 +19,11 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  // Sauvegarde d'une version précédente : profil en ligne créé, nouveautés annoncées, pseudo nettoyé
  {const old=JSON.parse(JSON.stringify(G));old.v=14;delete old.net;const n2=normalize(old);ok(n2.v===15&&n2.wn&&n2.net&&n2.net.lk==='hero'&&(n2.net.w|0)===0,'migration 14 -> 15');
   const o2=JSON.parse(JSON.stringify(G));o2.net={n:'<b>Léo</b>!!',lk:'dragon',w:'x',room:'zz'};const n3=normalize(o2);ok(n3.net.n==='bLéob'&&n3.net.lk==='hero'&&n3.net.w===0&&!n3.net.room,'profil en ligne nettoyé : '+n3.net.n)}
- NET.peers.clear();for(const n of[...MAPS.ville.npcs])if(n.net)MAPS.ville.npcs.splice(MAPS.ville.npcs.indexOf(n),1);NET.on=false;NET.code='';NET.R=[];AUTO.off=0;await wait(200);ok(!npcs(MAPS.ville).some(n=>n.net),'amis retirés');L('done')}
+ NET.peers.clear();for(const n of[...MAPS.ville.npcs])if(n.net)MAPS.ville.npcs.splice(MAPS.ville.npcs.indexOf(n),1);NET.on=false;NET.code='';NET.R=[];AUTO.off=0;await wait(200);ok(!npcs(MAPS.ville).some(n=>n.net),'amis retirés');
+ // Écran titre : JOUER EN LIGNE reprend la partie et ouvre directement le menu en ligne ; EN LIGNE est dans le menu pause
+ save();const AP=AUTO.pick;let seen=0,shot=0;AUTO.hold=m=>m&&!shot&&(m.opts.includes('JOUER EN LIGNE')||m.title==='En ligne');
+ AUTO.pick=m=>m.opts.includes('JOUER EN LIGNE')?m.opts.indexOf('JOUER EN LIGNE'):m.title==='En ligne'?(seen=1,m.opts.indexOf('RETOUR')):m.opts.includes('EN LIGNE')?m.opts.indexOf('FERMER'):AP(m);
+ const tp=titleScreen();await wait(900);ok(ui.menus.some(m=>m.opts.includes('JOUER EN LIGNE')),'JOUER EN LIGNE sur l\'écran titre');await SNAP('titre');shot=1;await wait(400);shot=0;
+ {const t=Date.now();while(!ui.menus.some(m=>m.title==='En ligne')&&Date.now()-t<8000)await wait(50)}ok(ui.menus.some(m=>m.title==='En ligne'),'menu en ligne ouvert depuis le titre');await SNAP('titre-enligne');shot=1;await tp;
+ ok(seen&&mode==='world'&&G&&G.net.n==='Ibra','partie reprise, retour au jeu');AUTO.hold=null;
+ AUTO.off=1;const pp=pauseMenu();await wait(500);ok(ui.menus.some(m=>m.opts.includes('EN LIGNE')),'EN LIGNE dans le menu pause');await SNAP('pause');press('b');await pp;AUTO.off=0;AUTO.pick=AP;L('done')}

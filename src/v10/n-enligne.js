@@ -80,6 +80,7 @@ async function promptInvite(){const I=NET.inv,P=NET.peers.get(I?.from);if(!I||!P
  const live=NET.inv===I&&NET.peers.has(P.pid)&&Date.now()-I.t0<45000;NET.inv=null;if(!live)return say('L\'invitation a expiré.');
  if(r!==0){NET.send('invr',{id:I.id,ok:0},P.pid,true);return}
  if(I.t==='tr'&&G.party.length<2){NET.send('invr',{id:I.id,ok:0},P.pid,true);return say('Il te faut au moins deux créatures pour échanger.')}
+ if(I.t==='bt'&&!G.party.length){NET.send('invr',{id:I.id,ok:0},P.pid,true);return say('Il te faut au moins une créature pour combattre. Va voir le Prof. Saule !')}
  NET.act={k:I.t,id:I.id,with:P.pid,me:1};const ok=await NET.send('invr',{id:I.id,ok:1},P.pid,true);if(!ok){NET.act=null;return say('La connexion avec ton ami s\'est interrompue.')}
  if(I.t==='tr')await tradeFlow(P,I.id,0);else await pvpFlow(P,I.id,I.ru,1)}
 setInterval(()=>{if(G&&mode==='world'&&f().starter&&!f().tip_net15&&!ui.tip&&!busy&&!ui.text&&(G.play||0)>120000)tip('net15','Nouveau : le menu EN LIGNE (touche MENU) te permet de retrouver tes amis : salon à code, combats et échanges.');
@@ -129,7 +130,7 @@ async function tradeAnim(a,b,P){const t0=now();ui.panel=()=>{const k=Math.min(1,
   for(let i=0;i<10;i++){const a2=now()/300+i*.63;R(X,i%2?C.gold:'#ffffff',ev(W/2+Math.cos(a2)*90),ev(H/2-20+Math.sin(a2)*50),3,3)}};sfx('ball');await wait(1100);sfx('evo');await wait(1100);jingle('item');await wait(400);ui.panel=null}
 
 // --- Menu pause : EN LIGNE (après le premier compagnon)
-pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],...(f().starter?[['EN LIGNE',ICO.net]]:[]),...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),...(G.keys.camera?[['PHOTO',ICO.camera]]:[]),['JOURNAL',ICO.book],...(f().starter?[['CARNET',ICO.star]]:[]),...(G.cin&&Object.keys(G.cin).length?[['CINÉMAS',ICO.ecl]]:[]),['GUIDE',ICO.guide],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
+pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.team],...(G.keys.dex?[['PIXÉDEX',ICO.dex]]:[]),['SAC',ICO.bag],['CARTE',ICO.map],['EN LIGNE',ICO.net],...(G.keys.sablier?[['SABLIER',ICO.sablier]]:[]),...(G.keys.camera?[['PHOTO',ICO.camera]]:[]),['JOURNAL',ICO.book],...(f().starter?[['CARNET',ICO.star]]:[]),...(G.cin&&Object.keys(G.cin).length?[['CINÉMAS',ICO.ecl]]:[]),['GUIDE',ICO.guide],['SAUVER',ICO.save],['OPTIONS',ICO.gear],['TITRE',ICO.home],['FERMER',ICO.close]];
  const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:O.length>9?24:26,vis:10,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
  if(i<0||k==='FERMER')return;if(k==='ÉQUIPE')await teamMenu();if(k==='PIXÉDEX')await dexMenu();if(k==='SAC')await bagMenu(false);if(k==='JOURNAL')await journal();if(k==='CARNET')await carnet();if(k==='PHOTO'){await takePhoto();return}
  if(k==='EN LIGNE'){await onlineMenu();return}

@@ -44,7 +44,7 @@ Le menu contient la carte de la région, le journal des quêtes (sur plusieurs p
 
 ![Aperçu de la version 15.0](apercus/v15-en-ligne.png)
 
-- **Salons à code** : menu EN LIGNE (dès le premier compagnon). Un joueur crée un salon et reçoit un code de 4 caractères ; ses amis choisissent REJOINDRE et le tapent sur le clavier à l'écran. Jusqu'à 8 joueurs, sur téléphone ou ordinateur, sans compte et sans rien installer. Le dernier salon est retenu pour y revenir en un geste.
+- **Salons à code** : JOUER EN LIGNE sur l'écran titre, ou EN LIGNE dans le menu du jeu (touche MENU). Un joueur crée un salon et reçoit un code de 4 caractères ; ses amis choisissent REJOINDRE et le tapent sur le clavier à l'écran. Jusqu'à 8 joueurs, sur téléphone ou ordinateur, sans compte et sans rien installer. Le dernier salon est retenu pour y revenir en un geste.
 - **Pseudo et apparence** : chacun choisit un pseudo (un surnom, jamais son vrai nom) et l'un des 14 personnages.
 - **Les amis sur la carte** : au même endroit, on voit ses amis marcher, avec leur nom au-dessus de la tête. Ils ne bloquent pas le passage. A devant un ami ouvre son menu : COMBAT, ÉCHANGE, MESSAGE. Le voyant en bas à gauche indique le salon et le nombre de joueurs.
 - **Messages rapides et émotes** : 14 phrases toutes prêtes (« Salut ! », « On fait un combat ? »…) affichées dans une bulle, et 5 émotes. Pas de texte libre : c'est plus sûr pour les plus jeunes.

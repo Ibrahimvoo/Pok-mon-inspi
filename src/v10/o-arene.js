@@ -185,7 +185,7 @@ async function pvpRep(A,stop){for(;;){if(stop())return null;const i=await pvpTea
 async function pvpWait(A,msg,done){let ff=0;show(msg,0);for(;;){if(done())break;const k=await key(150);if(done())break;if(k==='b'&&!ff){ui.text=null;if(await ask('Abandonner le combat ? Ce sera une défaite.')){ff=1;A.onFF?.()}if(!done())show(msg,0)}}ui.text=null}
 
 // --- Choix des créatures avant le combat
-async function pvpPickTeam(n,l50){const P=G.party,need=Math.min(n,P.length),sel=[];if(P.length<=need){await say(P.length>1?'Tu combats avec toute ton équipe, dans l\'ordre.':'Tu combats avec ta seule créature.');return P.map((_,i)=>i)}
+async function pvpPickTeam(n,l50){const P=G.party,need=Math.min(n,P.length),sel=[];if(!P.length)return null;if(P.length<=need){await say(P.length>1?'Tu combats avec toute ton équipe, dans l\'ordre.':'Tu combats avec ta seule créature.');return P.map((_,i)=>i)}
  const OK=P.length;for(;;){ui.dim=`Choisis ${need} créatures`;const i=await choose([...P.map(nm),'OK'],{bare:1,cols:2,i:sel.length===need?OK:0,rect:i=>i===OK?[W-124,H-36,112,30]:[12+(i%2)*232,40+(i>>1)*80,224,74],
   draw:(i,[x,y,w,h],s2,pr)=>{if(i===OK){const ok=sel.length===need;rr(x,y,w,h,4,C.ink);rr(x+2,y+2,w-4,h-4,2,pr?C.acc:s2?C.accL:ok?C.paper:C.paper2);txt(`OK  ${sel.length}/${need}`,x+w/2,y+20,ok?C.ink:C.mute,{al:'c',sh:0});return}
    const m=P[i],k=sel.indexOf(i),yy=y-(s2?2:0);rr(x,yy,w,h,4,C.ink);rr(x+2,yy+2,w-4,h-4,2,pr||s2?C.acc:k>=0?C.gold:C.frame);rr(x+6,yy+6,w-12,h-12,2,k>=0?'#fff6d8':C.paper);
