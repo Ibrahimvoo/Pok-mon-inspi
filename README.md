@@ -40,6 +40,21 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 15.0 : En ligne entre amis
+
+![Aperçu de la version 15.0](apercus/v15-en-ligne.png)
+
+- **Salons à code** : menu EN LIGNE (dès le premier compagnon). Un joueur crée un salon et reçoit un code de 4 caractères ; ses amis choisissent REJOINDRE et le tapent sur le clavier à l'écran. Jusqu'à 8 joueurs, sur téléphone ou ordinateur, sans compte et sans rien installer. Le dernier salon est retenu pour y revenir en un geste.
+- **Pseudo et apparence** : chacun choisit un pseudo (un surnom, jamais son vrai nom) et l'un des 14 personnages.
+- **Les amis sur la carte** : au même endroit, on voit ses amis marcher, avec leur nom au-dessus de la tête. Ils ne bloquent pas le passage. A devant un ami ouvre son menu : COMBAT, ÉCHANGE, MESSAGE. Le voyant en bas à gauche indique le salon et le nombre de joueurs.
+- **Messages rapides et émotes** : 14 phrases toutes prêtes (« Salut ! », « On fait un combat ? »…) affichées dans une bulle, et 5 émotes. Pas de texte libre : c'est plus sûr pour les plus jeunes.
+- **Combats entre amis** : 3 contre 3 ou 6 contre 6, tous au niveau 50 ou aux vrais niveaux. Talents, objets tenus, breloques, tempéraments, lien, Éveil et ciels comptent comme en aventure. Celui qui lance le défi calcule chaque tour avec les formules du jeu, puis les deux écrans rejouent exactement le même combat, chacun de son côté. Les équipes sont des copies : ni EXP, ni argent, ni PV perdus. On peut ABANDONNER ; une déconnexion annule simplement le combat (un ami qui quitte l'appli un instant a une minute pour revenir).
+- **Échanges** : chacun propose une créature et voit celle de l'autre (fiche complète). L'échange n'a lieu que lorsque les deux confirmations se sont croisées, et une confirmation envoyée ne peut plus être annulée. Les objets tenus et les breloques restent chez leur dresseur. Une créature reçue gagne plus d'EXP (x1,5).
+- **Invitations** : une invitation s'affiche dès que tu es libre (fin d'un dialogue ou d'un combat) ; si tu es déjà occupé, ton ami le sait aussitôt.
+- **Sous le capot** : les messages passent en même temps par plusieurs relais publics gratuits (MQTT sur WebSocket sécurisé : EMQX, HiveMQ, Eclipse, shiftr.io, Mosquitto), dont deux sur le port 443, rarement bloqué. Les doublons sont ignorés et les messages importants sont renvoyés jusqu'à l'accusé de réception. Le code du salon n'apparaît jamais en clair sur les relais. Tout ce qui arrive du réseau est vérifié avant d'entrer dans la partie (créatures, positions, noms, tours de combat).
+- Quatre succès, une entrée dans le journal avec le bilan des combats et des échanges, sauvegardes migrées automatiquement.
+- Tests : `node tools/play.mjs tools/scn-v15-arene.js` (400 combats aléatoires, puis relecture complète des deux points de vue), `node tools/play.mjs tools/scn-v15-menus.js` (écrans), et à deux navigateurs avec des relais locaux (`npm i aedes ws`) : `node tools/net2.mjs tools/scn-v15-duo.js` (salon créé et rejoint par les menus, échange, combat, abandon, déconnexion ; aussi avec `DROP=0.2`, 20 % des messages perdus).
+
 ## Version 14.0 : le Grand Voyage
 
 ![Aperçu de la version 14.0](apercus/v14-grand-voyage.png)
@@ -243,4 +258,8 @@ tools/play.mjs      parcours automatique (Playwright) → node tools/play.mjs to
 tools/scn-v4.js     teste les mécaniques 4.0         → node tools/play.mjs tools/scn-v4.js
 tools/scn-intro.js  teste l'introduction jouable     → node tools/play.mjs tools/scn-intro.js
 tools/fontcheck.mjs vérifie que chaque caractère existe dans la police bitmap
+tools/net2.mjs      deux joueurs en ligne + relais locaux → node tools/net2.mjs tools/scn-v15-duo.js   (npm i aedes ws ; DROP=0.2 : pertes)
+src/v10/m-reseau.js relais MQTT, salon, présence, amis sur la carte
+src/v10/n-enligne.js menu EN LIGNE, clavier, invitations, échanges
+src/v10/o-arene.js  combats en ligne (moteur de l'hôte, relecture sur les deux écrans)
 ```

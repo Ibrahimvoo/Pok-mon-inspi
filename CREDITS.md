@@ -357,3 +357,10 @@ Les éléments suivants viennent aussi du dépôt Tuxemon (`mods/tuxemon/gfx/til
 
 Le code du jeu (dossier `src/`, outils `tools/`) est propre à Pixémon Éclipse. Aucune ligne de code de Tuxemon
 (GPLv3) n'est reprise : seuls des graphismes le sont.
+
+## Réseau (mode En ligne)
+
+Le mode En ligne se connecte à des relais MQTT publics et gratuits, mis à disposition par EMQX (broker.emqx.io),
+HiveMQ (broker.hivemq.com), la fondation Eclipse (mqtt.eclipseprojects.io), shiftr.io (public.cloud.shiftr.io)
+et Eclipse Mosquitto (test.mosquitto.org). Aucun code de ces services n'est inclus dans le jeu :
+le petit client MQTT (`src/v10/m-reseau.js`) est écrit pour Pixémon Éclipse.
