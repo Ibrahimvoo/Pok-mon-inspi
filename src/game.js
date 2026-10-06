@@ -1719,7 +1719,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 13.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 14.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2100,6 +2100,7 @@ function ambient(M,cx,cy){const k=M.amb,cnt={};AMB.forEach(p=>cnt[p.k]=(cnt[p.k]
  const nt=night();if(k==='day'&&!nt&&Math.random()<.01)add('fly',3,{vx:Math.random()-.5,c:['#ffffff','#f6c445','#9ad6f2'][Math.random()*3|0]});if((k==='day'||k==='mont')&&nt&&Math.random()<.04)add('ff',8,{});
  if(k==='cave'&&Math.random()<.03)add('drip',4,{y:cy,vy:2.2,l:120});if(k==='tech'&&Math.random()<.06)add('spk',10,{vy:-.2,vx:(Math.random()-.5)*.3,l:140});
  if(M.spooky&&Math.random()<.05)add('wisp',7,{vx:(Math.random()-.5)*.25,vy:-.1,l:420});
+ if(M.dream){if(Math.random()<.07)add('wisp',7,{vx:(Math.random()-.5)*.3,vy:-.15,l:380});if(Math.random()<.1)add('ff',12,{})}
  if(k==='foret'&&!M.spooky){if(Math.random()<(nt?.14:.05))add('ff',nt?18:8,{});if(Math.random()<.02)add('leaf',5,{y:cy-8,vx:.3,vy:.5})}
  if(k==='mont'){if(Math.random()<.25)add('em',22,{y:cy+H+4,vy:-.6-Math.random()*.8,vx:(Math.random()-.5)*.4,l:260});if(Math.random()<.05)add('ash',10,{y:cy-4,vy:.35,vx:.2})}
  if(k==='in'&&Math.random()<.05)add('dust',8,{vx:(Math.random()-.5)*.1,vy:-.06});
@@ -2131,7 +2132,7 @@ function lightR(){const T=G.party.filter(alive).map(m=>SP[m.sp].t);return T.incl
 function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='multiply';X.fillStyle=c;X.fillRect(0,0,W,H);X.globalCompositeOperation='source-over'},out=!['in','cave','tech'].includes(M.amb),ph=phase();
  if(M.amb==='foret'){mul('#d2e4c6');if(ph<2){X.globalAlpha=.07;for(let i=0;i<3;i++){const bx=((i*230-cx*.3)%720+720)%720-140;for(let y=0;y<H;y+=4)R(X,'#fff6c0',ev(bx+y*.45),y,40,4)}X.globalAlpha=1}}
  if(out&&ph===1&&M.amb==='day'){X.globalAlpha=.09;for(let i=0;i<2;i++){const span=M.rows[0].length*TS+520,wx=((t*.012+i*span/2)%span+span)%span-260;X.drawImage(CLOUD,ev(wx-cx),ev(i*150+60-cy*.2))}X.globalAlpha=1}
- if(M.spooky)mul('#bab4dc');if(M.amb==='mont')mul('#f0d0c4');if(M.amb==='in')mul('#f6eada');if(M.amb==='tech')mul('#d6cef0');
+ if(M.spooky)mul('#bab4dc');if(M.dream)mul('#b8a4ec');if(M.amb==='mont')mul('#f0d0c4');if(M.amb==='in')mul('#f6eada');if(M.amb==='tech')mul('#d6cef0');
  if(out&&stars())for(let i=0;i<3;i++){const p=((t/2300+i*.41)%1);if(p<.22){const q=p/.22,x0=((i*173+Math.floor(t/2300+i*.41)*97)%W)+60,y0=10+i*30,x=x0-q*140,y=y0+q*70;X.globalAlpha=(1-q)*.9;for(let j=0;j<12;j++)R(X,j<2?'#ffffff':'#fff0b0',ev(x+j*3),ev(y-j*1.5),2,1);X.globalAlpha=1}}
  if(out){const tg=hexr(PHT[ph]);TC=TC.map((v,i)=>v+(tg[i]-v)*.04);if(TC.some(v=>v<250))mul(`rgb(${TC.map(Math.round)})`);if(ph===4){X.globalAlpha=.12;R(X,'#e8484f',0,0,W,4);R(X,'#e8484f',0,H-4,W,4);X.globalAlpha=1}}
  const lit=out?Math.max(0,(255-TC[0])/200):M.amb==='cave'?.8:0,mh=M.rows.length,mw=M.rows[0].length;X.globalCompositeOperation='lighter';

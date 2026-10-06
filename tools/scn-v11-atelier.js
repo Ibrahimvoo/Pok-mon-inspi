@@ -32,7 +32,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const F=f(),AP=AUTO.pick,ok=(c
  seq=['SE SOUVENIR','TEMPÉRAMENT','AU REVOIR'];AUTO.pick=m=>{if(m.opts.includes('SE SOUVENIR')){const v=seq.shift();return v?m.opts.indexOf(v):-1}if(m.bare)return 2;if(m.title?.startsWith('Infusion'))return NATK.indexOf(g.nat==='vif'?'robuste':'vif');return AP(m)};
  await me.fn(me);ok(g.moves.length===mv0+1&&G.money===cash-3500&&['vif','robuste'].includes(g.nat),`souvenir + infusion (${g.moves}) ${g.nat} ${cash-G.money}`);AUTO.pick=AP;
  // Breloque cachée
- await go('route2',3,12,2);const hb=npcs(MAPS.route2).find(n=>n.x===2&&n.y===12);ok(hb,'breloque cachée visible');await hb.fn(hb);ok(G.brq.lanterne===1&&!npcs(MAPS.route2).find(n=>n.x===2&&n.y===12),'breloque cachée ramassée');
+ await go('route2',3,12,2);const hb=npcs(MAPS.route2).find(n=>n.x===2&&n.y===12);ok(hb,'breloque cachée visible');const lb0=G.brq.lanterne||0;await hb.fn(hb);ok(G.brq.lanterne===lb0+1&&!npcs(MAPS.route2).find(n=>n.x===2&&n.y===12),'breloque cachée ramassée');
  // Après-histoire : dresseurs équipés
  F.balance=1;const foes=[mon('flamiot',30)];const bp=battle(foes,{tr:{name:'Test',money:1,team:[]}});await wait(100);ok(!!foes[0].eq,'dresseur équipé après l\'histoire : '+foes[0].eq);AUTO.off=0;await bp;F.balance=0;
  // Sauvegarde / chargement

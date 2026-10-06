@@ -18,6 +18,6 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const F=f(),AP=AUTO.pick,ok=(c
  AUTO.pick=m=>mode==='battle'&&m.opts.some(o=>/ÉVEIL/.test(o))?m.opts.findIndex(o=>/ÉVEIL/.test(o)):AP(m);await bp;clearInterval(iv);AUTO.pick=AP;ok(seen,'plan de coupe d\'Éveil affiché');
  // Migration 12 -> 13 : les étapes franchies débloquent les cinématiques
  const old=JSON.parse(JSON.stringify(G));old.v=12;delete old.cin;old.flags={...old.flags,t_corvin:1,boss:1,baseDone:1};const n2=normalize(old);
- ok(n2.v===13&&n2.cin.prologue&&n2.cin.mine&&n2.cin.eclipse&&n2.cin.centrale&&!n2.cin.aube,'migration 12 -> 13');
+ ok(n2.v>=13&&n2.cin.prologue&&n2.cin.mine&&n2.cin.eclipse&&n2.cin.centrale&&!n2.cin.aube,'migration 12 -> 13');
  save();ok(load().cin.dome,'sauvegarde des cinématiques vues');
  AUTO.off=1;const wp=whatsNew();await wait(400);await SNAP('news');press('b');await wp;AUTO.off=0;L('done')}

@@ -149,7 +149,7 @@ pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.tea
  const i=await choose(O.map(o=>o[0]),{x:W-162,y:8,w:154,rh:O.length>9?24:26,vis:10,icons:O.map(o=>o[1])});ui.panel=null;const k=O[i]?.[0];
  if(i<0||k==='FERMER')return;if(k==='ÉQUIPE')await teamMenu();if(k==='PIXÉDEX')await dexMenu();if(k==='SAC')await bagMenu(false);if(k==='JOURNAL')await journal();if(k==='CARNET')await carnet();if(k==='PHOTO'){await takePhoto();return}
  if(k==='SAUVER')await say(save()?'Partie sauvegardée !':'Impossible de sauvegarder dans ce navigateur.');
- if(k==='CARTE')await regionMap();if(k==='CINÉMAS')await cinemaMenu();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
+ if(k==='CARTE'&&await regionMap())return;if(k==='CINÉMAS')await cinemaMenu();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
  if(k==='TITRE'&&await ask('Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}};
 // Options : animations réduites (accessibilité)
 {const OP0=options;options=async function(){const o=G.opt;const i=await choose([`DIFFICULTÉ : ${f().expert?'EXPERT':'NORMALE'}`,`ANIMATIONS : ${o.calm?'RÉDUITES':'NORMALES'}`,'AUTRES OPTIONS…','RETOUR'],{x:W-252,y:8,w:244,title:'Options'});if(i===0){await difficulty();return options()}if(i===1){o.calm=o.calm?0:1;save();return options()}if(i===2)return OP0()}}

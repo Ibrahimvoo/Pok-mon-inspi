@@ -40,6 +40,17 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 14.0 : le Grand Voyage
+
+![Aperçu de la version 14.0](apercus/v14-grand-voyage.png)
+
+- **L'Envol** : après le Badge Miroir, le Facteur Léo, à Bourg-Lueur, prête son Piafou messager (Sifflet du Relais). Dans la CARTE, A sur un lieu déjà visité t'y emmène : Bourg-Lueur, Cendreville, Port-Miroir, Lunévie, Volterre, les Coteaux, le Lac Opalin, le Récif et le Pic Céleste. Impossible sous terre ou sous un toit.
+- **Expéditions** : au Centre de Soins (BOÎTE, puis EXPÉDITIONS), jusqu'à trois créatures de la Boîte partent explorer un lieu visité, pour une expédition courte (240 pas) ou longue (600 pas). Elles reviennent avec des objets propres au lieu, de l'EXP et un lien plus fort. Une créature dont le type convient au lieu (★) et assez forte pour lui trouve plus de choses, et plus souvent des raretés (pierres d'évolution, objets tenus, Disque Cycle).
+- **La Faille des Songes** (Lunévie, après le Badge Crépuscule) : un donjon dont les étages changent à chaque plongée (salles, couloirs, herbes, objets, dresseurs-ombres, feux oniriques qui soignent une fois). Les créatures s'accordent à ta force et deviennent plus fortes à chaque étage, et aucun Centre de Soins ne t'attend entre deux étages. Tous les cinq étages, un **Écho** t'attend : Kael, Sélène, Vex, Caïus, puis Valen. Après l'avoir vaincu, tu peux descendre plus bas ou te réveiller. Les **Éclats de Songe** s'échangent auprès de la Rêveuse Nyx (Disques Cycle, Pierre d'Aube, breloques…). Une défaite dans le rêve ne coûte pas d'argent : tu te réveilles simplement à Lunévie.
+- **Ta chambre** : le PC de ta chambre propose un catalogue de déco et l'option AMÉNAGER. Six emplacements (table de chevet, coin près du lit, étagère, deux coins de la pièce, mur) acceptent 24 meubles et tableaux. Cinq **trophées** arrivent quand tu les mérites : Coupe du Tournoi, Lampe de Songe (étage 10), Peluche du starter (lien Inséparable), Globe d'Aurélys (tous les points de relais visités) et Vitrine des badges.
+- Six nouveaux succès, quatre entrées dans le journal, sauvegardes migrées automatiquement (une partie sauvegardée dans la Faille reprend au même étage).
+- Test dédié : `node tools/play.mjs tools/scn-v14-monde.js` (vérifie entre autres que 440 étages générés ont tous une sortie accessible et des objets atteignables).
+
 ## Version 13.2 : intérieurs et ambiances
 
 ![Aperçu de la version 13.2](apercus/v13-2-interieurs.png)
