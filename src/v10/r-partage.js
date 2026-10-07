@@ -6,7 +6,7 @@
 // =====================================================================
 
 // --- Légendaires : espèce → drapeau qui la retire du monde (et ouvre la suite, comme une capture)
-const LGF={solarion:'legS',nocturion:'legN',crepuscel:'legC',presagelle:'legP',heliote:'legH',seleniote:'legL',wendigrave:'wendC',masquaserp:'masqOk',eclipsar:'legE',aurorelle:'legA',errenard:'legR'};
+const LGF={solarion:'legS',nocturion:'legN',crepuscel:'legC',presagelle:'legP',heliote:'legH',seleniote:'legL',wendigrave:'wendC',masquaserp:'masqOk',eclipsar:'legE',aurorelle:'legA',errenard:'legR',oasiphant:'legO',djinnflamme:'legD'};
 const lgMine=()=>G?Object.keys(LGF).filter(sp=>G.dex?.[sp]===2&&!G.coop?.lg?.[sp]):[];
 // Un ami de l'aventure a capturé ce légendaire : il quitte ton monde
 function lgTake(sp,who){if(!G?.coop||!LGF[sp]||G.dex?.[sp]===2||G.coop.lg?.[sp])return false;(G.coop.lg??={})[sp]=netName(who)||'Ton ami';

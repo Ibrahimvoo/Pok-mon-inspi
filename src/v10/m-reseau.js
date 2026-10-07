@@ -64,7 +64,7 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
   P.t=Date.now();if(m.k!=='p'&&m.k!=='hi')this.trace('<',m.k,m.s,P.name);try{if(Object.prototype.hasOwnProperty.call(this.H,m.k))this.H[m.k](m,P)}catch(e){console.error(e)}},
  trace(...a){this.dbg.push(a.join(' '));if(this.dbg.length>80)this.dbg.shift()},
  hi(force){const t=Date.now();if(!G||!force&&t-this.lhi<5000)return;this.lhi=t;const F=f(),pos={m:G.map,x:G.x,y:G.y,d:G.dir};
-  this.send('hi',{n:NG().n||'Dresseur',lk:NG().lk||'hero',...pos,b:['badge','badge2','badge3','badge4'].filter(k=>F[k]).length,ld:G.party[0]?.sp||'',dv:NETDV(),bz:this.act||mode==='battle'?1:0})},
+  this.send('hi',{n:NG().n||'Dresseur',lk:NG().lk||'hero',...pos,b:['badge','badge2','badge3','badge4','badge5'].filter(k=>F[k]).length,ld:G.party[0]?.sp||'',dv:NETDV(),bz:this.act||mode==='battle'?1:0})},
  drop(P,why){this.trace('drop',P.name,why);ghostDel(P);this.peers.delete(P.pid);if(why)this.note(`${P.name} ${why}`);this.H.gone?.(P)},
  note(s,ic){this.toasts.push({s,ic,t0:Date.now()});if(this.toasts.length>4)this.toasts.shift();this.log.push(s);if(this.log.length>30)this.log.shift()},
  tick(){if(!this.on)return;if(!G){this.leave(true);return}const t=Date.now();for(const r of this.R)r.tick(t);
@@ -82,7 +82,7 @@ addEventListener('pagehide',()=>{if(NET.on)NET.leave(true)});
 const okMap=m=>typeof m==='string'&&!!MAPS[m];
 const okXY=(m,x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&y>=0&&x>=0&&y<MAPS[m].rows.length&&x<MAPS[m].rows[0].length;
 NET.H.who=()=>{if(Date.now()-(NET.lwho||0)>800){NET.lwho=Date.now();NET.hi(1)}};
-NET.H.hi=(m,P)=>{const n=netName(m.n)||'Ami',nw=P.nw;P.nw=0;P.name=n;P.look=LOOKS.includes(m.lk)?m.lk:'hero';P.b=Math.max(0,Math.min(4,m.b|0));P.ld=SP[m.ld]?m.ld:'';P.dv=String(m.dv||'').slice(0,40);P.bz=m.bz?1:0;
+NET.H.hi=(m,P)=>{const n=netName(m.n)||'Ami',nw=P.nw;P.nw=0;P.name=n;P.look=LOOKS.includes(m.lk)?m.lk:'hero';P.b=Math.max(0,Math.min(5,m.b|0));P.ld=SP[m.ld]?m.ld:'';P.dv=String(m.dv||'').slice(0,40);P.bz=m.bz?1:0;
  if(m.s>P.ps&&okMap(m.m)&&okXY(m.m,m.x,m.y)){P.ps=m.s;const d=m.d&3;if(P.map!==m.m){P.map=m.m;P.x=m.x;P.y=m.y;P.d=d;P.q=[];P.snap=1}else P.q.push([m.x,m.y,d])}
  if(nw){NET.note(`${n} a rejoint ${netRoom()} !`);sfx('ok');NET.hi(1)}if(P.g){P.g.t=P.look}};
 NET.H.p=(m,P)=>{if(m.s<P.ps||!okMap(m.m)||!Array.isArray(m.p))return;P.ps=m.s;const L=m.p.slice(-12).filter(e=>Array.isArray(e)&&okXY(m.m,e[0],e[1]));if(!L.length)return;

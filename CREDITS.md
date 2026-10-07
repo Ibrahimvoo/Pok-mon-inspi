@@ -99,6 +99,70 @@ dessinée par les contributeurs du projet et publiée sous CC BY-SA 4.0 sauf men
 | Aurorelle | altie | Éclipsar | snarlon |
 | Errenard | anu | Masquaserp | masknake |
 
+**Version 18.0** (117 créatures, ajoutées par `tools/v18sprites.py`) :
+
+| Pixémon | Sprite Tuxemon | Pixémon | Sprite Tuxemon |
+|---|---|---|---|
+| Serpétin | hissiorite | Cobrasier | cobarett |
+| Pythonova | pythonova | Braisot | embra |
+| Éruptor | ruption | Lapignite | thumpurn |
+| Volcanin | volconey | Fournours | furnursus |
+| Ourscendre | statursus | Charbonours | coaldiak |
+| Tikitison | tikoal | Tikorche | tikorch |
+| Djinnflamme | djinnbo | Crabéil | sheye |
+| Crabermite | shrab | Algadou | weedsea |
+| Atlantalgue | weedlantis | Nudiflor | nudiflot_female |
+| Nudisprit | nudimind | Escargout | lesmagu |
+| Coquillagu | shelagu | Crustagu | crustagu |
+| Ornitaupe | taupypus | Gélilou | jelillow |
+| Bédouille | bedoo | Blobulle | uglip |
+| Eskichiot | eskipup | Givrechien | houndice |
+| Tuxou | tux | Oasiphant | pharavion |
+| Sushiko | drashimi | Makirol | tsushimi |
+| Tobishimi | tobishimi | Chlorasaure | chloragon |
+| Sèvragon | sapragon | Dragarbre | dragarbor |
+| Timibulbe | shybulb | Narcifeuille | narcileaf |
+| Hélifeuille | helipi | Copterbe | coppi |
+| Parasolis | parappi | Mousseroc | tarpeur |
+| Vigueur | vigueur | Choufroid | cohldrabi |
+| Laitgivre | lettice | Givrelaitue | frostuce |
+| Bourgeonge | budaye | Bambouddha | bamboon |
+| Croquepiège | trapsnap | Dionavore | sapsnap |
+| Bourbeux | sludgehog | Écrouvis | nut |
+| Boulonix | bolt | Arthrovolt | arthrobolt |
+| Singélec | tetrchimp | Apéoro | apeoro |
+| Kernélec | kernel | Méduchoc | medushock |
+| Coléorage | coleorus | Proto-MK | mk01_proto |
+| Alpha-MK | mk01_alpha | Delta-MK | mk01_delta |
+| Diablin | devidin | Diablosaure | devidra |
+| Diabloraptor | deviraptor | Briquillon | imbrickcile |
+| Briquegarde | bricgard | Briquemoth | brickhemoth |
+| Fourminet | scarlant | Fourmicrâne | shull |
+| Myrmidon | myrmison | Scorpaille | selket |
+| Scorpharaon | selmatek | Requiroc | carcharock |
+| Fennéclat | galnec | Pinçadune | dune_pincher |
+| Hippotame | hampotamos | Vampiver | vamporm |
+| Dracoon | dracune | Nocturaile | fluttaflap |
+| Ombrelain | hoarse | Équinuit | equill |
+| Cauchemare | hoarseshoo | Draplin | cairfrey |
+| Possédrap | possessun | Araignuit | spighter |
+| Hyénou | babysnitch | Hyénombre | baddrscratch |
+| Ninjombre | yamada | Poupétronce | hoodoll |
+| Vaudoronce | wolololl | Chromœil | chromeye |
+| Angrito | angrito | Tortune | forturtle |
+| Prophétoise | prophetoise | Flanlou | flummby |
+| Grosflan | flummack | Oursaturne | bursa |
+| Ourstral | flambear | Masquetotem | abesnaki |
+| Chatœil | cateye | Glifée | gliffary |
+| Chenillard | marvillar | Mantillard | marvantis |
+| Serpinet | snaki | Bicéphale | snokari |
+| Toucanari | toucanary | Raptoucan | raptoucan |
+| Ouistitou | capiti | Capisinge | capinyah |
+| Hélichat | propellercat | Hibougris | pairagrin |
+| Hiboumage | pairagrim | Lapitesse | squabbit |
+| Lapisaure | rabbitosaur | Fourmilou | aardorn |
+| Fourmilame | aardart |  |  |
+
 Auteurs connus :
 
 - **Nocturion** — « Drokoro », contributeurs du projet Tuxemon (Sanglorian et al.), CC BY-SA 4.0 / CC BY 3.0.
@@ -135,6 +199,7 @@ sont découpés dans les sprites de combat.
 - ["Spyder Boss"](https://wiki.tuxemon.org/index.php?title=Spyder_Boss). Overland sprites by Catch Challenger. Front sprite by Sanglorian.
 - ["Overseer"](https://wiki.tuxemon.org/index.php?title=Overseer) (Ambroise) et ["Rogue"](https://wiki.tuxemon.org/index.php?title=Rogue) (Commandant Orso) : contributeurs du projet Tuxemon, d'après les sprites de Catch Challenger, CC BY-SA 4.0.
 - Lou (sprites « catgirl », Pboop / Sanglorian / tamashihoshi) et Elias (sprites « professor », contributeurs Tuxemon).
+- Personnages ajoutés en 18.0 (`tools/v18people.py`) : Arlequin (« magician_fiery »), Faustine (« goth_rose »), Bérénice et Madame Prophétie (« witch »), Mirella (« catgirl_violet » / « fashionista_rose »), Maestro Fabrizio (« magician_grey » / « magician_alt1 »), ninjas (« ninja », « ninja_blue » / « ninja_violet »), chevaliers (« knight »), nomades (« disciple » / « desert_male », « desert_female »), danseuses (« dancer »), pâtissière (« barmaid »), costumes du joueur (« magician_blonde », « woodnymph » / « earthnymph ») : contributeurs du projet Tuxemon, d'après les sprites de Catch Challenger et de Sanglorian, CC BY-SA 4.0.
 - Autres personnages (aventurier·e, héroïne, fashionista, infirmière, professeur·e…) : contributeurs du projet
   Tuxemon, d'après les sprites de [Catch Challenger](https://github.com/alphaonex86/CatchChallenger-datapack) (CC BY)
   et de Sanglorian, CC BY-SA 4.0.

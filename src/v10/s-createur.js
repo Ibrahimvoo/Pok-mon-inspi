@@ -57,6 +57,8 @@ async function creatorMenu(){let last=0;for(;;){
    ui.panel=null;await battle([mon(sp,lv,{wild:1})],{});return null}],
   ['PIXÉDEX COMPLET',()=>{for(const k of DEX)if(SP[k])G.dex[k]=Math.max(G.dex[k]|0,creaLeg(k)?1:2);G.keys.dex=1;sfx('ok');return'Pixédex complété !'}],
   ['TOUTES LES CLÉS',()=>{for(const k of['dex','carte','boussole','bracelet','brv2','camera','charme','couveuse','lantern','rod','rod2','rod3','sablier'])G.keys[k]=1;sfx('ok');return'Tous les objets clés débloqués (canne, bracelet, sablier…).'}],
+  ['TOUS LES DÉGUISEMENTS',()=>{for(const k of Object.keys(DG))G.keys['dg_'+k]=1;sfx('ok');return'Les cinq déguisements sont dans ton armoire : MENU, TENUES.'}],
+  ['TOUS LES BADGES',()=>{for(const k of['badge','badge2','badge3','badge4','badge5'])f()[k]=1;G.keys.bracelet=1;sfx('ok');return'Les cinq badges sont à toi !'}],
   ['TÉLÉPORTATION',async()=>{const L=Object.keys(MAPS).filter(k=>MAPS[k].name&&!MAPS[k].dream&&k!=='songe'&&k!==G.map);const i=await choose(L.map(k=>MAPS[k].name),{x:W-232,y:8,w:224,vis:12,title:'Aller où ?'});if(i<0)return;
    const s=creaSpot(L[i]);if(!s)return'Impossible d\'aller là.';ui.panel=null;sfx('door');await fadeTo(1,220);loadMap(L[i],s[0],s[1],0);await fadeTo(0,220);if(NET.on)NET.hi(1);return'exit'}],
   [`PLUIE : ${onOff(G.wx?.k==='rain')}`,()=>{G.wx=G.wx?.k==='rain'?null:{k:'rain',n:600}}],

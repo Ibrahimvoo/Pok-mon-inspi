@@ -36,7 +36,7 @@ const advMates=g=>Object.values(g?.coop?.mates||{}).filter(s=>typeof s==='string
 const numSlot=()=>Math.min(3,Math.max(1,+lsGet('pixemon-slot')||1));
 {const ts17=titleScreen;titleScreen=async function(){if(typeof SLOT!=='number')SLOT=numSlot();KW=null;SCQ.length=0;return ts17()}}
 function advInfo(g,code,x,y,w){txt(`AVENTURE ${code}`,x+16,y+28,C.acc);txt(MAPS[g.map]?.name.split(' · ')[0]||'',x+16,y+50);txt(fmtT(g.play||0),x+w-16,y+50,C.ink2,{al:'r'});
- const F=g.flags,nb=(F.badge?1:0)+(F.badge2?1:0)+(F.badge3?1:0)+(F.badge4?1:0);[ICO.bRoc,ICO.bMir,ICO.bVol,ICO.bCre].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+58,14,14));
+ const F=g.flags,nb=(F.badge?1:0)+(F.badge2?1:0)+(F.badge3?1:0)+(F.badge4?1:0)+(F.badge5?1:0);[ICO.bRoc,ICO.bMir,ICO.bVol,ICO.bCre,ICO.bMas].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+58,14,14));
  g.party.slice(0,6).forEach((m,j)=>X.drawImage(monSpr(m.sp,0,48),x+16+j*30,y+78,28,28));const mt=advMates(g);wrap(mt.length?'Avec '+mt.join(', '):'Pas encore d\'autre joueur.',w-32,1).slice(0,2).forEach((l,j)=>txt(l,x+16,y+122+j*11,C.ink2,{s:1,sh:0}))}
 async function advMenu(){for(;;){const L=advSaves().slice(0,4),O=[...L.map(s=>`CONTINUER ${s.code}`),'NOUVELLE AVENTURE','REJOINDRE',...(L.length?['EFFACER']:[]),'AIDE','RETOUR'];
  ui.panel=()=>{panel(8,8,W-16,H-16);X.drawImage(ICO.team,22,20,16,16);txt('AVENTURE À PLUSIEURS',44,34,C.acc,{sh:0});R(X,C.paper2,20,44,W-40,2);

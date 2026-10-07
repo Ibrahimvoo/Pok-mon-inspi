@@ -32,7 +32,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);
  for(const k of['code1','code2','code3'])await docRead(k);await warp('centrale2',8,8,1);{const op=AUTO.pick;AUTO.pick=m=>m.title==='Chiffre 1'?1:m.title==='Chiffre 2'?2:m.title==='Chiffre 3'?0:op(m);await codeLock();AUTO.pick=op}L('code',f().ceCode);
  await fightAll('centrale2');loadMap('centrale2',9,3,1);await orsoTalk(MAPS.centrale2.npcs.find(n=>n.fn===orsoTalk));L('base',f().baseDone);await SNAP('centrale');
  loadMap('volterre',7,6,1);await gym4Door();await fightAll('gym4');L('badge4',f().badge4);
- loadMap('volterre',13,1,1);await volGate();L('telepherique',G.map);
+ loadMap('volterre',13,1,1);await volGate();L('vol18',f().v18vol,G.map);G.bag.clecabine=1;f().v18faus=1;await volGate();L('cle18',f().v18done);await volGate();L('telepherique',G.map);
  loadMap('obs',8,9,1);await MAPS.obs.enter();L('obsScene',f().obsScene);await SNAP('obs');
  await fightAll('obs');for(const i of[1,0,2])await consoleAct(i);L('bar',f().bar,MAPS.obs.rows[3]);
  const sel=MAPS.obs.npcs.find(n=>n.t==='selene');loadMap('obs',9,4,1);await trainerBattle(sel);L('selene2',f().selene2done);

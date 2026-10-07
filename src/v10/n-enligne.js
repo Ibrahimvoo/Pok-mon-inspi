@@ -27,7 +27,7 @@ const NETHELP=['EN LIGNE, tu joues avec tes amis, chacun sur son téléphone ou 
 // --- Menu EN LIGNE
 const netWhere=P=>P.map&&MAPS[P.map]?MAPS[P.map].name.split(' · ')[0]:'?';
 function netPanel(){panel(8,8,W-176,H-16);const up=NET.up();X.drawImage(ICO.net,22,20,16,16);txt(`SALON ${NET.code}`,44,34,C.acc,{sh:0});pell(X,W-196,28,4,4,up?'#4cc46a':'#f6c445');txt(up?'CONNECTE':'CONNEXION...',W-206,32,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,W-200,2);
- const L=[{name:NG().n+' (toi)',look:NG().lk,map:G.map,b:['badge','badge2','badge3','badge4'].filter(k=>f()[k]).length,me:1},...NET.peers.values()];
+ const L=[{name:NG().n+' (toi)',look:NG().lk,map:G.map,b:['badge','badge2','badge3','badge4','badge5'].filter(k=>f()[k]).length,me:1},...NET.peers.values()];
  L.slice(0,8).forEach((P,i)=>{const y=52+i*30;X.drawImage(chr(P.look,0,0),20,y-8,16,32);txt(P.name,42,y+12,P.me?C.ink2:C.ink,{s:1.5});txt(netWhere(P)+(P.bz?' · occupé':''),42,y+24,C.mute,{s:1,sh:0});for(let j=0;j<P.b;j++)X.drawImage(ICO.star,W-206-j*12,y+4,10,10)});
  if(!NET.peers.size)wrap(up?`En attente d'amis… Donne-leur le code ${NET.code} : ils choisissent EN LIGNE, puis REJOINDRE.`:'Connexion aux relais en cours… Vérifie que ton appareil est connecté à Internet.',W-210,1).forEach((l,j)=>txt(l,22,100+j*11,C.ink2,{s:1,sh:0}));
  const nl=NET.log.slice(-3);nl.forEach((l,j)=>txt(l,22,H-50+j*11,C.mute,{s:1,sh:0}));txt(`RELAIS ${NET.R.filter(r=>r.up).length}/${NET.R.length}`,W-206,H-22,C.mute,{mini:1,al:'r'})}
