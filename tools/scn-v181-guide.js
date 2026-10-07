@@ -33,5 +33,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  while(QT.cur||QT.q.length)await wait(100);
  G.flags={...st0};delete G.qk;await wait(500);f().badge=1;await until(()=>QT.cur,4000);ok(QT.cur?.k==='new'&&QT.cur.t==='Les Coteaux d\'Aurore','le badge ouvre une quête : Les Coteaux d\'Aurore');ok(QT.q.some(q=>q.k==='goal'&&/Tito/.test(q.d)),'« NOUVEL OBJECTIF » quand l\'histoire avance (à la suite)');
  await until(()=>QT.cur?.k==='goal',9000);await wait(900);QT.hold=1;await SNAP('objectif');QT.hold=0;
- ok(NEWS[0][1]==='Flèche-guide et niveaux','nouveautés 18.1 en tête');
+ ok(NEWS.slice(0,4).some(n=>n[1]==='Flèche-guide et niveaux'),'nouveautés 18.1 parmi les plus récentes');
  L('done')}

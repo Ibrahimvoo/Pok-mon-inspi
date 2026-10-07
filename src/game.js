@@ -551,8 +551,8 @@ ville:{name:'Cendreville',bg:'plaine',amb:'day',mus:'town',edges:{s:['route1',0]
  step:async()=>{if(G.x>=19&&(G.y===8||G.y===9)&&(!f().badge||!f().mine&&!f().rival2)){await say(f().badge?'Halte ! Personne ne passe tant que nos gars sont dans la mine ! Va donc jouer ailleurs… hé hé !':'Halte ! La forêt appartient à la Team Éclipse ! Reviens quand tu auras un badge… hé hé !','Sbire Éclipse');await forceStep(2);return true}}},
 mine:{name:'Mine de Cendreville',bg:'grotte',amb:'cave',mus:'mont',cave:1,under:'g',encAll:1,
  enc:[['rocaillon',12,14,32],['ratounet',11,13,22],['rocaton',11,13,18],['magmor',13,14,10],['nocturelle',12,14,14,'n'],['ombrelin',12,13,12,'n'],['lumignon',12,13,10,'n']],
- rows:["^^^^^^^^^^^^^^^^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^^^g^^^^^^^^^^^^^","^^^^^^gggggggggggggg^^^^^","^^^^^^g^^^^gg^^^^^^g^^^^^","^^gggggg^^^gg^^^vvvggg^g^","^^gvvvvg^^^gg^^^vvvvvgxg^","^^gvvvvg^^^gg^^^gggg^g^^^",
-  "^^ggg^^^^^^gg^^^^^^^^g^^^","^^^^g^^^^ggggggg^^^^^g^^^","^^^^g^^^^g^^^^^g^^^^^g^^^","^^ggggg^^g^^^^^g^^gggggg^","^^gvvvg^^g^^^^^g^^gvvvvg^","^^gggggggggggggggggggggg^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^EE^^^^^^^^^^^^"],
+ rows:["^^^^^^^^^^^^^^^^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^gggggg^^^^^^^^^^","^^^^^^^^^^^g^^^^^^^^^^^^^","^^^^^^gggggggggggggg^^^^^","^^^^^^gggggggggggggg^^^^^","^^gggggg^^^gg^^^vvvggg^g^","^^gvvvvg^^^gg^^^vvvvvgxg^","^^gvvvvg^^^gg^^^gggg^g^^^",
+  "^^ggg^^^^ggggggg^^^^gg^^^","^^^ggg^^^ggggggg^^^^gg^^^","^^^^gg^^^gg^^^gg^^^^gg^^^","^^ggggg^^gg^^^gg^^gggggg^","^^gvvvgggggggggggggvvvvg^","^^gggggggggggggggggggggg^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^gg^^^^^^^^^^^^","^^^^^^^^^^^EE^^^^^^^^^^^^"],
  doors:{'11,17':['ville',17,1,0],'12,17':['ville',17,1,0]},signs:{},hidden:[{x:7,y:6,it:'biscuit',q:2,id:'mh1'}],
  npcs:[{x:15,y:14,t:'grunt',d:2,tr:TR('gm1','Sbire Éclipse',[['ratounet',12],['ombrelin',13]],400,'Hé ! Cette mine est réquisitionnée par la Team Éclipse !','Pfff… On n\'est payés que pour creuser, nous…',{post:'Le chef veut des Éclats d\'Aube. Des tonnes. Pour un bracelet, qu\'il dit…'})},
   {x:9,y:12,t:'grunt',d:0,tr:TR('gm2','Sbire Éclipse',[['rocaillon',13],['magmor',13]],400,'Tu cherches le gamin ? Il est tout au fond, derrière le lieutenant !','Aïe aïe aïe…',{post:'Les Éclats d\'Aube réagissent au lien entre un dresseur et sa créature. C\'est pour ça que le chef les veut.'})},
@@ -633,7 +633,8 @@ gym2:{name:'Arène Miroir',bg:'lac',amb:'in',floor:'stone',dark:1,mus:'gym',rows
   {x:10,y:5,t:'sailor',d:2,tr:TR('ana','Matelote Ana',[['volticelle',23],['crapaflot',23]],800,'L\'ÉLEC contre l\'EAU ? Je connais la parade !','Bien joué, moussaillon.')}]},
 grotte:{name:'Grotte Écho',bg:'grotte',amb:'cave',mus:'mont',cave:1,dark2:1,under:'g',encAll:1,edges:{s:['port',-1]},
  enc:[['nocturelle',23,26,36],['rocaillon',23,26,26],['rocaton',23,25,14],['granifelin',25,27,4],['rocaroc',25,27,8],['magmor',24,26,12],['ombrelin',23,26,18]],
- rows:["^^^^^^^^^^^^^EE^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^ggggggggg^^^^^^^","^^^^^^^^^^g^^^^^^gg^^^^^^^","^^^^^^^^^^gvvvvvvggggg^^^^","^^^^^^^^^^^^^^^^^^^^^g^^^^","^^^^gggg^^^^^^^^^^^^^g^^^^","^^^^ggggkgggg^^^^^^^^g^^^^","^^^^gggg^^^^g^^^^^^^^gggg^","^^g^^^^^^^^^g^^^^^^^^g^^g^","^^gvgvvvv^^^g^^^^^^^^g^gg^","^^^^g^^^^^^^g^^^^^^^^g^^^^","^^^^gggggggggggggggggg^^^^","^^^^g^^^^^^^^^^^^^^^^^^^^^","^^^^g^^^vvvvv^^^^^^^^^^^^^","^^^^ggggvvvvvgggg^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^"],
+ rows:["^^^^^^^^^^^^^EE^^^^^^^^^^^","^^^^^^^^^^^^gggg^^^^^^^^^^","^^^^^^^^^ggggggggggggg^^^^","^^^^^^^^^gg^^^^ggggggg^^^^","^^^^^^^^^^^^^^^^^^^^gg^^^^","^^^^^^^^^^^^^^^^^^^vgg^^^^","^^^^gggg^^^^^^^^^^^vgg^^^^","^^^^ggggkgggg^^^^^^^gg^^^^","^^^^gggg^^^gg^^^^^^^ggggg^",
+  "^^g^^^^^^^^gg^^^^^^^ggggg^","^^gggvvvv^^gg^^^^^^^ggggg^","^^^gg^^^^^^gg^^^^^^^gg^^^^","^^^gg^^^^^gggggoogg^gg^^^^","^^^ggggggggggggggggggg^^^^","^^^gggggggvvvggggggg^^^^^^","^^^^^^^^^^vvvgggvvv^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^","^^^^^^^^^^^^^gg^^^^^^^^^^^"],
  doors:{'13,0':['obs',8,9,1],'14,0':['obs',9,9,1]},signs:{},hidden:[{x:24,y:8,pg:3}],
  npcs:[{x:24,y:9,t:'caver',d:1,tr:TR('remi','Spéléologue Rémi',[['rocaillon',24],['nocturelle',25]],900,'Chut ! Tu entends l\'écho ? Mes créatures, elles, voient avec leurs oreilles !','L\'écho m\'a trahi…',{post:'Les Nocturelle ne ratent jamais leur cible : elles se guident au son. Pratique, dans le noir !'})},
   {x:18,y:2,t:'grunt',d:0,tr:TR('g6','Sbire Éclipse',[['nocturelle',25],['magmor',25]],900,'Tu as trouvé ton chemin dans le noir ? Pas mal. Mais l\'Observatoire est fermé aux visiteurs !','Ouille… Va, de toute façon le chef t\'attend.')},
@@ -824,11 +825,13 @@ async function dadReturns(){f().dadHome=1;const d=MAPS.salon.npcs.find(n=>n.t===
 const SHY=new Set(['piafou','lapilune','pissenlou','herissou','etincelot','racinou','larvigne','fumenard','miroitruite','tetardin']),
  CURIOUS=new Set(['ratounet','ratoroi','rocaton','volticelle','lumignon','ombrelin','hiboulume']),
  PREY={granifelin:['rocaillon','rocaton'],faucaube:['piafou','larvigne'],pyrenard:['ratounet','ratoroi'],noctyrex:['lumignon','ombrelin'],nocturelle:['larvigne','volticelle']};
+// Les créatures visibles restent dans les endroits dégagés : jamais dans un couloir d'une case ni à côté d'une porte.
+const roomy=(M,x,y)=>{let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;if(M.doors?.[(x+dx)+','+(y+dy)])return false;const c=M.rows[y+dy]?.[x+dx];if(c&&!SOLID.has(c)&&!'~wHL'.includes(c))n++}return n>=5};
 function faunaSpawn(k){const M=MAPS[k];for(const m of Object.values(MAPS))m.npcs=m.npcs.filter(n=>!n.fauna);
  if(!M.enc||isInt(M)||!G?.party.length||k==='ruines'&&!f().balance)return;const L=M.enc.filter(e=>!e[4]||(e[4]==='r'?rain():(e[4]==='n')===night()));if(!L.length)return;
  const mw=M.rows[0].length,mh=M.rows.length,n0=mw*mh>420?3:2,taken=new Set(M.npcs.map(n=>n.x+','+n.y));
  for(let i=0;i<n0;i++){const e=L[(Math.random()*L.length)|0];for(let tries=0;tries<40;tries++){const x=1+(Math.random()*(mw-2)|0),y=1+(Math.random()*(mh-2)|0),c=M.rows[y][x];
-   if(SOLID.has(c)||'~wHLhE='.includes(c)||M.doors?.[x+','+y]||taken.has(x+','+y)||Math.abs(x-G.x)+Math.abs(y-G.y)<5)continue;taken.add(x+','+y);
+   if(SOLID.has(c)||'~wHLhE='.includes(c)||M.doors?.[x+','+y]||taken.has(x+','+y)||Math.abs(x-G.x)+Math.abs(y-G.y)<5||!roomy(M,x,y))continue;taken.add(x+','+y);
    const nocturnal=e[4]==='n'||['OMB','LUM'].includes(SP[e[0]].t),slp=Math.random()<(night()!==nocturnal?.55:.15);
    M.npcs.push({x,y,x0:x,y0:y,d:rnd(0,3),t:'mon',sp:e[0],lv:rnd(e[1],e[2]),fauna:1,wild:1,slp,tt:800+Math.random()*2000,fn:faunaMeet});break}}}
 async function faunaMeet(n){if(n.gone)return;n.gone=1;const sp=SP[n.sp].name;
@@ -837,7 +840,7 @@ async function faunaMeet(n){if(n.gone)return;n.gone=1;const sp=SP[n.sp].name;
  const m=mon(n.sp,n.lv,{wild:1});if(n.slp){m.st='slp';m.slp=3}rmFauna(n);await battle([m])}
 const rmFauna=n=>{for(const M of Object.values(MAPS)){const i=M.npcs.indexOf(n);if(i>=0)M.npcs.splice(i,1)}};
 function faunaTick(dt){const M=MAPS[G.map],NM=npcs(M),busyAt=(x,y)=>x===G.x&&y===G.y||NM.some(o=>o.x===x&&o.y===y||o.rx===x&&o.ry===y)||x===FOL.x&&y===FOL.y;
- const free=(x,y)=>{const c=M.rows[y]?.[x];return c&&!SOLID.has(c)&&!'~wHL'.includes(c)&&!M.doors?.[x+','+y]&&!busyAt(x,y)};
+ const free=(x,y)=>{const c=M.rows[y]?.[x];return c&&!SOLID.has(c)&&!'~wHL'.includes(c)&&!M.doors?.[x+','+y]&&!busyAt(x,y)&&roomy(M,x,y)};
  for(const n of NM){if(!n.fauna||n.walk||n.gone)continue;n.tt-=dt;if(n.tt>0)continue;n.tt=900+Math.random()*1800;
   if(n.slp){if(Math.abs(n.x-G.x)+Math.abs(n.y-G.y)<=4)logObs(n.sp,'dodo');if(Math.random()<.5){const e={n,k:'…',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),900)}continue}
   const dP=Math.abs(n.x-G.x)+Math.abs(n.y-G.y);let away=null;
@@ -1319,7 +1322,7 @@ async function facteurTalk(){const F='Facteur Léo',L=LETTRES.find(([k])=>f()[k]
 function mapRows(k){const M=MAPS[k];M.rows0??=M.rows.slice();return M.rows0.map((r,y)=>[...r].map((c,x)=>c==='h'&&f()[`c_${k}_${x}_${y}`]?'u':M.sw?.[c]?M.sw[c]():AFF[c]&&f()[`c_${k}_${x}_${y}`]?(M.floor?'F':M.under||'.'):M.opens?.[c]&&f()[M.opens[c][0]]?M.opens[c][1]:c).join(''))}
 function refreshMap(k){const M=MAPS[k],r=mapRows(k);if(r.join()!==M.rows.join()){M.rows=r;M.L=null}buildMap(M)}
 const mapMus=M=>ecl()&&(M.mus==='route'||M.mus==='foret'||M.mus==='town')?'ecl':M.mus==='town'&&night()?'nuit':M.mus;
-function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;faunaSpawn(map);folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
+function loadMap(map,x,y,d){EPOCH++;const ch=map!==G.map||!ui.banner;G.map=map;G.x=x;G.y=y;if(d!=null)G.dir=d;move=null;AMB=[];refreshMap(map);MAPS[map].npcs.forEach(n=>{n.x0??=n.x;n.y0??=n.y;n.d0??=n.d;n.x=n.x0;n.y=n.y0;n.d=n.d0;n.walk=0;n.rx=n.ry=null;n.ox=n.oy=0});if(ch)ui.banner={s:MAPS[map].name,t0:now()};(G.seen??={})[map]=1;if(ch)ENCR=Math.max(ENCR,3);faunaSpawn(map);folReset();CAMO=null;musPlay(mapMus(MAPS[map]));
  if(ch&&!G.wx&&RAINY.has(map)&&f().starter&&Math.random()<.16){G.wx={k:'rain',n:rnd(70,150)};ui.note={s:'Averse',t0:now()+900}}const sw=swarm();if(ch&&sw&&sw[0]===map)setTimeout(()=>{ui.note={s:'Essaim : '+SP[sw[1]].name,t0:now()}},1600)}
 async function warp(map,x,y,d){sfx('door');await fadeTo(1,200);loadMap(map,x,y,d);await fadeTo(0,200);save();if(MAPS[map].enter)await MAPS[map].enter()}
 function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G.y+DY[d],mw=M.rows[0].length,mh=M.rows.length;
@@ -1329,8 +1332,10 @@ function tryMove(d){const pd=G.dir;G.dir=d;const M=MAPS[G.map],tx=G.x+DX[d],ty=G
  const bo=npcs(M).find(n=>n.push&&n.x===tx&&n.y===ty);if(bo){if(now()-lastBump>260){lastBump=now();run(()=>pushRock(bo,d))}return}
  const fa=npcs(M).find(n=>n.fauna&&!n.gone&&n.x===tx&&n.y===ty);if(fa){run(()=>faunaMeet(fa));return}
  if(SOLID.has(M.rows[ty][tx])||npcs(M).some(n=>n.x===tx&&n.y===ty||n.rx===tx&&n.ry===ty)){if(now()-lastBump>350){sfx('bump');lastBump=now()}return}
- move={fx:G.x,fy:G.y,tx,ty,t:0};folFollow(G.x,G.y);if(held.b)AMB.push({k:'dst',x:G.x*TS+16,y:G.y*TS+28,l:18,ml:18})}
-function updWorld(dt){G.play+=dt;if(move){move.t+=dt/(held.b?95:170);if(move.t>=1){G.x=move.tx;G.y=move.ty;steps++;const s=move.sil;move=null;if(!s)run(onStep)}return}
+ move={fx:G.x,fy:G.y,tx,ty,t:0};folFollow(G.x,G.y);if(running())AMB.push({k:'dst',x:G.x*TS+16,y:G.y*TS+28,l:18,ml:18})}
+// Course : B maintenu fait courir ; avec l'option COURSE : TOUJOURS (par défaut sur écran tactile), on court sans rien tenir et B fait marcher.
+const TOUCH=typeof matchMedia==='function'&&matchMedia('(pointer:coarse)').matches,running=()=>(G?.opt?.run??(TOUCH?1:0))?!held.b:!!held.b;
+function updWorld(dt){G.play+=dt;if(move){move.t+=dt/((move.sil?held.b:running())?95:170);if(move.t>=1){G.x=move.tx;G.y=move.ty;steps++;const s=move.sil;move=null;if(!s)run(onStep)}return}
  if(busy)return;if((FOL.tt-=dt)<=0){FOL.tt=4500;const M=MAPS[G.map];if(folMon()&&(M.hidden||[]).some(h=>!f()[hk(h)]&&Math.abs(h.x-G.x)+Math.abs(h.y-G.y)<=3)){const e={n:'fol',k:'!',t0:now()};ui.emo.push(e);sfx('sel');setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),700)}}
  faunaTick(dt);const NM=npcs(MAPS[G.map]);for(const n of NM)if((n.say||n.fn)&&!n.fix&&!n.tr&&!n.walk&&!['ball','mon','shard','obj'].includes(n.t)){n.tt=(n.tt??Math.random()*3000)-dt;if(n.tt<=0){n.tt=2200+Math.random()*3000;const d=[0,0,2,3,1][Math.random()*5|0];n.d=d;
   if(n.wan&&Math.random()<.6){const M=MAPS[G.map],tx=n.x+DX[d],ty=n.y+DY[d],c=M.rows[ty]?.[tx];if(c&&!SOLID.has(c)&&Math.abs(tx-n.x0)<=2&&Math.abs(ty-n.y0)<=2&&!(tx===G.x&&ty===G.y)&&!(move&&tx===move.tx&&ty===move.ty)&&!(tx===FOL.x&&ty===FOL.y)&&!NM.some(o=>o!==n&&(o.x===tx&&o.y===ty||o.rx===tx&&o.ry===ty))&&!M.doors?.[tx+','+ty]){n.walk=1;n.rx=tx;n.ry=ty;npcStep(n,d,320).then(()=>{n.walk=0;n.rx=n.ry=null})}}}}
@@ -1354,7 +1359,12 @@ async function onStep(){const M=MAPS[G.map],ch=M.rows[G.y][G.x],ph=phase();G.t++
  if(G.repel>0&&--G.repel===0){await say('L\'effet de la Repousse se dissipe.');return}
  if(M.step&&await M.step())return;if(await checkTrainers())return;
  const tall=ch===','||ch==='v',cave=M.encAll&&ch==='g';
- if((tall||cave)&&M.enc&&G.party.some(alive)&&Math.random()<(tall?.1:.045)){const e=pickEnc(encTable(M,G.map)),lv=rnd(e[1],e[2]);if(G.repel>0&&lv<G.party.find(alive).lv)return;await battle([mon(e[0],lv,{wild:1})])}}
+ if((tall||cave)&&M.enc&&G.party.some(alive)&&encRoll(M,tall)){const e=pickEnc(encTable(M,G.map)),lv=rnd(e[1],e[2]);if(G.repel>0&&lv<G.party.find(alive).lv)return;await battle([mon(e[0],lv,{wild:1})])}}
+// Rencontres au pas : hautes herbes 8 %, éboulis des grottes 6 %, sol des grottes 3 %. Quelques pas de répit après chaque combat
+// et à l'arrivée sur une carte (ENCR) ; moitié moins quand la créature de tête dépasse nettement la zone ; option RENCONTRES : RARES.
+let ENCR=0;
+function encRoll(M,tall){if(ENCR>0){ENCR--;return false}const ld=G.party.find(alive),hi=Math.max(1,...(M.enc||[]).map(e=>e[2]));
+ let p=tall?(M.cave?.06:.08):.03;if(ld&&ld.lv>=hi+8)p*=.5;if(G.opt?.enc)p*=.4;return Math.random()<p}
 async function checkTrainers(){const M=MAPS[G.map];for(const n of npcs(M)){if(!n.tr||n.los===0||f()['t_'+n.tr.id])continue;let x=n.x,y=n.y;for(let k=1;k<=4;k++){x+=DX[n.d];y+=DY[n.d];if(x===G.x&&y===G.y){await bang(n);for(let i=1;i<k;i++)await npcStep(n,n.d);G.dir=OPP[n.d];await trainerBattle(n);return true}const c=M.rows[y]?.[x];if(!c||SOLID.has(c)||npcs(M).some(o=>o!==n&&o.x===x&&o.y===y))break}}return false}
 async function bang(n){await emote(n,'!',750)}
 function tip(id,txt2){if(!G||f()['tip_'+id])return;f()['tip_'+id]=1;ui.tip={s:txt2}}
@@ -1379,7 +1389,7 @@ function debris(x,y,c='#a08a78',n=16){for(let i=0;i<n;i++)AMB.push({k:'rkd',x:x*
 // Compagnon : la créature de tête suit le joueur, réagit, et flaire les objets cachés
 const FOL={x:0,y:0,fx:0,fy:0,d:0,tt:0};
 const folMon=()=>G.opt.fol!==0&&G.party[0]&&G.party[0].hp>0?G.party[0]:null;
-function folReset(){const d=G.dir,bx=G.x-DX[d],by=G.y-DY[d],M=MAPS[G.map],c=M.rows[by]?.[bx],ok=c&&!SOLID.has(c);FOL.x=FOL.fx=ok?bx:G.x;FOL.y=FOL.fy=ok?by:G.y;FOL.d=d}
+function folReset(){const d=G.dir,bx=G.x-DX[d],by=G.y-DY[d],M=MAPS[G.map],c=M.rows[by]?.[bx],ok=c&&!SOLID.has(c)&&!npcs(M).some(n=>n.x===bx&&n.y===by);FOL.x=FOL.fx=ok?bx:G.x;FOL.y=FOL.fy=ok?by:G.y;FOL.d=d}
 function folFollow(fx,fy){FOL.fx=FOL.x;FOL.fy=FOL.y;if(FOL.x!==fx||FOL.y!==fy){FOL.d=fx>FOL.x?3:fx<FOL.x?2:fy>FOL.y?0:1}FOL.x=fx;FOL.y=fy}
 async function folTalk(){const m=folMon();if(!m)return;tip('fol','Ta créature de tête te suit partout. Elle s\'agite quand un objet caché est tout proche : regarde bien autour de toi !');const S=st(m),t=SP[m.sp].t,n=nm(m),r=m.st?['…',`${n} ne se sent pas très bien. Un Total Soin l'aiderait.`]:m.hp<S.hp*.3?['…',`${n} a l'air épuisé. Il aimerait se reposer.`]:night()&&t==='OMB'?['♪',`${n} danse dans l'obscurité. La nuit lui va si bien.`]:night()&&t==='LUM'?['♪',`${n} brille doucement pour éclairer ton chemin.`]:act2()?['…',`${n} lève les yeux vers le soleil voilé. Il reste près de toi.`]:FOLB[Math.min(4,bondLv(m))](n)[G.t%2];
  await emote('fol',r[0],500);await say(r[1]+` (Lien : ${BONDN[bondLv(m)]})`)}
@@ -1720,7 +1730,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.1',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.2',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -1980,7 +1990,7 @@ async function throwArc(b,x0,y0,x1,y1,ms,hgt){const t0=now();for(;;){const t=Mat
 async function popOut(o,T,m){sfx('ball');spawn({k:'ring',x:T[0],y:T[1]+10,r0:4,r1:44,l:16,c:'#ffffff'});burstAt(T,14,['#ffffff',TY[SP[m.sp].t][1]],3.5,{k:'star'});o.v=1;o.b=1;o.s=0;await tween(o,'s',1,240,1);o.b=0;sfx('cry')}
 async function sendFoe(){B.showFoe=1;B.fo={x:0,y:0,v:0,s:0,b:0};B.dh[1]=B.foe.hp;B.part=new Set(B.me&&B.me.hp>0?[B.me]:[]);dex(B.foe.sp,1);await say(`${B.tr.name} envoie ${nm(B.foe)} !`,0,1);const b=B.ball={x:W+20,y:40,r:0};await throwArc(b,W+20,40,FOE[0],FOE[1]+10,320,30);B.ball=null;await popOut(B.fo,FOE,B.foe);tween(B,'hf',1,300,1);await entryTal(1)}
 async function sendOut(){B.hm=0;B.mo={x:0,y:0,v:0,s:0,b:0};B.dh[0]=B.me.hp;B.part.add(B.me);show(`En avant, ${nm(B.me)} !`);const b=B.ball={x:-20,y:260,r:0};await throwArc(b,-20,260,ME[0],ME[1]+30,340,90);B.ball=null;await popOut(B.mo,ME,B.me);tween(B,'hm',1,300,1);await wait(350);ui.text=null;if(B.tr?.vs&&bondLv(B.me)>=4&&!B.bondMsg?.has(B.me)){(B.bondMsg||=new Set()).add(B.me);burstAt(ME,10,['#ff7aa8','#ffffff'],2,{k:'star',g:-.05});await say(bondLv(B.me)>=5?`${nm(B.me)} te lance un regard plein de confiance. Vous êtes inséparables.`:`${nm(B.me)} se retourne vers toi, prêt à tout donner.`,0,1)}await entryTal(0)}
-async function battleLoop(){for(;;){if(canEv(0)&&!f().tip_evr){f().tip_evr=1;await say('Le Bracelet du Cycle brille ! Ta jauge d\'Éveil est pleine : choisis ATTAQUE, puis ÉVEIL DU CYCLE avant ton attaque.')}show(`Que doit faire ${nm(B.me)} ?`,0,262);const c=await choose(['ATTAQUE','SAC','ÉQUIPE','FUITE'],{x:270,y:H-90,w:206,rh:33,cols:2,cancel:false,dis:i=>i===3&&!!B.tr});let act={};
+async function battleLoop(){for(;;){if(canEv(0)&&!f().tip_evr){f().tip_evr=1;await say('Le Bracelet du Cycle brille ! Ta jauge d\'Éveil est pleine : choisis ATTAQUE, puis ÉVEIL DU CYCLE avant ton attaque.')}show(`Que doit faire ${nm(B.me)} ?`,0,234);const c=await choose(['ATTAQUE','SAC','ÉQUIPE','FUITE'],{x:242,y:H-90,w:234,rh:33,cols:2,cancel:false,dis:i=>i===3&&!!B.tr});let act={};
  if(c===0){ui.text=null;const ms=B.me.moves;if(B.me.pp.every(p=>p<=0)){await say(`${nm(B.me)} n'a plus de PP ! Il se débat…`,0,1);act={mv:'lutte'}}
   else{const i=await pickMove();if(i<0)continue;act={mv:ms[i]}}}
  else if(c===1){ui.text=null;const r=await bagMenu(true);if(!r)continue;if(r.ball&&await throwBall(r.ball))return'catch'}
@@ -2129,7 +2139,8 @@ function ambient(M,cx,cy){const k=M.amb,cnt={};AMB.forEach(p=>cnt[p.k]=(cnt[p.k]
   return p.l>0&&sx>-90&&sx<W+90&&sy>-90&&sy<H+90})}
 const CLOUD=mkc(260,120,g=>{for(const[x,y,rx,ry]of[[80,60,70,30],[150,50,60,34],[200,66,50,24],[120,76,60,22]])pell(g,x,y,rx,ry,'#141a3a')}),FOG=mkc(W,H,g=>{const r=seed('fog');for(let i=0;i<26;i++)pell(g,r()*W,r()*H,30+r()*60,10+r()*16,'rgba(236,242,250,.07)')});
 const PHT=['#ecd2de','#ffffff','#f2c6a0','#5c66b4','#8c5a86'],DARK=mkc(W,H),hexr=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));let TC=[255,255,255];
-function lightR(){const T=G.party.filter(alive).map(m=>SP[m.sp].t);return T.includes('FEU')||T.includes('LUM')?104:T.includes('ELE')?84:G.keys.lantern?66:34}
+// Rayon de lumière dans les lieux sombres : créature FEU ou LUMIÈRE > ÉLECTRIK > lanterne > rien ; hors du halo, les parois restent devinables.
+function lightR(){const T=G.party.filter(alive).map(m=>SP[m.sp].t);return T.includes('FEU')||T.includes('LUM')?156:T.includes('ELE')?140:G.keys.lantern?124:60}
 function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='multiply';X.fillStyle=c;X.fillRect(0,0,W,H);X.globalCompositeOperation='source-over'},out=!['in','cave','tech'].includes(M.amb),ph=phase();
  if(M.amb==='foret'){mul('#d2e4c6');if(ph<2){X.globalAlpha=.07;for(let i=0;i<3;i++){const bx=((i*230-cx*.3)%720+720)%720-140;for(let y=0;y<H;y+=4)R(X,'#fff6c0',ev(bx+y*.45),y,40,4)}X.globalAlpha=1}}
  if(out&&ph===1&&M.amb==='day'){X.globalAlpha=.09;for(let i=0;i<2;i++){const span=M.rows[0].length*TS+520,wx=((t*.012+i*span/2)%span+span)%span-260;X.drawImage(CLOUD,ev(wx-cx),ev(i*150+60-cy*.2))}X.globalAlpha=1}
@@ -2141,8 +2152,8 @@ function lighting(M,cx,cy,t,px,py){const mul=c=>{X.globalCompositeOperation='mul
   if(c==='L'){X.globalAlpha=.32+.12*Math.sin(t/400+x+y);X.drawImage(GLOW,sx-32,sy-32)}else if(c==='x'){X.globalAlpha=.4+.1*Math.sin(t/200+x);X.drawImage(GLOW,sx-32,sy-36)}
   else if(lit>.05&&(c==='n'||c==='l')){X.globalAlpha=lit*(c==='l'?.75:.5);c==='l'?X.drawImage(GLOWY,sx-32,sy-62):X.drawImage(GLOWY,sx-16,sy-20,64,64)}}
  X.globalAlpha=1;X.globalCompositeOperation='source-over';
- if(M.dark2){const g=DARK.getContext('2d'),r=lightR()+Math.sin(t/300)*2,lx=px-cx+16,ly=py-cy+10;g.globalCompositeOperation='source-over';g.clearRect(0,0,W,H);g.fillStyle='rgba(6,4,16,.97)';g.fillRect(0,0,W,H);g.globalCompositeOperation='destination-out';
-  for(let k=0;k<4;k++)pell(g,lx,ly,ev(r*(1-k*.2)),ev(r*(1-k*.2)*.85),'rgba(0,0,0,.38)');X.drawImage(DARK,0,0)}
+ if(M.dark2){const g=DARK.getContext('2d'),r=lightR()+Math.sin(t/300)*2,lx=px-cx+16,ly=py-cy+10;g.globalCompositeOperation='source-over';g.clearRect(0,0,W,H);g.fillStyle=G.keys.lantern||r>100?'rgba(6,4,16,.86)':'rgba(6,4,16,.94)';g.fillRect(0,0,W,H);g.globalCompositeOperation='destination-out';
+  for(let k=0;k<5;k++)pell(g,lx,ly,ev(r*(1-k*.17)),ev(r*(1-k*.17)*.85),'rgba(0,0,0,.36)');X.drawImage(DARK,0,0)}
  if(M.snow){X.globalAlpha=.85;for(let i=0;i<60;i++){const s=i%3?2:4,sx=ev(((i*137+t*.03*(1+i%3)+Math.sin(t/900+i)*18)%(W+40))-20),sy=ev(((i*71+t*.05*(1+i%3))%(H+40))-20);R(X,i%4?'#ffffff':'#dce6f8',sx,sy,s,s)}X.globalAlpha=1}
  if(rain()&&!M.snow){mul('#b4c0d8');X.globalAlpha=.55;for(let i=0;i<70;i++){const rx=ev(((i*137+t*.35)%(W+40))-20),ry=ev(((i*71+t*.75)%(H+40))-20);R(X,'#c8e0ff',rx,ry,2,8)}X.globalAlpha=1;if(Math.random()<.3){const tx=(cx/TS|0)+(Math.random()*W/TS|0),ty=(cy/TS|0)+(Math.random()*H/TS|0);if(!SOLID.has(M.rows[ty]?.[tx]??'T'))AMB.push({k:'spl',x:tx*TS+Math.random()*32,y:ty*TS+Math.random()*32,l:14,ml:14})}}
  if(M.fog){X.globalAlpha=.32+.25*TC[0]/255;for(let i=0;i<2;i++){const o=((t*(i?.012:.02)+cx*(i?.5:.8))%W+W)%W,oy=i*24-(cy*.1)%40;X.drawImage(FOG,-o,oy);X.drawImage(FOG,W-o,oy)}X.globalAlpha=1}
@@ -2188,11 +2199,11 @@ function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R
  if(ui.bob){const b=ui.bob,sx=b.x*TS-cx+12,sy=b.y*TS-cy+12+(b.bite?6:Math.round(Math.sin(t/220)*2));R(X,C.ink,sx-1,sy-1,10,10);R(X,'#ffffff',sx,sy+4,8,4);R(X,C.acc,sx,sy,8,4);X.globalAlpha=.5;R(X,'#eef9ff',sx-6,sy+9,20,2);X.globalAlpha=1;R(X,'#ece6d6',px-cx+16,py-cy+4,1,1)}
  // rangées : décors posés sur la rangée r, puis personnages de cette rangée (du fond vers l'avant)
  const rows=new Map();for(const e of ents){const r=Math.floor((e.y+16)/TS);if(!rows.has(r))rows.set(r,[]);rows.get(r).push(e)}
- const r0=Math.max(0,(cy>>5)-1),r1=Math.min(mh+3,((cy+H)>>5)+4);let meHidden=0;
- for(let r=r0;r<=r1;r++){const S=M.S?.[r];if(S)for(const s of S){const sx=s.x-cx,sy=s.y-cy;if(sx>W||sy>H||sx+s.img.width<0||sy+s.img.height<0)continue;X.drawImage(s.img,sx,sy);if(r>Math.floor((py+16)/TS)&&sx<px-cx+28&&sx+s.img.width>px-cx+4&&sy<py-cy+24&&sy+s.img.height>py-cy+4)meHidden=1}
+ const r0=Math.max(0,(cy>>5)-1),r1=Math.min(mh+3,((cy+H)>>5)+4);
+ // un décor (arbre, toit) qui passe devant le joueur devient translucide pour qu'on le voie toujours
+ const pr=Math.floor((py+16)/TS);for(let r=r0;r<=r1;r++){const S=M.S?.[r];if(S)for(const s of S){const sx=s.x-cx,sy=s.y-cy;if(sx>W||sy>H||sx+s.img.width<0||sy+s.img.height<0)continue;const hid=r>pr&&sx<px-cx+28&&sx+s.img.width>px-cx+4&&sy<py-cy+24&&sy+s.img.height>py-cy-20;if(hid)X.globalAlpha=.45;X.drawImage(s.img,sx,sy);X.globalAlpha=1}
   const E=rows.get(r);if(E){E.sort((a,b)=>a.y-b.y);E.forEach(e=>e.d())}}
  for(const[r,E]of rows)if(r<r0||r>r1)E.forEach(e=>e.d());
- if(meHidden){X.globalAlpha=.5;X.drawImage(silh(chr(dgLook(),G.dir,0),'#2a2050'),px-cx,py-cy-32);X.globalAlpha=1}
  ambient(M,cx,cy);lighting(M,cx,cy,t,px,py);
  if(ui.bob?.bite){X.drawImage(ICO.bang,px-cx+8,py-cy-30,16,22)}
  for(const e of ui.emo){const n=e.n,k=Math.min(1,(now()-e.t0)/160),[wx,wy]=n==='me'?[px,py]:n==='fol'?[FOL.x*TS,FOL.y*TS-10]:[n.x*TS+(n.ox||0),n.y*TS+(n.oy||0)],sx=ev(wx-cx)+8,sy=ev(wy-cy)-30-ev(Math.sin(k*Math.PI)*8);X.drawImage(EMO()[e.k]||ICO.bang,sx,sy,16,22)}
@@ -2206,8 +2217,13 @@ function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R
 // RENDU : COMBAT (décors par zone, plateformes, HUD, effets)
 // =====================================================================
 const BGA={};
-// Fonds de combat illustrés (Tuxemon / Superpowers, CC0) avec version de nuit ; sol prolongé sous l'horizon du cadre.
-function bgArt(k){const nk=night()&&BGI[k+'N']?k+'N':k,im=BGI[nk];if(im)return BGA[nk]||(BGA[nk]=mkc(240,160,g=>{g.drawImage(im,-8,0);g.drawImage(im,0,im.height-1,im.width,1,-8,im.height,im.width,160-im.height)}));return bgArt0(k)}
+// Fonds de combat illustrés (Tuxemon / Superpowers, CC0) avec version de nuit. L'image (256x108) est moins haute que l'écran :
+// le sol est prolongé en reflétant sa bande du bas (hauteur propre à chaque fond), un peu agrandie et assombrie vers le bas.
+const BGEXT={plaine:30,foret:26,lac:22,grotte:20,mont:28};
+function bgArt(k){const nk=night()&&BGI[k+'N']?k+'N':k,im=BGI[nk];if(!im)return bgArt0(k);
+ return BGA[nk]||(BGA[nk]=mkc(240,160,g=>{const w=im.width,h=im.height,K=Math.min(h,BGEXT[k]||24),x0=Math.round((240-w)/2);g.drawImage(im,x0,0);if(h>=160)return;
+  for(let y=h;y<160;y++){const d=y-h,o=d%K,r=(d/K|0)%2?h-K+o:h-1-o,ww=Math.round(w*(1+.3*d/(160-h)));g.drawImage(im,0,r,w,1,Math.round((240-ww)/2),y,ww,1)}
+  const gr=g.createLinearGradient(0,h,0,160);gr.addColorStop(0,'rgba(10,6,20,0)');gr.addColorStop(1,'rgba(10,6,20,.3)');g.fillStyle=gr;g.fillRect(0,h,240,160-h)}))}
 function bgArt0(k){if(BGA[k])return BGA[k];return BGA[k]=mkc(240,160,g=>{const p=(c,x,y,w=1,h=1)=>R(g,c,x,y,w,h);
  const sky=(cols,hz)=>{const bh=hz/cols.length;cols.forEach((c,i)=>p(c,0,Math.round(i*bh),240,Math.ceil(bh)+1));for(let i=1;i<cols.length;i++){const y=Math.round(i*bh);for(let x=0;x<240;x+=2){p(cols[i-1],x,y);p(cols[i-1],x+1,y+1)}}};
  const ridge=(c,base,amp,fq,ph,hz)=>{for(let x=0;x<240;x++){const y=Math.round(base-amp*(Math.sin(x*fq+ph)*.6+Math.sin(x*fq*2.3+ph*2)*.4));p(c,x,y,1,hz-y+1)}};
@@ -2296,7 +2312,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.1',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.2',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);

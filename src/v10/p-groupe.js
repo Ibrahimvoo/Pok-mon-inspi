@@ -403,7 +403,7 @@ async function cbBag(C){const ks=Object.keys(G.bag).filter(k=>G.bag[k]>0&&IT[k]&
   if(K==='revive'?m.hp>0:K==='heal'?m.hp<=0||m.hp>=S.hp:K==='cure'?!m.st||m.hp<=0:m.pp.every((p,j)=>p>=MV[m.moves[j]].pp)){await say('Ça n\'aura aucun effet.');continue}
   G.bag[k]--;B.usedBag=1;const r=C.real[t];if(r)bondUp(r,1);return{it:k,t}}}
 async function cbChoose(C,stop){for(;;){if(stop())return null;if(canEv(0)&&!f().tip_evr){f().tip_evr=1;await say('Le Bracelet du Cycle brille ! Ta jauge d\'Éveil est pleine : choisis ATTAQUE, puis ÉVEIL DU CYCLE avant ton attaque.')}
- show(`Que doit faire ${nm(B.me)} ?`,0,262);const c=await choose(['ATTAQUE','SAC','ÉQUIPE',C.host?'FUITE':'PARTIR'],{x:270,y:H-90,w:206,rh:33,cols:2,dis:i=>i===3&&C.host&&!!C.tr});ui.text=null;if(stop())return null;if(c<0)continue;
+ show(`Que doit faire ${nm(B.me)} ?`,0,234);const c=await choose(['ATTAQUE','SAC','ÉQUIPE',C.host?'FUITE':'PARTIR'],{x:242,y:H-90,w:234,rh:33,cols:2,dis:i=>i===3&&C.host&&!!C.tr});ui.text=null;if(stop())return null;if(c<0)continue;
  if(c===0){if(B.me.pp.every(p=>p<=0)){await say(`${nm(B.me)} n'a plus de PP ! Il se débat…`,0,1);return{m:-1}}const i=await pickMove();if(stop())return null;if(i<0)continue;const e=B.arm?1:0;B.arm=0;return{m:i,e}}
  if(c===1){const r=await cbBag(C);if(r){if(stop()){if(r.it)G.bag[r.it]++;if(r.ball)G.bag[r.ball]++;return null}return r}continue}
  if(c===2){const i=await cbTeamMenu(C,'Envoyer qui ?');if(stop())return null;if(i<0)continue;const m=C.D[C.me].T[i];if(m.hp<=0){await say(`${nm(m)} est K.O. !`);continue}if(i===C.D[C.me].a){await say(`${nm(m)} est déjà au combat !`);continue}return{w:i}}

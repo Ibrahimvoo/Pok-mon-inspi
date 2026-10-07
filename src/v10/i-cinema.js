@@ -251,7 +251,7 @@ CINE.aube=async A=>{const s={gem:0,solY:-120,bow:0,ang:0,orb:0,sph:0,ec:1,mx:0,d
 // CINÉMATHÈQUE — revoir les cinématiques déjà vues (menu)
 // =====================================================================
 async function cinemaMenu(){const L=Object.keys(CINT).filter(k=>G.cin?.[k]);if(!L.length)return say('Aucune cinématique vue pour l\'instant.');
- for(;;){const i=await choose([...L.map(k=>CINT[k]),'RETOUR'],{x:W/2-150,y:40,w:300,title:'Cinémathèque'});if(i<0||i===L.length)return;const pn=ui.panel;ui.panel=null;await cinema(L[i]);ui.panel=pn}}
+ for(;;){const i=await choose([...L.map(k=>CINT[k]),'RETOUR'],{x:W/2-180,y:40,w:360,title:'Cinémathèque'});if(i<0||i===L.length)return;const pn=ui.panel;ui.panel=null;await cinema(L[i]);ui.panel=pn}}
 // Les sauvegardes existantes débloquent les cinématiques des étapes déjà franchies
 const norm13=normalize;normalize=function(g){g=norm13(g);if(!g)return g;const F=g.flags||{};g.cin??={};g.cin.prologue=1;if(F.t_corvin||F.mine)g.cin.mine=1;if(F.eclipse||F.boss)g.cin.eclipse=1;if(F.baseDone)g.cin.centrale=1;if(F.balance)g.cin.dome=g.cin.aube=1;if(g.v<13){g.wn=1;g.v=13}return g};
 

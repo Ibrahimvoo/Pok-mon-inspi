@@ -116,7 +116,7 @@ async function sgNext(){const D=G.dream;if(!D)return;D.fl++;D.got++;G.bag.songe=
  if(D.fl%5===0){await cine(1);await camTo(12,5,700);await say('Une silhouette familière se dresse au fond de la salle… mais ses contours tremblent comme une flamme.');await camBack();await cine(0)}save()}
 async function sgBoss(){const D=G.dream;G.bag.songe=(G.bag.songe||0)+5;D.got+=5;f().sgEcho=(f().sgEcho||0)+1;await fadeTo(.6,300);healAll();await fadeTo(0,300);jingle('heal');
  await say(`L'écho se dissipe en poussière d'étoiles. Tu ramasses 5 Éclats de Songe, et une douce chaleur soigne ton équipe.`);
- const i=await choose(['DESCENDRE PLUS BAS','SE RÉVEILLER'],{w:230,title:`Étage ${D.fl}`});if(i===0)return sgNext();return sgWake(0)}
+ const i=await choose(['DESCENDRE PLUS BAS','SE RÉVEILLER'],{w:262,title:`Étage ${D.fl}`});if(i===0)return sgNext();return sgWake(0)}
 function sgEnd(){const F=f();for(const k of Object.keys(F))if(k.startsWith('i_fs_')||k.startsWith('t_fs_')||k.startsWith('fs_'))delete F[k];G.dream=null}
 async function sgWake(lost){const D=G.dream;sgEnd();await fadeTo(1,600);healAll();loadMap('lunevie',19,8,1);await fadeTo(0,600);
  await say(lost?`Tu te réveilles en sursaut près de la Faille… Le rêve s'est dissipé à l'étage ${D.fl}.`:`Tu ouvres les yeux à Lunévie. Tu es descendu jusqu'à l'étage ${D.fl}.`);await say(`Éclats de Songe rapportés pendant ce rêve : ${D.got}. Record : étage ${f().sgBest||1}.`,'Rêveuse Nyx',0,'girl');save()}

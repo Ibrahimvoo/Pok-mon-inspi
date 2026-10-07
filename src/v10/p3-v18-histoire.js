@@ -18,7 +18,7 @@ function dgLook(){const d=G?.dg,k=d&&DG[d]?.[1];return k&&PEO[k]?k:myLook()}
 function dgGive(k,why){if(!G.keys['dg_'+k]){G.keys['dg_'+k]=1;jingle('item');ui.pop={ic:ICO['dg_'+k],t0:now()}}tip('tenues','Les TENUES se changent depuis le MENU (TENUES). Chaque déguisement a son effet : regarde sa description. Tes amis en ligne te voient déguisé, eux aussi.');if(why)return say(why)}
 async function dgWear(k){if(k&&!dgHas(k))return;G.dg=k||null;sfx(k?'ok':'back');puff(G.x,G.y,k?'#f6c445':'#d8c8f0',16);if(NET?.on)NET.hi(1);save()}
 async function tenuesMenu(){for(;;){const L=Object.keys(DG).filter(dgHas),O=[...L.map(k=>DG[k][0]+(G.dg===k?' (PORTÉE)':'')),...(G.dg?['RETIRER LA TENUE']:[]),'RETOUR'];
- const i=await choose(O,{x:W-346,y:8,w:338,title:'Tenues',icons:[...L.map(k=>ICO['dg_'+k]),...(G.dg?[ICO.close]:[]),ICO.close],info:j=>({s:j<L.length?DG[L[j]][2]:j===L.length&&G.dg?'Reprendre ton apparence habituelle.':'Fermer.'})});
+ const i=await choose(O,{x:W-378,y:8,w:370,title:'Tenues',icons:[...L.map(k=>ICO['dg_'+k]),...(G.dg?[ICO.close]:[]),ICO.close],info:j=>({s:j<L.length?DG[L[j]][2]:j===L.length&&G.dg?'Reprendre ton apparence habituelle.':'Fermer.'})});
  if(i<0||O[i]==='RETOUR')return;if(O[i]==='RETIRER LA TENUE'){await dgWear(null);await say('Tu reprends ton apparence habituelle.');continue}
  const k=L[i];if(G.dg===k){await dgWear(null);await say('Tu retires ta tenue.');continue}await dgWear(k);await say(`Tu enfiles : ${DG[k][0]} !`);return}}
 // Le MENU gagne une entrée TENUES (juste avant SAUVER) dès qu'on possède un déguisement
@@ -133,7 +133,7 @@ REM.arlequin=L=>[['possedrap',L-1,null,'baiesoin'],['chatoeil',L-1,null,'pierrec
 // ---------------------------------------------------------------- LE THÉÂTRE ET LE REPAIRE DE LA MASCARADE
 async function trapGuard(){const F=f(),S='Machiniste louche';if(!dgOk('eclipse'))return say(F.v18ecoute?'Les coulisses sont interdites au public. Hé, je t\'ai à l\'œil, toi. Va voir le spectacle.':'Les coulisses sont interdites au public. Va voir le spectacle, il est très bien. Enfin, paraît-il.',S,0,'grunt');
  await cine(1);await say('Ah, un collègue ! Tu connais la procédure. Le mot de passe ?',S,0,'grunt');
- const O=['« Vive le soleil ! »','« L\'ombre danse avec nous. »','« Masque et cape ! »','« Bonjour ? »'],i=await choose(O,{w:300,title:'Mot de passe'});
+ const O=['« Vive le soleil ! »','« L\'ombre danse avec nous. »','« Masque et cape ! »','« Bonjour ? »'],i=await choose(O,{w:344,title:'Mot de passe'});
  if(i===1){F.v18trappe=1;await say('C\'est bon. Passe. Et ne fais pas de bruit : la patronne répète son grand discours.',S,0,'grunt');await cine(0);save();return}
  await say('Mauvais mot de passe ! T\'es pas un vrai sbire, toi ! Intrus !',S,0,'grunt');await cine(0);
  const r=await battle(team([['hyenou',33],['protomk',34]]),{tr:{name:'Machiniste louche',look:'grunt',money:900,after:'Grr… Reviens quand tu connaîtras le mot de passe, imposteur !'}});save();return r}

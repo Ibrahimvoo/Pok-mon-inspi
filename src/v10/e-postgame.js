@@ -45,7 +45,7 @@ MAPS.volterre.npcs.push({x:21,y:18,t:'orso',d:2,name:'Arbitre Orso',fn:()=>defiT
 const MONOTR=[['Dresseur','scout'],['Dresseuse','girl'],['Montagnard','mountaineer'],['Scientifique','assistant'],['Vétéran','captain']];
 async function defiTalk(){const O='Arbitre Orso';if(!f().badge4)return say('Ancien commandant de la Centrale, reconverti en arbitre. Les Défis de Volterre sont réservés aux détenteurs du Badge Volt.',O,0,'orso');
  if(!f().orsoD){f().orsoD=1;await say('Surpris ? Après la Centrale, Ambroise m\'a proposé un travail honnête. J\'arbitre, maintenant. C\'est moins bruyant que commander des sbires.',O,0,'orso')}
- const c=await choose(['DÉFI MONO-TYPE','DÉFI ÉGALITÉ (NIV. 50)','RÈGLES','PARTIR'],{w:260,title:'Défis de Volterre'});if(c<0||c===3)return;
+ const c=await choose(['DÉFI MONO-TYPE','DÉFI ÉGALITÉ (NIV. 50)','RÈGLES','PARTIR'],{w:272,title:'Défis de Volterre'});if(c<0||c===3)return;
  if(c===2)return say('MONO-TYPE : toute ton équipe doit partager un type. Cinq combats d\'affilée, sans soins. ÉGALITÉ : tes créatures sont ramenées au niveau 50, et l\'adversaire aussi. Cinq combats, sans soins. Chaque type vaincu rapporte une récompense.',O,0,'orso');
  if(c===0){const ts=[...new Set(G.party.map(m=>SP[m.sp].t))];if(ts.length!==1||G.party.length<3)return say('Il me faut au moins trois créatures… et toutes du même type !',O,0,'orso');return defiRun(ts[0],0)}
  if(G.party.length<3)return say('Il faut au moins trois créatures pour le Défi Égalité.',O,0,'orso');return defiRun(null,1)}

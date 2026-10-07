@@ -73,7 +73,7 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
   for(const P of[...this.peers.values()])if(t-P.t>(this.act&&this.act.with===P.pid?60000:18000))this.drop(P,'a perdu la connexion.');
   if(!this.up())return;this.hi();
   if(G&&mode==='world'){const k=G.map+','+G.x+','+G.y+','+G.dir;if(k!==this.lk){this.lk=k;if(G.map!==this.lm){this.lm=G.map;this.path=[];this.send('p',{m:G.map,p:[[G.x,G.y,G.dir]],j:1});this.lf=t}else this.path.push([G.x,G.y,G.dir])}}
-  if(this.path.length&&t-this.lf>180){this.lf=t;this.send('p',{m:G.map,p:this.path.slice(-10),rn:held.b?1:0});this.path=[]}}};
+  if(this.path.length&&t-this.lf>180){this.lf=t;this.send('p',{m:G.map,p:this.path.slice(-10),rn:running()?1:0});this.path=[]}}};
 setInterval(()=>{try{NET.tick();if(NET.on)ghostTick()}catch(e){console.error(e)}},50);
 addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!NET.on)return;const t=Date.now();for(const r of NET.R)if(!r.up){r.close();r.next=0}else{r.chk=t;r.pg=0}NET.hi(1)});
 addEventListener('pagehide',()=>{if(NET.on)NET.leave(true)});

@@ -18,7 +18,7 @@ const chSave=()=>creaSet(CREA_O,JSON.stringify(CH)),chActive=()=>creaOn()&&!!G;
 {const b0=ballMul;ballMul=function(k){return chActive()&&CH.cap?99999:b0(k)}}
 {const x0=gainXp;gainXp=function(m,n,q){return x0(m,chActive()&&CH.xp?n*10:n,q)}}
 {const t0=tryMove;tryMove=function(d){if(!chActive()||!CH.wall)return t0(d);const s=[...SOLID];SOLID.clear();try{return t0(d)}finally{for(const c of s)SOLID.add(c)}}}
-{const u0=updWorld;updWorld=function(dt){if(chActive()&&CH.spd>1&&move)move.t+=dt*(CH.spd-1)/(held.b?95:170);return u0(dt)}}
+{const u0=updWorld;updWorld=function(dt){if(chActive()&&CH.spd>1&&move)move.t+=dt*(CH.spd-1)/(running()?95:170);return u0(dt)}}
 setInterval(()=>{if(chActive()&&CH.rep&&mode==='world')G.repel=Math.max(G.repel|0,999)},1000);
 
 // --- Accès caché depuis le MENU

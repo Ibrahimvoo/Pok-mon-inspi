@@ -176,7 +176,7 @@ function pvpTeamMenu(A,title){const L=A.D[A.me];ui.dim=title;return choose(L.map
 async function pvpFoeTeam(A){const L=A.D[1-A.me];ui.panel=()=>{panel(8,8,W-16,H-16);txt(`ÉQUIPE DE ${A.nm[1-A.me].toUpperCase()}`,24,34,C.acc,{sh:0});
   L.forEach((m,i)=>{const x=20+(i%3)*150,y=46+(i/3|0)*128,ko=m.hp<=0;rr(x,y,142,120,4,'#efe6d2');X.drawImage(ko?silh(monSpr(m.sp,0,64),'#9a92aa'):monSpr(m.sp,0,64,m.sh),x+39,y+4,64,64);txt(nm(m),x+71,y+82,ko?C.mute:C.ink,{al:'c'});txt('NV'+m.lv,x+8,y+98,C.ink2,{mini:1});chip(SP[m.sp].t,x+60,y+88);hpBar(x+34,y+104,100,m.hp/st(m).hp)});
   txt('A / B : FERMER',W-24,H-20,C.mute,{mini:1,al:'r'})};for(;;){const k=await key();if(k==='a'||k==='b')break}ui.panel=null}
-async function pvpChoose(A,stop){for(;;){if(stop())return null;show(`Que doit faire ${nm(B.me)} ?`,0,262);const c=await choose(['ATTAQUE','ÉQUIPE','ADVERSE','ABANDON'],{x:270,y:H-90,w:206,rh:33,cols:2});ui.text=null;if(stop())return null;if(c<0)continue;
+async function pvpChoose(A,stop){for(;;){if(stop())return null;show(`Que doit faire ${nm(B.me)} ?`,0,234);const c=await choose(['ATTAQUE','ÉQUIPE','ADVERSE','ABANDON'],{x:242,y:H-90,w:234,rh:33,cols:2});ui.text=null;if(stop())return null;if(c<0)continue;
  if(c===0){if(B.me.pp.every(p=>p<=0)){await say(`${nm(B.me)} n'a plus de PP ! Il se débat…`,0,1);return{m:'L'}}const i=await pickMove();if(stop())return null;if(i<0)continue;const e=B.arm?1:0;B.arm=0;return{m:i,e}}
  if(c===1){const i=await pvpTeamMenu(A,'Envoyer qui ?');if(stop())return null;if(i<0)continue;const m=A.D[A.me][i];if(m.hp<=0){await say(`${nm(m)} est K.O. !`);continue}if(i===A.act[A.me]){await say(`${nm(m)} est déjà au combat !`);continue}return{w:i}}
  if(c===2){await pvpFoeTeam(A);continue}

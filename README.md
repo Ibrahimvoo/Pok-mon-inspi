@@ -40,6 +40,18 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 18.2 : Confort de jeu
+
+![Aperçu de la version 18.2](apercus/v182-confort.png)
+
+- **Fonds de combat réparés** : les décors illustrés (plaine, forêt, lac, grotte, montagne) sont moins hauts que l'écran, et le bas était rempli en étirant une seule ligne de pixels, d'où les bandes verticales sous les créatures. Le sol est maintenant prolongé en reflétant la bande du bas de chaque décor, légèrement agrandie et assombrie vers l'avant, de jour comme de nuit.
+- **Moins de combats à la chaîne** : 8 % de chances par pas dans les hautes herbes (10 % avant), 3 % sur le sol des grottes (4,5 %), 6 % dans les éboulis des grottes. Après chaque combat, 6 à 9 pas de répit, et 3 pas en arrivant sur une carte : plus jamais deux combats coup sur coup. Une équipe qui dépasse nettement les créatures du coin en rencontre deux fois moins. Nouvelle option **RENCONTRES : RARES** (MENU, OPTIONS, OPTIONS DU JEU) pour en avoir encore bien moins.
+- **Créatures visibles hors des couloirs** : les créatures sauvages qui se promènent ne se placent et ne marchent plus que dans les endroits dégagés, jamais dans un couloir d'une case ni devant une porte. Elles ne bloquent plus le passage dans les grottes, où il fallait les combattre pour avancer.
+- **Grottes élargies et éclairées** : la Mine de Cendreville et la Grotte Écho ont des galeries de deux cases de large (les cases de couloir étroit passent de 35 à 2 dans la mine, de 54 à 5 dans la grotte) et un chemin plus court (la Grotte Écho se traverse en 29 pas au lieu d'une cinquantaine), avec les mêmes dresseurs, objets, rocher fissuré et brasier. Dans les lieux sombres, la lanterne éclaire presque deux fois plus loin et les parois restent devinables hors du halo. Le Bois Sépulcral perd quelques arbres qui fermaient ses passages.
+- **Se déplacer** : un arbre ou un toit qui passe devant le joueur devient translucide. Option **COURSE : TOUJOURS** (activée par défaut sur écran tactile, où tenir B en même temps que la croix est pénible) : on court sans rien tenir, B fait marcher. Un conseil explique la course au début.
+- **Corrections** : à Cendreville, le puits décoratif enfermait l'Éclat d'Aube caché à côté du panneau de la mine, qui ne pouvait plus être ramassé ; les décors ne se posent plus jamais sur un objet caché ; le compagnon n'apparaît plus sur la case d'un personnage en arrivant sur une carte. Les menus trop étroits (commandes de combat, options, cinémathèque, tenues, mot de passe du Théâtre, réglages en ligne, Faille des Songes, Défis de Volterre) ont été élargis : plus aucun texte ne déborde.
+- Test : `node tools/play.mjs tools/scn-v182-confort.js` (fonds sans bandes, taux de rencontres et répit, créatures hors des couloirs, options, grottes entièrement accessibles, Éclat de Cendreville).
+
 ## Version 18.1 : Ne plus jamais se perdre
 
 ![Aperçu de la version 18.1](apercus/v181-guide.png)
@@ -328,4 +340,5 @@ src/v10/o-arene.js  combats en ligne (moteur de l'hôte, relecture sur les deux 
 src/v10/t-v181-guide.js   flèche-guide (cibles des objectifs, itinéraire entre cartes, chemin case par case)
 src/v10/u-v181-niveaux.js plafond de niveau selon l'histoire, rattrapage d'EXP, niveaux des zones
 src/v10/v-v181-quetes.js  annonces de quêtes et partage des quêtes en aventure à plusieurs
+src/v10/w-v182-confort.js répit après les combats, conseil de course (le reste de la 18.2 est dans game.js et world.js)
 ```

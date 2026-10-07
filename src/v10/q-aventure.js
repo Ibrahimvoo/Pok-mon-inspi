@@ -13,7 +13,7 @@
 askLook=async function(){const cur=Math.max(0,LOOKS.indexOf(NG().lk)),c=7,x0=ev((W-c*62)/2);ui.panel=()=>{panel(8,8,W-16,H-16);txt('TON APPARENCE',24,36,C.acc,{sh:0});txt('C\'est toi dans le monde : tu te vois ainsi, et tes amis aussi.',24,56,C.ink2,{s:1,sh:0})};
  const i=await choose(LOOKS,{i:cur,bare:1,cols:c,rect:i=>[x0+(i%c)*62,74+(i/c|0)*110,58,104],draw:(i,[x,y,w,h],sel,pr)=>{rr(x,y,w,h,3,C.ink);rr(x+2,y+2,w-4,h-4,2,pr?C.acc:sel?C.accL:'#efe6d2');X.drawImage(chr(LOOKS[i],0,sel?1+(now()/200|0)%2:0),x+w/2-16,y+18,32,64);if(LOOKS[i]===NG().lk)X.drawImage(ICO.star,x+w-18,y+6,12,12)}});
  ui.panel=null;if(i>=0){NG().lk=LOOKS[i];profSave();if(G.map)save();if(NET.on)NET.hi(1)}};
-{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, animations, son, musique, texte, vitesse des combats…','Fermer.'][j]})});
+{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, rencontres, course, flèche-guide, son, musique, texte, vitesse des combats…','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0){await askLook();continue}return OP17()}}}
 // Profil de l'appareil : pseudo et apparence proposés d'office dans les nouvelles parties en ligne
 const PROF=(()=>{try{const o=JSON.parse(lsGet('pixemon-profile')||'{}');return{n:netName(o.n),lk:LOOKS.includes(o.lk)?o.lk:''}}catch(e){return{n:'',lk:''}}})();
@@ -41,7 +41,7 @@ function advInfo(g,code,x,y,w){txt(`AVENTURE ${code}`,x+16,y+28,C.acc);txt(MAPS[
 async function advMenu(){for(;;){const L=advSaves().slice(0,4),O=[...L.map(s=>`CONTINUER ${s.code}`),'NOUVELLE AVENTURE','REJOINDRE',...(L.length?['EFFACER']:[]),'AIDE','RETOUR'];
  ui.panel=()=>{panel(8,8,W-16,H-16);X.drawImage(ICO.team,22,20,16,16);txt('AVENTURE À PLUSIEURS',44,34,C.acc,{sh:0});R(X,C.paper2,20,44,W-40,2);
   if(!L.length)wrap('Toute l\'histoire avec tes amis : chacun sur son téléphone ou son ordinateur, sans compte. Crée une aventure et donne son code, ou rejoins celle d\'un ami.',W-282,1).forEach((l,j)=>txt(l,262,70+j*12,C.ink2,{s:1,sh:0}))};
- const i=await choose(O,{x:16,y:52,w:236,rh:24,vis:9,ib:[256,52,W-272,150],infoShow:j=>j<L.length,infoDraw:(j,x,y,w)=>{if(L[j])advInfo(L[j].g,L[j].code,x,y,w)}});const k=O[i];
+ const i=await choose(O,{x:16,y:52,w:250,rh:24,vis:9,ib:[270,52,W-286,150],infoShow:j=>j<L.length,infoDraw:(j,x,y,w)=>{if(L[j])advInfo(L[j].g,L[j].code,x,y,w)}});const k=O[i];
  if(i<0||k==='RETOUR'){ui.panel=null;return false}
  if(k==='AIDE'){const pn=ui.panel;ui.panel=null;for(const l of ADVHELP)await say(l);ui.panel=pn;continue}
  if(k==='EFFACER'){const j=await choose([...L.map(s=>s.code),'RETOUR'],{x:16,y:52,w:236,title:'Effacer laquelle ?'});if(j<0||j>=L.length)continue;
@@ -100,12 +100,12 @@ drawNet=function(){if(!NET.on||!G)return;const t=Date.now(),adv=advCode();
 // Menu EN LIGNE : salon ou aventure, joueurs, amis, réglages
 // =====================================================================
 async function netSettings(){for(;;){const N=NG(),O=[`COMBATS DES AMIS : ${N.aj==='ask'?'DEMANDER':'REJOINDRE'}`,`SCÈNES DE L'HISTOIRE : ${N.fs===0?'NE PAS SUIVRE':'SUIVRE'}`,'RETOUR'];
- const i=await choose(O,{x:W-308,y:8,w:300,title:'Réglages en ligne',info:j=>({s:['Quand un ami (ou un joueur de ton aventure) commence un combat : le rejoindre tout de suite, ou te demander d\'abord.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
+ const i=await choose(O,{x:W-368,y:8,w:360,title:'Réglages en ligne',info:j=>({s:['Quand un ami (ou un joueur de ton aventure) commence un combat : le rejoindre tout de suite, ou te demander d\'abord.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0)N.aj=N.aj==='ask'?'auto':'ask';if(i===1)N.fs=N.fs===0?1:0;save()}}
 onlineMenu=async function(){if(!NG().n){await say('EN LIGNE, tu peux retrouver tes amis dans Aurélys : vous vous voyez sur la carte, vous vous défiez, vous échangez vos créatures et vous combattez ensemble.');if(!await askName())return;await askLook();await say('C\'est noté ! Crée un salon, ou rejoins celui d\'un ami avec son code.')}
  for(;;){const adv=advCode();
   if(!NET.on){const O=adv?[[`RECONNECTER ${adv}`,ICO.net],['MES AMIS',ICO.team],['PROFIL',ICO.star],['RÉGLAGES',ICO.gear],['AIDE',ICO.guide],['RETOUR',ICO.close]]:[['CRÉER UN SALON',ICO.home],['REJOINDRE',ICO.pin],...(NG().room?[[`SALON ${NG().room}`,ICO.net]]:[]),['MES AMIS',ICO.team],['PROFIL',ICO.star],['RÉGLAGES',ICO.gear],['AIDE',ICO.guide],['RETOUR',ICO.close]];
-   const k=O[await choose(O.map(o=>o[0]),{x:W-244,y:8,w:236,icons:O.map(o=>o[1]),title:adv?`Aventure ${adv}`:'En ligne'})]?.[0];
+   const k=O[await choose(O.map(o=>o[0]),{x:W-252,y:8,w:244,icons:O.map(o=>o[1]),title:adv?`Aventure ${adv}`:'En ligne'})]?.[0];
    if(!k||k==='RETOUR')return;if(k==='PROFIL'){await netProfile();continue}if(k==='AIDE'){for(const l of adv?ADVHELP:NETHELP)await say(l);continue}if(k==='MES AMIS'){await frMenu();continue}if(k==='RÉGLAGES'){await netSettings();continue}
    let code=k.startsWith('RECONNECTER')?adv:k.startsWith('SALON ')?NG().room:null;if(k==='CRÉER UN SALON')code=Array.from({length:4},()=>NETAB[Math.random()*NETAB.length|0]).join('');
    if(k==='REJOINDRE'){code=await kbInput('CODE DU SALON',4,[...NETAB],{cols:8,kw:44,hint:'Demande le code de 4 caractères à ton ami.',ok:s=>s.length===4?s:null});if(!code)continue}
