@@ -40,6 +40,15 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 18.1 : Ne plus jamais se perdre
+
+![Aperçu de la version 18.1](apercus/v181-guide.png)
+
+- **Flèche-guide (façon Yo-kai Watch)** : une flèche dorée tourne autour du joueur et montre le chemin de l'objectif de l'histoire, case par case (elle contourne les murs, l'eau et les PNJ), de carte en carte : sorties, portes, arènes, bateaux du passeur, ferry et téléphérique compris. Un repère flotte au-dessus de la personne à voir ou de la porte à prendre, et un bandeau en haut à gauche dit qui aller voir et la prochaine étape (« Étape : Route 2 », « Étape : Passeur Marius (bateau) »). Il donne aussi les conseils utiles : mettre son masque avant la Place du Carnaval, la Tenue des Sables avant la tempête, attendre la nuit pour l'Arène Crépuscule… Toute l'histoire est couverte, du réveil dans la chambre (sac, carte, casquette) jusqu'aux quêtes d'après-histoire. MENU, OPTIONS, FLÈCHE-GUIDE pour la couper.
+- **Un vrai système de niveaux** : un plafond suit l'avancée de l'histoire (15 avant le premier badge, 16 après, puis 18, 22, 25… jusqu'à 38 avant l'Observatoire, aucun après la fin). Aucune créature sauvage (herbes, créatures visibles, pêche, essaims, éclipses), aucun dresseur ordinaire et aucun mini-boss ne le dépasse, ni n'a plus de 6 niveaux (8 pour les dresseurs) d'avance sur ta meilleure créature : un lieu visité trop tôt, comme le Bois Sépulcral la nuit, n'envoie plus de créature de niveau 33 contre une équipe de niveau 14. Les Champions et les grands combats de l'histoire gardent leurs niveaux. Une créature sous le niveau conseillé gagne jusqu'à 2,5 fois plus d'EXP (mode normal), ce qui aide aussi un ami qui rejoint l'aventure en retard. À l'entrée de chaque zone, une pastille indique les niveaux qu'on y rencontre (verte, jaune ou rouge selon ton équipe), et la flèche-guide conseille de s'entraîner si l'équipe est trop juste.
+- **Annonce des quêtes** : « NOUVELLE QUÊTE ! », « QUÊTE TERMINÉE ! » et « NOUVEL OBJECTIF » s'affichent en grand avec le nom de la quête et ce qu'il faut faire. **À plusieurs**, une quête reçue en parlant à quelqu'un est donnée à tous les joueurs de l'aventure (avec les objets remis au départ), qui voient « Partagée par Alice ».
+- Tests : `node tools/play.mjs tools/scn-v181-guide.js` (itinéraire de chaque étape de l'histoire, conseils, bateaux, plafond et rattrapage d'EXP, combats réels, annonces) et, à deux navigateurs, `node tools/net2.mjs tools/scn-v181-aventure.js` (quête partagée).
+
 ## Version 18.0 : Le Carnaval des Masques
 
 ![Aperçu de la version 18.0](apercus/v18-carnaval.png)
@@ -316,4 +325,7 @@ tools/net2.mjs      joueurs en ligne + relais locaux → node tools/net2.mjs too
 src/v10/m-reseau.js relais MQTT, salon, présence, amis sur la carte
 src/v10/n-enligne.js menu EN LIGNE, clavier, invitations, échanges
 src/v10/o-arene.js  combats en ligne (moteur de l'hôte, relecture sur les deux écrans)
+src/v10/t-v181-guide.js   flèche-guide (cibles des objectifs, itinéraire entre cartes, chemin case par case)
+src/v10/u-v181-niveaux.js plafond de niveau selon l'histoire, rattrapage d'EXP, niveaux des zones
+src/v10/v-v181-quetes.js  annonces de quêtes et partage des quêtes en aventure à plusieurs
 ```

@@ -23,7 +23,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);const F=f(),AP=AUTO.pick,ok=(c
  const w=G.party[G.party.length-1];ok(w.lv===lv0+3&&G.money===cash-400&&G.pen.length===1,`retrait : +3 niveaux (${w.lv}), 400 pièces`);AUTO.pick=AP;
  // Échanges : Malo (Cendreville) et Yann (Port-Miroir)
  await go('ville',5,12,1);const ma=npcs(MAPS.ville).find(n=>n.name==='Petit Malo');ok(ma?.qm(),'Malo propose un échange');AUTO.pick=m=>m.bare?G.party.indexOf(w):AP(m);await ma.fn(ma);AUTO.pick=AP;
- const rc=G.party.find(m=>m.sp==='ricanoir');ok(rc&&rc.ot==='Petit Malo'&&F.trd_malo&&!ma.qm(),'échange Ratounet contre Ricanoir');const x0=rc.exp;await gainXp(rc,100,1);ok(rc.exp===x0+150,'créature échangée : EXP x1,5');
+ const rc=G.party.find(m=>m.sp==='ricanoir');ok(rc&&rc.ot==='Petit Malo'&&F.trd_malo&&!ma.qm(),'échange Ratounet contre Ricanoir');const x0=rc.exp;await gainXp(rc,100,1);const k181=typeof lvBoost==='function'?lvBoost(rc):1;ok(rc.exp===x0+Math.floor(Math.ceil(100*k181)*1.5),'créature échangée : EXP x1,5 (rattrapage 18.1 : x'+k181.toFixed(2)+')');
  await go('port',9,12,1);const ya=npcs(MAPS.port).find(n=>n.name==='Matelot Yann');await ya.fn(ya);ok(G.party.some(m=>m.sp==='pousseron'&&m.ot),'troisième starter obtenu par échange');
  AUTO.off=1;let sp=summary(rc);await wait(200);press('right');await wait(300);await SNAP('profil-origine');press('b');await sp;AUTO.off=0;
  // Mode Expert
