@@ -1,6 +1,6 @@
 // Test 17.0 (scènes d'histoire partagées, deux navigateurs, aventure à plusieurs) : case piégée de la Forêt Murmure (Kael, cinématique et combat
 // à deux, Bob était ailleurs dans la forêt), entrée de Cendreville (cinématique sans combat vécue par Bob déjà sur place, récompenses pour les deux), ami occupé qui rattrape la scène après coup (résultat repris,
-// sans prime), réglage « ne pas suivre » (aide en combat mais pas de scène), légendaire attrapé par l'un (l'autre peut encore le trouver),
+// sans prime), réglage « ne pas suivre » (aide en combat mais pas de scène), légendaire attrapé par l'un (il disparaît chez l'autre, 17.1),
 // meneur qui se déconnecte en plein combat de scène.
 (()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Error('ÉCHEC '+m);L('ok',m)},until=async(c,ms=30000)=>{const t=Date.now();while(!c()&&Date.now()-t<ms)await wait(30);return c()};
  const cbBare=m=>{if(!m.bare||!B?.coop)return null;const D=B.coop.D[B.coop.me];return Math.max(0,D.T.findIndex((x,i)=>x.hp>0&&i!==D.a))};
@@ -20,9 +20,9 @@
   G.party=team(60);healAll();loadMap('route1',7,11,2);await BAR('occupe');await run(interact);ok(f().t_lina===1&&window.CBLAST?.Nmax===1,'Lina battue par Alice seule (Bob occupé)');const o1=await BAR('occupe-fin');ok(o1.t_lina&&o1.money===o1.m0,'Bob a rattrapé la scène : Lina battue chez lui aussi, sans prime');
   // 4) Bob ne suit plus les scènes : il vient quand même aider au combat contre la Scout Nina, sans la scène
   healAll();loadMap('foret',6,4,1);await BAR('nesuitpas');await run(interact);ok(f().t_nina===1&&window.CBLAST?.Nmax===2,'Nina battue avec l\'aide de Bob');const n1=await BAR('nesuitpas-fin');ok(!n1.t_nina&&n1.money===n1.m0+400&&n1.stay,'Bob a aidé (prime) sans vivre la scène (Nina reste à battre chez lui)');
-  // 5) Légendaire : Alice attrape Solarion, Bob pourra le retrouver
+  // 5) Légendaire : Alice attrape Solarion, il disparaît du monde de Bob
   Object.assign(f(),{balance:1});delete f().eclipse;G.party=team(55);healAll();G.bag={cyclecapsule:1};loadMap('mont',9,2,1);await BAR('legende');Z.ball=1;await run(interact);Z.ball=0;
-  ok(f().legS===1&&G.party.some(m=>m.sp==='solarion'),'Solarion attrapé par Alice');const l1=await BAR('legende-fin');ok(!l1.legS&&l1.visible&&!l1.has,'chez Bob, Solarion attend encore');
+  ok(f().legS===1&&G.party.some(m=>m.sp==='solarion'),'Solarion attrapé par Alice');const l1=await BAR('legende-fin');ok(l1.legS&&!l1.visible&&!l1.has&&l1.lg==='Alice','chez Bob, Solarion a disparu (capturé par Alice)');
   // 6) Alice se déconnecte en plein combat de scène (Botaniste Iris) : Bob s'en sort proprement
   healAll();loadMap('foret',22,12,3);await BAR('coupure');Z.hold=1;const pi=run(interact);ok(await until(()=>CB&&CB.vE?.A.filter(a=>a&&!a.out).length>=2,60000),'Bob est dans le combat d\'Alice');await BAR('dedans');NET.leave();Z.hold=0;await pi;
   ok(idle()&&f().t_iris===1,'Alice finit seule le combat contre Iris');await BAR('coupure-fin');NET.join('HIST');ok(await until(()=>isAdvMate(peer('Bob')),30000),'Alice reconnectée');await BAR('fin');NET.leave();L('done')},
@@ -38,7 +38,7 @@
   await wait(1500);await BAR('nesuitpas-fin',{t_nina:f().t_nina|0,money:G.money,m0:m1,stay:G.map==='route1'&&G.x===4&&G.y===8});NG().fs=1;SCQ.length=0;
   // 5) légendaire
   Object.assign(f(),{balance:1});delete f().eclipse;G.party=team(55);healAll();loadMap('mont',12,10,0);await BAR('legende');ok(await until(()=>idle()&&window.CBLAST?.r==='run'&&window.CBLAST?.by===0,180000),'Bob a combattu Solarion avec Alice, qui l\'a attrapé');
-  await BAR('legende-fin',{legS:f().legS|0,visible:npcs(MAPS.mont).some(n=>n.sp==='solarion'),has:G.party.some(m=>m.sp==='solarion')});
+  await BAR('legende-fin',{legS:f().legS|0,visible:npcs(MAPS.mont).some(n=>n.sp==='solarion'),has:G.party.some(m=>m.sp==='solarion'),lg:G.coop.lg?.solarion||''});
   // 6) coupure
   healAll();loadMap('route1',4,8,0);await BAR('coupure');ok(await until(()=>!!CBG,90000),'Bob suit la scène d\'Iris et entre dans le combat');await BAR('dedans');ok(await until(()=>idle(),120000),'Bob revient au monde malgré la coupure');ok(!f().t_iris,'combat interrompu : Iris reste à battre chez Bob');
   await BAR('coupure-fin');ok(await until(()=>isAdvMate(peer('Alice')),30000),'Alice revenue');await BAR('fin');NET.leave();L('done')}}})()

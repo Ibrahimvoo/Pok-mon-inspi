@@ -527,7 +527,7 @@ async function cbFinish(C){const v=C.v||{},end=C.end||{w:'run',by:-1},me=C.me,Dm
   if(m){m.hp=Math.max(1,Math.round(k*st14(m).hp));m.st=C.foe.st==='slp'?null:C.foe.st;m.slp=0;delete m._S;B.foe=m;const nw=G.dex[m.sp]!==2;dex(m.sp,2);msEvt('cap',m.sp);await say(`Bravo ! ${nm(m)} est attrapé !`);if(m.item)await say(`${nm(m)} tenait ${IT[m.item][0]} !`);if(nw)await say(`Les données de ${nm(m)} sont ajoutées au Pixédex.`);
    if(m.nat&&NAT[m.nat])await say(`${nm(m)} a l'air ${NAT[m.nat][0].toLowerCase()}. ${NAT[m.nat][3]}`);if(G.party.length<6)G.party.push(m);else{G.box.push(m);await say(`${nm(m)} est envoyé dans la Boîte du Centre de Soins.`)}}else r='win'}
  else if(C.host&&C.wild&&!C.tr){B.foe=C.wild}
- if(end.w==='catch'&&end.by!==me&&!C.left){const D=C.D?.[end.by];await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} en premier ! ${o.legend||o.roam?'Il en existe peut-être un autre pour toi, quelque part…':'Il est à lui.'}`)}
+ if(end.w==='catch'&&end.by!==me&&!C.left){const D=C.D?.[end.by],lg=(o.legend||o.roam)&&advCode()&&lgTake(C.foe.sp,D?.nm);await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} en premier ! ${lg?'Il est à lui : il a quitté ton monde.':o.legend||o.roam?'Il en existe peut-être un autre pour toi, quelque part…':'Il est à lui.'}`)}
  if(!C.host)B.tr=C.tr;B.o=C.o||{};window.CBLAST={w:end.w,by:end.by,me,Nmax:v.Nmax|0,r,left:C.left?1:0,tr:C.tr?.name||''};return r}
 
 // --- Sauvegarde 16.0 (rien de nouveau à stocker hors des compteurs en ligne) : on montre les nouveautés

@@ -9,4 +9,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  t=throwAll([100,300,200]);ok(t.v.by===0,'l\'hôte l\'attrape quand il a lancé en premier');
  t=throwAll([500,400,100]);ok(t.v.by===2,'la place 2 l\'attrape quand elle a lancé en premier');
  t=throwAll(null);ok(t.v.by===0,'sans horodatage : ordre des places');
+ {const g=JSON.parse(JSON.stringify(G));g.v=17;g.coop={code:'ABCD',mates:{},lg:{solarion:'Alice',pikachu:'x',nocturion:3}};const n=normalize(g);ok(n.v>=17.1&&n.wn&&JSON.stringify(n.coop.lg)==='{"solarion":"Alice"}','sauvegarde 17.1 : légendaires pris par les amis vérifiés')}
  L('done')}

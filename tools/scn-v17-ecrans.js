@@ -27,5 +27,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  {const p=frMenu();await wait(400);await SNAP('amis');press('b');await wait(150);press('b');await p}
  // 4) Sauvegardes abîmées
  {const g=JSON.parse(JSON.stringify(G));g.coop={code:'nope'};g.net.aj='toujours';g.net.fs='oui';const n=normalize(g);ok(!n.coop&&!n.net.aj&&n.net.fs===undefined,'aventure et réglages invalides nettoyés')}
- {const g=JSON.parse(JSON.stringify(G));g.v=16;delete g.coop;const n=normalize(g);ok(n.v===17&&n.wn,'migration 16 -> 17')}
+ {const g=JSON.parse(JSON.stringify(G));g.v=16;delete g.coop;const n=normalize(g);ok(n.v>=17&&n.wn,'migration 16 -> 17')}
  NET.peers.clear();for(const n of[...MAPS.ville.npcs])if(n.net)MAPS.ville.npcs.splice(MAPS.ville.npcs.indexOf(n),1);NET.on=false;NET.R=[];frDel(P1.id);AUTO.off=0;L('done')}
