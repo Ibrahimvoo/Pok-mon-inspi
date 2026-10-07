@@ -239,7 +239,7 @@ function cbEngine(foes,o={}){const R=()=>Math.random(),FT=(Array.isArray(foes)?f
   for(const a of live())if(c[a.s].lv&&a.s!==0)leave_(a.s,'run');if(LB.ph==='end')return;
   if(!tr&&c[0]?.run&&A[0]&&!A[0].out){const ok=R()<.45+.4*SPD(0)/Math.max(1,SPD(CBF));E.push({k:'run',s:0,ok:ok?1:0});if(ok)return fin('run','run')}
   for(const a of live()){const x=c[a.s];if(x.it)item_(a.s,x.it,x.t)}
-  if(!tr)for(const a of live()){const x=c[a.s];if(x.ball&&IT[x.ball]?.[4]==='ball'&&ball_(a.s,x.ball))return}
+  if(!tr)for(const a of live().filter(a=>c[a.s].ball).sort((p,q)=>(c[p.s].at??1e15)-(c[q.s].at??1e15))){const x=c[a.s];if(IT[x.ball]?.[4]==='ball'&&ball_(a.s,x.ball))return}
   for(const a of live()){const x=c[a.s];if(x.w!=null){if(okSw(a.s,x.w))switch_(a.s,x.w);else c[a.s]=autoC(a.s)}}
   for(const a of live()){const x=c[a.s];if(x.w==null&&!x.it&&!x.ball&&!x.run&&x.e&&canEv_(a.s))awaken_(a.s)}
   let fIt=0;if(tr&&F.items>0&&F.m.hp>0&&F.m.hp<F.m._S.hp*.3&&(alv()===1||R()<.6)){fitem_();fIt=1}
@@ -427,7 +427,7 @@ NET.H['cb-jn']=(m,P)=>{if(typeof m.id!=='string'||!CBID.test(m.id))return;const 
  const rv=cbRvState(m.id);if(rv==='wait'){const j=mk();if(!j){NET.send('cb-no',{id:m.id,why:'bad'},P.pid,true);return}const L=PJB.get(m.id)||{L:[],t:Date.now()};L.L=L.L.filter(x=>x.pid!==P.pid);L.L.push(j);PJB.set(m.id,L);return}
  NET.send('cb-no',{id:m.id,why:rv==='none'?'none':'over'},P.pid,true)};
 NET.H['cb-jx']=(m,P)=>{const L=PJB.get(m.id);if(L)L.L=L.L.filter(x=>x.pid!==P.pid);const C=CB;if(!C||m.id!==C.id)return;C.pj=C.pj.filter(j=>j.pid!==P.pid);const a=C.vE?.A.find(x=>x&&x.pid===P.pid&&!x.out);if(a)C.pl.add(a.s);const e=C.exp?.get(P.pid);if(e)e.st='no'};
-NET.H['cb-ch']=(m,P)=>{const C=CB;if(!C||m.id!==C.id||!Number.isInteger(m.n)||!C.vE||m.n<=C.vE.n)return;const a=C.vE.A.find(x=>x&&x.pid===P.pid&&!x.out);if(!a)return;const c=cbSan(m.c);if(c.lv){C.pl.add(a.s);return}(C.ch[m.n]??={})[a.s]??=c};
+NET.H['cb-ch']=(m,P)=>{const C=CB;if(!C||m.id!==C.id||!Number.isInteger(m.n)||!C.vE||m.n<=C.vE.n)return;const a=C.vE.A.find(x=>x&&x.pid===P.pid&&!x.out);if(!a)return;const c=cbSan(m.c);if(c.lv){C.pl.add(a.s);return}c.at=Date.now();(C.ch[m.n]??={})[a.s]??=c};
 NET.H['cb-lv']=(m,P)=>{const C=CB;if(!C||m.id!==C.id)return;const a=C.vE?.A.find(x=>x&&x.pid===P.pid&&x.out!==1);if(a)C.pl.add(a.s)};
 NET.H['cb-ack']=(m,P)=>{const C=CB;if(!C||m.id!==C.id)return;const e=C.exp.get(P.pid);if(e&&!e.fol)e.st=m.ok?'yes':'no'};
 function cbBroadcast(C,r,nv,add){for(const a of nv.A)if(a&&a.s!==0&&a.out!==1&&NET.peers.has(a.pid)&&!r.add.some(x=>x.s===a.s))NET.send('cb-st',{id:C.id,n:nv.n,ev:r.ev,vw:nv},a.pid,90);
@@ -448,7 +448,7 @@ async function cbGather(C){const t0=Date.now(),pend=()=>{const L=[],dt=Date.now(
  let skip=0;while(!skip&&pend().length){const L=pend();show(`En attente de ${L.map(P=>P.name).join(', ')}… (B : commencer sans attendre)`,0);const k=await key(200);if(k==='b'){ui.text=null;if(await ask('Commencer sans les attendre ? Ils pourront te rejoindre en plein combat.'))skip=1}}ui.text=null;
  if(C.pj.length){const add=C.pj.splice(0,CBMAX),r=C.E.step({add,only:1}),nv=C.vE=C.E.view();cbBroadcast(C,r,nv,add);if(r.add.length)NET.hi(1);for(const e of r.ev)await cbEv(C,e);cbView(C,nv)}}
 async function cbHostLoop(C){for(;;){const v=C.v;if(!v||v.ph==='end'||C.end)break;const n=v.n+1,meA=v.A[0],need=!!meA&&meA.out===0&&(v.ph==='act'||!!meA.need);
-  let c=null;if(need)c=v.ph==='act'?await cbChoose(C,()=>false):await cbRep(C,()=>false);
+  let c=null;if(need){c=v.ph==='act'?await cbChoose(C,()=>false):await cbRep(C,()=>false);if(c)c.at=Date.now()}
   const lim=v.ph==='act'?45000:30000,t0=Date.now();let skip=0;
   const who=()=>(C.vE.A||[]).filter(a=>a&&a.s!==0&&!a.out&&(v.ph==='act'||a.need)&&!C.pg.has(a.s)&&!C.pl.has(a.s)&&!C.ch[n]?.[a.s]&&NET.peers.has(a.pid));
   while(who().length&&!skip&&Date.now()-t0<lim){const L=who();show(`En attente de ${L.map(a=>a.nm).join(', ')}… ${Math.ceil((lim-(Date.now()-t0))/1000)} s`,0);const k=await key(250);if(k==='b'){ui.text=null;if(await ask('Ne plus attendre ? Leurs créatures attaqueront toutes seules.'))skip=1}}ui.text=null;
@@ -527,7 +527,7 @@ async function cbFinish(C){const v=C.v||{},end=C.end||{w:'run',by:-1},me=C.me,Dm
   if(m){m.hp=Math.max(1,Math.round(k*st14(m).hp));m.st=C.foe.st==='slp'?null:C.foe.st;m.slp=0;delete m._S;B.foe=m;const nw=G.dex[m.sp]!==2;dex(m.sp,2);msEvt('cap',m.sp);await say(`Bravo ! ${nm(m)} est attrapé !`);if(m.item)await say(`${nm(m)} tenait ${IT[m.item][0]} !`);if(nw)await say(`Les données de ${nm(m)} sont ajoutées au Pixédex.`);
    if(m.nat&&NAT[m.nat])await say(`${nm(m)} a l'air ${NAT[m.nat][0].toLowerCase()}. ${NAT[m.nat][3]}`);if(G.party.length<6)G.party.push(m);else{G.box.push(m);await say(`${nm(m)} est envoyé dans la Boîte du Centre de Soins.`)}}else r='win'}
  else if(C.host&&C.wild&&!C.tr){B.foe=C.wild}
- if(end.w==='catch'&&end.by!==me&&!C.left&&(o.legend||o.roam)){const D=C.D?.[end.by];await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} ! Il en existe peut-être un autre pour toi, quelque part…`)}
+ if(end.w==='catch'&&end.by!==me&&!C.left){const D=C.D?.[end.by];await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} en premier ! ${o.legend||o.roam?'Il en existe peut-être un autre pour toi, quelque part…':'Il est à lui.'}`)}
  if(!C.host)B.tr=C.tr;B.o=C.o||{};window.CBLAST={w:end.w,by:end.by,me,Nmax:v.Nmax|0,r,left:C.left?1:0,tr:C.tr?.name||''};return r}
 
 // --- Sauvegarde 16.0 (rien de nouveau à stocker hors des compteurs en ligne) : on montre les nouveautés
