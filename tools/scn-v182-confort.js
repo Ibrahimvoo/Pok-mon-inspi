@@ -29,7 +29,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
   const R=MAPS.mine.rows.map(r=>[...r]);R[3][11]='^';const M0=MAPS.mine.rows;MAPS.mine.rows=R.map(r=>r.join(''));const S3=reach('mine',[[11,16]]);MAPS.mine.rows=M0;ok(!S3.has('11,1'),'Mine : Tito reste derrière le lieutenant Corvin');ok(!S.has('23,6'),'Mine : la galerie secrète reste derrière le brasier')}
  // 6) Cendreville : l'Éclat caché (19,1) n'est plus enfermé par le puits
  {refreshMap('ville');const S=reach('ville',[[12,0]]);ok([[19,2],[18,1],[20,1],[19,0]].some(([x,y])=>S.has(x+','+y))||S.has('19,1'),'Cendreville : l\'Éclat caché est accessible')}
- ok(NEWS[0][1]==='Combats et rencontres'&&NEWS[1][1]==='Grottes et déplacements','nouveautés 18.2 en tête');ok(normalize(Object.assign(JSON.parse(JSON.stringify(G)),{v:18.1,wn:0})).wn===1,'une sauvegarde 18.1 affiche les nouveautés');
+ ok(NEWS[0][1]==='Nouvelle console'&&NEWS[1][1]==='Combats et rencontres'&&NEWS[2][1]==='Grottes et déplacements','nouveautés 18.2 en tête');ok(normalize(Object.assign(JSON.parse(JSON.stringify(G)),{v:18.1,wn:0})).wn===1,'une sauvegarde 18.1 affiche les nouveautés');
  // 7) un vrai combat dans la grotte s'affiche (capture)
  G.party=[mon('torrentor',30)];loadMap('grotte',13,13,1);AUTO.off=1;{const p=run(()=>battle([mon('rocaton',10,{wild:1})]));await wait(2400);await SNAP('combat-grotte');AUTO.off=0;await p}
  loadMap('grotte',20,8,1);ui.banner=null;await wait(300);await SNAP('grotte-lumiere');

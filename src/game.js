@@ -35,7 +35,7 @@ A:'010,101,111,101,101',B:'110,101,110,101,110',C:'111,100,100,100,111',D:'110,1
 const FONT={},MINI={};for(const[k,v]of Object.entries(FD))FONT[k]=v.split(',');for(const[k,v]of Object.entries(MD))MINI[k]=v.split(',');
 const GC={},ACC_={'́':['001','010'],'̀':['100','010'],'̂':['010','101'],'̈':['101'],'̧':['010','110']};
 const dots=(g,rows,ox,oy)=>rows.forEach((s,y)=>[...s].forEach((v,x)=>v==='1'&&g.fillRect(ox+x,oy+y,1,1)));
-function glyph(ch,col,mini){const key=ch+col+(mini?1:0);if(GC[key])return GC[key];let b=ch,mk='';const n=ch.normalize('NFD');if(n.length>1){b=n[0];mk=n[1]}
+function glyph(ch,col,mini){if(ch==='«'||ch==='»')ch='"';const key=ch+col+(mini?1:0);if(GC[key])return GC[key];let b=ch,mk='';const n=ch.normalize('NFD');if(n.length>1){b=n[0];mk=n[1]}
  if(mini){const r=MINI[b.toUpperCase()]||MINI['?'],w=Math.max(...r.map(s=>s.length));return GC[key]=mkc(w,5,g=>{g.fillStyle=col;dots(g,r,0,0)})}
  if(mk&&b==='i')b='ı';const r=FONT[b]||FONT['?'],bw=Math.max(...r.map(s=>s.length)),w=mk?Math.max(bw,3):bw,ox=(w-bw)>>1;
  return GC[key]=mkc(w,12,g=>{g.fillStyle=col;dots(g,r,ox,3);const A=ACC_[mk];if(A){const up=b!==b.toLowerCase();dots(g,A,(w-3)>>1,mk==='̧'?10:up?(A.length>1?0:1):(A.length>1?2:3))}})}
@@ -448,16 +448,25 @@ async function jingle(k){const back=mus.want===k?null:mus.want;musStop();musPlay
 // =====================================================================
 const held={},waiters=[];
 const KM={arrowup:'up',z:'up',w:'up',arrowdown:'down',s:'down',arrowleft:'left',q:'left',a:'left',arrowright:'right',d:'right',' ':'a',enter:'a',j:'a',x:'b',escape:'b',backspace:'b',k:'b',m:'start',tab:'start'};
-function down(k){initAudio();held[k]=1;press(k)}
+const padLit=(k,on)=>document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>b.classList.toggle('on',!!on));
+function down(k){initAudio();held[k]=1;padLit(k,1);press(k)}
+const release=k=>{held[k]=0;padLit(k,0)};
 addEventListener('keydown',e=>{const k=KM[e.key.toLowerCase()];if(!k)return;e.preventDefault();if(e.repeat){if(waiters.length&&['up','down','left','right'].includes(k))press(k);return}down(k)});
-addEventListener('keyup',e=>{const k=KM[e.key.toLowerCase()];if(k)held[k]=0});
-addEventListener('blur',()=>{for(const k in held)held[k]=0});
-document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();down(k)});['pointerup','pointerleave','pointercancel'].forEach(v=>b.addEventListener(v,()=>held[k]=0))});
-// Croix tactile : on peut glisser le doigt d'une direction à l'autre sans le lever ; petite vibration à chaque appui
-{const dp=document.querySelector('.dp');let cur=null;const buzz=()=>{try{navigator.vibrate?.(8)}catch(e){}};document.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('pointerdown',buzz));
- if(dp){dp.addEventListener('pointerdown',e=>{cur=e.target.closest?.('[data-k]')?.dataset.k||null});
-  dp.addEventListener('pointermove',e=>{if(!cur)return;const k=document.elementFromPoint(e.clientX,e.clientY)?.closest?.('[data-k]')?.dataset.k;if(k&&k!==cur&&dp.contains(document.querySelector(`[data-k="${k}"]`))){held[cur]=0;cur=k;down(k);buzz()}});
-  ['pointerup','pointercancel'].forEach(v=>dp.addEventListener(v,()=>{if(cur)held[cur]=0;cur=null}))}}
+addEventListener('keyup',e=>{const k=KM[e.key.toLowerCase()];if(k)release(k)});
+addEventListener('blur',()=>{for(const k in held)release(k)});
+const buzz=()=>{try{navigator.vibrate?.(8)}catch(e){}};
+document.querySelectorAll('[data-k]').forEach(b=>{if(b.closest('.dp'))return;const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();buzz();down(k)});['pointerup','pointerleave','pointercancel'].forEach(v=>b.addEventListener(v,()=>release(k)))});
+// Croix tactile : la direction suit la position du doigt sur toute la croix (zone morte au centre), on glisse d'une direction à l'autre sans lever le doigt
+{const dp=document.querySelector('.dp');let cur=null,pid=null;
+ const dirAt=e=>{const r=dp.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;if(Math.hypot(x,y)<r.width*.1)return cur;return Math.abs(x)>Math.abs(y)?(x>0?'right':'left'):(y>0?'down':'up')};
+ const set=k=>{if(k===cur)return;if(cur)release(cur);cur=k;if(k){buzz();down(k)}};
+ if(dp){dp.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{dp.setPointerCapture(pid)}catch(_){}set(dirAt(e))});
+  dp.addEventListener('pointermove',e=>{if(e.pointerId===pid)set(dirAt(e))});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(v=>dp.addEventListener(v,e=>{if(e.pointerId!==pid)return;pid=null;set(null)}))}}
+// Couleur de la coque : toucher le logo sous l'écran la change (mémorisée sur cet appareil)
+{const CQ=['crepuscule','braise','maree','aube','nuit'],con=document.getElementById('console'),lg=document.getElementById('logo');
+ if(con&&lg){let i=0;try{i=Math.max(0,CQ.indexOf(localStorage.getItem('pixemon-coque')))}catch(e){}con.dataset.theme=CQ[i];
+  lg.addEventListener('click',()=>{i=(i+1)%CQ.length;con.dataset.theme=CQ[i];try{localStorage.setItem('pixemon-coque',CQ[i])}catch(e){}initAudio();sfx('ok')})}}
 const cpos=e=>{const r=cv.getBoundingClientRect(),s=W/cv.clientWidth;return{x:(e.clientX-r.left-cv.clientLeft)*s,y:(e.clientY-r.top-cv.clientTop)*s}};
 const hit=(m,p)=>m.rects?m.rects.findIndex(r=>r&&p.x>=r[0]&&p.x<r[0]+r[2]&&p.y>=r[1]&&p.y<r[1]+r[3]):-1;
 cv.addEventListener('pointermove',e=>{const m=ui.menus[ui.menus.length-1];if(!m)return;const i=hit(m,cpos(e));if(i>=0&&i!==m.i){m.i=i;sfx('sel')}});
@@ -1723,7 +1732,7 @@ const NEWS=[[()=>ICO.bVol,'Volterre et l\'Arène Volt','4e arène, Centrale de l
  [()=>ICO.coin,'Un monde qui bouge','Marchande itinérante, facteur et ses lettres, carnet de voyage, orages de Volterre, musique de nuit.'],
  [()=>ICO.star,'Le défi d\'Elias','Quand le Pixédex est presque complet, ton père t\'attend sous le dôme, une nuit. Le combat le plus dur d\'Aurélys.'],
  [()=>ICO.board,'Graphismes libres','Projet libre Tuxemon et ses artistes : appuie sur A pour les crédits.']];
-const newsBody=()=>NEWS.forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))});
+const newsBody=()=>NEWS.slice(0,7).forEach(([ic,t,s],i)=>{const y=48+i*36,im=ic(),sm=im.width<8;X.drawImage(im,24,y+(sm?2:0),sm?14:16,sm?12:16);txt(t,46,y+15);wrap(s,404,1).slice(0,2).forEach((l,j)=>txt(l,46,y+25+j*9,C.ink2,{s:1,sh:0}))});
 // Crédits graphiques (détail complet dans CREDITS.md)
 const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','github.com/Tuxemon/Tuxemon','',
  'Créatures, personnages et tuiles : Sanglorian, Catch Challenger,','rubberduck, JaskRendix, Kelvin Shadewing, George, ArMM1998,','Mike Bramson, Leo, Kurt Stine, Rawng, Princess-phoenix, pboop,',

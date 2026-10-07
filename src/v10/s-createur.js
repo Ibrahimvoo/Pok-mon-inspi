@@ -47,7 +47,7 @@ async function creatorMenu(){let last=0;for(;;){
   [`VITESSE : x${CH.spd}`,()=>{CH.spd=CH.spd>=4?1:CH.spd*2}],
   [`REPOUSSE INFINI : ${onOff(CH.rep)}`,()=>{CH.rep^=1;if(!CH.rep)G.repel=0}],
   [`EXP x10 : ${onOff(CH.xp)}`,()=>{CH.xp^=1}],
-  ['ARGENT +100 000',()=>{G.money=Math.min(9999999,(G.money|0)+100000);jingle('item');return`Tu as maintenant ${G.money} ¥.`}],
+  ['ARGENT +100 000',()=>{G.money=Math.min(9999999,(G.money|0)+100000);jingle('item');return`Tu as maintenant ${G.money} pièces.`}],
   ['TOUS LES OBJETS x99',()=>{for(const k of Object.keys(IT))if(IT[k][4]!=='quest')G.bag[k]=99;jingle('item');return'Sac rempli : 99 de chaque objet.'}],
   ['ÉQUIPE NIVEAU 100',()=>{for(const m of G.party){m.lv=100;m.exp=xpFor(100)}healAll();sfx('ok');return'Toute l\'équipe est niveau 100 !'}],
   ['ÉQUIPE CHROMATIQUE',()=>{for(const m of G.party)m.sh=1;sfx('shard');return'Toute l\'équipe brille !'}],
