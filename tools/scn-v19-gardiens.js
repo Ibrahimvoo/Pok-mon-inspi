@@ -8,8 +8,8 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  const sm=MAPS.mont.npcs.find(n=>n.sp==='solarion'&&n.fn);loadMap('mont',sm.x,sm.y+1,1);ok(npcs(MAPS.mont).includes(sm),'Solarion au sommet');await interact();
  ok(f().v19sol===1&&G.keys.plume===1,'il s\'envole et laisse une Plume d\'Aube');ok(!npcs(MAPS.mont).includes(sm),'le sommet est vide');
  // 2. Coteaux, 3. Bourg-Lueur
- loadMap('coteaux',15,4,1);await MAPS.coteaux.step();ok(f().v19sol===2&&G.keys.plume===2,'deuxième apparition aux Coteaux');
- loadMap('bourg',13,5,1);await MAPS.bourg.step();await SNAP('solarion-bourg');ok(f().v19sol===3&&G.keys.plume===3&&SAID.some(s=>/détourné les yeux/.test(s)),'Solarion parle à Bourg-Lueur');
+ loadMap('coteaux',17,5,1);await MAPS.coteaux.step();ok(f().v19sol===2&&G.keys.plume===2,'deuxième apparition aux Coteaux');
+ loadMap('bourg',15,12,1);await MAPS.bourg.step();await SNAP('solarion-bourg');ok(f().v19sol===3&&G.keys.plume===3&&SAID.some(s=>/détourné les yeux/.test(s)),'Solarion parle à Bourg-Lueur');
  // 4. Épreuve du Zénith : tenir 6 tours (équipe qui ne fait que se protéger)
  G.party=[0,1,2,3,4,5].map(()=>mon('rocaroc',70,{moves:['durcir']}));loadMap('mont',sm.x,sm.y+1,1);ok(npcs(MAPS.mont).includes(sm),'Solarion est revenu au sommet');
  const n0=G.bag.capsule=5;await interact();ok(f().legS&&[...G.party,...G.box].some(m=>m.sp==='solarion'),'Épreuve du Zénith réussie : Solarion t\'a choisi');ok(SAID.some(s=>/Épreuve : 3\/6/.test(s)),'compte des tours affiché');

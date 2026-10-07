@@ -7285,7 +7285,7 @@ const FRAG19=[{m:'lunevie',x:8,y:17,t:'Lunévie'},{m:'clairiere',x:2,y:5,t:'la C
 const frag19N=()=>FRAG19.filter((_,i)=>GV()['v19f'+i]).length;
 FRAG19.forEach((F,i)=>MAPS[F.m].npcs.push({x:F.x,y:F.y,t:'obj',k:'chain19',time:'n',cond:()=>GV().balance&&GV().v19noc&&!GV().legN&&!GV()['v19f'+i],fn:()=>frag19(i)}));
 // --- Solarion : la piste de l'aube
-const SOL19=[{m:'coteaux',x:15,y:1},{m:'bourg',x:13,y:2}];
+const SOL19=[{m:'coteaux',x:17,y:2},{m:'bourg',x:15,y:10}];
 SOL19.forEach((S,i)=>MAPS[S.m].npcs.push({x:S.x,y:S.y,t:'mon',sp:'solarion',d:0,time:'j',sol19:i+1,cond:()=>GV().balance&&!GV().legS&&GV().v19sol===i+1,fn:()=>sol19Fly(i+1)}));
 async function solTakeoff(n,txt){await cine(1);if(n){rays(n.x,n.y,C.goldL,2200);await emote(n,'!',500)}ui.shake=10;sfx('roar');ui.flash=.6;ui.flashC='#ffe8a0';await say(txt);
  if(n){puff(n.x,n.y,'#ffe8a0',26);for(let i=0;i<24;i++)AMB.push({k:'pf',x:n.x*TS+16,y:n.y*TS+8,vx:(Math.random()-.5)*3,vy:-1-Math.random()*3,l:50,ml:50,c:i%2?'#ffd23a':'#ffffff'});n.hid=1}
@@ -7354,8 +7354,8 @@ for(const S of SOL19){const M=MAPS[S.m],s0=M.step;M.step=async function(){const 
 {const n=MAPS.mont.npcs.find(x=>x.sp==='solarion'&&x.time==='j'&&x.fn);if(n){const c0=n.cond;n.cond=()=>c0()&&!(GV().v19sol>=1&&GV().v19sol<3)}}
 {const n=MAPS.dome.npcs.find(x=>x.sp==='nocturion'&&x.time==='n'&&x.fn);if(n){const c0=n.cond;n.cond=()=>c0()&&!(GV().v19noc&&frag19N()<3)}}
 GDT.unshift([/Va à sa rencontre|Épreuve du Zénith/,()=>({...gN('mont',null,9,1,'Solarion'),hint:night()?'Solarion ne se montre que le jour':null})],
- [/hauteurs des Coteaux/,()=>({m:'coteaux',x:15,y:1,lbl:'Hauteurs des Coteaux',hint:night()?'Solarion ne se montre que le jour':null})],
- [/où tout a commencé/,()=>({m:'bourg',x:13,y:2,lbl:'Bourg-Lueur',hint:night()?'Solarion ne se montre que le jour':null})],
+ [/hauteurs des Coteaux/,()=>({m:'coteaux',x:17,y:2,lbl:'Hauteurs des Coteaux',hint:night()?'Solarion ne se montre que le jour':null})],
+ [/où tout a commencé/,()=>({m:'bourg',x:15,y:10,lbl:'Bourg-Lueur',hint:night()?'Solarion ne se montre que le jour':null})],
  [/réfugié sous le dôme|Épreuve de la Nuit/,()=>({...gN('dome',null,5,1,'Nocturion'),hint:night()?null:'Nocturion ne se montre que la nuit'})],
  [/fragments de ses chaînes/,()=>{const i=FRAG19.findIndex((_,j)=>!GV()['v19f'+j]);const F=FRAG19[i<0?0:i];return{m:F.m,x:F.x,y:F.y,lbl:'Fragment de chaîne',hint:night()?null:'Les fragments ne brillent que la nuit'}}]);
 {const q19g=quests;quests=function(){const Q=q19g(),g=GV(),i=Q.findIndex(q=>q&&q[0]==='Les gardiens');if(i>=0&&g.balance){const s=g.legS?'Solarion t\'a choisi':['Solarion : au sommet du Mont Braise (jour)','Solarion : hauteurs des Coteaux (jour)','Solarion : Bourg-Lueur (jour)','Solarion : Épreuve du Zénith au sommet'][Math.min(3,g.v19sol|0)],
