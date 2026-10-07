@@ -26,7 +26,8 @@ const CREA_T=[];
 {const c0=choose;choose=async function(opts,o={}){const pause=Array.isArray(opts)&&opts.includes('SAUVER')&&opts.includes('TITRE')&&opts.includes('FERMER')&&!opts.includes('CRÉATEUR');
  if(!pause)return c0(opts,o);
  if(creaOn()){const i=await c0(['CRÉATEUR',...opts],{...o,icons:o.icons?[ICO.gear,...o.icons]:o.icons,rh:22,vis:Math.max(o.vis||10,11)});if(i===0){ui.panel=null;await creatorMenu();return opts.length}return i<0?i:i-1}
- const i=await c0(opts,o);if(opts[i]!=='SAUVER')return i;const t=Date.now();CREA_T.push(t);while(CREA_T.length&&t-CREA_T[0]>6000)CREA_T.shift();
+ while(CREA_T.length&&Date.now()-CREA_T[0]>30000)CREA_T.shift();
+ const i=await c0(opts,CREA_T.length?{...o,i:opts.indexOf('SAUVER')}:o);if(opts[i]!=='SAUVER'){CREA_T.length=0;return i}const t=Date.now();CREA_T.push(t);
  if(CREA_T.length<3)return i;CREA_T.length=0;ui.panel=null;const p=await kbInput('MOT DE PASSE',12,[...NETAB],{cols:8,kw:44});
  if(p&&creaHash(p)===CREA_H){creaSet(CREA_K,CREA_H);sfx('ok');await say('Accès créateur activé sur cet appareil ! Ouvre le MENU : CRÉATEUR est tout en haut.')}else if(p)sfx('back');return opts.length}}
 
