@@ -38,7 +38,7 @@ const FSP0=faunaSpawn;
 {const ft171=faunaTick;faunaTick=function(dt){if(faOn()&&!FA.own&&FA.map===G.map)return;return ft171(dt)}}
 function faState(){const L=faList().slice(0,8).map(n=>[n.fid||(n.fid=faId()),n.sp,n.lv,n.walk&&n.rx!=null?n.rx:n.x,n.walk&&n.ry!=null?n.ry:n.y,n.d&3,n.slp?1:0]);return{m:G.map,L,wx:G.wx?.k==='rain'?1:0}}
 function faSend(force){if(!faOn()||!FA.own||FA.map!==G.map||!faMates(G.map).length)return;const s=faState(),j=JSON.stringify(s),t=Date.now();
- if(!force&&j===FA.sent&&t-FA.ts<2000)return;FA.sent=j;FA.ts=t;NET.send('fa-s',s)}
+ if(!force&&j===FA.sent&&t-FA.ts<1000)return;FA.sent=j;FA.ts=t;NET.send('fa-s',s)}
 setInterval(()=>{try{faSend(0);faPromote()}catch(e){console.error(e)}},250);
 NET.H['fa-q']=(m,P)=>{if(isAdvMate(P)&&faOn()&&FA.own&&m.m===G.map)faSend(1)};
 NET.H['fa-s']=(m,P)=>{if(!isAdvMate(P)||P.dv!==NETDV()||!faOn()||m.m!==G.map||FA.map!==G.map||!Array.isArray(m.L))return;
@@ -58,21 +58,22 @@ function faAdopt(m){const M=MAPS[G.map],seen=new Set();
  if(m.wx&&!G.wx&&RAINY.has(G.map))G.wx={k:'rain',n:80};else if(!m.wx&&G.wx?.k==='rain')G.wx=null}
 // Le meneur est parti (autre carte, déconnexion) : on prend le relais avec les créatures déjà là
 function faPromote(){if(!faOn()||FA.own||FA.map!==G.map)return;const L=faLead(),t=Date.now();
- if(L&&L.map===G.map&&NET.peers.has(L.pid)&&t-FA.last<4000)return;if(!FA.got&&t-FA.t0<2500)return;
+ if(L&&L.map===G.map&&NET.peers.has(L.pid)&&t-FA.last<6000)return;if(!FA.got&&t-FA.t0<3500)return;
  FA.own=true;FA.src='';for(const n of faList())if(!n.fid)n.fid=faId();if(!FA.got&&!faList().length)FSP0(G.map);for(const n of faList())if(!n.fid)n.fid=faId();faSend(1)}
 // Qui touche une créature le premier l'affronte ; le meneur tranche
 {const fm171=faunaMeet;faunaMeet=async function(n){if(n.gone)return;
  if(!faOn()||!n.fid||FA.map!==G.map)return fm171(n);
  if(FA.own){FA.by[n.fid]=NG().n||'Ton ami';const r=fm171(n);faSend(1);return r}
  const L=faLead();if(!L)return fm171(n);n.gone=1;const id=n.fid;FA.tk={id,ok:null,by:''};NET.send('fa-t',{m:G.map,id},L.pid,true);
- const t0=Date.now();while(FA.tk?.ok==null&&Date.now()-t0<2000)await wait(40);const R=FA.tk;FA.tk=null;
+ const t0=Date.now();while(FA.tk?.ok==null&&Date.now()-t0<6000)await wait(40);const R=FA.tk;FA.tk=null;
  if(R&&R.ok===0){rmFauna(n);sfx('back');await say(`Trop tard ! ${R.by||'Ton ami'} a trouvé ce ${SP[n.sp].name} avant toi.`);return}
- n.gone=0;return fm171(n)}}
+ // Sans réponse alors que le meneur est toujours là : on ne risque pas un combat en double, la créature reste et on peut réessayer
+ n.gone=0;if(R?.ok!==1&&NET.peers.has(L.pid)&&L.map===G.map)return;return fm171(n)}}
 NET.H['fa-t']=(m,P)=>{if(!isAdvMate(P)||typeof m.id!=='string'||!FAID.test(m.id))return;
- if(!faOn()||!FA.own||m.m!==G.map){NET.send('fa-r',{id:m.id,ok:1},P.pid);return}
+ if(!faOn()||!FA.own||m.m!==G.map){NET.send('fa-r',{id:m.id,ok:1},P.pid,true);return}
  const n=(MAPS[G.map].npcs||[]).find(o=>o.fauna&&o.fid===m.id);
- if(n&&!n.gone){n.gone=1;rmFauna(n);FA.by[m.id]=P.name;NET.send('fa-r',{id:m.id,ok:1},P.pid);faSend(1);return}
- NET.send('fa-r',{id:m.id,ok:0,by:FA.by[m.id]||''},P.pid)};
+ if(n&&!n.gone){n.gone=1;rmFauna(n);FA.by[m.id]=P.name;NET.send('fa-r',{id:m.id,ok:1},P.pid,true);faSend(1);return}
+ NET.send('fa-r',{id:m.id,ok:0,by:FA.by[m.id]||''},P.pid,true)};
 NET.H['fa-r']=(m,P)=>{const T=FA.tk;if(T&&T.id===m.id&&P.pid===FA.src){T.ok=m.ok?1:0;T.by=netName(m.by)||''}};
 
 // Les succès d'un légendaire restent à celui qui l'a capturé

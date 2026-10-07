@@ -49,7 +49,10 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
  relayUp(r){this.ever=1;this.hi(1);this.send('who')},
  relayDown(r){},
  out(s){let n=0;for(const r of this.R)if(r.pub(s))n++;return n},
- send(k,o={},to,rel){if(!this.on)return rel?Promise.resolve(false):0;const m={...o,v:NETV,f:this.pid,s:++this.seq,k};delete m.to;delete m.r;if(to)m.to=to;if(rel)m.r=1;const s=JSON.stringify(m);this.out(s);if(k!=='p'&&k!=='hi')this.trace('>',k,m.s,to);
+ send(k,o={},to,rel){if(!this.on)return rel?Promise.resolve(false):0;
+  // Messages rapides et émotes : un exemplaire par ami, avec accusé de réception, pour qu'ils ne se perdent pas en route
+  if((k==='ch'||k==='em')&&!to&&!rel&&this.peers.size){for(const P of this.peers.values())this.send(k,o,P.pid,5);return 0}
+  const m={...o,v:NETV,f:this.pid,s:++this.seq,k};delete m.to;delete m.r;if(to)m.to=to;if(rel)m.r=1;const s=JSON.stringify(m);this.out(s);if(k!=='p'&&k!=='hi')this.trace('>',k,m.s,to);
   if(rel)return new Promise(res=>this.pend.set(m.s,{s,to,t:Date.now(),t0:Date.now(),max:(rel>1?rel:30)*1000,ok:()=>res(true),ko:()=>res(false)}));return m.s},
  ack(m){this.out(JSON.stringify({v:NETV,f:this.pid,s:++this.seq,k:'ack',a:m.s,to:m.f}))},
  recv(s){if(!this.on||s.length>60000)return;let m;try{m=JSON.parse(s)}catch(e){return}
