@@ -1973,7 +1973,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.1',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2549,7 +2549,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.1',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -3311,7 +3311,7 @@ pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.tea
  if(k==='CARTE'&&await regionMap())return;if(k==='CINÉMAS')await cinemaMenu();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
  if(k==='TITRE'&&await ask('Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}};
 // Options : animations réduites (accessibilité)
-{const OP0=options;options=async function(){const o=G.opt;const i=await choose([`DIFFICULTÉ : ${f().expert?'EXPERT':'NORMALE'}`,`ANIMATIONS : ${o.calm?'RÉDUITES':'NORMALES'}`,'AUTRES OPTIONS…','RETOUR'],{x:W-252,y:8,w:244,title:'Options'});if(i===0){await difficulty();return options()}if(i===1){o.calm=o.calm?0:1;save();return options()}if(i===2)return OP0()}}
+{const OP0=options;options=async function(){const o=G.opt;const i=await choose([`DIFFICULTÉ : ${f().expert?'EXPERT':'NORMALE'}`,`ANIMATIONS : ${o.calm?'RÉDUITES':'NORMALES'}`,`FLÈCHE-GUIDE : ${o.guide!==0?'OUI':'NON'}`,'AUTRES OPTIONS…','RETOUR'],{x:W-252,y:8,w:244,title:'Options'});if(i===0){await difficulty();return options()}if(i===1){o.calm=o.calm?0:1;save();return options()}if(i===2){o.guide=o.guide!==0?0:1;save();return options()}if(i===3)return OP0()}}
 
 // --- Sauvegardes : migration vers la 10.0 (aucune donnée perdue, nouveaux champs créés à la volée)
 const norm0=normalize;normalize=function(g){g=norm0(g);if(!g)return g;g.rep??={};g.ach??={};g.album??={};g.fishSp??={};g.stat??={cap:0,capN:0,capR:0,capE:0,capS:0,shiny:0,evo:0,fish:0,berry:0,win:0,trW:0};g.mail??=[];
@@ -6561,9 +6561,221 @@ async function creatorMenu(){let last=0;for(;;){
  const r=await O[i][1]();chSave();if(r==='exit')return;if(r)await say(r)}}
 
 // =====================================================================
+// 18.1 — FLÈCHE-GUIDE (façon Yo-kai Watch) : une flèche dorée tourne autour du joueur et montre le chemin de l'objectif,
+// de carte en carte (bords, portes, bateaux). Un repère flotte au-dessus de la personne ou de la porte à atteindre,
+// et un bandeau rappelle qui aller voir et la prochaine étape. Option : MENU, OPTIONS, FLÈCHE-GUIDE.
+// =====================================================================
+const gN=(m,who,x,y,lbl)=>({m,who,x,y,lbl});
+// Cible de chaque objectif (les textes de goal() / postGoal()). {m} seul : arriver sur la carte suffit.
+const GDT=[
+ [/Prof\. Saule dans son labo/,()=>{const F=f();if(F.intro===1){const P={hSac:[1,5],hCarte:[5,1],hCap:[8,5]},k=PREP.find(p=>!hf(p[0]));
+   if(k)return{...gN('chambre',null,P[k[0]][0],P[k[0]][1],k[1]),hint:'Avant de partir : sac, Carte de Dresseur et casquette'};return{...gN('salon',null,5,7,'Porte d\'entrée'),door:1,hint:'Dis au revoir à Maman, puis sors'}}
+  return gN('lab','prof',7,2,'Prof. Saule')}],
+ [/bats Brasia/,gN('gym','brasia',5,1,'Brasia, Championne')],
+ [/Sauve Tito/,gN('mine','Tito',11,1,'Tito')],
+ [/Traverse la Forêt Murmure/,gN('foret','Kael',19,1,'Kael')],
+ [/Gravis le Mont Braise/,gN('mont','Vex',9,2,'Vex')],
+ [/Brasia peut dégager/,{m:'ville',lbl:'Cendreville'}],
+ [/Suis la Route 2/,{m:'port',lbl:'Port-Miroir'}],
+ [/Bats Maëlle/,gN('gym2','maelle',5,1,'Maëlle, Championne')],
+ [/sortie nord de Port-Miroir/,{m:'port',edge:'n',lbl:'Sortie nord du port'}],
+ [/Grotte Écho jusqu'au plateau/,{m:'volterre',lbl:'Volterre'}],
+ [/Libère la Centrale/,gN('centrale2','Commandant Orso',9,2,'Commandant Orso')],
+ [/Bats Ambroise, le Champion/,gN('gym4','ambroise',5,1,'Ambroise, Champion')],
+ [/Prends le téléphérique/,{m:'volterre',x:13,y:0,door:1,lbl:'Téléphérique'}],
+ [/Désactive la barrière/,{m:'obs',lbl:'Les trois consoles'}],
+ [/Affronte Sélène devant le dôme/,gN('obs','selene2',9,2,'Sélène')],
+ [/Arrête Vex sous le dôme/,gN('dome','Vex',5,2,'Vex')],
+ [/jusqu'à Carnavelle/,{m:'carnavelle',lbl:'Carnavelle'}],
+ [/Atelier Mirella|Retourne voir Mirella/,gN('atelier','Mirella',7,3,'Mirella')],
+ [/tends l'oreille/,gN('carnaval','Sbire masqué',19,7,'Sbires masqués')],
+ [/Bats Arlequin/,()=>{const F=f();return!F.v18fk0?gN('gym5',null,2,2,'Reflet d\'Arlequin'):!F.v18fk1?gN('gym5',null,9,2,'Reflet d\'Arlequin'):gN('gym5','arlequin',5,1,'Arlequin, Champion')}],
+ [/Déguisé en sbire/,()=>{const F=f(),t=!F.v18trappe?gN('theatre','Machiniste louche',14,2,'Machiniste louche'):!F.v18gaston?gN('repaire','Sbire Gaston',5,4,'Sbire Gaston'):!F.v18code?gN('repaire',null,9,1,'Robot gardien'):gN('repaire2','Faustine',6,2,'Faustine');
+   if(!dgOk('eclipse'))t.hint=dgHas('eclipse')?'Mets l\'Uniforme Éclipse : MENU, TENUES':null;return t}],
+ [/Rapporte la clé du téléphérique/,gN('volterre','Ambroise',11,2,'Ambroise')],
+ [/Défie Solarion/,()=>!f().legS?{...gN('mont',null,9,1,'Solarion'),hint:night()?'Solarion ne se montre que le jour':null}:{...gN('dome',null,5,1,'Nocturion'),hint:night()?null:'Nocturion ne se montre que la nuit'}],
+ [/Sélène t'attend sur les Coteaux/,()=>!f().failleQ?gN('coteaux','Sélène',13,8,'Sélène'):gN('faille','Caïus',15,3,'Caïus')],
+ [/Bats Orane/,()=>({...gN('gym3','orane',5,1,'Orane, Championne'),hint:night()?null:'L\'arène n\'ouvre que la nuit'})],
+ [/Tournoi du Cycle de Brasia/,gN('gym','brasia',5,1,'Brasia : Tournoi du Cycle')],
+ [/Monte au Sanctuaire/,gN('sanctuaire',null,6,3,'Cœur du Sanctuaire')],
+ [/jumeaux Héliote/,{m:'sanctuaire',lbl:'Sanctuaire du Cycle'}],
+ [/Papa t'attend sous le dôme/,()=>({...gN('dome','Papa',9,2,'Papa'),hint:night()?null:'Il t\'attend la nuit'})],
+ [/Rentre voir Papa/,gN('salon','Papa',6,3,'Papa')],
+ [/Défi du Crépuscule/,gN('gym3','orane',5,1,'Orane : Défi du Crépuscule')],
+ [/Temple des Fondateurs/,{m:'temple',lbl:'Temple des Fondateurs'}],
+ [/Sceau d'Éclipsar/,gN('sceau',null,5,2,'Sceau d\'Éclipsar')],
+ [/feux du Pic Céleste/,{m:'pic',lbl:'Les quatre feux'}],
+ [/Conseil du Cycle/,{m:'citadelle',lbl:'Conseil du Cycle'}],
+ [/Maestro du Théâtre/,()=>f().v18partQ===1&&!G.bag.partition?gN('marais',null,12,13,'La partition'):gN('theatre','Maestro Fabrizio',7,1,'Maestro Fabrizio')],
+ [/Chef Saïd/,gN('dunes','Chef Saïd',20,17,'Chef Saïd')],
+ [/Tombeau du Roi des Sables/,()=>f().v18tomb?gN('tombeau2',null,7,2,'Coffre du Roi'):{m:'tombeau',lbl:'Les quatre statues'}],
+ [/Frotte la Lampe/,()=>({...gN('oasisH','Sage Amina',4,2,'Sage Amina'),hint:night()?null:'Le génie ne sort que la nuit'})],
+ [/gardien de l'Oasis/,()=>({...gN('oasis',null,16,13,'Source de l\'Oasis'),hint:[0,2].includes(phase())?null:'Il se montre à l\'aube et au crépuscule'})],
+ [/Maître Kaito/,()=>{const F=f();return!F.t_r3e?gN('route3','r3e',8,2,'Élève de Kaito'):!F.t_mac?gN('marais','mac',20,15,'Élève de Kaito'):!F.t_coa?gN('corail','coa',8,9,'Élève de Kaito'):gN('carnH1','Maître Kaito',4,2,'Maître Kaito')}],
+ [/Grand Bal/,()=>({...gN('carnaval',null,15,19,'Faustine'),hint:night()?null:'Le Grand Bal a lieu la nuit'})]];
+// Passages qui ne sont ni des bords ni des portes : bateaux et téléphérique.
+const GDX=[['port','recif',{who:'Passeur Marius',x:13,y:13},()=>f().badge2,'Passeur Marius (bateau)'],['recif','port',{who:'Passeur Marius',x:11,y:16},null,'Passeur Marius (bateau)'],
+ ['carnavelle','corail',{who:'Capitaine Corentin',x:6,y:17},()=>f().v18done,'Capitaine Corentin (ferry)'],['corail','carnavelle',{who:'Capitaine Corentin',x:15,y:17},null,'Capitaine Corentin (ferry)'],
+ ['volterre','pic',{door:1,x:13,y:0},()=>f().balance,'Téléphérique'],['pic','volterre',{door:1,x:9,y:19},null,'Téléphérique']];
+const GDDES=new Set(['dunes','oasis','oasisH','tombeau','tombeau2']),GDCARN=new Set(['carnaval','gym5','theatre','tente','repaire','repaire2','dunes','oasis','oasisH','bazar','tombeau','tombeau2']);
+let GDG=null;
+function gdGraph(){if(GDG)return GDG;const L={},add=(a,l)=>(L[a]||=[]).push(l);
+ for(const[k,M]of Object.entries(MAPS)){for(const[s,e]of Object.entries(M.edges||{}))if(MAPS[e[0]])add(k,{to:e[0],edge:s});
+  for(const[p,v]of Object.entries(M.doors||{})){const[x,y]=p.split(',').map(Number);
+   if(Array.isArray(v)){if(MAPS[v[0]])add(k,{to:v[0],door:1,x,y});continue}const m=String(v).match(/warp\('(\w+)'/);if(m&&MAPS[m[1]])add(k,{to:m[1],door:1,x,y})}}
+ // Portes « fonction » (arènes, mine, Théâtre…) : on les relie grâce à la porte de retour, qui dépose le joueur juste devant.
+ for(const[k,M]of Object.entries(MAPS))for(const v of Object.values(M.doors||{})){if(!Array.isArray(v))continue;const[A,tx,ty]=v,D=MAPS[A]?.doors;if(!D||(L[A]||[]).some(l=>l.to===k))continue;
+  let best=null,bd=3;for(const[p,w]of Object.entries(D)){if(Array.isArray(w))continue;const[x,y]=p.split(',').map(Number),d=Math.abs(x-tx)+Math.abs(y-ty);if(d<bd){bd=d;best=[x,y]}}
+  if(best)add(A,{to:k,door:1,x:best[0],y:best[1]})}
+ for(const[a,b,o,ok,lbl]of GDX)if(MAPS[a]&&MAPS[b])add(a,{to:b,...o,ok,via:lbl});
+ return GDG=L}
+const gdLinks=k=>(gdGraph()[k]||[]).filter(l=>!l.ok||l.ok());
+function gdDist(t){const D={[t]:0},q=[t],rev={};for(const[a,ls]of Object.entries(gdGraph()))for(const l of ls)if(!l.ok||l.ok())(rev[l.to]||=[]).push(a);
+ while(q.length){const k=q.shift();for(const a of rev[k]||[])if(D[a]==null){D[a]=D[k]+1;q.push(a)}}return D}
+function gdTarget(){if(!G?.flags||!f().starter&&f().intro==null)return null;let s;try{s=goal()}catch(e){return null}
+ const r=GDT.find(([re])=>re.test(s));if(!r)return null;const t=typeof r[1]==='function'?r[1]():r[1];return t&&MAPS[t.m]?{...t,goal:s}:null}
+let GDB=null;   // cases occupées par des PNJ, calculées une fois par recherche
+const gdPass=(M,x,y,ign)=>{const c=M.rows[y]?.[x];if(c==null||SOLID.has(c)||M.doors?.[x+','+y])return false;if(ign)return true;return!(GDB||gdBusy(M)).has(x+','+y)};
+const gdBusy=M=>{const S=new Set();for(const n of npcs(M))if(!n.fauna){S.add(n.x+','+n.y);if(n.rx!=null)S.add(n.rx+','+n.ry)}return S};
+// Cases à atteindre sur la carte courante pour une cible (PNJ : une case voisine ; porte : la porte ; bord : la bordure).
+function gdGoals(M,o){const S=[],mw=M.rows[0].length,mh=M.rows.length;
+ if(o.edge){const d='snwe'.indexOf(o.edge);for(let i=0;i<(d<2?mw:mh);i++){const x=d<2?i:d===2?0:mw-1,y=d<2?(d?0:mh-1):i;if(gdPass(M,x,y,1))S.push([x,y,o.edge])}return S}
+ let x=o.x,y=o.y;if(o.who){const n=npcs(M).find(n=>n.name===o.who||n.tr?.id===o.who||n.t===o.who);if(n){x=n.x;y=n.y}}if(x==null)return S;
+ if(o.door||M.doors?.[x+','+y])return[[x,y,'door']];if(gdPass(M,x,y,1)&&!npcs(M).some(n=>n.x===x&&n.y===y))S.push([x,y]);
+ for(let d=0;d<4;d++)if(gdPass(M,x+DX[d],y+DY[d],1))S.push([x+DX[d],y+DY[d]]);return S}
+function gdBfs(M,goals,ign){GDB=gdBusy(M);try{return gdBfs0(M,goals,ign)}finally{GDB=null}}
+function gdBfs0(M,goals,ign){const mw=M.rows[0].length,key=(x,y)=>y*mw+x,G2=new Map(goals.map(g=>[key(g[0],g[1]),g])),prev=new Map([[key(G.x,G.y),-1]]),q=[[G.x,G.y]];
+ for(let h=0;h<q.length;h++){const[x,y]=q[h],k=key(x,y);if(G2.has(k)){const P=[];let c=k;while(c!==-1){P.unshift([c%mw,c/mw|0]);c=prev.get(c)}return{path:P,g:G2.get(k)}}
+  for(let d=0;d<4;d++){const nx=x+DX[d],ny=y+DY[d],nk=key(nx,ny);if(prev.has(nk))continue;if(G2.has(nk)||gdPass(M,nx,ny,ign)){prev.set(nk,k);q.push([nx,ny])}}}return null}
+// Itinéraire complet : prochaine carte, cases visées, chemin, conseils (masque, tenue des sables).
+let GDC={k:'',r:null};
+function gdRoute(){const t=gdTarget();if(!t)return null;const ck=[G.map,G.x,G.y,t.goal,t.m,t.x,t.y,t.lbl,now()/600|0].join('|');if(GDC.k===ck)return GDC.r;
+ const M=MAPS[G.map],r={t,lbl:t.lbl,hint:t.hint||null,next:null,via:null,goals:[],path:null,maps:[G.map]};
+ if(t.m===G.map){r.goals=gdGoals(M,t);if(!t.edge&&!t.door&&t.x!=null){const n=t.who&&npcs(M).find(n=>n.name===t.who||n.tr?.id===t.who||n.t===t.who);r.tp=n?[n.x,n.y]:[t.x,t.y]}}
+ else{const D=gdDist(t.m);if(D[G.map]==null){r.far=1}else{const C=gdLinks(G.map).filter(l=>D[l.to]===D[G.map]-1);r.next=C[0]?.to;r.via=C.find(l=>l.via)?.via||null;
+   for(const l of C)r.goals.push(...gdGoals(M,l));let k=r.next;while(k&&k!==t.m){r.maps.push(k);const n=gdLinks(k).find(l=>D[l.to]===D[k]-1);k=n?.to}r.maps.push(t.m)}}
+ if(r.goals.length){const b=gdBfs(M,r.goals,0)||gdBfs(M,r.goals,1);if(b){r.path=b.path;r.end=b.g}else r.end=r.goals.reduce((a,g)=>Math.hypot(g[0]-G.x,g[1]-G.y)<Math.hypot(a[0]-G.x,a[1]-G.y)?g:a)}
+ {const all=[...r.maps,t.m];if(!GDCARN.has(G.map)&&all.some(k=>GDCARN.has(k))&&!carnOpen()&&dgHas('masque'))r.hint='Mets ton masque pour entrer : MENU, TENUES';
+  else if(!r.hint&&all.some(k=>GDDES.has(k))&&(t.m!=='dunes'||t.y<15)&&!dgOk('sable')&&dgHas('sable'))r.hint='Mets la Tenue des Sables : MENU, TENUES'}
+ GDC={k:ck,r};return r}
+const gdOn=()=>G?.opt?.guide!==0;
+function gdShow(){return gdOn()&&mode==='world'&&!busy&&!ui.text&&!ui.menus.length&&!ui.panel&&!CAMO&&!CN&&!SCX}
+{const dw181=drawWorld;drawWorld=function(t){dw181(t);if(!gdShow()||!CAM)return;let r;try{r=gdRoute()}catch(e){return}if(!r||!r.end)return;
+ const[cx,cy]=CAM;let px=G.x*TS,py=G.y*TS;if(move){px=(move.fx+(move.tx-move.fx)*move.t)*TS;py=(move.fy+(move.ty-move.fy)*move.t)*TS}
+ const bob=Math.round(Math.sin(t/180)*3),[ex,ey,ek]=r.end,ed='snwe'.indexOf(ek);
+ // Repère : au-dessus de la personne visée, au-dessus de la porte, ou au bord de la carte (pointé vers la sortie)
+ let mx,my,md=0;if(ed>=0){mx=ex*TS-cx+16+DX[ed]*12;my=ey*TS-cy+16+DY[ed]*12;md=ed}else if(ek==='door'){mx=ex*TS-cx+16;my=ey*TS-cy+10+bob}else{const[tx,ty]=r.tp||[ex,ey];mx=tx*TS-cx+16;my=ty*TS-cy-50+bob}
+ if(ed>=0){mx+=DX[ed]*bob;my+=DY[ed]*bob}if(mx>-20&&mx<W+20&&my>-20&&my<H+20)gdMark(mx,my,md);
+ // Flèche qui tourne autour du joueur, dirigée vers un point du chemin trois pas plus loin
+ let wx=null,wy=null;const P=r.path;if(P&&P.length>1){const p=P[Math.min(3,P.length-1)];wx=p[0];wy=p[1]}else if(P&&ed>=0){wx=G.x+DX[ed];wy=G.y+DY[ed]}else if(!P&&(ex!==G.x||ey!==G.y)){wx=ex;wy=ey}
+ if(wx==null)return;const a=Math.atan2(wy*TS-py,wx*TS-px),R=40+Math.sin(t/160)*3;gdArrow(px-cx+16+Math.cos(a)*R,py-cy+4+Math.sin(a)*R*.85,a)}}
+function gdArrow(x,y,a){X.save();X.translate(Math.round(x),Math.round(y));X.rotate(a);const P=[[15,0],[-8,-12],[-3,0],[-8,12]],path=(o,c)=>{X.beginPath();P.forEach(([u,v],i)=>i?X.lineTo(u+o,v+o):X.moveTo(u+o,v+o));X.closePath();X.fillStyle=c;X.fill()};
+ path(2,'rgba(12,8,28,.5)');path(0,'#ffd23a');X.lineWidth=2.5;X.strokeStyle='#1f1a33';X.stroke();X.beginPath();X.moveTo(10,0);X.lineTo(-5,-8);X.lineTo(-2,0);X.closePath();X.fillStyle='#fff6c0';X.fill();X.restore()}
+function gdMark(x,y,d){X.save();X.translate(Math.round(x),Math.round(y));X.rotate([Math.PI/2,-Math.PI/2,Math.PI,0][d]);const P=[[8,0],[-6,-9],[-2,0],[-6,9]];
+ X.beginPath();P.forEach(([u,v],i)=>i?X.lineTo(u,v):X.moveTo(u,v));X.closePath();X.fillStyle=(now()/260|0)%2?'#ffd23a':'#ffb020';X.fill();X.lineWidth=2;X.strokeStyle='#1f1a33';X.stroke();X.restore()}
+// Bandeau d'objectif (en haut à gauche) : qui aller voir, prochaine étape, conseil.
+{const dn181=drawNet;drawNet=function(){dn181();if(!G||!gdShow()||ui.banner||ui.tip||ui.fade>0)return;let r;try{r=gdRoute()}catch(e){return}if(!r)return;
+ const L1=r.lbl,L2=r.hint||(r.via&&r.next?'Étape : '+r.via:r.next?'Étape : '+MAPS[r.next].name.split(' · ')[0]:r.far?'Destination : '+MAPS[r.t.m].name.split(' · ')[0]:null);
+ const w=Math.min(W-16,Math.max(tw(L1,1),L2?tw(L2,1):0)+34),h=L2?30:18,x=6,y=6;X.globalAlpha=.9;rr(x,y,w,h,3,C.ink);rr(x+2,y+2,w-4,h-4,2,'#2a2050');X.globalAlpha=1;
+ X.drawImage(ICO.flag,x+5,y+3,12,12);txt(L1,x+21,y+13,'#ffe27a',{s:1,sh:0});if(L2)txt(L2,x+21,y+25,r.hint?'#ffb0a0':'#d8d0ee',{s:1,sh:0})}}
+
+// =====================================================================
+// 18.1 — SYSTÈME DE NIVEAUX : un plafond suit l'histoire (badges, chapitres). Aucune créature sauvage, aucun dresseur
+// ordinaire, aucun mini-boss ne dépasse ce plafond, ni n'a plus de 6 à 8 niveaux d'avance sur ta meilleure créature.
+// Les Champions et les grands combats de l'histoire gardent leurs niveaux (ils sont équilibrés). Une équipe en retard
+// sur le niveau conseillé gagne plus d'EXP pour rattraper vite. Niveau des lieux affiché à l'entrée de chaque zone.
+// =====================================================================
+// [niveau conseillé, plafond] selon l'avancée de l'histoire
+function lvBand(){const g=f();if(!g)return[5,100];if(g.balance)return[45,100];
+ return!g.starter?[5,6]:!g.badge?[12,15]:!g.mine||!g.rival2?[14,16]:!g.boss?[16,18]:!g.portScene?[18,22]:!g.badge2?[26,25]:!g.kael3?[26,26]:!g.volArr?[26,27]
+  :!g.baseDone?[28,30]:!g.badge4?[30,32]:!g.obsScene&&!g.v18arr?[31,34]:!g.obsScene&&!g.badge5?[34,36]:!g.obsScene&&!g.v18done?[35,37]:[35,38]}
+const lvRec=()=>lvBand()[0],lvCap=()=>lvBand()[1];
+const lvTop=()=>Math.max(1,...(G?.party||[]).map(m=>m.lv));
+// Niveau autorisé pour un adversaire : jamais au-dessus du plafond, ni trop loin devant ta meilleure créature.
+const lvClamp=(lv,extra,gap)=>Math.max(2,Math.min(lv,lvCap()+extra,lvTop()+gap));
+function lvSet(m,lv){if(!m||lv>=m.lv)return;const full=m.hp>=st(m).hp;m.lv=lv;m.exp=xpFor(lv);if(full||m.hp>st(m).hp)m.hp=st(m).hp}
+const lvWildCap=(lv)=>{const c=lvClamp(lv,0,6);return lv>c?Math.max(2,c-rnd(0,2)):lv};
+{const bt181=battle;battle=async function(foes,o={}){
+ if(G&&Array.isArray(foes)&&G.map!=='songe'&&!o.noCap){
+  const boss=o.tr&&(o.tr.boss||o.tr.vs);
+  if(!o.tr)for(const m of foes){if(!m)continue;lvSet(m,o.legend||o.roam?lvClamp(m.lv,4,8):lvWildCap(m.lv))}
+  else if(!boss)for(const m of foes)if(m)lvSet(m,lvClamp(m.lv,2,8))}
+ return bt181(foes,o)}}
+// Rattrapage : une créature sous le niveau conseillé gagne jusqu'à 2,5 fois plus d'EXP (mode normal).
+const lvBoost=m=>{const d=lvRec()-m.lv;return f()?.expert||d<=0?1:1+Math.min(1.5,d*.15)};
+{const gx181=gainXp;gainXp=function(m,n,q){if(m&&n>0){const k=lvBoost(m);if(k>1)n=Math.ceil(n*k)}return gx181(m,n,q)}}
+// Niveaux d'une zone (ce que l'on peut vraiment y rencontrer maintenant)
+const lvNowE=c=>!c||(c==='j'?!night():c==='n'?night():c==='r'?rain():c==='e'?ecl():true);
+function lvZone(k){const M=MAPS[k],E=(M?.enc||[]).filter(e=>lvNowE(e[4]));if(!E.length||isInt(M))return null;const lo=Math.min(...E.map(e=>e[1])),hi=Math.max(...E.map(e=>e[2]));
+ const a=Math.min(lo,lvClamp(lo,0,6)),b=Math.max(a,lvClamp(hi,0,6));return[a,b]}
+// Pastille de niveau sous le nom du lieu : verte (facile), jaune (à ta hauteur), rouge (prudence)
+{const dw181b=drawWorld;drawWorld=function(t){dw181b(t);if(!ui.banner||!G)return;const z=lvZone(G.map);if(!z)return;const k=now()-ui.banner.t0;if(k>2800)return;
+ const y=Math.min(8,-48+k/3,8+(2400-k)/3)+48,top=lvTop(),c=top>=z[1]+3?'#3aa84a':top>=z[0]?'#d8a020':'#d84040',s=`NV ${z[0]}-${z[1]}`,w=tw(s,2,1)+16;
+ if(y<-14)return;rr(14,y,w,16,2,C.ink);rr(16,y+2,w-4,12,2,c);txt(s,22,y+11,'#ffffff',{mini:1})}}
+// Conseil dans le bandeau de la flèche-guide quand l'équipe est en retard
+{const gr181=gdRoute;gdRoute=function(){const r=gr181();if(r&&!r.hint&&lvTop()<lvRec()-2)r.hint=`Conseil : entraîne ton équipe (niveau conseillé ${lvRec()})`;return r}}
+
+// =====================================================================
+// 18.1 — ANNONCE DES QUÊTES : « NOUVELLE QUÊTE ! », « QUÊTE TERMINÉE ! » et « NOUVEL OBJECTIF » s'affichent dès qu'une
+// quête du journal apparaît, se termine, ou que l'objectif de l'histoire change. Dans une aventure à plusieurs, une quête
+// reçue en parlant à quelqu'un est donnée à tous les joueurs (drapeaux de la quête et objets remis au départ).
+// =====================================================================
+const QTX=new Set(['Objectif','Pixédex','Rumeur du jour','Nuit d\'étoiles filantes','En ligne','Combats en groupe','Expéditions','Ta chambre','Salle de jeux de Volterre','Échanges']);
+const QT={q:[],cur:null,from:null,fromT:0};
+function qtNow(){let Q;try{Q=quests()}catch(e){return null}const o={};for(const q of Q||[])if(Array.isArray(q)&&typeof q[0]==='string'&&!QTX.has(q[0]))o[q[0]]=[q[1]|0,String(q[2]||'')];return o}
+const qtIdle=()=>G&&mode==='world'&&!busy&&!ui.text&&!ui.menus.length&&!ui.panel&&!ui.tip&&!CN&&!SCX;
+function qtCheck(){if(!G?.flags||!f().starter||G.qk&&!qtIdle())return;const N=qtNow();if(!N)return;let g='';try{g=goal()}catch(e){}
+ if(!G.qk){G.qk={};for(const[k,v]of Object.entries(N))G.qk[k]=v[0];G.qg=g;return}
+ const from=Date.now()-QT.fromT<20000?QT.from:null,descs=[];
+ for(const[k,[s,d]]of Object.entries(N)){const o=G.qk[k];if(o==null&&s){QT.q.push({k:s===2?'done':'new',t:k,d,from});descs.push(d)}else if(o===1&&s===2)QT.q.push({k:'done',t:k,d});G.qk[k]=s}
+ if(g!==G.qg){if(G.qg!=null&&g&&!descs.includes(g)&&!/^Tu as tout/.test(g))QT.q.push({k:'goal',t:'Objectif',d:g});G.qg=g}
+ if(descs.length)QT.from=null}
+setInterval(()=>{try{qtCheck()}catch(e){}},300);
+// Bannière : glisse du haut de l'écran, reste quelques secondes, puis la suivante
+const QTS={new:['NOUVELLE QUÊTE !','#ffd23a','#5a3a08'],done:['QUÊTE TERMINÉE !','#7ae07a','#1a4a20'],goal:['NOUVEL OBJECTIF','#8ad0ff','#16345a']};
+function qtDraw(){if(mode!=='world'||!G)return;const T=now();
+ if(!QT.cur&&QT.q.length&&qtIdle()){QT.cur={...QT.q.shift(),t0:T};sfx(QT.cur.k==='done'?'lv':QT.cur.k==='new'?'shard':'ok')}
+ const c=QT.cur;if(!c)return;if(!qtIdle()){c.t0+=T-(c.last||T);c.last=T;return}c.last=T;if(QT.hold)c.t0=T-1000;const k=T-c.t0,D=c.k==='goal'?4200:5200;if(k>D){QT.cur=null;return}
+ const[hd,col,dk]=QTS[c.k],w=392,x=(W-w)/2,L=wrap(c.d,w-30,1).slice(0,3),h=(c.k==='goal'?28:48)+L.length*11+(c.from?11:0),y=Math.round(Math.min(26,-h+k/2,26+(D-400-k)/2));if(y<-h)return;
+ X.globalAlpha=.96;rr(x+3,y+3,w,h,4,'rgba(8,6,20,.45)');rr(x,y,w,h,4,C.ink);rr(x+2,y+2,w-4,h-4,3,'#231c3e');X.globalAlpha=1;R(X,col,x+2,y+2,w-4,16);
+ X.drawImage(c.k==='goal'?ICO.flag:ICO.book||ICO.star,x+8,y+3,14,14);txt(hd,x+28,y+13,dk,{s:1,sh:0});
+ if((T/300|0)%2&&c.k!=='goal'){R(X,'#ffffff',x+w-18,y+6,2,2);R(X,'#ffffff',x+w-26,y+11,2,2)}
+ let yy=y+22;if(c.k!=='goal'){txt(c.t,x+12,yy+14,col,{sh:0});yy+=22}
+ L.forEach((l,i)=>txt(l,x+12,yy+10+i*11,'#ece6d6',{s:1,sh:0}));if(c.from)txt(`Partagée par ${c.from}`,x+w-12,y+h-6,'#b8b0d0',{s:1,sh:0,al:'r'})}
+{const dr181=draw;draw=function(t){dr181(t);try{qtDraw()}catch(e){}}}
+// La flèche-guide s'efface le temps de l'annonce
+{const gs181=gdShow;gdShow=()=>!QT.cur&&gs181()}
+// --- Aventure à plusieurs : une quête reçue en parlant à quelqu'un est donnée à tout le groupe
+const QDENY=/^(expert|intro|intro3|starter|rs|wn|v|constructor|prototype|tourDay|towerBest)$|^rm_/;
+const qtOkF=(k,v)=>typeof k==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,23}$/.test(k)&&!QDENY.test(k)&&(v===true||Number.isInteger(v)&&v>0&&v<1e7);
+const qtOkK=(k,v)=>typeof k==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,23}$/.test(k)&&!QDENY.test(k)&&(v===true||Number.isInteger(v)&&v>0&&v<100);
+function qtShare(F0,B0,K0,Q0){if(!F0||!Q0||typeof advCode!=='function'||!advCode()||!NET.on)return;const Q1=qtNow();if(!Q1)return;
+ const nq=Object.keys(Q1).filter(k=>Q0[k]==null&&Q1[k][0]===1);if(!nq.length)return;const F=f(),fl={},bg={},ky={};
+ for(const[k,v]of Object.entries(F))if(!F0[k]&&qtOkF(k,v))fl[k]=v;
+ for(const[k,v]of Object.entries(G.bag||{}))if(Object.hasOwn(IT,k)&&v>(B0[k]|0))bg[k]=Math.min(5,v-(B0[k]|0));
+ for(const[k,v]of Object.entries(G.keys||{}))if(!K0[k]&&qtOkK(k,v))ky[k]=v;
+ for(const P of matePeers())if(isAdvMate(P))NET.send('qt',{q:nq.slice(0,4),fl,bg,ky},P.pid,true)}
+// Une scène avec combat, cinématique ou badge est déjà vécue par tous (scènes partagées) : on ne partage que les simples conversations.
+let QTEV=0;{const b181=battle;battle=function(...a){QTEV++;return b181.apply(this,a)}}{const c181=cinema;cinema=function(...a){QTEV++;return c181.apply(this,a)}}{const g181=badgeGet;badgeGet=function(...a){QTEV++;return g181.apply(this,a)}}
+{const it181=interact;interact=async function(){const ok=G?.flags&&typeof advCode==='function'&&advCode()&&NET.on&&!SCX,F0=ok?{...f()}:null,B0=ok?{...G.bag}:null,K0=ok?{...G.keys}:null,Q0=ok?qtNow():null,e0=QTEV;
+ const r=await it181();if(ok&&QTEV===e0)try{qtShare(F0,B0,K0,Q0)}catch(e){}return r}}
+NET.H['qt']=(m,P)=>{if(!isAdvMate(P)||!G?.flags||!m||typeof m!=='object'||Array.isArray(m))return;const F=f(),o=v=>v&&typeof v==='object'&&!Array.isArray(v)?Object.entries(v).slice(0,24):[];let ch=0;
+ for(const[k,v]of o(m.fl))if(qtOkF(k,v)&&!F[k]){F[k]=v;ch=1}
+ for(const[k,v]of o(m.bg))if(Object.hasOwn(IT,k)&&Number.isInteger(v)&&v>0&&v<=5&&!(G.bag[k]>0)){G.bag[k]=v;ch=1}
+ for(const[k,v]of o(m.ky))if(qtOkK(k,v)&&!G.keys[k]){G.keys[k]=v;ch=1}
+ if(ch){QT.from=String(P.name||'Ton ami').slice(0,16);QT.fromT=Date.now();save()}};
+
+// =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.
 // =====================================================================
 NEWS.unshift(...NEWS18);
+
+// =====================================================================
+// EXTENSION 18.1 — en dernier : les nouveautés 18.1 en tête de l'écran des nouveautés, sauvegarde marquée 18.1.
+// =====================================================================
+NEWS.unshift([()=>ICO.flag,'Flèche-guide et niveaux','Une flèche dorée montre où aller pour suivre l\'histoire, de carte en carte, et un repère flotte au-dessus de la personne à voir. Les créatures et dresseurs ne dépassent plus le niveau permis par ton avancée, et une équipe en retard gagne plus d\'EXP.'],
+ [()=>ICO.book||ICO.star,'Annonce des quêtes','« Nouvelle quête ! », « Quête terminée ! » et « Nouvel objectif » s\'affichent à l\'écran. Dans une aventure à plusieurs, une quête reçue par l\'un est donnée à tout le groupe.']);
+{const norm181=normalize;normalize=function(g){g=norm181(g);if(g&&(g.v||0)<18.1){g.wn=1;g.v=18.1}return g}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 
