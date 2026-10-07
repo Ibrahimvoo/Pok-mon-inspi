@@ -40,6 +40,21 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 19.1 : L'Acte II revisité
+
+![Aperçu de la version 19.1](apercus/v191-acte2.png)
+
+L'Acte II reçoit le même soin que l'Acte I : des situations à vivre plutôt que des combats à enchaîner, et un final qui tient compte de tout ce que le joueur a fait en route.
+
+- **La nuit des bateaux perdus (Port-Miroir)** : le phare de la Pointe s'est éteint avec le soleil et trois bateaux errent dans le noir. Maëlle n'ouvre pas son arène tant que ses marins ne sont pas rentrés. Le Bracelet du Cycle rallume l'Éclat d'Aube du phare (ce que le Prof vient d'expliquer devient une action), puis une **vue « du haut du phare »** : on tourne le faisceau avec la croix pour retrouver chaque bateau dans la brume avant qu'il ne heurte les récifs. Le dernier est encerclé par un **Torrentor rendu fou par l'éclipse** : un combat-épreuve où il faut tenir 4 tours **sans le mettre K.O.** (le calmer vaut une Coquille Calme et un épilogue différent). Ensuite, le phare tourne chaque nuit au-dessus du port, et Maëlle raconte ce qu'il représentait pour Valen et elle.
+- **Le petit veilleur du ponton** : un petit Ombrelin aperçu dans la brume de la Route 2 attend chaque nuit au bout du ponton de Valen (désormais accessible). Mémé Rosa raconte Brume ; un Biscuit d'Aube et un peu de patience, et il te suit… jusqu'au dôme.
+- **La Centrale en douce** : les sbires montent la garde et tournent la tête, comme dans la Mine. Qui atteint Orso sans s'être fait voir le prend de court (pas de surcharge) et trouve sa « prime de sécurité ».
+- **L'Observatoire sous tension** : le sceau de Nocturion cède à vue d'œil (3 %, 2 %, 1 %, 0 %), Kael retient un sbire pour toi, une énigme remplace l'ordre des consoles écrit en clair, et **Sélène peut être convaincue sans combat** si l'on a écouté sa pierre d'écho ou lu sa lettre à la Centrale ; elle entre alors au dôme avec toi.
+- **Les mots pour Valen** : quand Nocturion entre en jeu, on peut parler à Valen. Le ponton, la promesse à Brume, Kael (selon ce qu'on lui a dit au feu de camp), Caïus (le mémo de la Centrale, ou l'avertissement de Corvin), Sélène, le petit Ombrelin : chaque souvenir trouvé en route le fait douter. Assez de doute dissipe l'éclipse et apaise Nocturion ; trop peu, et Valen se reprend.
+- **Épilogue** : avant le générique, ce que tes choix ont changé (le phare, la forêt, Corvin, Orso, Sélène, Valen), et le petit Ombrelin choisit entre Valen et toi.
+- **Corrections** : Kael ne découvre plus « pour la première fois » que Vex est son frère à la Centrale (il le sait depuis le Mont Braise) ; le dossier révèle à la place que Caïus surveille Valen.
+- Test : `node tools/play.mjs tools/scn-v191-acte2.js`.
+
 ## Version 19 : Un monde qui respire
 
 ![Aperçu de la version 19](apercus/v19-monde.png)

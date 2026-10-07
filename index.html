@@ -1548,7 +1548,7 @@ MAPS.centrale2={name:'Centrale · Générateurs',bg:'tech',amb:'tech',floor:'tec
 async function codeLock(){if(f().ceCode)return;await say('Un clavier à code. Trois chiffres.');const D=['1','3','8','6'];let code='';for(let i=0;i<3;i++){const c=await choose(D,{w:120,title:`Chiffre ${i+1}`});if(c<0)return;code+=D[c]}
  if(code!=='381'){sfx('bump');ui.shake=6;return say('BZZT ! "Code erroné." Les documents de la Centrale devraient t\'aider.')}sfx('shard');f().ceCode=1;refreshMap(G.map);await say('Bip-bip-bip ! La barrière s\'éteint.');save()}
 async function orsoTalk(n){const O='Commandant Orso';await cine(1);faceTo(n,G.x,G.y);
- await say('Tiens donc. Le gamin qui a battu Corvin, Sélène, et la moitié de mes sbires. Tu sais ce que tu fais, là ?',O,0,'orso');
+ await say(f().v191gh===1?'…Comment t\'es arrivé jusqu\'ici, toi ? Pas une alarme, pas un cri. Mes sbires dorment debout ou quoi ?!':'Tiens donc. Le gamin qui a battu Corvin, Sélène, et la moitié de mes sbires. Tu sais ce que tu fais, là ?',O,0,'orso');
  await say('Ces turbines alimentent la barrière du dôme. Coupe-les, et la barrière tombe. Et le rêve de Vex avec.',O,0,'orso');
  await say('Moi, son rêve, je m\'en moque. On me paie pour que ça tourne. Alors ça va tourner.',O,0,'orso');await cine(0);
  const r=await battle([mon('noctyrex',29,{item:'encensnoir'}),mon('magmor',29,{item:'charbon'}),mon('eclipsoeil',31,{moves:['hypnose','rayonnoir','morsure','nuit'],item:'baiesoin'})],{tr:{name:'Commandant Orso',look:'orso',money:3500,vs:1,boss:1,items:1,after:'Bon. Ça ne tournera pas.'}});
@@ -1557,8 +1557,8 @@ async function orsoTalk(n){const O='Commandant Orso';await cine(1);faceTo(n,G.x,
  puff(n.x,n.y,'#c060ff',12);f().baseDone=1;await wait(300);await cinema('centrale');
  const k=tmpN('centrale2',{x:8,y:8,t:'rival',d:1,name:'Kael'});puff(8,8,'#ffffff',8);await walk(k,'uu');
  await say('Hé ! J\'ai vu les lumières se rallumer de la grotte. Bien joué. …Attends, c\'est quoi, ça ?','Kael');await emote(k,'!',600);
- await say('Kael ramasse un dossier tombé du bureau d\'Orso : "Dossier personnel — VEX. Vrai nom : Valen. Ancien du ponton de Port-Miroir."');await emote(k,'…',1100);
- await say(f().ysL?'Grand-mère avait raison. C\'est vraiment lui. Mon frère est là-haut, et il va réveiller un dragon.':'Valen… C\'est le prénom de mon grand frère. Il est parti il y a des années. Ça ne peut pas être…','Kael');
+ await say('Kael ramasse un dossier tombé du bureau d\'Orso : "Dossier personnel — VEX. Vrai nom : Valen. Ne dort plus depuis l\'éclipse. Parle seul, la nuit, à la chose sous le dôme. À SURVEILLER DE PRÈS. — C."');await emote(k,'…',1100);
+ await say('"C."… Caïus. Il surveille mon frère comme on surveille une proie. Et Valen ne voit rien venir.','Kael');
  await say('Je pars devant. Je dois le voir. Bats Ambroise, prends le téléphérique, et retrouve-moi à l\'Observatoire.','Kael');puff(k.x,k.y,'#ffffff',8);rmN('centrale2',k);
  give('miettes',1);jingle('item');await say('Sur le bureau du commandant, tu trouves des MIETTES DORÉES. Orso n\'en aura plus besoin.');await cine(0);healAll();save()}
 
@@ -2088,7 +2088,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19.1',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2670,7 +2670,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19.1',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -7549,6 +7549,307 @@ async function echo19(i){const E=ECHO19[i],F=f();if(F['v19ec'+i])return say('La 
 {const q19m=quests;quests=function(){const Q=q19m(),F=f(),n=[0,1,2].filter(j=>F['v19ec'+j]).length;if(n)Q.push(['Les échos de la grotte',n>=3?2:1,n>=3?'Tu as entendu Kael, Valen et Sélène. La Grotte Écho n\'a plus rien à dire.':`${n}/3 pierres d'écho écoutées dans la Grotte Écho.`]);return Q}}
 
 // =====================================================================
+// 19.1 — L'ACTE II REVISITÉ
+// - Port-Miroir : « La nuit des bateaux perdus ». Le phare s'est éteint avec le soleil et trois bateaux errent dans le noir.
+//   Maëlle n'ouvre pas son arène tant que ses marins ne sont pas rentrés. Ton Bracelet rallume l'Éclat du phare, tu guides
+//   les bateaux avec le faisceau (vue « du haut du phare »), puis il faut calmer un Torrentor rendu fou par l'éclipse.
+// - Le petit veilleur du ponton : un Ombrelin aperçu dans la brume attend chaque nuit au bout du ponton de Valen.
+// - Centrale de Volterre : les sbires montent la garde et tournent la tête ; qui passe sans se faire voir prend Orso par surprise.
+// - Observatoire : le sceau cède peu à peu, Kael retient un sbire, Sélène peut être convaincue, et en plein combat final,
+//   ce que tu as vécu (le ponton, la grotte, Kael, Caïus, Sélène, le petit Ombrelin) devient des mots pour atteindre Valen.
+// - Épilogue : ce que tes choix ont changé dans Aurélys.
+// =====================================================================
+const F191=()=>f();
+SONG.phare191=[230,['triangle',.045,'A4 - - - C5 - E5 - D5 - - - C5 - B4 - A4 - - - E4 - - - G4 - - - - - - -'],['sine',.03,'A2 - - - - - - - F2 - - - - - - - D2 - - - - - - - E2 - - - - - - -'],['sine',.014,'. . . . E5 - - - . . . . A5 - - - . . . . F5 - - - . . . . G#5 - - -']];
+const halo191=(x,y,r,c,a)=>{X.save();X.globalCompositeOperation='lighter';const g=X.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c);g.addColorStop(1,'rgba(0,0,0,0)');X.globalAlpha=a;X.fillStyle=g;X.fillRect(x-r,y-r,r*2,r*2);X.restore()};
+const cone191=(x,y,a,w,len,c,al)=>{X.save();X.globalCompositeOperation='lighter';for(const[k,m]of[[1.8,.35],[1.2,.6],[.6,1]]){X.globalAlpha=al*m;X.fillStyle=c;X.beginPath();X.moveTo(x,y);X.lineTo(x+Math.cos(a-w*k)*len,y+Math.sin(a-w*k)*len);X.lineTo(x+Math.cos(a+w*k)*len,y+Math.sin(a+w*k)*len);X.closePath();X.fill()}X.restore()};
+const said191=async(s,who)=>{try{await say(s,who)}catch(e){}};
+
+// ---------------------------------------------------------------- Port-Miroir : le ponton devient accessible
+// Le Passeur Marius bloquait l'unique accès au ponton (et le Capitaine Loup, au bout, était injoignable) : on les décale.
+{const P=MAPS.port,mv=(nm,x,y,d)=>{const n=P.npcs.find(n=>n.name===nm);if(n){n.x=x;n.y=y;n.d=d;if('x0'in n)n.x0=x;if('y0'in n)n.y0=y}};
+ mv('Passeur Marius',11,13,3);mv('Capitaine Loup',15,13,0);
+ const g=typeof GDX!=='undefined'&&GDX.find(e=>e[0]==='port'&&e[1]==='recif');if(g)g[2]={...g[2],x:11,y:13}}
+
+// ---------------------------------------------------------------- Le phare de la Pointe (décor, faisceau dans le monde)
+const phLit191=()=>{const F=F191();return!!(F.v191lit||F.v191ph||F.badge2)};
+const ph191On=()=>{const F=F191();return act2()&&!!F.portScene&&!F.badge2&&!F.v191ph};
+MAPS.port.npcs.push({x:20,y:16,t:'obj',k:'phare191'});
+function drawPh191(sx,sy,t){const lit=phLit191();
+ R(X,C.ink,sx-6,sy+14,44,16);R(X,'#3e3a4e',sx-4,sy+15,40,12);R(X,'#5c5670',sx,sy+15,14,3);R(X,'#26222f',sx-4,sy+24,40,3);
+ if((t/700|0)%2)R(X,'#9ab8e0',sx-8+((t/350|0)%3)*2,sy+27,10,1);
+ for(let i=0;i<5;i++){const y=sy+14-(i+1)*13,w=22-i*2,x=sx+5+i;R(X,C.ink,x,y,w,14);R(X,i%2?'#e6dece':'#c24848',x+1,y+1,w-2,12);R(X,i%2?'#fff8ea':'#e06060',x+1,y+1,2,12)}
+ const ty=sy+14-5*13;R(X,C.ink,sx+7,ty-16,18,17);R(X,lit?'#fff2a8':'#3a3c52',sx+9,ty-14,14,12);R(X,C.ink,sx+15,ty-14,2,12);
+ R(X,C.ink,sx+5,ty-20,22,5);R(X,'#2e2a40',sx+6,ty-19,20,3);R(X,C.ink,sx+14,ty-26,4,7);
+ if(lit){glowAt(sx+16,ty-8,30,.45+.15*Math.sin(t/300));R(X,'#ffffff',sx+11,ty-12,3,3)}}
+{const do191=drawObj;drawObj=function(k,sx,sy,t,n){if(k==='phare191')return drawPh191(sx,sy,t);return do191(k,sx,sy,t,n)}}
+{const lg191=lighting;lighting=function(M,cx,cy,t,px,py){lg191.apply(this,arguments);try{if(M===MAPS.port&&phLit191()&&(act2()||night())&&!PV191.on){const x=20*TS+16-cx,y=16*TS+14-5*13-8-cy;cone191(x,y,t/2400,.06,300,'#fff2b8',.13);glowAt(x,y,24,.5)}}catch(e){}}}
+
+// ---------------------------------------------------------------- Vue « du haut du phare » et mini-jeu du faisceau
+const PV191={on:0,epi:0,ang:-Math.PI/2,boats:[],msg:null,home:0,dmg:0,rev:0};
+const PVO={x:W/2,y:H+40},PVH=118,pvY191=z=>PVH+6+(1-z)*150;
+const pvPos191=(a,z)=>{const y=pvY191(z),s=(y-PVO.y)/Math.sin(a);return[PVO.x+s*Math.cos(a),y]};
+const angD191=(a,b)=>Math.abs(((a-b+Math.PI*3)%(Math.PI*2))-Math.PI);
+const ROCK191=[[-2.3,.66],[-1.95,.84],[-1.28,.6],[-.86,.86],[-1.62,.42],[-2.05,.36],[-1.1,.33]];
+let SIL191=null;const sil191=()=>{if(SIL191)return SIL191;const im=monSpr('torrentor',0,128),c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#04060c';g.fillRect(0,0,c.width,c.height);return SIL191=c};
+{const dw191=drawWorld;drawWorld=function(t){if(PV191.on)return pvDraw191(t);if(PV191.epi)return epiDraw191(t);return dw191.apply(this,arguments)}}
+function pvDraw191(t){const P=PV191;let g=X.createLinearGradient(0,0,0,PVH);g.addColorStop(0,'#05040c');g.addColorStop(1,'#161b32');X.fillStyle=g;X.fillRect(0,0,W,PVH+2);
+ for(let i=0;i<46;i++){const sx=(i*137+11)%W,sy=(i*61+7)%(PVH-16);if(((t/600|0)+i*3)%7)R(X,i%5?'#34324e':'#5e5c84',sx,sy,1,1)}
+ const ex=392,ey=34;halo191(ex,ey,40,'#fff0b0',.22+.05*Math.sin(t/700));X.fillStyle='#020206';X.beginPath();X.arc(ex,ey,13,0,7);X.fill();X.strokeStyle='#fff0b0';X.globalAlpha=.6;X.lineWidth=1;X.beginPath();X.arc(ex,ey,14,0,7);X.stroke();X.globalAlpha=1;
+ X.fillStyle='#0c0f1e';X.beginPath();X.moveTo(0,PVH+2);for(let x=0;x<=W;x+=12)X.lineTo(x,PVH-5-Math.round(5*Math.sin(x/53)+3*Math.sin(x/19)));X.lineTo(W,PVH+2);X.closePath();X.fill();
+ X.beginPath();X.moveTo(26,PVH);X.lineTo(44,PVH-34);X.lineTo(96,PVH-38);X.lineTo(118,PVH);X.closePath();X.fill();X.beginPath();X.arc(70,PVH-38,12,Math.PI,0);X.fill();R(X,'#0c0f1e',58,PVH-40,24,4);
+ halo191(70,PVH-46,34,'#c060ff',.22+.12*Math.sin(t/450));R(X,'#e8a0ff',69,PVH-52,2,3);
+ g=X.createLinearGradient(0,PVH,0,H);g.addColorStop(0,'#101c34');g.addColorStop(1,'#04080f');X.fillStyle=g;X.fillRect(0,PVH,W,H-PVH);
+ for(let i=0;i<26;i++){const k=i/26,y=Math.round(PVH+3+Math.pow(k,1.7)*(H-PVH)),o=(t*(.01+k*.03)+i*57)%90;for(let x=-90+o;x<W;x+=90)R(X,i%3?'#14223c':'#1c2e50',Math.round(x),y,Math.round(18+k*30),1)}
+ const lit=(a)=>angD191(a,P.ang)<.085;
+ for(const[a,z]of ROCK191){const[x,y]=pvPos191(a,z),s=.5+(1-z)*1.3,L=lit(a);X.fillStyle=L?'#3e4660':'#06080e';X.beginPath();X.moveTo(x-12*s,y+2);X.lineTo(x-6*s,y-7*s);X.lineTo(x-1*s,y-4*s);X.lineTo(x+4*s,y-10*s);X.lineTo(x+12*s,y+2);X.closePath();X.fill();
+  if(L){R(X,'#8a94b0',Math.round(x+3*s),Math.round(y-10*s),2,2);R(X,'#c8d4f0',Math.round(x-12*s),y+2,Math.round(24*s),1)}}
+ X.globalAlpha=.16;const fo=(t*.012)%W;X.drawImage(FOG,-fo,PVH-30);X.drawImage(FOG,W-fo,PVH-30);X.globalAlpha=.1;X.drawImage(FOG,-(t*.02%W),PVH+40);X.drawImage(FOG,W-(t*.02%W),PVH+40);X.globalAlpha=1;
+ cone191(PVO.x,PVO.y,P.ang,.075,470,'#fff4c4',.15);
+ for(const b of P.boats){if(b.st==='gone')continue;const[x,y]=pvPos191(b.a,b.z),s=.55+(1-b.z)*1.15,L=lit(b.a)||b.st!=='lost',bob=Math.round(Math.sin(t/380+b.i)*1.5);
+  if(b.st==='reveal'){const S=sil191(),k=Math.min(1,(now()-P.rev)/1300),h=S.height*s*1.3*k;X.drawImage(S,0,0,S.width,S.height*k,x+10*s,y-h+8,S.width*s*1.3,h);if(k>.6){const w=S.width*s*1.3,ex=Math.round(x+10*s+w*.5),ey=Math.round(y-h+8+h*.3);halo191(ex,ey,16,'#e070ff',.9);R(X,'#ffb0ff',ex-5,ey,3,2);R(X,'#ffb0ff',ex+3,ey,3,2)}}
+  X.globalAlpha=L?1:.28;const hw=Math.round(14*s),hy=Math.round(y+bob);R(X,C.ink,Math.round(x-hw),hy-3,hw*2,5);R(X,L?'#9a6440':'#2a1c14',Math.round(x-hw+1),hy-3,hw*2-2,3);R(X,C.ink,Math.round(x-1),hy-Math.round(18*s),2,Math.round(16*s));
+  if(L){X.fillStyle='#e8e0cc';X.beginPath();X.moveTo(x+1,hy-17*s);X.lineTo(x+10*s,hy-5*s);X.lineTo(x+1,hy-5*s);X.closePath();X.fill()}X.globalAlpha=1;
+  if(L||(t/600|0)%2===b.i%2){R(X,'#ffd27a',Math.round(x-hw+2),hy-Math.round(7*s),2,2);halo191(x-hw+3,hy-6*s,L?12:9,'#ffcf6a',L?.7:.5)}
+  if(b.st==='lost'&&b.p>0){X.strokeStyle='#fff0b0';X.lineWidth=2;X.beginPath();X.arc(x,hy-26*s,7,-Math.PI/2,-Math.PI/2+b.p*Math.PI*2);X.stroke()}}
+ X.globalAlpha=.85;R(X,'#0a0812',0,H-26,W,26);X.globalAlpha=1;R(X,'#2a2438',0,H-26,W,2);for(let x=8;x<W;x+=40)R(X,'#2a2438',x,H-24,3,24);
+ rr(8,8,156,24,3,C.ink);rr(10,10,152,20,2,C.frameD);txt(`BATEAUX RENTRÉS : ${P.home}/3`,18,24,'#ffffff',{mini:1});
+ const B=P.boats.find(b=>b.st==='lost');if(B){const left=Math.max(0,1-B.t/B.tmax);rr(W-118,8,110,24,3,C.ink);rr(W-116,10,106,20,2,C.frameD);txt(B.n.toUpperCase(),W-110,20,'#ffd27a',{mini:1});R(X,'#3a2a4a',W-110,23,94,4);R(X,left>.35?'#9ad06a':'#e8484f',W-110,23,Math.round(94*left),4)}
+ if(P.msg){const k=now()-P.msg.t0;if(k<2600){const w=tw(P.msg.s,2,1)+28;rr((W-w)/2|0,40,w,22,3,C.ink);rr(((W-w)/2|0)+2,42,w-4,18,2,'#2a2440');txt(P.msg.s,W/2,55,'#fff0b0',{mini:1,al:'c'})}else P.msg=null}
+ txt('GAUCHE / DROITE : TOURNER LE FAISCEAU',W/2,H-9,'#c9c2d6',{mini:1,al:'c'})}
+const pvMsg191=s=>{PV191.msg={s:s.replace(/…/g,'...').replace(/,/g,'').replace(/'/g,' '),t0:now()}};
+async function pvGame191(){const P=PV191;Object.assign(P,{on:1,ang:-Math.PI/2,home:0,dmg:0,msg:null,rev:0,
+  boats:[{n:'La Mouette',a:-2.12,z:.58,i:0},{n:'Le Bigorneau',a:-.98,z:.74,i:1},{n:'La Comète',a:-1.7,z:.9,i:2}].map(b=>({...b,st:'wait',p:0,t:0,tmax:22000,v:(b.i%2?-1:1)*.000035,dmg:0}))});
+ P.boats[0].st='lost';pvMsg191('Une lueur clignote dans la brume…');let last=now(),gap=0,out=null;const lb0=ui.lb;ui.lb=0;ui.tip=null;
+ try{while(!out){await key(16);const t=now(),dt=Math.min(60,t-last);last=t;if(window.PH191HOLD)continue;const cur=P.boats.find(b=>b.st==='lost'||b.st==='reveal');
+  if(window.PH191AUTO&&cur){const d=cur.a-P.ang;P.ang+=Math.sign(d)*Math.min(Math.abs(d),dt*.004)}else{if(held.left)P.ang-=dt*.0012;if(held.right)P.ang+=dt*.0012}
+  P.ang=Math.max(-Math.PI/2-1.05,Math.min(-Math.PI/2+1.05,P.ang));
+  for(const b of P.boats){if(b.st==='home'){b.z-=dt*.00035;b.a+=(-Math.PI/2-b.a)*Math.min(1,dt*.0012);if(b.z<=.02)b.st='gone';continue}
+   if(b.st!=='lost')continue;b.t+=dt;b.a+=b.v*dt;if(b.a<-Math.PI/2-1||b.a>-Math.PI/2+1)b.v=-b.v;
+   if(angD191(b.a,P.ang)<.085){b.p=Math.min(1,b.p+dt/1300)}else b.p=Math.max(0,b.p-dt/3500);
+   if(b.p>=1){if(b.i===2){b.st='reveal';P.rev=now();sfx('roar');ui.shake=10;pvMsg191('Une ombre énorme tourne autour de La Comète !');await wait(1700);await fadeTo(1,300);out='reveal';break}
+    b.st='home';P.home++;sfx('ok');pvMsg191(`${b.n} a vu le faisceau ! Cap sur le port !`);gap=1600;continue}
+   if(b.t>=b.tmax){b.t=0;b.dmg++;ui.flash=.4;ui.flashC='#e8484f';sfx('hit');ui.shake=6;
+    if(b.dmg>=2){b.st='home';P.home++;P.dmg++;pvMsg191(`${b.n} rentre en boitant…`);gap=1600}else{P.dmg++;pvMsg191(`Crac ! ${b.n} a raclé un récif… Vite !`)}}}
+  if(gap>0){gap-=dt;if(gap<=0){const nx=P.boats.find(b=>b.st==='wait');if(nx){nx.st='lost';pvMsg191(nx.i===2?'Une dernière lueur tout au fond…':'Une autre lueur clignote…')}}}}}
+ finally{P.on=0;ui.lb=lb0}return{dmg:P.dmg}}
+
+// ---------------------------------------------------------------- Port-Miroir : l'alarme
+async function alarm191(){const F=F191();if(F.v191al)return;F.v191al=1;const P='port';await cine(1);
+ for(let i=0;i<3;i++){sfx('alert');ui.shake=4;await wait(380)}
+ await say('DONG… DONG… DONG… La cloche du port sonne l\'alarme. Partout, des volets s\'ouvrent.');
+ const[ox,oy]=nearSpot(3),o=tmpN(P,{x:ox,y:oy,t:'girl',d:0,name:'Odile'});faceTo(o,G.x,G.y);await emote(o,'!',500);await approach(o,5);
+ await say('Tu es dresseur ? Alors aide-nous, je t\'en supplie ! Trois bateaux sont partis pêcher ce matin. Avec ce ciel noir, ils ne sont jamais rentrés.','Odile');
+ await say('Le phare de la Pointe s\'est éteint en même temps que le soleil. Sans lui, personne ne retrouve l\'entrée du port, et il y a des récifs partout…','Odile');
+ await say('Mon Ernest est sur La Mouette. Maëlle est au bout du ponton, elle cherche une solution depuis des heures. Va la voir, vite !','Odile');
+ await fadeTo(1,200);rmN(P,o);await fadeTo(0,200);await cine(0);save()}
+{const ps191=portScene;portScene=async function(){await ps191.apply(this,arguments);if(ph191On()&&!F191().v191al)await alarm191()}}
+{const M=MAPS.port,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);if(G.map==='port'&&ph191On()&&!F191().v191al)await alarm191()}}
+{const M=MAPS.port,s0=M.step;M.step=async function(){if(G.map==='port'&&ph191On()&&!F191().v191al){await alarm191();return true}return s0?s0.apply(this,arguments):undefined}}
+// L'arène reste fermée tant que les bateaux ne sont pas rentrés
+{const D=MAPS.port.doors,d0=D['6,4'];D['6,4']=async(...a)=>{if(ph191On())return say('Un mot est punaisé sur la porte : "ARÈNE FERMÉE. Je suis au bout du ponton. Les bateaux d\'abord. — Maëlle"');return Array.isArray(d0)?warp(...d0):d0(...a)}}
+// Les gens du port
+MAPS.port.npcs.push({x:9,y:13,t:'girl',d:0,name:'Odile',cond:()=>!!F191().v191al,say:()=>F191().v191ph||F191().badge2?(F191().v191dmg?'Ernest dit que La Mouette a encore une bosse sur la coque. Moi, je dis qu\'il est vivant, et c\'est tout ce qui compte.':'Ernest ne parle plus que de toi. "Un doigt de lumière dans le noir", qu\'il dit. Merci, mille fois.'):'Ernest… Reviens, je t\'en prie…'},
+ {x:10,y:13,t:'fisher',d:0,name:'Pêcheur Ernest',cond:()=>!!F191().v191ph,say:()=>night()?'La nuit, je regarde le faisceau tourner. Avant, je n\'y faisais même plus attention.':'Le lac est plein de poissons depuis l\'éclipse. Ils ont peur du noir, eux aussi : ils se serrent près des quais.'});
+
+// ---------------------------------------------------------------- Port-Miroir : Maëlle au bout du ponton
+MAPS.port.npcs.push({x:15,y:15,t:'maelle',d:0,name:'Maëlle',cond:ph191On,fn:maelPier191});
+async function maelPier191(n){const F=F191(),M='Maëlle';faceTo(n,G.x,G.y);
+ if(F.v191st===1){await say('La Comète est toujours là-bas, avec ce Torrentor qui lui tourne autour. Gédéon garde le faisceau braqué sur lui.',M);if(!await ask('Repartir avec Maëlle ?'))return;await cine(1);return torrent191()}
+ await cine(1);await say('C\'est toi, le dresseur dont Kael m\'a parlé ? Désolée : l\'arène attendra. Mes marins sont là-dehors, dans le noir.',M);
+ await say('Le phare de la Pointe brûle grâce à un Éclat d\'Aube. Il boit la lumière du soleil. Plus de soleil… plus de phare. Le vieux Gédéon a tout essayé.',M);await emote(n,'…',700);
+ await say('Le Prof dit que les Éclats réagissent au lien entre un dresseur et sa créature. Et toi, tu portes un Bracelet du Cycle…',M);
+ if(!await ask('Essayer de rallumer le phare ?','Maëlle')){await say('Je comprends. Mais fais vite… chaque minute compte.',M);return cine(0)}
+ await say('Ma barque est amarrée juste là. Accroche-toi !',M);await light191()}
+async function light191(){const F=F191(),ld=G.party.find(alive);musStop();await fadeTo(1,350);await camTo(20,14,0);await fadeTo(0,350);
+ await say('Maëlle rame dans le noir jusqu\'à la Pointe. En haut de l\'escalier en colimaçon, un vieil homme vous attend, une lampe-tempête à la main.');
+ await say('Maëlle ! Et… un minot ? Si vous arrivez à rallumer ce phare, je vous paie des crêpes jusqu\'à la fin de vos jours.','Gédéon');
+ await say(`Tu poses la main sur l'Éclat d'Aube, froid comme une pierre. Ton Bracelet s'éveille…${ld?' '+nm(ld)+' se serre contre toi. L\'Éclat palpite au rythme de vos deux cœurs.':''}`);
+ ui.shake=8;for(let i=0;i<3;i++){ui.flash=.35;ui.flashC='#fff0b0';sfx('blip');await wait(220)}F.v191lit=1;rays(20,14,C.goldL,2600);sfx('shard');ui.flash=.8;ui.flashC='#fff4c4';if(ld)bondUp(ld,2);musPlay('phare191');
+ await say('L\'ÉCLAT S\'EMBRASE ! Pour la première fois depuis l\'éclipse, le faisceau du phare balaie le lac.');
+ await say('Ha ! Regardez-moi ça ! …Mais la brume est épaisse, et les bateaux dérivent. Il faut guider le faisceau à la main. Petit, à toi la manivelle !','Gédéon');
+ await say('Tourne le faisceau avec GAUCHE et DROITE. Garde la lumière sur un bateau jusqu\'à ce qu\'il te voie. Fais vite : ils dérivent vers les récifs !');
+ await fadeTo(1,300);const res=await (async()=>{const p=pvGame191();await wait(30);await fadeTo(0,300);return p})();F.v191dmg=res.dmg;await fadeTo(0,300);
+ await say('C\'est La Comète ! Le bateau de mon fils, Yann ! Et cette ombre qui tourne autour…','Gédéon');
+ await say('Un Torrentor sauvage. L\'éclipse le rend fou : il ne voit plus rien, il attaque tout ce qui bouge. Gédéon, garde le faisceau sur lui ! Toi, avec moi !','Maëlle');
+ F.v191st=1;save();await torrent191()}
+{const tb191=throwBall;throwBall=async function(k){if(B?.o?.trial?.cap191){G.bag[k]=(G.bag[k]||0)+1;await say('Le Torrentor fouette l\'eau et la Capsule rebondit sur ses écailles. Ce n\'est pas le moment : il faut le calmer !',0,1);return false}return tb191(k)}}
+async function torrent191(){const F=F191();await say('La barque fend l\'eau noire. Le Torrentor jaillit devant la proue, les yeux voilés de violet !');await camBack(0);await cine(0);
+ const m=mon('torrentor',Math.max(16,Math.min(26,lvTop()+1)));m.item=null;
+ const r=await battle([m],{trial:{k:'tenir',n:4,cap191:1,rule:'Le faisceau du phare apaise peu à peu le Torrentor. Tiens 4 tours SANS le mettre K.O. : protège-toi, soigne-toi, change de créature.'}});
+ if(r==='trial'){F.v191tor=2;await cine(1);await say('Le Torrentor s\'immobilise dans la lumière. Le voile violet quitte ses yeux… Il pousse un long cri, presque un soupir, et plonge sans un remous.')}
+ else if(r==='win'){F.v191tor=1;await cine(1);await say('Le Torrentor coule, sonné… puis remonte et s\'éloigne en titubant. Il s\'en remettra. Maëlle, elle, a l\'air songeuse.')}
+ else{if(r==='run')await say('Maëlle fait demi-tour… La Comète est toujours en danger ! Parle-lui quand tu seras prêt.');return}
+ await reunion191()}
+async function reunion191(){const F=F191(),P='port';F.v191ph=1;delete F.v191st;await fadeTo(1,400);loadMap(P,14,15,3);
+ const mm=tmpN(P,{x:15,y:15,t:'maelle',d:2,name:'Maëlle'}),ya=tmpN(P,{x:13,y:13,t:'sailor',d:0,name:'Yann'}),rz=tmpN(P,{x:14,y:13,t:'girl',d:0,name:'Rozenn'}),er=MAPS.port.npcs.find(n=>n.name==='Pêcheur Ernest');
+ await fadeTo(0,500);await say('Une heure plus tard, trois bateaux dansent le long du quai. Tout Port-Miroir est sorti les accueillir.');
+ const od=MAPS.port.npcs.find(n=>n.name==='Odile'&&!n.fix);if(od)await emote(od,'♥',600);
+ await say('Je l\'ai vu, le faisceau ! Comme un doigt de lumière qui me montrait la route. Odile, je te promets : plus jamais je ne sors par temps noir.','Ernest');if(er)await emote(er,'♥',600);
+ await say('Sans vous deux, ce monstre nous aurait coulés. Papa va être insupportable de fierté pendant au moins dix ans.','Yann');
+ if(!F.v191dmg)await say('Pas une égratignure sur Le Bigorneau ! Tiens, c\'est la plus belle perle qu\'on ait remontée cette saison. Elle est à toi.','Rozenn');
+ else await say('Le Bigorneau a la coque fendue, mais on est tous là. C\'est tout ce qui compte.','Rozenn');
+ faceTo(mm,G.x,G.y);await say('Tu sais… quand on était petits, Valen et moi, on venait aider Gédéon à rallumer le phare, chaque soir. Valen disait que tant qu\'il brillerait, personne ne se perdrait jamais.','Maëlle');
+ await emote(mm,'…',800);await say('Il s\'est perdu quand même. Toi, tu as ramené tout le monde.','Maëlle');
+ if(F.v191tor===2){await say('Et ce Torrentor… tu ne lui as même pas fait de mal. Tiens : une Coquille Calme. Celui qui la porte garde son sang-froid, comme toi tout à l\'heure.','Maëlle');give('coquille');await say('Tu reçois une COQUILLE CALME !')}
+ await camTo(16,15,600);await say('Tiens… le petit Ombrelin est encore là, au bout du ponton. Il vient chaque nuit, depuis des années. Mémé Rosa dit qu\'il attend quelqu\'un.','Maëlle');F.v191omH=1;await camBack(500);
+ await say('Bon. Mes marins sont rentrés : mon arène est ouverte. Viens me défier quand tu veux. Et ne te retiens pas… moi, je ne me retiendrai pas.','Maëlle');
+ give('filetcapsule',3);await say('Ernest et Odile t\'offrent 3 FILET CAPSULES : "Pour les créatures d\'eau et de plante, c\'est imbattable !"');
+ give('biscuit',3);await say('Yann te remet 3 BISCUITS D\'AUBE de la part de Gédéon : "Ma mère les faisait pour les créatures du port. Papa dit qu\'elles en raffolent."');
+ if(!F.v191dmg){give('perle');await say('Tu reçois une PERLE DES MARÉES !')}
+ await fadeTo(1,400);for(const n of[mm,ya,rz])rmN(P,n);await cine(0);await fadeTo(0,400);save()}
+// Maëlle, à l'arène, se souvient de la nuit
+{const mt=MAPS.gym2?.npcs.find(n=>n.tr?.id==='maelle')?.tr;if(mt){const p0=mt.pre;Object.defineProperty(mt,'pre',{configurable:true,get:()=>F191().v191ph?'Tu as ramené mes marins. Merci… Mais ici, c\'est autre chose. La pluie est mon alliée : sous l\'averse, mes Crapaflot nagent deux fois plus vite et l\'EAU frappe une fois et demie plus fort. Change le temps, ou noie-toi sous la vague !':p0,set:v=>{}})}}
+
+// ---------------------------------------------------------------- Le petit veilleur du ponton
+const fr191=(M,x,y)=>{const c=M.rows[y]?.[x];return!!c&&!SOLID.has(c)&&!npcs(M).some(n=>n.x===x&&n.y===y)&&!(x===G.x&&y===G.y)};
+const omOwn191=()=>[...G.party,...G.box].some(m=>m.pb19);
+const omStory191=()=>{const F=F191();return!!F.r2&&!!(F.v191omH||F.v191om)&&!F.v191omR&&(F.v191om|0)<3&&!omOwn191()};
+// Route 2 : une silhouette dans la brume
+{const M=MAPS.route2,s0=M.step;M.step=async function(){const F=F191();if(act2()&&!F.v191om&&G.x>=10&&G.x<=22&&await omGlimpse191())return true;return s0?s0.apply(this,arguments):undefined}}
+async function omGlimpse191(){const F=F191(),M=MAPS.route2;let p=null;for(let k=3;k<=5&&!p;k++)for(const dy of[0,-1,1])if(fr191(M,G.x-k,G.y+dy)){p=[G.x-k,G.y+dy];break}if(!p)return false;
+ F.v191om=1;await cine(1);const o=tmpN('route2',{x:p[0],y:p[1],t:'mon',sp:'ombrelin',d:3,a:.85});puff(p[0],p[1],'#8a7ab0',8);await emote(o,'?',800);
+ await say('Dans la brume, un petit Ombrelin te fixe de ses grands yeux. Il n\'a pas l\'air sauvage… plutôt perdu.');
+ o.a=.5;await wait(300);o.a=.25;puff(o.x,o.y,'#8a7ab0',12);rmN('route2',o);await say('Le temps d\'un battement de cils, il s\'est fondu dans le brouillard. Vers l\'ouest… vers Port-Miroir.');await cine(0);save();return true}
+// Port-Miroir : il attend la nuit, au bout du ponton
+MAPS.port.npcs.push({x:16,y:15,t:'mon',sp:'ombrelin',d:0,a:.9,cond:()=>!!F191().r2&&(act2()||night())&&(F191().v191om|0)<3&&!omOwn191(),fn:omPier191});
+async function omPier191(n){const F=F191();
+ if((F.v191om|0)<2){if(!(G.bag.biscuit>0)){await emote(n,'!',500);await say(F.v191omR?'Le petit Ombrelin recule d\'un pas, puis s\'arrête. Mémé Rosa a parlé de Biscuits d\'Aube…':'Le petit Ombrelin recule, méfiant. Il ne quitte pas des yeux le lac noir, comme s\'il attendait quelqu\'un.');if(!F.v191omH){F.v191omH=1;save()}return}
+  if(!await ask('Poser un Biscuit d\'Aube sur le ponton ?'))return;G.bag.biscuit--;await cine(1);
+  await say('Tu poses un Biscuit d\'Aube sur les planches et tu recules doucement…');await emote(n,'?',900);
+  await say('Le petit Ombrelin s\'approche, renifle… et le croque en trois bouchées. Puis il lève les yeux vers toi.');await emote(n,'♥',800);F.v191om=2;F.v191omH=1;await cine(0)}
+ const c=await choose(['L\'EMMENER AVEC MOI','LE LAISSER VEILLER'],{w:260,title:'Le petit Ombrelin te regarde'});
+ if(c!==0){await say('Tu lui fais un petit signe. Il se retourne vers le lac. Il sera encore là la prochaine nuit.');return}
+ const m=mon('ombrelin',Math.max(14,lvTop()-3));m.pb19=1;m.aff=140;dex('ombrelin',2);if(G.party.length<6)G.party.push(m);else G.box.push(m);F.v191om=3;jingle('item');
+ await say(`Le petit Ombrelin saute dans tes bras ! Il rejoint ${G.party.includes(m)?'ton équipe':'la Boîte'}.`);
+ await say('Il ne te lâche plus d\'une semelle… mais de temps en temps, il fixe le nord. Vers l\'Observatoire. Garde-le près de toi.');save()}
+// Mémé Rosa raconte
+{const rn=MAPS.port.npcs.find(n=>n.name==='Mémé Rosa');if(rn){const f0=rn.fn,q0=rn.qm;rn.qm=()=>!!(q0&&q0())||omStory191();
+ rn.fn=async function(n){if(!omStory191())return f0.apply(this,arguments);const F=F191(),R='Mémé Rosa';F.v191omR=1;
+  await say('Le petit Ombrelin du ponton ? Ah… Tu l\'as vu, toi aussi.',R);
+  await say('Brume, l\'Ombrelin de Valen, s\'asseyait chaque nuit au bout du ponton. Le petit est arrivé l\'été où Brume s\'est éteint. Les vieux du port disent que c\'est son petit.',R);
+  await say('Depuis, il attend. Il ne laisse personne l\'approcher. Brume, lui, ne résistait jamais à un Biscuit d\'Aube…',R);
+  if(!(G.bag.biscuit>0)){give('biscuit');await say('Tiens, j\'en garde toujours un dans mon tablier. Pour lui. Tu reçois un BISCUIT D\'AUBE.',R)}save()}}}
+
+// ---------------------------------------------------------------- Objectifs, guide et journal
+{const g191=goal;goal=function(){const F=F191();if(ph191On()&&F.v191al)return F.v191st===1?'La Comète est en danger : rejoins Maëlle au bout du ponton pour calmer le Torrentor.':'Les bateaux de Port-Miroir sont perdus dans le noir. Rejoins Maëlle au bout du ponton.';return g191()}}
+GDT.unshift([/rejoins Maëlle au bout du ponton/i,gN('port','Maëlle',15,15,'Maëlle')]);
+{const q191=quests;quests=function(){const Q=q191(),F=F191();
+ if(F.v191al)Q.push(['La nuit des bateaux perdus',F.v191ph?2:1,F.v191ph?`Les trois bateaux sont rentrés au port${F.v191tor===2?', et tu as calmé le Torrentor sans le blesser':''}.`:'Le phare de la Pointe est éteint et trois bateaux errent dans le noir. Maëlle t\'attend au bout du ponton.']);
+ if(F.v191om||F.v191omH)Q.push(['Le petit veilleur du ponton',(F.v191om|0)>=3?2:1,(F.v191om|0)>=3?'Le petit Ombrelin du ponton t\'a suivi.':F.v191omR?'Brume ne résistait jamais à un Biscuit d\'Aube, dit Mémé Rosa. Le petit Ombrelin attend la nuit, au bout du ponton.':'Un petit Ombrelin attend chaque nuit au bout du ponton de Port-Miroir. Mémé Rosa en sait peut-être plus.']);
+ return Q}}
+
+// =====================================================================
+// 19.1 — DE VOLTERRE AU DÔME
+// - Centrale : les sbires tournent la tête (on peut passer dans leur dos). Personne ne t'a vu ? Orso est pris de court.
+// - Observatoire : le sceau cède (3 %, 2 %, 1 %, 0 %), Kael retient un sbire, une énigme remplace le mot de passe écrit
+//   en clair, et Sélène peut être convaincue (son écho dans la Grotte, sa lettre à la Centrale).
+// - Combat final : « Que dis-tu à Valen ? » Le ponton, la promesse à Brume, Kael, Caïus, Sélène, le petit Ombrelin :
+//   chaque mot trouvé en route fait vaciller Nocturion.
+// - Épilogue : ce que tes choix ont changé, avant le générique.
+// =====================================================================
+// ---------------------------------------------------------------- Centrale : des sentinelles, pas un couloir de combats
+const SENT191={centrale:{ce_g1:[3,1,2,0],ce_g2:[2,1,0,1],ce_e1:[0,2,0,3]},centrale2:{ce_g3:[3,1,0,1]}};
+setInterval(()=>{try{if(mode!=='world'||busy||move||!G||F191().baseDone)return;const S=SENT191[G.map];if(!S)return;const t=now();
+ for(const n of npcs(MAPS[G.map])){const P=n.tr&&S[n.tr.id];if(!P||F191()['t_'+n.tr.id]||n.walk)continue;if((n.st191??=t+rnd(500,1500))>t)continue;
+  n.st191=t+1800+Math.random()*1200;n.si191=((n.si191||0)+1)%P.length;n.d=P[n.si191];
+  if(Math.random()<.3){const e={n,k:'?',t0:now()};ui.emo.push(e);setTimeout(()=>ui.emo.splice(ui.emo.indexOf(e),1),500)}
+  if(sees19(n)){run(checkTrainers);return}}}catch(e){}},110);
+{const M=MAPS.centrale,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);if(G.map==='centrale'&&!F191().baseDone)tip('garde191','Les sbires de la Centrale montent la garde et tournent la tête. Passe dans leur dos : si personne ne te voit, Orso ne s\'y attendra pas.')}}
+const CEN191=['ce_g1','ce_t1','ce_g2','ce_e1','ce_g3','ce_g4'];
+{const o0=orsoTalk;orsoTalk=async function(n){const F=F191();
+  if(!F.baseDone&&F.v191gh==null)F.v191gh=CEN191.every(k=>!F['t_'+k])?1:0;
+  if(F.v191gh===1&&!F.baseDone&&!F.v191ghS){F.v191ghS=1;await cine(1);await emote(n,'!',600);await say('Le Commandant Orso sursaute si fort qu\'il renverse son café sur le tableau de bord.');await cine(0)}
+  await o0.apply(this,arguments);
+  if(F.baseDone&&F.v191gh===1&&!F.v191ghR){F.v191ghR=1;G.money+=2500;sfx('ok');await say('Dans le tiroir d\'Orso, une enveloppe : "PRIME DE SÉCURITÉ". Elle n\'a protégé personne. Tu trouves 2 500 pièces !')}};const on=MAPS.centrale2.npcs.find(n=>n.name==='Commandant Orso');if(on)on.fn=orsoTalk}
+PH19.unshift([t=>t.name==='Commandant Orso'&&f().v191gh===1&&f().v19cor!==3,['Euh… Turbines ? Quelqu\'un ? Allô ?! Pourquoi personne n\'a sonné l\'alerte ?!'],['Des incapables… Je suis entouré d\'incapables !'],'Orso : ÉLEC et OMBRE, pris de court. Le ROC bloque l\'électricité.']);
+
+// ---------------------------------------------------------------- Observatoire : le sceau cède
+async function seal191(p,s){ui.shake=10;sfx('roar');ui.flash=.3;ui.flashC='#7050a0';await say(`${s} Sur un écran, une ligne clignote en rouge : SCEAU DE NOCTURION — ${p} %.`)}
+{const M=MAPS.obs,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);const F=F191();if(G.map==='obs'&&F.obsScene&&!F.vex2&&!F.v191s3){F.v191s3=1;await cine(1);await seal191(3,'Le sol de l\'Observatoire tremble. Un grondement sourd monte du dôme.');await cine(0)}}}
+{const ca191=consoleAct;consoleAct=async function(){const was=!!f().bar;await ca191.apply(this,arguments);const F=F191();if(!was&&F.bar&&!F.v191s2&&!F.vex2){F.v191s2=1;await seal191(2,'Derrière la barrière, le dôme gronde de plus belle.')}}}
+const sealSel191=async()=>{const F=F191();if(F.selene2done&&!F.v191s1&&!F.vex2){F.v191s1=1;await seal191(1,'Le dôme rugit. Il n\'y a plus une seconde à perdre.')}};
+{const st=MAPS.obs.npcs.find(n=>n.tr?.id==='selene2')?.tr;if(st){const w0=st.win;st.win=async function(){if(w0)await w0.apply(this,arguments);await sealSel191()}}}
+// L'énigme des consoles (au lieu de l'ordre écrit en clair)
+MAPS.obs.acts['12,5']=()=>say('Une note froissée, coincée sous un clavier :\n"La barrière obéit au Cycle. D\'abord celle qui veille quand tout dort. Puis ses mille sœurs, qui s\'allument une à une. Enfin, celui qui les chasse toutes. — S."');
+// Kael retient un sbire ; Sélène peut être convaincue
+{const tb191=trainerBattle;trainerBattle=async function(n){const id=n?.tr?.id,F=F191();
+ if(id==='g8'&&!F.t_g8&&F.obsScene&&!F.vex2)return kaelG8191(n);
+ if(id==='selene2'&&!F.t_selene2&&(F.v19ec2||F.doc_selene)&&!F.vex2)return selene191(n,tb191);
+ return tb191.apply(this,arguments)}}
+async function kaelG8191(n){const F=F191(),M=MAPS.obs,kc=M.npcs.find(x=>x.t==='rival'&&!x.fix);if(kc)kc.hid=1;try{return await kaelG8b191(n,F,M)}finally{if(kc)kc.hid=0}}
+async function kaelG8b191(n,F,M){await cine(1);await say(n.tr.pre,n.tr.name,0,n.t);
+ const p=[[0,1],[1,0],[-1,0],[0,-1]].map(([dx,dy])=>[n.x+dx,n.y+dy]).find(([x,y])=>fr191(M,x,y))||nearSpot(2);
+ const k=tmpN('obs',{x:p[0],y:p[1],t:'rival',d:0,name:'Kael'});puff(p[0],p[1],'#ffffff',10);sfx('door');faceTo(k,n.x,n.y);await emote(k,'!',400);
+ await say('Celui-là, il est pour moi ! Va aux consoles, je te couvre !','Kael');faceTo(n,k.x,k.y);await emote(n,'!',400);
+ for(let i=0;i<3;i++){ui.shake=6;sfx('hit');puff((n.x+k.x)/2,(n.y+k.y)/2,i%2?'#ffd060':'#c060ff',10);await wait(350)}
+ await say('Les créatures de Kael et celles du sbire s\'affrontent dans un tourbillon d\'éclairs et d\'ombres…');F.t_g8=1;await emote(n,'…',700);
+ await say('…Battu par le petit frère du chef. Il va me renvoyer creuser à la mine.',n.tr.name,0,n.t);
+ await emote(k,'♪',500);await say('Et d\'un ! Je retourne surveiller l\'entrée. Fonce !','Kael');puff(k.x,k.y,'#ffffff',8);rmN('obs',k);await cine(0);save();return'win'}
+async function selene191(n,tb){const F=F191(),S='Admin Sélène';await cine(1);faceTo(n,G.x,G.y);await emote(n,'…',600);
+ await say('Encore toi. Valen est là-haut, avec Nocturion. Si tu passes, tu brises le seul espoir des créatures d\'ombre.',S,0,'selene');
+ const O=[];if(F.v19ec2)O.push(['"TU L\'AS SUIVI POUR LUI."','echo']);if(F.doc_selene)O.push(['"TU AS PEUR DE CE QUI S\'ÉVEILLE."','lettre']);O.push(['SE PRÉPARER AU COMBAT','fight']);
+ const c=await choose(O.map(o=>o[0]),{w:330,title:'Que dis-tu à Sélène ?'});await cine(0);const k=c<0?'fight':O[c][1];if(k==='fight')return tb(n);
+ await cine(1);if(k==='echo')await say('Dans la Grotte Écho, une pierre t\'a fait entendre sa voix. Tu le lui dis : elle ne l\'a pas suivi parce qu\'elle y croyait. Elle l\'a suivi pour qu\'il ne soit pas seul.');
+ else await say('Tu lui parles de la lettre trouvée à la Centrale. "Je te suivrai, mais j\'ai peur de ce qui se réveillera." Elle avait raison d\'avoir peur.');
+ await emote(n,'!',600);await say(k==='echo'?'…Cette grotte n\'oublie rien, hein.':'…Tu as lu ça. Je ne l\'ai jamais envoyée.',S,0,'selene');await emote(n,'…',900);
+ await say('Si je me bats contre toi, je gagne peut-être. Et après ? Je le regarde disparaître sous ce dôme ?',S,0,'selene');
+ await say('Non. Je ne veux ni le vaincre, ni te vaincre. Je veux le ramener. Alors on y va ensemble.',S,0,'selene');
+ F.t_selene2=1;F.v191sel=1;await cine(0);await seleneTruth();await sealSel191();save();return'win'}
+// Sélène entre au dôme avec toi
+{const fb191=finalBattle;finalBattle=async function(){const F=F191();if(!F.v191s0){F.v191s0=1;await cine(1);ui.shake=14;sfx('roar');await say('CRAC. Quelque part sous tes pieds, la dernière chaîne vient de céder. SCEAU DE NOCTURION — 0 %.');await cine(0)}
+ const se=F.v191sel&&!F.vex2?tmpN('dome',{x:3,y:6,t:'selene',d:3,name:'Sélène'}):null;try{return await fb191.apply(this,arguments)}finally{if(se)rmN('dome',se)}}}
+
+// ---------------------------------------------------------------- Combat final : « Que dis-tu à Valen ? »
+{const sf191=sendFoe;sendFoe=async function(...a){const r=await sf191.apply(this,a);try{if(B&&!B.coop&&!B.pvp&&B.tr?.name==='Vex'&&B.foe?.sp==='nocturion'&&!B.w191){B.w191=1;await words191()}}catch(e){console.error(e)}return r}}
+{const um191=useMove;useMove=async function(s,id){if(s===1&&B?.hes191>0&&B.foe?.sp==='nocturion'&&B.foe.hp>0){B.hes191--;await say('Nocturion n\'attaque pas. Il regarde Valen, immobile.',0,1);return null}return um191.apply(this,arguments)}}
+async function words191(){const F=F191(),V='Valen',lk='vex',A=[];
+ if(F.badge2)A.push(['LE PONTON',async()=>{await say('"Maëlle t\'attend sur le ponton. Elle m\'a fait promettre de te le dire."');await say('…Le ponton. On y pêchait des nuits entières sans jamais rien attraper.',V,0,lk);return 1}]);
+ if(F.v19ec1)A.push(['LA PROMESSE À BRUME',async()=>{await say('"Dans la Grotte Écho, j\'ai entendu ta promesse à Brume. Tu voulais réparer le ciel. Pas l\'éteindre."');await say('Tu… as entendu ça ? Personne n\'était censé l\'entendre.',V,0,lk);return 1}]);
+ A.push(['KAEL',async()=>{const k=F.v19k;await say(k===1?'"Kael a cru pendant des années que c\'était sa faute si tu étais parti."':k===2?'"Tu avais raison sur la nuit. Mais pas comme ça. Pas en faisant payer tout le reste."':'"Kael n\'est pas venu te battre. Il est venu te ramener à la maison."');
+  await say(k===1?'…Sa faute ? Il avait dix ans. C\'est moi qui suis parti. Moi.':k===2?'…Pas comme ça. Alors comment ? Dis-moi comment !':'À la maison… Je ne sais même plus où c\'est.',V,0,lk);return 1}]);
+ if(F.v19cor===3||F.doc_caius)A.push(['CAÏUS',async()=>{await say(F.doc_caius?'"Caïus l\'a écrit noir sur blanc : celui qui tient le Cycle tient le monde. Il attend que tu brises le sceau pour tout prendre."':'"Corvin m\'a prévenu : Caïus ne pense qu\'au pouvoir. Il se sert de toi."');await say('Caïus… Non. Il m\'a toujours poussé à aller plus loin. Toujours plus loin…',V,0,lk);return 1}]);
+ if(F.v191sel)A.push(['SÉLÈNE',async()=>{await say('Valen. Je t\'ai suivi pour que tu ne sois pas seul. Pas pour te regarder disparaître.','Sélène',0,'selene');await say('…Sélène.',V,0,lk);return 1}]);
+ const om=G.party.find(m=>m.pb19);
+ if(om)A.push(['LE PETIT OMBRELIN',async()=>{await say('Le petit Ombrelin du ponton s\'échappe de ta Capsule et file droit vers Valen !');await say('…Brume ? Non… Tu n\'es pas Brume. Mais tu as ses yeux.',V,0,lk);
+  await say('Valen tombe à genoux et serre le petit Ombrelin contre lui. "Nocturion… arrête. Arrête, je t\'en prie."');B.hes191=2;bondUp(om,2);F.v191omF=1;return 2}]);
+ await say('Le masque de Vex se fissure. Derrière, tu vois Valen, à bout de forces. Il hésite… C\'est le moment de lui parler.');
+ let d=0;for(;;){const c=await choose([...A.map(a=>a[0]),'SE BATTRE'],{w:300,title:'Que dis-tu à Valen ?'});if(c<0||c>=A.length)break;
+  const[lbl,fn]=A.splice(c,1)[0];d+=await fn();(F.v191w??=[]).includes(lbl)||F.v191w.push(lbl);if(!A.length)break}
+ F.v191d=Math.max(F.v191d|0,d);if(!d)return;
+ if(d>=3){if(B.sky?.k==='eclipse'){B.sky=null;ui.flash=.5;ui.flashC=C.goldL}await say('Valen relâche son emprise. L\'éclipse se dissipe : Nocturion se bat seul, et sa colère retombe.');if(B.foe.hp>0)await statChange(1,'atk',-1);
+  if(d>=5){await say('Valen n\'ordonne plus rien. Il regarde Nocturion… et Nocturion le regarde.');if(B.foe.hp>0)await statChange(1,'spd',-1)}}
+ else await say('Valen vacille… puis se reprend. Il faudrait plus que des mots pour l\'atteindre. Des souvenirs, peut-être, que tu n\'as pas trouvés en chemin.')}
+
+// ---------------------------------------------------------------- Épilogue : ce que tes choix ont changé
+{const cr191=credits;credits=async function(){const F=F191();if(F.vex2&&F.balance&&!F.v191epi){F.v191epi=1;try{await epilogue191()}catch(e){console.error(e)}PV191.epi=0}return cr191.apply(this,arguments)}}
+function epiDraw191(t){let g=X.createLinearGradient(0,0,0,H);g.addColorStop(0,'#070a1e');g.addColorStop(.7,'#1a1d44');g.addColorStop(1,'#3a2a52');X.fillStyle=g;X.fillRect(0,0,W,H);
+ for(let i=0;i<90;i++){const sx=(i*151+23)%W,sy=(i*67+11)%(H-90),tw2=((t/400|0)+i*7)%9;if(tw2)R(X,i%7?'#c8c6ec':'#ffffff',sx,sy,i%11?1:2,i%11?1:2)}
+ halo191(380,60,46,'#e8ecff',.22);X.fillStyle='#f4f2ff';X.beginPath();X.arc(380,60,14,0,7);X.fill();X.fillStyle='#1a1d44';X.beginPath();X.arc(386,56,13,0,7);X.fill();
+ halo191(W/2,H+30,170,'#ffb070',.18+.04*Math.sin(t/900));
+ X.fillStyle='#0a0b18';X.beginPath();X.moveTo(0,H);for(let x=0;x<=W;x+=12)X.lineTo(x,H-52-Math.round(14*Math.sin(x/70)+6*Math.sin(x/23)));X.lineTo(W,H);X.closePath();X.fill();
+ X.beginPath();X.moveTo(300,H-60);X.lineTo(318,H-96);X.lineTo(360,H-100);X.lineTo(378,H-60);X.closePath();X.fill();X.beginPath();X.arc(339,H-100,10,Math.PI,0);X.fill();halo191(339,H-104,22,'#c080ff',.18)}
+async function epilogue191(){const F=F191();PV191.epi=1;musPlay('nuit');await fadeTo(0,900);
+ const L=['Cette nuit-là, pour la première fois depuis des siècles, la nuit d\'Aurélys dura jusqu\'au matin.'];
+ if(F.v191ph||F.badge2)L.push(F.v191tor===2?'À Port-Miroir, Gédéon rallume le phare chaque soir. Un Torrentor escorte parfois les barques jusqu\'au quai : les pêcheurs l\'appellent "le Calme".':'À Port-Miroir, Gédéon rallume le phare chaque soir. Plus aucun bateau ne s\'est perdu depuis.');
+ if(F.v19forDone)L.push('Dans la Forêt Murmure, Iris a planté un jardin là où se dressaient les machines. Les créatures y chantent plus fort qu\'ailleurs.');
+ if(F.v19cor===3)L.push('Corvin a raccroché sa capuche violette. À Cendreville, Tito lui apprend à creuser… pour de vrai.');else if(F.v19cor)L.push('Le lieutenant Corvin a disparu avec les derniers sbires. Certains jurent l\'avoir vu rôder du côté des Coteaux.');
+ if(F.v191gh===1)L.push('Le Commandant Orso raconte encore qu\'un fantôme a traversé sa Centrale sans déclencher une seule alarme. Personne ne le croit.');
+ L.push(F.v191sel?'Sélène est restée près du dôme, entre Valen et Nocturion. Elle dit qu\'il lui reste une dette à régler : Caïus.':'Sélène a quitté l\'Observatoire sans un mot. On dit qu\'elle est partie vers le nord, sur la piste de Caïus.');
+ if((F.v191d|0)>=3)L.push('Valen ne parle pas beaucoup de cette nuit-là. Mais il répète souvent qu\'on ne l\'a pas battu : on l\'a retrouvé.');
+ for(const s of L)await say(s);
+ const om=G.party.find(m=>m.pb19);if(om&&F.v191omF){await say('Le petit Ombrelin du ponton regarde Valen… puis toi.');const c=await choose(['IL RESTE AVEC MOI','IL VA AVEC VALEN'],{w:240,title:'Le petit Ombrelin'});
+  if(c===1&&G.party.length>1){G.party.splice(G.party.indexOf(om),1);F.v191om=4;await say('Le petit Ombrelin s\'est blotti contre Valen. Depuis, on les voit chaque soir au bout du ponton, avec Maëlle. Il ne fixe plus le lac : il n\'attend plus personne.')}
+  else{F.v191om=5;await say('Le petit Ombrelin a choisi de rester avec toi. Mais chaque soir, il file s\'asseoir un moment au bout du ponton, à côté de Valen.')}}
+ await say('Et Kael ? Il a retrouvé son frère. Il dit qu\'il te doit tout… et qu\'il te battra la prochaine fois.');
+ await fadeTo(1,900)}
+// Après l'aventure : le petit Ombrelin qui a choisi Valen
+MAPS.dome.npcs.push({x:3,y:5,t:'mon',sp:'ombrelin',d:2,a:.9,cond:()=>!!F191().balance&&F191().v191om===4,fn:()=>say('Le petit Ombrelin dort, roulé en boule contre la botte de Valen. Il ronfle tout doucement.')});
+{const q191b=quests;quests=function(){const Q=q191b(),F=F191();if(F.baseDone&&F.v191gh===1)Q.push(['Le fantôme de la Centrale',2,'Tu as traversé la Centrale de Volterre sans te faire voir une seule fois. Orso n\'en revient toujours pas.']);
+ if(F.v191sel)Q.push(['Les mots de Sélène',2,'Tu as convaincu Sélène sans combattre. Elle est entrée au dôme avec toi.']);
+ if(F.v191w?.length)Q.push(['Les mots pour Valen',2,`En plein combat, tu as parlé à Valen : ${F.v191w.join(', ').toLowerCase()}.`]);return Q}}
+
+// =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.
 // =====================================================================
 NEWS.unshift(...NEWS18);
@@ -7577,6 +7878,15 @@ NEWS.unshift([()=>ICO.dex,'La faune d\'Aurélys','Fini les combats-surprises : l
  [()=>ICO.moon,'Les Gardiens du Cycle','Solarion et Nocturion ne se capturent plus en trois lignes. Suis la piste de l\'aube, écoute ce que racontent les chaînes de Nocturion, et relève leurs épreuves : ils te choisiront… ou non.'],
  [()=>ICO.star,'Quêtes et Défis d\'Élite','Le voleur de croissants, le dresseur d\'autrefois, la course des Coteaux, l\'œuf de l\'orage, l\'apprenti Tito et trois Défis d\'Élite. Un « ! » doré signale qui a besoin de toi, et les crieurs racontent l\'histoire du monde.']);
 {const norm19=normalize;normalize=function(g){g=norm19(g);if(g&&(g.v||0)<19){g.wn=1;g.v=19}return g}}
+
+// =====================================================================
+// VERSION 19.1 — en dernier : les nouveautés 19.1 en tête de l'écran des nouveautés, sauvegarde marquée 19.1.
+// =====================================================================
+NEWS.unshift([()=>ICO.lantern,'La nuit des bateaux perdus','À Port-Miroir, le phare s\'est éteint avec le soleil et trois bateaux errent dans le noir. Rallume l\'Éclat avec ton Bracelet, guide-les avec le faisceau, puis calme le Torrentor qui menace le dernier.'],
+ [()=>ICO.moon,'Le petit veilleur du ponton','Un petit Ombrelin aperçu dans la brume de la Route 2 attend chaque nuit au bout du ponton de Port-Miroir. Mémé Rosa connaît son histoire…'],
+ [()=>ICO.ecl,'De Volterre au dôme','Dans la Centrale, les sbires montent la garde : passe sans te faire voir et Orso sera pris de court. À l\'Observatoire, le sceau cède, Kael te couvre et Sélène peut être convaincue.'],
+ [()=>ICO.heart,'Les mots pour Valen','En plein combat final, ce que tu as vécu devient des mots pour atteindre Valen. Et après la victoire, un épilogue raconte ce que tes choix ont changé.']);
+{const norm191=normalize;normalize=function(g){g=norm191(g);if(g&&(g.v||0)<19.1){g.wn=1;g.v=19.1}return g}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 

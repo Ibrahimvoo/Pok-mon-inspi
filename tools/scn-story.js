@@ -4,7 +4,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a);
  await run(()=>pickStarter('goutelin'));L('starter',f().starter,f().rival1,G.party.length);
  await gusTalk();L('rod',G.keys.rod);
  G.party=[mon('torrentor',60),mon('bourdonnerre',60),mon('phalumine',60),mon('rocaroc',60),mon('papivigne',60),mon('brasilion',60)];
- const fightAll=async k=>{loadMap(k,MAPS[k].npcs[0].x,MAPS[k].npcs[0].y);for(const n of [...MAPS[k].npcs])if(n.tr&&!f()['t_'+n.tr.id]&&(!n.cond||n.cond())){await trainerBattle(n);L('beat',n.tr.id,!!f()['t_'+n.tr.id])}};
+ const fightAll=async k=>{busy=true;try{loadMap(k,MAPS[k].npcs[0].x,MAPS[k].npcs[0].y);for(const n of [...MAPS[k].npcs])if(n.tr&&!f()['t_'+n.tr.id]&&(!n.cond||n.cond())){await trainerBattle(n);L('beat',n.tr.id,!!f()['t_'+n.tr.id])}}finally{busy=false}};
  await fightAll('route1');await fightAll('gym');L('badge',f().badge,G.keys.bracelet);
  // la Mine de Cendreville (après le badge)
  loadMap('ville',6,5,0);await MAPS.ville.enter();L('mineAlert',f().mineAlert);loadMap('ville',17,2,1);await SNAP('mine-entree');
