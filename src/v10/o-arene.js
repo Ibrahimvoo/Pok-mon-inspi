@@ -204,13 +204,13 @@ NET.H['bt-x']=(m,P)=>{const A=NET.act;if((A?.k==='bt'||A?.k==='tr')&&A.id===m.id
 NET.H.gone=P=>{const A=NET.act;if(A&&A.with===P.pid)A.gone=1};
 async function pvpFlow(P,id,ru,me){const A=NET.act?.k==='bt'&&NET.act.id===id?NET.act:(NET.act={k:'bt',id,with:P.pid});Object.assign(A,{me,ru,D:null,act:[0,0],v:null,nm:[],lk:[],br:[]});A.tm??=null;A.go??=null;A.gch??={};A.res??={};A.oppFF??=0;A.x??=0;A.gone??=0;NET.hi(1);
  const lost=()=>A.gone||A.x||!NET.peers.has(P.pid),send=(k,o)=>NET.send(k,{id,...o},P.pid,90).then(ok=>{if(!ok)A.gone=1});let started=0;
- try{const pick=await pvpPickTeam(ru.n,ru.l50);if(!pick||lost()){NET.send('bt-x',{id},P.pid,true);if(!lost())await say('Combat annulé.');else await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté le salon.`);return}
+ try{const pick=await pvpPickTeam(ru.n,ru.l50);if(!pick||lost()){NET.send('bt-x',{id},P.pid,true);if(!lost())await say('Combat annulé.');else await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté ${netRoom()}.`);return}
   const mine=pick.map(i=>pvpCopy(G.party[i],ru.l50)),brc={b:G.keys.bracelet?1:0,b2:G.keys.brv2?1:0};let eng=null,ev0;
   if(me===1){send('bt-tm',{tm:mine.map(pvpSnap),br:brc});show(`En attente de ${P.name}…`);while(!A.go&&!lost()){const k=await key(150);if(k==='b'&&await ask('Annuler le combat ?')){NET.send('bt-x',{id},P.pid,true);return}if(!A.go&&!lost())show(`En attente de ${P.name}…`)}ui.text=null;
-   if(!A.go){await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté le salon.`);return}const g=A.go,T0=pvpTeam(g.tm?.[0],6,ru.l50),T1=pvpTeam(g.tm?.[1],6,ru.l50);
+   if(!A.go){await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté ${netRoom()}.`);return}const g=A.go,T0=pvpTeam(g.tm?.[0],6,ru.l50),T1=pvpTeam(g.tm?.[1],6,ru.l50);
    if(!T0||!T1){NET.send('bt-x',{id},P.pid,true);return say('Les données du combat sont illisibles. Combat annulé.')}A.D=[T0,T1];A.br=[{b:g.br?.[0]?.b?1:0},{b:g.br?.[1]?.b?1:0}];ev0=Array.isArray(g.ev)?g.ev:[];A.v0=g.vw}
   else{show(`En attente de ${P.name}…`);while(!A.tm&&!lost()){const k=await key(150);if(k==='b'&&await ask('Annuler le combat ?')){NET.send('bt-x',{id},P.pid,true);return}if(!A.tm&&!lost())show(`En attente de ${P.name}…`)}ui.text=null;
-   if(!A.tm){await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté le salon.`);return}
+   if(!A.tm){await say(A.x?`${P.name} a annulé le combat.`:`${P.name} a quitté ${netRoom()}.`);return}
    const S0=mine.map(pvpSnap),T1=pvpTeam(A.tm.tm,ru.n,ru.l50);if(!T1){NET.send('bt-x',{id},P.pid,true);return say(`L'équipe de ${P.name} est illisible. Combat annulé.`)}const S1=T1.map(pvpSnap);
    A.br=[brc,A.tm.br];eng=pvpEngine(S0.map(o=>pvpMon(o,ru.l50)),S1.map(o=>pvpMon(o,ru.l50)),ru,A.br);ev0=eng.start();A.v0=eng.view();A.D=[S0.map(o=>pvpMon(o,ru.l50)),S1.map(o=>pvpMon(o,ru.l50))];
    send('bt-go',{tm:[S0,S1],br:A.br,nm:[NG().n,P.name],lk:[NG().lk,P.look],ev:ev0,vw:A.v0})}

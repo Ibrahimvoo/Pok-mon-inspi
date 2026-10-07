@@ -104,6 +104,7 @@ const SPR={};
 function chr(t,dir,f=0){if(PEO[t])return PEO[t].ow[dir*3+f];const k=t+dir+f;if(SPR[k])return SPR[k];const pal={o:C.ink,s:'#f8d0a8',S:'#d99f78',e:C.ink,w:'#ffffff',k:'#3b3357',h:'#888888',d:'#4a3020',b:'#888888',p:'#2f3050',...LOOK[t]};for(const c of'hdbp')pal[c.toUpperCase()]=mix(pal[c],C.ink,.35);
  const rows=[...UP[dir===0?'d':dir===1?'u':'s'],...LEGS[dir>1?'s':'d'][f]];
  return SPR[k]=mkc(16,16,g=>rows.forEach((r,y)=>[...r].forEach((c,x)=>{if(pal[c])R(g,pal[c],dir===2?15-x:x,y)})))}
+const myLook=()=>{const k=G?.net?.lk;return k&&PEO[k]?k:'hero'};   // apparence choisie (profil), visible par soi et par les amis
 const trSpr=(t,big)=>PEO[t]?(big?PEO[t].vs:PEO[t].bt):PEO.grunt[big?'vs':'bt'];
 const SHD=mkc(14,5,g=>pell(g,7,2,6,1,'rgba(20,14,40,.32)')),SHD2=mkc(24,8,g=>{g.fillStyle='rgba(22,18,44,.34)';g.beginPath();g.ellipse(12,4,11,3.4,0,0,7);g.fill();g.fillStyle='rgba(22,18,44,.2)';g.beginPath();g.ellipse(12,4,12,4,0,0,7);g.fill()});
 
@@ -361,7 +362,7 @@ function mon(sp,lv,o={}){const m={sp,lv,exp:xpFor(lv),moves:[],st:null};for(cons
  m.aff=o.aff??70;m.item=o.item||(o.wild&&Math.random()<.08?(Math.random()<.5?'baiesoin':BOOST[SP[sp].t]):null);return m}
 const nm=m=>SP[m.sp].name,f=()=>G.flags,alive=m=>m.hp>0,fullHeal=m=>{m.hp=st(m).hp;m.st=null;m.slp=0;m.pp=m.moves.map(id=>MV[id].pp)},healAll=()=>G.party.forEach(fullHeal);
 const newGame=()=>({v:7,map:'bourg',x:5,y:6,dir:0,party:[],box:[],bag:{potion:1},money:500,flags:{},heal:['bourg',5,6],t:70,dex:{},keys:{},repel:0,play:0,opt:{snd:1}});
-const SK='pixemon-eclipse-v1',SLOTK=s=>s>1?SK+'-'+s:SK,lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};let SLOT=Math.min(3,Math.max(1,+lsGet('pixemon-slot')||1));
+const SK='pixemon-eclipse-v1',SLOTK=s=>typeof s==='string'?SK+'-coop-'+s.slice(2):s>1?SK+'-'+s:SK,lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};let SLOT=Math.min(3,Math.max(1,+lsGet('pixemon-slot')||1));
 // Remet à niveau une sauvegarde (y compris celles de la version précédente) : PP, statuts, Pixédex, horloge…
 function normalize(g){if(!g||!Array.isArray(g.party)||!g.flags)return null;g.box??=[];g.bag??={};g.party=g.party.filter(m=>m&&SP[m.sp]);g.box=g.box.filter(m=>m&&SP[m.sp]);if(!MAPS[g.map]){g.map='bourg';g.x=8;g.y=8}g.dex??={};for(const k in g.dex)if(!SP[k])delete g.dex[k];g.keys??={};g.repel??=0;g.t??=70;g.play??=0;g.opt??={snd:1};const F=g.flags;
  for(const m of[...g.party,...g.box]){m.moves=m.moves.filter(id=>MV[id]);if(!m.moves.length)m.moves=['charge'];if(!m.pp||m.pp.length!==m.moves.length)m.pp=m.moves.map(id=>MV[id].pp);m.st??=null;m.aff??=Math.min(200,70+m.lv*3);m.item??=null;g.dex[m.sp]=2}
@@ -369,7 +370,7 @@ function normalize(g){if(!g||!Array.isArray(g.party)||!g.flags)return null;g.box
  if(!g.v){if(F.starter)g.keys.dex=1;if(F.boss){F.eclipse=1;F.r2=1}delete F.legend;g.v=3}
  for(const m of[...g.party,...g.box]){if(m.sp==='solarion')F.legS=1;if(m.sp==='nocturion')F.legN=1;if(m.sp==='crepuscel')F.legC=1;if(m.sp==='presagelle')F.legP=1;if(m.sp==='heliote')F.legH=1;if(m.sp==='seleniote')F.legL=1}
  for(const k in g.bag)if(!IT[k])delete g.bag[k];if(F.badge&&!g.keys.bracelet){g.keys.bracelet=1;g.brRetro=1}if(g.v<4){g.wn=1;g.v=4}if(g.v<5){g.wn=1;g.v=5}if(g.v<6){g.wn=1;g.v=6}if(g.v<7){g.wn=1;g.v=7}return g}
-function save(){try{const K=SLOTK(SLOT),s=JSON.stringify(G),o=localStorage.getItem(K);if(o&&o!==s)localStorage.setItem(K+'-bak',o);localStorage.setItem(K,s);localStorage.setItem('pixemon-slot',SLOT);G.lastSave=Date.now();ui.toast={t0:now()};return true}catch(e){return false}}
+function save(){try{const K=SLOTK(SLOT),s=JSON.stringify(G),o=localStorage.getItem(K);if(o&&o!==s)localStorage.setItem(K+'-bak',o);localStorage.setItem(K,s);if(typeof SLOT==='number')localStorage.setItem('pixemon-slot',SLOT);localStorage.setItem('pixemon-last',String(SLOT));G.lastSave=Date.now();ui.toast={t0:now()};return true}catch(e){return false}}
 function load(sl=SLOT){for(const k of[SLOTK(sl),SLOTK(sl)+'-bak']){try{const g=normalize(JSON.parse(localStorage.getItem(k)));if(g)return g}catch(e){}}return null}
 setInterval(()=>{if(G&&mode==='world'&&!busy&&!ui.menus.length&&Date.now()-(G.lastSave||0)>90000)save()},5000);
 setInterval(()=>{if(G&&mode==='world'&&!busy&&mus.want&&SONG[mus.want]&&!SONG[mus.want][3]){const k=mapMus(MAPS[G.map]);if(k&&k!==mus.want)musPlay(k)}},4000);   // la musique suit le passage jour/nuit   // sauvegarde auto discrète
@@ -716,7 +717,7 @@ const CUD={
  photo1:t=>{card(130,22,220,178,'#fbf6ea');const x=142,y=34,w=196,h=132;for(let i=0;i<8;i++)R(X,mix('#f6b26b','#fde6b8',i/7),x,y+i*7,w,7);R(X,'#fde6b8',x,y+56,w,6);
   R(X,'#3a78a8',x,y+62,w,h-62);for(let i=0;i<10;i++)R(X,'#8ac0e0',x+(i*37)%180,y+70+(i*13)%50,10,1);R(X,'#7a5434',x+20,y+98,176,10);R(X,'#a8784a',x+20,y+98,176,3);for(const px of[30,90,150,186])R(X,'#5a3a22',x+px,y+106,4,26);
   pell(X,x+150,y+40,14,14,'#ffe8a0');X.globalAlpha=.65;people([['kid',0,0]],x+150,y+100,.55);X.drawImage(monSpr('ombrelin',0,48),x+166,y+78,20,20);X.globalAlpha=1;
-  people([['dad',30,0],['hero',62,8],['mom',90,0]],x,y+104,1);sepia(x,y,w,h);txt('Port-Miroir, été',240,186,'#6a5a48',{s:1,al:'c',sh:0})},
+  people([['dad',30,0],[myLook(),62,8],['mom',90,0]],x,y+104,1);sepia(x,y,w,h);txt('Port-Miroir, été',240,186,'#6a5a48',{s:1,al:'c',sh:0})},
  photo2:t=>{card(130,22,220,178,'#fbf6ea');const x=142,y=34,w=196,h=132;R(X,'#141836',x,y,w,h);for(let i=0;i<40;i++)R(X,i%5?'#c8c8f0':'#ffe8a0',x+(i*53)%w,y+(i*29)%70,1,1);
   R(X,'#2a2440',x,y+96,w,36);pell(X,x+98,y+92,46,34,'#5a5878');pell(X,x+98,y+92,42,30,'#7a7898');R(X,'#2a2440',x+52,y+92,92,40);R(X,'#3a3456',x+70,y+70,8,22);R(X,'#ffe8a0',x+94,y+78,8,6);
   people([['dad',48,0],['prof',108,0]],x,y+130,.8);sepia(x,y,w,h,.25);txt('Observatoire, nuit de recherche',240,186,'#6a5a48',{s:1,al:'c',sh:0})},
@@ -725,7 +726,7 @@ const CUD={
   txt('Les nuits raccourcissent :',128,58,'#3a2a2a',{s:1,sh:0});txt('3 minutes de moins chaque année.',128,74,'#3a2a2a',{s:1,sh:0});txt('Le Cycle boite. Ce qui a été',128,106,'#3a2a2a',{s:1,sh:0});txt('scellé doit-il le rester ?',128,122,'#3a2a2a',{s:1,sh:0});
   txt('Pour mes enfants : un jour, je',128,154,'#5a3a6a',{s:1,sh:0});txt('vous montrerai le vrai ciel. - E.',128,170,'#5a3a6a',{s:1,sh:0});txt('dragon ?',300,118,'#4a5a8a',{s:1,sh:0})},
  lettre:t=>{card(100,20,280,188,'#f8f0dc');R(X,'#c83a3a',220,30,40,6);const L=['Cher voisin,','','Pour la Fête de l\'Aube et tes douze','ans, je t\'attends au labo ce matin.','Un Pixémon t\'y attend.','','Prof. Saule','','PS : Kael a déjà demandé l\'heure','trois fois.'];L.forEach((l,i)=>txt(l,120,56+i*14,i>=8?'#7a6a58':'#3a2a2a',{s:1,sh:0}))},
- carte:t=>{card(110,40,260,150,'#4a7ab8');R(X,'#3a64a0',113,43,254,26);txt('CARTE DE DRESSEUR',240,61,'#ffffff',{al:'c',sh:0});rr(124,80,80,80,3,'#efe6d2');if(PEO.hero)X.drawImage(PEO.hero.pt[0],128,84,72,72);
+ carte:t=>{card(110,40,260,150,'#4a7ab8');R(X,'#3a64a0',113,43,254,26);txt('CARTE DE DRESSEUR',240,61,'#ffffff',{al:'c',sh:0});rr(124,80,80,80,3,'#efe6d2');if(PEO[myLook()])X.drawImage(PEO[myLook()].pt[0],128,84,72,72);
   [['Bourg-Lueur',92],['12 ans aujourd\'hui',110],['Badges : '+((f().badge?1:0)+(f().badge2?1:0)+(f().badge3?1:0)+(f().badge4?1:0)),128],['Pixédex : '+DEX.filter(k=>G.dex[k]===2).length,146]].forEach(([s,y])=>txt(s,216,y,'#ffffff',{s:1,sh:0}))},
  calendrier:t=>{card(150,30,180,170,'#f4ead2');R(X,'#c83a3a',153,33,174,26);txt('AUJOURD\'HUI',240,52,'#ffffff',{al:'c',sh:0});txt('FÊTE DE L\'AUBE',240,96,'#3a2a2a',{al:'c',sh:0});
   X.strokeStyle='#e8484f';X.lineWidth=3;X.beginPath();X.ellipse(240,132,46,22,0,0,7);X.stroke();X.lineWidth=1;txt('MES 12 ANS !',240,138,'#c83a3a',{al:'c',sh:0})},
@@ -1362,7 +1363,7 @@ function drawTip(){const T=ui.tip;T.t0??=now();const k=now()-T.t0;if(k>6500){ui.
 // --- Mise en scène : bandes cinéma, caméra libre, émotions, déplacements scriptés, rayons, flux de particules ---
 let CAMO=null;const EMO=()=>({'!':ICO.bang,'?':ICO.q,'…':ICO.dots,'♥':ICO.heart,'♪':ICO.note});
 async function emote(n,k='!',ms=700){const e={n,k,t0:now()};ui.emo.push(e);sfx(k==='!'?'alert':k==='♥'||k==='♪'?'ok':'sel');await wait(ms);ui.emo.splice(ui.emo.indexOf(e),1)}
-const cine=on=>tween(ui,'lb',on?1:0,320,1);
+const cine=on=>{if(on&&typeof scMark==='function')scMark();return tween(ui,'lb',on?1:0,320,1)};
 async function camTo(x,y,ms=700){CAMO??={x:G.x*TS+16,y:G.y*TS+16};await Promise.all([tween(CAMO,'x',x*TS+16,ms,1),tween(CAMO,'y',y*TS+16,ms,1)])}
 async function camBack(ms=600){if(!CAMO)return;await Promise.all([tween(CAMO,'x',G.x*TS+16,ms,1),tween(CAMO,'y',G.y*TS+16,ms,1)]);CAMO=null}
 async function walk(n,path,ms=200){for(const c of path){const d='dulr'.indexOf(c);if(d>=0)await npcStep(n,d,ms);else n.d='DULR'.indexOf(c)}}
@@ -1719,7 +1720,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 16.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 17.0',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2182,7 +2183,7 @@ function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R
   else{X.drawImage(SHD2,sx+5,sy+25);X.drawImage(chr(n.t,n.d,(n.ox||n.oy)?1+(t/130|0)%2:0),sx,sy-32);grassOver(n.x,n.y,sx,sy);if(n.qm?.())X.drawImage(ICO.qmark,sx+8,sy-44-(t/320|0)%2*2,16,22)}}}));
  const fm=folMon();if(fm&&!(FOL.x===G.x&&FOL.y===G.y&&!move)){const k=move?Math.min(1,move.t):1,fx=Math.round((FOL.fx+(FOL.x-FOL.fx)*k)*TS),fy=Math.round((FOL.fy+(FOL.y-FOL.fy)*k)*TS),fly=FLY.has(fm.sp);
   ents.push({y:fy-1,d:()=>{const sx=fx-cx,sy=fy-cy,hop=move?Math.round(Math.sin(k*Math.PI)*3):fly?Math.round(Math.sin(t/260)*3+3):(t/480|0)%2;X.drawImage(SHD,sx+2,sy+22,28,10);X.drawImage(monOW(fm.sp,FOL.d,fm.sh),sx-16,sy-32-hop-(fly?6:0),64,64);grassOver(FOL.x,FOL.y,sx,sy)}})}
- ents.push({y:py,me:1,d:()=>{const sx=px-cx,sy=py-cy,fr=move&&move.t>.15&&move.t<.7?1+steps%2:0;X.drawImage(SHD2,sx+5,sy+25);X.drawImage(chr('hero',G.dir,fr),sx,sy-32);const gx=move?(move.t>.5?move.tx:move.fx):G.x,gy=move?(move.t>.5?move.ty:move.fy):G.y;grassOver(gx,gy,sx,sy)}});
+ ents.push({y:py,me:1,d:()=>{const sx=px-cx,sy=py-cy,fr=move&&move.t>.15&&move.t<.7?1+steps%2:0;X.drawImage(SHD2,sx+5,sy+25);X.drawImage(chr(myLook(),G.dir,fr),sx,sy-32);const gx=move?(move.t>.5?move.tx:move.fx):G.x,gy=move?(move.t>.5?move.ty:move.fy):G.y;grassOver(gx,gy,sx,sy)}});
  for(const h of M.hidden||[])if(!f()[hk(h)]&&((t/150|0)+h.x*7+h.y*3)%(G.keys.boussole?7:night()||M.dark2?12:26)===0){const sx=h.x*TS-cx+12,sy=h.y*TS-cy+10;R(X,'#ffffff',sx,sy-4,2,10);R(X,'#ffffff',sx-4,sy,10,2);R(X,C.goldL,sx,sy,2,2)}
  if(ui.bob){const b=ui.bob,sx=b.x*TS-cx+12,sy=b.y*TS-cy+12+(b.bite?6:Math.round(Math.sin(t/220)*2));R(X,C.ink,sx-1,sy-1,10,10);R(X,'#ffffff',sx,sy+4,8,4);R(X,C.acc,sx,sy,8,4);X.globalAlpha=.5;R(X,'#eef9ff',sx-6,sy+9,20,2);X.globalAlpha=1;R(X,'#ece6d6',px-cx+16,py-cy+4,1,1)}
  // rangées : décors posés sur la rangée r, puis personnages de cette rangée (du fond vers l'avant)
@@ -2191,7 +2192,7 @@ function drawWorld(t){const M=MAPS[G.map],mw=M.rows[0].length,mh=M.rows.length;R
  for(let r=r0;r<=r1;r++){const S=M.S?.[r];if(S)for(const s of S){const sx=s.x-cx,sy=s.y-cy;if(sx>W||sy>H||sx+s.img.width<0||sy+s.img.height<0)continue;X.drawImage(s.img,sx,sy);if(r>Math.floor((py+16)/TS)&&sx<px-cx+28&&sx+s.img.width>px-cx+4&&sy<py-cy+24&&sy+s.img.height>py-cy+4)meHidden=1}
   const E=rows.get(r);if(E){E.sort((a,b)=>a.y-b.y);E.forEach(e=>e.d())}}
  for(const[r,E]of rows)if(r<r0||r>r1)E.forEach(e=>e.d());
- if(meHidden){X.globalAlpha=.5;X.drawImage(silh(chr('hero',G.dir,0),'#2a2050'),px-cx,py-cy-32);X.globalAlpha=1}
+ if(meHidden){X.globalAlpha=.5;X.drawImage(silh(chr(myLook(),G.dir,0),'#2a2050'),px-cx,py-cy-32);X.globalAlpha=1}
  ambient(M,cx,cy);lighting(M,cx,cy,t,px,py);
  if(ui.bob?.bite){X.drawImage(ICO.bang,px-cx+8,py-cy-30,16,22)}
  for(const e of ui.emo){const n=e.n,k=Math.min(1,(now()-e.t0)/160),[wx,wy]=n==='me'?[px,py]:n==='fol'?[FOL.x*TS,FOL.y*TS-10]:[n.x*TS+(n.ox||0),n.y*TS+(n.oy||0)],sx=ev(wx-cx)+8,sy=ev(wy-cy)-30-ev(Math.sin(k*Math.PI)*8);X.drawImage(EMO()[e.k]||ICO.bang,sx,sy,16,22)}
@@ -2295,7 +2296,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V16.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V17.0',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -2337,8 +2338,8 @@ const INTRO=['Bienvenue dans la région d\'Aurélys ! Ici vivent d\'étranges cr
 function svInfo(sv,x,y,w){const F=sv.flags,nb=(F.badge?1:0)+(F.badge2?1:0)+(F.badge4?1:0)+(F.badge3?1:0);txt(MAPS[sv.map]?.name.split(' · ')[0]||'',x+16,y+28);txt(fmtT(sv.play||0),x+w-16,y+28,C.ink2,{al:'r'});[ICO.bRoc,ICO.bMir,ICO.bVol,ICO.bCre].forEach((ic,j)=>X.drawImage(j<nb?ic:silh(ic,'#b0a8c0'),x+16+j*20,y+34,14,14));X.drawImage(ICO.dex,x+80,y+34,14,14);txt(DEX.filter(k=>sv.dex?.[k]===2).length,x+98,y+46,C.ink,{mini:1});X.drawImage(ICO.shard,x+128,y+34,14,14);txt(sv.keys?.shards||0,x+146,y+46,C.ink,{mini:1});sv.party.slice(0,6).forEach((m,j)=>X.drawImage(monSpr(m.sp,0,48),x+w-140+j*22,y+28,24,24))}
 async function slotPick(title){return choose([1,2,3].map(s=>`PARTIE ${s}${load(s)?'':' · VIDE'}`),{x:W/2-120,y:210,w:240,rh:22,title,ib:[W/2-160,148,320,58],infoShow:()=>true,infoDraw:(i,x,y,w)=>{const sv=load(i+1);if(sv)svInfo(sv,x,y,w);else txt('Emplacement libre',x+w/2,y+36,C.mute,{al:'c'})}})}
 async function titleScreen(){mode='title';B=null;move=null;ui.menus=[];ui.text=null;ui.panel=null;ui.dim=null;G=null;musPlay('title');await fadeTo(0,400);
- for(;;){const sv=load(),any=[1,2,3].some(s=>load(s)),opts=[...(sv?['CONTINUER','JOUER EN LIGNE']:[]),...(any?['CHARGER']:[]),'NOUVELLE PARTIE','QUOI DE NEUF ?'],cont=i=>opts[i]==='CONTINUER'||opts[i]==='JOUER EN LIGNE',big=opts.length>4,rh=big?21:22,i=await choose(opts,{x:W/2-120,y:300-opts.length*rh,w:240,rh,cancel:false,ib:[W/2-160,big?140:148,320,big?54:58],infoShow:cont,infoDraw:sv?(i,x,y,w)=>{if(cont(i))svInfo(sv,x,big?y-3:y,w)}:null});
-  const o=opts[i];if(o==='QUOI DE NEUF ?'){await whatsNew();continue}
+ for(;;){const la=lsGet('pixemon-last'),av=la&&/^c:[A-Z2-9]{4}$/.test(la)?load(la):null,sv=av||load(),any=[1,2,3].some(s=>load(s)),CA='CONTINUER L\'AVENTURE',opts=[...(av?[CA]:sv?['CONTINUER','JOUER EN LIGNE']:[]),...(any?['CHARGER']:[]),'NOUVELLE PARTIE','AVENTURE À PLUSIEURS','QUOI DE NEUF ?'],cont=i=>opts[i]==='CONTINUER'||opts[i]==='JOUER EN LIGNE'||opts[i]===CA,big=opts.length>4,rh=opts.length>5?18:big?21:22,i=await choose(opts,{x:W/2-142,y:300-opts.length*rh,w:284,rh,cancel:false,ib:[W/2-160,big?140:148,320,opts.length>5?50:big?54:58],infoShow:cont,infoDraw:sv?(i,x,y,w)=>{if(cont(i))svInfo(sv,x,big?y-3:y,w)}:null});
+  const o=opts[i];if(o==='QUOI DE NEUF ?'){await whatsNew();continue}if(o==='AVENTURE À PLUSIEURS'){if(await advMenu())return;continue}if(o===CA){if(await advContinue(la.slice(2)))return;continue}
   let g0=null;if(o==='CONTINUER'||o==='JOUER EN LIGNE')g0=sv;else if(o==='CHARGER'){const s=await slotPick('Charger une partie');if(s<0)continue;g0=load(s+1);if(!g0){if(!await ask('Cet emplacement est vide. Commencer une nouvelle partie ici ?'))continue;SLOT=s+1;G=newGame();await fadeTo(1,400);await dreamIntro();return}SLOT=s+1}
   if(g0){G=g0;await fadeTo(1,300);mode='world';ui.banner=null;loadMap(G.map,G.x,G.y,G.dir);await fadeTo(0,300);
    if(G.wn){delete G.wn;await whatsNew()}if(G.brRetro){delete G.brRetro;tip('bracelet','Nouveau : Brasia t\'a fait parvenir le BRACELET DU CYCLE ! En combat, remplis sa jauge, puis choisis ÉVEIL DU CYCLE parmi tes attaques.')}if(o==='JOUER EN LIGNE')await onlineMenu();return}

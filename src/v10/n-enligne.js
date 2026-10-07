@@ -69,7 +69,7 @@ const netId=()=>Math.random().toString(36).slice(2,10);
 async function netInvite(P,t,ru){const id=netId(),A=NET.act={k:'inv',id,with:P.pid,resp:null};NET.send('inv',{id,t,ru},P.pid,true);
  show(`Invitation envoyée à ${P.name}… (B : annuler)`);const t0=Date.now();let why=null;
  for(;;){if(A.resp)break;if(!NET.peers.has(P.pid)){why='gone';break}if(Date.now()-t0>45000){why='late';break}const k=await key(150);if(k==='b'){why='cancel';break}}ui.text=null;
- if(NET.act===A)NET.act=why||!A.resp.ok?null:{k:t,id,with:P.pid,me:0};if(why){NET.send('inv-x',{id},P.pid,true);if(why==='gone')await say(`${P.name} a quitté le salon.`);if(why==='late')await say(`${P.name} n'a pas répondu.`);return null}
+ if(NET.act===A)NET.act=why||!A.resp.ok?null:{k:t,id,with:P.pid,me:0};if(why){NET.send('inv-x',{id},P.pid,true);if(why==='gone')await say(`${P.name} a quitté ${netRoom()}.`);if(why==='late')await say(`${P.name} n'a pas répondu.`);return null}
  if(!A.resp.ok){await say(A.resp.why==='busy'?`${P.name} est occupé pour le moment.`:`${P.name} a refusé.`);return null}return id}
 NET.H.inv=(m,P)=>{const ok=typeof m.id==='string'&&m.id.length<=12&&(m.t==='bt'||m.t==='tr');if(!ok)return;if(NET.act||NET.inv&&NET.inv.id!==m.id||mode!=='world'||P.dv!==NETDV()){NET.send('invr',{id:m.id,ok:0,why:'busy'},P.pid,true);return}
  const ru=m.t==='bt'?{n:m.ru?.n===6?6:3,l50:m.ru?.l50?1:0,ph:Math.max(0,Math.min(3,m.ru?.ph|0))}:{};NET.inv={id:m.id,from:P.pid,t:m.t,ru,t0:Date.now()};NET.note(`${P.name} te propose ${m.t==='bt'?'un combat':'un échange'} !`);sfx('alert')};
@@ -113,7 +113,7 @@ async function tradeFlow(P,id,host){NET.hi(1);const A=NET.act?.k==='tr'&&NET.act
    if(A.ok&&A.ok.a===th.v&&A.ok.b===mv){done=tradeCommit(mine,tm,P);break}if(gone())break;if(A.their!==th){await say(`${P.name} a changé sa proposition.`);continue}
    await say(`${P.name} n'a pas confirmé à temps.`);break}
  }finally{if(NET.act===A)NET.act=null;NET.hi(1)}
- if(!done){NET.send('tr-x',{id},P.pid,true);if(!NET.peers.has(P.pid))await say(`${P.name} a quitté le salon. L'échange est annulé.`);else if(A.x)await say(`${P.name} a annulé l'échange.`);else await say('Échange annulé.');return}
+ if(!done){NET.send('tr-x',{id},P.pid,true);if(!NET.peers.has(P.pid))await say(`${P.name} a quitté ${netRoom()}. L'échange est annulé.`);else if(A.x)await say(`${P.name} a annulé l'échange.`);else await say('Échange annulé.');return}
  await tradeAnim(done.out,done.in,P);await say(`Tu envoies ${nm(done.out)} à ${P.name}… et tu reçois ${nm(done.in)} !`);if(done.in.ot)await say(`${nm(done.in)} vient de chez ${done.in.ot} : il gagne plus d'EXP (x1,5).`);if(done.kept)await say('Les objets et breloques qu\'il portait restent chez toi.')}
 NET.H['tr-of']=(m,P)=>{const A=NET.act;if(A?.k!=='tr'||A.id!==m.id||A.with!==P.pid||!Number.isInteger(m.ver)||m.ver<=A.tv||!netMon(m.m))return;A.tv=m.ver;A.their={v:m.ver,m:m.m};A.ok=null};
 NET.H['tr-ok']=(m,P)=>{const A=NET.act;if(A?.k==='tr'&&A.id===m.id&&A.with===P.pid)A.ok={a:m.a,b:m.b}};
@@ -136,4 +136,4 @@ pauseMenu=async function(){for(;;){ui.panel=drawCard;const O=[['ÉQUIPE',ICO.tea
  if(k==='EN LIGNE'){await onlineMenu();return}
  if(k==='SAUVER')await say(save()?'Partie sauvegardée !':'Impossible de sauvegarder dans ce navigateur.');
  if(k==='CARTE'&&await regionMap())return;if(k==='CINÉMAS')await cinemaMenu();if(k==='GUIDE')await guide();if(k==='SABLIER'){ui.panel=null;await useSablier()}if(k==='OPTIONS')await options();
- if(k==='TITRE'&&await ask(NET.on?'Retourner à l\'écran titre ? Tu quitteras le salon en ligne, et la progression non sauvegardée sera perdue.':'Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}};
+ if(k==='TITRE'&&await ask(NET.on?`Retourner à l'écran titre ? Tu quitteras ${typeof advCode==='function'&&advCode()?'l\'aventure en ligne':'le salon en ligne'}, et la progression non sauvegardée sera perdue.`:'Retourner à l\'écran titre ? La progression non sauvegardée sera perdue.')){await fadeTo(1,300);return titleScreen()}}};

@@ -8,7 +8,7 @@ const NETV=1,NETP='pixemon-eclipse/v1/',NETAB='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 const NETRL=(typeof NET_RELAYS!=='undefined'&&Array.isArray(NET_RELAYS))?NET_RELAYS:[{u:'wss://broker.emqx.io:8084/mqtt'},{u:'wss://broker.hivemq.com:8884/mqtt'},{u:'wss://mqtt.eclipseprojects.io/mqtt'},{u:'wss://public.cloud.shiftr.io',l:'public',w:'public'},{u:'wss://test.mosquitto.org:8081/mqtt'}];
 const netTopic=c=>{let a=2166136261,b=5381;for(const ch of 'pxe15:'+c){const k=ch.charCodeAt(0);a=Math.imul(a^k,16777619)>>>0;b=(Math.imul(b,33)^k)>>>0}return NETP+a.toString(16).padStart(8,'0')+b.toString(16).padStart(8,'0')};
 const NETDV=()=>DEX.length+'.'+Object.keys(MV).length+'.'+Object.keys(IT).length+'.'+Object.keys(BQ).length;
-const NOGHOST=new Set(['songe','chambre','salon']);
+const NOGHOST=new Set(['songe','chambre','salon']),netRoom=()=>typeof advCode==='function'&&advCode()?'l\'aventure':'le salon';
 const LOOKS=['hero','girl','kid','girlkid','scout','camper','botanist','climber','caver','sailor','fisher','astro','assistant','mountaineer'];
 const QCHAT=['Salut !','Ça va ?','On fait un combat ?','On échange ?','Viens par ici !','Attends-moi !','J\'arrive !','Bien joué !','Merci !','Trop fort !','Oups !','Regarde !','Je reviens vite.','À plus !'];
 const QEMO=['!','?','♥','♪','…'];
@@ -43,7 +43,7 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
  will(){return JSON.stringify({v:NETV,f:this.pid,s:0,k:'bye'})},
  up(){return this.R.some(r=>r.up)},
  join(code){this.leave(true);this.code=code;this.topic=netTopic(code);this.pid=Array.from({length:8},()=>'abcdefghijklmnopqrstuvwxyz0123456789'[Math.random()*36|0]).join('');this.seq=0;this.peers.clear();this.seen.clear();this.pend.clear();
-  this.log=[];this.inv=null;this.act=null;this.on=true;this.ever=0;this.lk='';this.path=[];this.R=NETRL.map(c=>new Relay(c));this.R.forEach(r=>r.open());NG().room=code;this.note(`Salon ${code} : connexion…`)},
+  this.log=[];this.inv=null;this.act=null;this.on=true;this.ever=0;this.lk='';this.path=[];this.R=NETRL.map(c=>new Relay(c));this.R.forEach(r=>r.open());NG().room=code;this.note(`${G?.coop?.code===code?'Aventure':'Salon'} ${code} : connexion…`)},
  leave(quiet){if(!this.on)return;try{this.out(JSON.stringify({v:NETV,f:this.pid,s:++this.seq,k:'bye'}))}catch(e){}const R=this.R;setTimeout(()=>R.forEach(r=>r.close(1)),150);
   for(const p of this.pend.values())p.ko?.();this.pend.clear();for(const P of this.peers.values())ghostDel(P);this.peers.clear();this.R=[];this.on=false;this.code='';this.inv=null;this.act=null;if(!quiet)this.note('Tu as quitté le salon.')},
  relayUp(r){this.ever=1;this.hi(1);this.send('who')},
@@ -81,7 +81,7 @@ const okXY=(m,x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&y>=0&&x>=0&&y<MAPS
 NET.H.who=()=>{if(Date.now()-(NET.lwho||0)>800){NET.lwho=Date.now();NET.hi(1)}};
 NET.H.hi=(m,P)=>{const n=netName(m.n)||'Ami',nw=P.nw;P.nw=0;P.name=n;P.look=LOOKS.includes(m.lk)?m.lk:'hero';P.b=Math.max(0,Math.min(4,m.b|0));P.ld=SP[m.ld]?m.ld:'';P.dv=String(m.dv||'').slice(0,40);P.bz=m.bz?1:0;
  if(m.s>P.ps&&okMap(m.m)&&okXY(m.m,m.x,m.y)){P.ps=m.s;const d=m.d&3;if(P.map!==m.m){P.map=m.m;P.x=m.x;P.y=m.y;P.d=d;P.q=[];P.snap=1}else P.q.push([m.x,m.y,d])}
- if(nw){NET.note(`${n} a rejoint le salon !`);sfx('ok');NET.hi(1)}if(P.g){P.g.t=P.look}};
+ if(nw){NET.note(`${n} a rejoint ${netRoom()} !`);sfx('ok');NET.hi(1)}if(P.g){P.g.t=P.look}};
 NET.H.p=(m,P)=>{if(m.s<P.ps||!okMap(m.m)||!Array.isArray(m.p))return;P.ps=m.s;const L=m.p.slice(-12).filter(e=>Array.isArray(e)&&okXY(m.m,e[0],e[1]));if(!L.length)return;
  if(P.map!==m.m||m.j){P.map=m.m;const[x,y,d]=L[L.length-1];P.x=x;P.y=y;P.d=d&3;P.q=[];P.snap=1;return}P.run=!!m.rn;for(const[x,y,d]of L)P.q.push([x,y,d&3]);if(P.q.length>24)P.q.splice(0,P.q.length-24)};
 NET.H.ch=(m,P)=>{const i=m.c|0;if(i<0||i>=QCHAT.length)return;P.say={s:QCHAT[i],t0:now()};NET.note(`${P.name} : ${QCHAT[i]}`);sfx('sel')};

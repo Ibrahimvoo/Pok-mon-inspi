@@ -24,12 +24,12 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  for(const k of['join','left','pw','item','ball','run','ko','end'])ok(kinds[k]>0,'événement '+k+' vu');
  // 2) Équilibrage : équipes cohérentes (niveau de la créature +3), attaques automatiques, selon le nombre de joueurs
  const SPW=Object.values(MAPS).flatMap(M=>(M.enc||[]).map(e=>e[0])).filter(k=>SP[k]),bal={};
- for(const N of[1,2,3,4]){let w=0,turns=0,dmgT=0,lost=0;for(let b=0;b<160;b++){const lv=rnd(10,40),E=cbEngine(cbMon(cbSnap(cbCopy(mon(pick(SPW),lv)))));const mk=()=>[mon(pick(SPW),lv+3),mon(pick(SPW),lv+1),mon(pick(SPW),lv)].map(m=>cbMon(cbSnap(cbCopy(m))));
+ for(const N of[1,2,3,4]){let w=0,turns=0,dmgT=0,lost=0;for(let b=0;b<300;b++){const lv=rnd(10,40),E=cbEngine(cbMon(cbSnap(cbCopy(mon(pick(SPW),lv)))));const mk=()=>[mon(pick(SPW),lv+3),mon(pick(SPW),lv+1),mon(pick(SPW),lv)].map(m=>cbMon(cbSnap(cbCopy(m))));
    E.host({pid:'h',nm:'H',lk:'hero',T:mk(),a:0,stg:{},ev:0,evOn:0});const add=[];for(let i=1;i<N;i++)add.push({pid:'p'+i,nm:'J'+i,lk:'hero',T:mk(),br:{}});E.step({add,cs:{}});let v=E.view(),k=0;
    const hp0=E.A.map(a=>a.T.reduce((s,m)=>s+m.hp,0));while(v.ph!=='end'&&k++<80){E.step({cs:{}});v=E.view()}
    if(v.w==='win')w++;turns+=v.turn;dmgT+=E.A.reduce((s,a,i)=>s+1-a.T.reduce((t,m)=>t+m.hp,0)/hp0[i],0)/N;lost+=E.A.reduce((s,a)=>s+a.T.filter(m=>m.hp<=0).length,0)/N}
-  bal[N]={victoires:Math.round(w/1.6)+'%',tours:(turns/160).toFixed(1),pvPerdus:Math.round(dmgT/1.6)+'%',KO:(lost/160).toFixed(2)}}
- L('équilibrage',JSON.stringify(bal));ok(parseInt(bal[2].pvPerdus)>parseInt(bal[1].pvPerdus)&&parseInt(bal[4].pvPerdus)>parseInt(bal[2].pvPerdus),'plus de joueurs : chaque joueur perd plus de PV');
+  bal[N]={victoires:Math.round(w/3)+'%',tours:(turns/300).toFixed(1),pvPerdus:Math.round(dmgT/3)+'%',KO:(lost/300).toFixed(2)}}
+ L('équilibrage',JSON.stringify(bal));const p1=parseInt(bal[1].pvPerdus);ok([2,3,4].every(N=>Math.abs(parseInt(bal[N].pvPerdus)-p1)<=12&&parseInt(bal[N].victoires)>=parseInt(bal[1].victoires)-8),'à plusieurs, chaque joueur encaisse à peu près autant qu\'en solo (17.0)');
  // 3) Relecture visuelle complète (hôte, puis invité)
  for(const me of[0,1]){const foe=mon('rocaillon',22),E=cbEngine(cbMon(cbSnap(cbCopy(foe))));const T=[mon('brasilion',24),mon('goutelin',22)],mk=a=>a.map(m=>cbMon(cbSnap(cbCopy(m))));
   E.host({pid:'h',nm:'Alice',lk:'girl',T:mk(T),a:0,stg:{},ev:0,evOn:1});const C={id:'t'+me,host:me?0:1,me,real:me?[]:T,oth:[],N:1,part:new Set(),o:{}};

@@ -40,9 +40,27 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 17.0 : Aventure à plusieurs
+
+![Aperçu de la version 17.0](apercus/v17-aventure.png)
+
+- **Toute l'histoire à plusieurs** : sur l'écran titre, AVENTURE À PLUSIEURS, puis NOUVELLE AVENTURE. Le jeu donne un code de 4 caractères ; les amis choisissent AVENTURE À PLUSIEURS, puis REJOINDRE, et le tapent. Une salle d'attente montre qui est connecté, puis chacun commence dans sa chambre. Jusqu'à 4 joueurs, chacun sur son téléphone ou son ordinateur.
+- **Une sauvegarde par aventure** : la partie est enregistrée sur chaque appareil sous le code de l'aventure, à côté des trois parties habituelles. Pour reprendre : CONTINUER L'AVENTURE sur l'écran titre (ou AVENTURE À PLUSIEURS, puis CONTINUER) ; on se reconnecte tout seul et on se retrouve.
+- **Le tutoriel ensemble** : au labo, chacun choisit sa créature ; Kael attend que tout le monde ait choisi (« On l'attend ! ») puis affronte tous les joueurs en même temps. Le Prof. Saule remet ensuite Pixédex, Capsules et Potions à chacun.
+- **On combat tout ensemble** : créatures sauvages, dresseurs, champions d'arène, Kael, la Team Éclipse, les légendaires… Dès que l'un commence un combat, les autres le rejoignent automatiquement, où qu'ils soient, puis reviennent là où ils étaient. Chacun touche la prime du dresseur et gagne l'EXP. Celui qui attrape un légendaire le garde ; chez les autres, il attend encore quelque part.
+- **Des scènes partagées** : quand l'un déclenche une scène de l'histoire (parler à un champion, à un légendaire, à un personnage clé, se faire repérer par un dresseur…), les autres sont transportés près de lui et la vivent sur leur écran ; ses combats se jouent ensemble et chacun reçoit badges, bracelet et récompenses. Les scènes qui se déclenchent en marchant ou en entrant dans un lieu sont partagées avec ceux qui sont sur la même carte ; les autres les vivront en y passant. Un ami occupé (menu, autre combat) rattrape la scène dès qu'il est libre et reprend le résultat du combat.
+- **Toujours ensemble** : l'heure d'Aurélys est commune à toute l'aventure. EN LIGNE, JOUEURS, puis ALLER LE VOIR téléporte auprès d'un ami. RÉGLAGES permet de demander avant de rejoindre un combat, ou de ne plus suivre les scènes.
+- **Amis pour de bon** : dans un salon ordinaire, AJOUTER EN AMI remplace FAIRE ÉQUIPE. Les amis sont retenus par l'appareil, d'un salon à l'autre, et se rejoignent automatiquement à chaque combat, même sur une autre carte (MES AMIS pour la liste, RETIRER DES AMIS pour arrêter).
+- **Ton apparence, pour toi aussi** : le personnage choisi (OPTIONS, APPARENCE, ou le profil en ligne) s'affiche enfin sur ton propre écran (monde, carte de la région, Carte de Dresseur), et plus seulement chez tes amis.
+- **Équilibrage revu** : l'adversaire se renforce selon le nombre de joueurs debout (PV x1,9 / x2,7 / x3,5, Attaque +12 % / +22 % / +32 %, Défense et Vitesse un peu) pour que chacun encaisse à peu près autant qu'en solo. Sur des centaines de combats simulés : contre trois créatures de dresseur, environ 45 % de victoires seul et 50 à 60 % à plusieurs, pour 80 à 90 % des PV perdus ; contre une créature sauvage, environ 20 % des PV perdus quel que soit le nombre de joueurs. Bonus d'EXP x1,2 / x1,35 / x1,5 (x1,1 / x1,2 / x1,3 contre les dresseurs).
+- **Sous le capot** : le moteur de combat en groupe gère désormais les équipes adverses (créature suivante choisie selon les types, Super Potions, Éveil des dresseurs et des légendaires, terrains Roc, Volt, Marée et Crépuscule). Chaque scène partagée est rejouée par le jeu de chaque joueur ; ses combats portent un identifiant commun, et un ami qui arrive après la bataille en reprend simplement le résultat. Un joueur qui perd la connexion en plein combat revient à son aventure sans rien casser.
+- Tests : `node tools/play.mjs tools/scn-v17-moteur.js` (300 combats aléatoires contre des dresseurs à 1-4 joueurs, équilibrage, relecture visuelle) et, avec les relais locaux : `node tools/net2.mjs tools/scn-v17-aventure.js` (de l'écran titre à Brasia : code, Kael à deux, scène de dresseur, combat sauvage rejoint de loin, badge pour les deux, ALLER LE VOIR, reprise), `node tools/net2.mjs tools/scn-v17-histoire.js` (case piégée, entrée de lieu, ami occupé, réglage, légendaire, coupure), `SIDES=A,B,C node tools/net2.mjs tools/scn-v17-amis.js` (amis dans un salon ordinaire) et `SIDES=A,B,C node tools/net2.mjs tools/scn-v17-aventure3.js` (Kael à trois) ; tous aussi avec `DROP=0.2`.
+
 ## Version 16.0 : Combats en groupe
 
 ![Aperçu de la version 16.0](apercus/v16-groupe.png)
+
+*Depuis la 17.0 : AJOUTER EN AMI remplace FAIRE ÉQUIPE, les amis rejoignent les combats automatiquement depuis n'importe quelle carte, et le renforcement de l'adversaire est plus doux (voir ci-dessus).*
 
 - **Faire équipe** : dans un salon, parle à un ami (ou passe par EN LIGNE, AMIS) et choisis FAIRE ÉQUIPE. Un groupe compte jusqu'à 4 joueurs. Les membres ont une étoile à côté de leur nom, sur la carte et dans les listes ; EN LIGNE, GROUPE montre le groupe et permet de le quitter.
 - **Venir aider** : quand un membre du groupe affronte une créature sauvage (hautes herbes, créature visible ou pêche), ceux qui sont sur la même carte reçoivent un appel : « Alice affronte un Rocaillon sauvage ! Aller l'aider ? ». On peut aussi la rejoindre plus tard, en plein combat : un « ! » clignote au-dessus d'elle, on s'approche, A, puis AIDER. On entre dans le combat au début du tour suivant.
@@ -50,7 +68,7 @@ Le menu contient la carte de la région, le journal des quêtes (sur plusieurs p
 - **Avec ses vraies créatures** : PV, PP, statuts, baies mangées et objets utilisés sont conservés après le combat ; on peut changer de créature, utiliser le sac (soins, rappels, capsules) et l'Éveil. L'EXP est gagnée par chacun, avec un bonus de groupe (x1,4 à deux, x1,8 à trois, x2,2 à quatre). Celui qui réussit à capturer la créature la garde ; les autres gagnent quand même l'EXP.
 - **Partir, fuir, perdre** : un invité peut PARTIR à tout moment (ses amis continuent sans lui). Celui qui a trouvé la créature peut FUIR, ce qui arrête le combat pour tout le monde. Un joueur dont toutes les créatures sont K.O. regarde la suite ; si le groupe gagne, il rentre se soigner sans rien perdre.
 - **Sous le capot** : celui qui a trouvé la créature calcule chaque tour avec les formules du jeu (talents, objets tenus, breloques, ciels, lien, Éveil) et envoie à chacun la même suite d'événements ; chaque écran la rejoue avec ses propres animations, sa créature au premier plan et celles des amis plus petites autour. Les joueurs qui tardent à choisir (45 s) attaquent automatiquement. Les créatures envoyées sur le réseau sont vérifiées à l'arrivée.
-- Deux succès et une ligne dans le journal. Tests : `node tools/play.mjs tools/scn-v16-groupe.js` (300 combats aléatoires à 1-4 joueurs avec arrivées et départs, équilibrage, relecture visuelle) et à trois navigateurs : `SIDES=A,B,C node tools/net2.mjs tools/scn-v16-trio.js` (groupe formé par les menus, appel à l'aide, arrivée en plein combat, même fin sur les trois écrans, départ en cours de combat ; aussi avec `DROP=0.2`).
+- Deux succès et une ligne dans le journal. Tests : `node tools/play.mjs tools/scn-v16-groupe.js` (300 combats aléatoires à 1-4 joueurs avec arrivées et départs, équilibrage, relecture visuelle) et à trois navigateurs (remplacé en 17.0 par `scn-v17-amis.js`, mêmes situations avec les amis : arrivée en plein combat, même fin sur les trois écrans, départ en cours de combat).
 
 ## Version 15.0 : En ligne entre amis
 
@@ -270,7 +288,7 @@ tools/play.mjs      parcours automatique (Playwright) → node tools/play.mjs to
 tools/scn-v4.js     teste les mécaniques 4.0         → node tools/play.mjs tools/scn-v4.js
 tools/scn-intro.js  teste l'introduction jouable     → node tools/play.mjs tools/scn-intro.js
 tools/fontcheck.mjs vérifie que chaque caractère existe dans la police bitmap
-tools/net2.mjs      deux joueurs en ligne + relais locaux → node tools/net2.mjs tools/scn-v15-duo.js   (npm i aedes ws ; DROP=0.2 : pertes ; SIDES=A,B,C : trois joueurs)
+tools/net2.mjs      joueurs en ligne + relais locaux → node tools/net2.mjs tools/scn-v17-aventure.js   (npm i aedes ws, ou NETMOD=dossier ; DROP=0.2 : pertes ; SIDES=A,B,C : trois joueurs)
 src/v10/m-reseau.js relais MQTT, salon, présence, amis sur la carte
 src/v10/n-enligne.js menu EN LIGNE, clavier, invitations, échanges
 src/v10/o-arene.js  combats en ligne (moteur de l'hôte, relecture sur les deux écrans)
