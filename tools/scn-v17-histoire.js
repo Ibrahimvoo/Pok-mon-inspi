@@ -20,8 +20,8 @@
   G.party=team(60);healAll();loadMap('route1',7,11,2);await BAR('occupe');await run(interact);ok(f().t_lina===1&&window.CBLAST?.Nmax===1,'Lina battue par Alice seule (Bob occupé)');const o1=await BAR('occupe-fin');ok(o1.t_lina&&o1.money===o1.m0,'Bob a rattrapé la scène : Lina battue chez lui aussi, sans prime');
   // 4) Bob ne suit plus les scènes : il vient quand même aider au combat contre la Scout Nina, sans la scène
   healAll();loadMap('foret',6,4,1);await BAR('nesuitpas');await run(interact);ok(f().t_nina===1&&window.CBLAST?.Nmax===2,'Nina battue avec l\'aide de Bob');const n1=await BAR('nesuitpas-fin');ok(!n1.t_nina&&n1.money===n1.m0+400&&n1.stay,'Bob a aidé (prime) sans vivre la scène (Nina reste à battre chez lui)');
-  // 5) Légendaire : Alice attrape Solarion, il disparaît du monde de Bob
-  Object.assign(f(),{balance:1});delete f().eclipse;G.party=team(55);healAll();G.bag={cyclecapsule:1};loadMap('mont',9,2,1);await BAR('legende');Z.ball=1;await run(interact);Z.ball=0;
+  // 5) Légendaire : Alice attrape Solarion (piste de l'aube déjà suivie ; en groupe, l'épreuve est un combat classique), il disparaît du monde de Bob
+  Object.assign(f(),{balance:1,v19sol:3});delete f().eclipse;G.party=team(55);healAll();G.bag={cyclecapsule:1};loadMap('mont',9,2,1);await BAR('legende');Z.ball=1;await run(interact);Z.ball=0;
   ok(f().legS===1&&G.party.some(m=>m.sp==='solarion'),'Solarion attrapé par Alice');const l1=await BAR('legende-fin');ok(l1.legS&&!l1.visible&&!l1.has&&l1.lg==='Alice','chez Bob, Solarion a disparu (capturé par Alice)');
   // 6) Alice se déconnecte en plein combat de scène (Botaniste Iris) : Bob s'en sort proprement
   healAll();loadMap('foret',22,12,3);await BAR('coupure');Z.hold=1;const pi=run(interact);ok(await until(()=>CB&&CB.vE?.A.filter(a=>a&&!a.out).length>=2,60000),'Bob est dans le combat d\'Alice');await BAR('dedans');NET.leave();Z.hold=0;await pi;
@@ -37,7 +37,7 @@
   NG().fs=0;SCQ.length=0;healAll();loadMap('route1',4,8,0);const m1=G.money;await BAR('nesuitpas');ok(await until(()=>!!CBG,60000),'Bob rejoint le combat d\'Alice en renfort');ok(await until(()=>idle(),120000),'combat fini');
   await wait(1500);await BAR('nesuitpas-fin',{t_nina:f().t_nina|0,money:G.money,m0:m1,stay:G.map==='route1'&&G.x===4&&G.y===8});NG().fs=1;SCQ.length=0;
   // 5) légendaire
-  Object.assign(f(),{balance:1});delete f().eclipse;G.party=team(55);healAll();loadMap('mont',12,10,0);await BAR('legende');ok(await until(()=>idle()&&window.CBLAST?.r==='run'&&window.CBLAST?.by===0,180000),'Bob a combattu Solarion avec Alice, qui l\'a attrapé');
+  Object.assign(f(),{balance:1,v19sol:3});delete f().eclipse;G.party=team(55);healAll();loadMap('mont',12,10,0);await BAR('legende');ok(await until(()=>idle()&&window.CBLAST?.r==='run'&&window.CBLAST?.by===0,180000),'Bob a combattu Solarion avec Alice, qui l\'a attrapé');
   await BAR('legende-fin',{legS:f().legS|0,visible:npcs(MAPS.mont).some(n=>n.sp==='solarion'),has:G.party.some(m=>m.sp==='solarion'),lg:G.coop.lg?.solarion||''});
   // 6) coupure
   healAll();loadMap('route1',4,8,0);await BAR('coupure');ok(await until(()=>!!CBG,90000),'Bob suit la scène d\'Iris et entre dans le combat');await BAR('dedans');ok(await until(()=>idle(),120000),'Bob revient au monde malgré la coupure');ok(!f().t_iris,'combat interrompu : Iris reste à battre chez Bob');

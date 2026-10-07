@@ -44,4 +44,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  {G=newGame();mode='world';Object.assign(f(),{starter:'goutelin',intro:3,rival1:1});G.party=[mon('ratounet',4)];G.money=1000;loadMap('gym',6,4,1);const br=MAPS.gym.npcs.find(n=>n.tr?.id==='brasia');
   const n0=SAID.length;const r=await trainerBattle(br);await SNAP('defaite');const S=SAID.slice(n0);L('analyse',S.filter(s=>/^Analyse|^Et aussi/.test(s)).join(' | '));
   ok(r==='lose'&&G.money===900,'défaite : 10 % de l\'argent ('+G.money+')');ok(S.some(s=>/^Analyse : Brasia/.test(s)),'analyse sur mesure de Brasia');ok(G.map==='gym'&&G.party[0].hp===st(G.party[0]).hp,'RÉESSAYER : on reste dans l\'arène, équipe soignée')}
+ ok(NEWS[0][1]==='La faune d\'Aurélys'&&normalize(Object.assign(JSON.parse(JSON.stringify(G)),{v:18.2,wn:0})).wn===1,'nouveautés 19 en tête, une sauvegarde 18.2 les affiche');
  L('fin')}

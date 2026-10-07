@@ -1,7 +1,7 @@
 // Test 18.2 : fonds de combat prolongés proprement, taux de rencontres et répit, créatures visibles hors des couloirs,
 // options RENCONTRES et COURSE, grottes élargies (tout reste accessible), Éclat caché de Cendreville accessible.
 async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Error('ÉCHEC '+m);L('ok',m)};
- G=newGame();mode='world';Object.assign(f(),{starter:'goutelin',intro:3,badge:1,badge2:1,mineAlert:1});G.keys.lantern=1;G.party=[mon('torrentor',14)];
+ G=newGame();mode='world';G.opt.encV=0;Object.assign(f(),{starter:'goutelin',intro:3,badge:1,badge2:1,mineAlert:1});G.keys.lantern=1;G.party=[mon('torrentor',14)];
  // 1) fonds de combat : 240x160, le bas n'est plus une seule ligne étirée (les lignes sous l'image diffèrent entre elles)
  for(const k of['plaine','foret','lac','grotte','mont']){const c=bgArt(k),g=c.getContext('2d'),row=y=>[...g.getImageData(0,y,240,1).data].join(),h=BGI[k].height;
   ok(c.width===240&&c.height===160,'fond '+k+' 240x160');let diff=0;for(let y=h+1;y<160;y++)if(row(y)!==row(h))diff++;ok(diff>(160-h)/2,`fond ${k} : sol prolongé sans bandes (${diff} lignes différentes)`)}
@@ -29,7 +29,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
   const R=MAPS.mine.rows.map(r=>[...r]);R[3][11]='^';const M0=MAPS.mine.rows;MAPS.mine.rows=R.map(r=>r.join(''));const S3=reach('mine',[[11,16]]);MAPS.mine.rows=M0;ok(!S3.has('11,1'),'Mine : Tito reste derrière le lieutenant Corvin');ok(!S.has('23,6'),'Mine : la galerie secrète reste derrière le brasier')}
  // 6) Cendreville : l'Éclat caché (19,1) n'est plus enfermé par le puits
  {refreshMap('ville');const S=reach('ville',[[12,0]]);ok([[19,2],[18,1],[20,1],[19,0]].some(([x,y])=>S.has(x+','+y))||S.has('19,1'),'Cendreville : l\'Éclat caché est accessible')}
- ok(NEWS[0][1]==='Nouvelle console'&&NEWS[1][1]==='Combats et rencontres'&&NEWS[2][1]==='Grottes et déplacements','nouveautés 18.2 en tête');ok(normalize(Object.assign(JSON.parse(JSON.stringify(G)),{v:18.1,wn:0})).wn===1,'une sauvegarde 18.1 affiche les nouveautés');
+ {const i=NEWS.findIndex(n=>n[1]==='Nouvelle console');ok(i>=0&&NEWS[i+1][1]==='Combats et rencontres'&&NEWS[i+2][1]==='Grottes et déplacements','nouveautés 18.2 présentes (juste après celles des versions suivantes)')}ok(normalize(Object.assign(JSON.parse(JSON.stringify(G)),{v:18.1,wn:0})).wn===1,'une sauvegarde 18.1 affiche les nouveautés');
  // 7) un vrai combat dans la grotte s'affiche (capture)
  G.party=[mon('torrentor',30)];loadMap('grotte',13,13,1);AUTO.off=1;{const p=run(()=>battle([mon('rocaton',10,{wild:1})]));await wait(2400);await SNAP('combat-grotte');AUTO.off=0;await p}
  loadMap('grotte',20,8,1);ui.banner=null;await wait(300);await SNAP('grotte-lumiere');

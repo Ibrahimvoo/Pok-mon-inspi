@@ -30,6 +30,9 @@ function ruNew(k,p){RU.map=null;if(!encVis()||!fauOk(k)||Math.random()>p)return;
 setInterval(()=>{try{if(mode!=='world'||!G||RU.map!==G.map||busy&&!move)return;const M=MAPS[G.map],c=M.rows[RU.y]?.[RU.x],col=c===','?'#9ae07a':M.cave||c==='g'?'#9aa8b8':'#e8945a';
  for(let i=0;i<2;i++)AMB.push({k:'rl',x:RU.x*TS+6+Math.random()*20,y:RU.y*TS+20,vx:(Math.random()-.5)*1.8,vy:-1.6-Math.random()*1.2,l:20,c:col});
  if(Math.abs(RU.x-G.x)+Math.abs(RU.y-G.y)<=4&&Math.random()<.12)sfx('grass')}catch(e){}},170);
+// Les herbes frémissantes se voient bien : de petits traits qui tremblent au-dessus de la touffe, de jour comme de nuit
+{const dw19f=drawWorld;drawWorld=function(t){dw19f(t);if(mode!=='world'||!G||RU.map!==G.map)return;const sx=RU.x*TS-CAM[0],sy=RU.y*TS-CAM[1],k=(t/110|0)%10;if(k>6)return;const o=k%2?2:-1;
+ X.globalAlpha=.9;for(const[x,y,h]of[[3,10,6],[27,10,6],[8,4,5],[22,4,5],[15,0,4]])R(X,'#ffffff',sx+x+(x<15?-o:x>15?o:0),sy+y-(k%2),2,h);X.globalAlpha=1}}
 async function ruHit(){const M=MAPS[G.map];RU.map=null;RU.last=steps;if(!G.party.some(alive))return;const T=encTable(M,G.map).filter(encOk);if(!T.length)return;
  const S=[...T].sort((a,b)=>encW(a)-encW(b)),R=S.slice(0,Math.max(1,Math.ceil(S.length/3))),e=R[Math.random()*R.length|0],lv=Math.min(e[2]+1,rnd(e[1],e[2])+1);
  sfx('grass');for(let i=0;i<14;i++)AMB.push({k:'rl',x:G.x*TS+4+Math.random()*24,y:G.y*TS+18,vx:(Math.random()-.5)*3,vy:-2-Math.random()*2,l:26,c:'#9ae07a'});
@@ -39,7 +42,7 @@ async function ruHit(){const M=MAPS[G.map];RU.map=null;RU.last=steps;if(!G.party
 const fauTerr=k=>!!(PREY[k]||SP[k]?.bs[1]>=85)&&!SHY.has(k);
 async function fauCharge(){if(!encVis()||G.repel>0||!G.party.some(alive))return false;const M=MAPS[G.map],ld=G.party.find(alive),L=npcs(M);
  for(const n of L){if(!n.fauna||n.gone||n.slp||n.walk||!fauTerr(n.sp)||n.lv<ld.lv-8)continue;const dx=G.x-n.x,dy=G.y-n.y;if(dx&&dy)continue;const dist=Math.abs(dx)+Math.abs(dy);if(dist<1||dist>3)continue;
-  const d=dx>0?3:dx<0?2:dy>0?0:1;let ok=true;for(let i=1;i<dist;i++){const x=n.x+DX[d]*i,y=n.y+DY[d]*i,c=M.rows[y]?.[x];if(!c||SOLID.has(c)||L.some(o=>o!==n&&o.x===x&&o.y===y)){ok=false;break}}if(!ok)continue;
+  if((MAPS[G.map].cave||MAPS[G.map].dark)&&dist>2)continue;const d=dx>0?3:dx<0?2:dy>0?0:1;let ok=true;for(let i=1;i<dist;i++){const x=n.x+DX[d]*i,y=n.y+DY[d]*i,c=M.rows[y]?.[x];if(!c||SOLID.has(c)||L.some(o=>o!==n&&o.x===x&&o.y===y)){ok=false;break}}if(!ok)continue;
   n.d=d;n.walk=1;await emote(n,'!',420);for(let i=1;i<dist;i++)await npcStep(n,d,130);n.walk=0;n.rx=n.ry=null;
   tip('terr','Certaines créatures défendent leur territoire : si elles te voient de près, elles te chargent. Observe-les et contourne-les, ou relève le défi !');
   await say(`Le ${SP[n.sp].name} sauvage défend son territoire !`);await faunaMeet(n);return true}return false}

@@ -1739,7 +1739,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.2',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2321,7 +2321,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.2',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);

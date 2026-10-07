@@ -49,6 +49,7 @@ async function solTrial(){const F=GV(),n=npcs(MAPS.mont).find(x=>x.sp==='solario
  if(r==='trial'){await cine(1);if(n)rays(n.x,n.y,C.goldL,2600);await say('Le soleil se voile doucement. Solarion replie ses ailes et incline sa tête immense devant toi.');
   await say('« Tu as tenu. Pas en frappant plus fort : en veillant sur les tiens. C\'est ce que j\'aurais dû faire, il y a mille ans. »','Solarion');await cine(0);await gv19Join('solarion','legS');
   await say('Partout dans Aurélys, ce matin-là, les gens jurent que l\'aube était plus dorée que d\'habitude.')}
+ else if(r==='catch'){F.legS=1;await say('Solarion a rejoint ton équipe. Prends soin de lui.')}   // combat en groupe (aventure à plusieurs) : épreuve classique
  else if(r==='win')await say('Solarion s\'élève, blessé dans sa fierté. « Tu n\'as rien compris. » Il reviendra demain au sommet.');}
 // --- Nocturion : les chaînes
 async function noc19Meet(){const F=GV(),n=npcs(MAPS.dome).find(x=>x.sp==='nocturion');await cine(1);if(n)await emote(n,'!',600);ui.shake=6;sfx('roar');
@@ -78,6 +79,7 @@ async function nocTrial(){const F=GV(),n=npcs(MAPS.dome).find(x=>x.sp==='nocturi
  if(r==='trial'){await cine(1);await say('Nocturion vacille… puis s\'arrête. Il te regarde longtemps, sans colère. Les fragments se brisent en poussière d\'étoiles.');
   await say('« Tu pouvais me faire tomber. Tu ne l\'as pas fait. Mille ans que j\'attendais quelqu\'un qui sache s\'arrêter. »','Nocturion');await cine(0);await gv19Join('nocturion','legN');
   await say('Cette nuit-là, au-dessus d\'Aurélys, le ciel est si clair que l\'on voit la Voie lactée depuis les rues de Volterre.')}
+ else if(r==='catch'){F.legN=1;await say('Nocturion a rejoint ton équipe. Prends soin de lui.')}
  else if(r==='win')await say('Nocturion s\'effondre… puis se dissout dans l\'ombre. Tu l\'as fait tomber. Il faudra revenir, une autre nuit, et savoir t\'arrêter.')}
 // --- Branchement sur les gardiens existants (Mont Braise le jour, dôme la nuit)
 {const lg19=legend;legend=async function(sp){const F=GV();

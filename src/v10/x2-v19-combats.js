@@ -43,8 +43,9 @@ const RULE19={aucun:['Combat amical',''],express:['Défi Express','Gagne en {n} 
  eclipse:['Combat dans l\'ombre','OMBRE x1,5 pendant tout le combat.'],inverse:['Combat Inversé','Les faiblesses deviennent des résistances, et inversement !']};
 const ch19Txt=C=>{const[t,d]=RULE19[C[0]];return(t+(d?' : '+d.replace('{n}',C[1]):'.'))};
 {const tb19=trainerBattle;trainerBattle=async function(n){const tr=n?.tr,C=tr&&CH19[tr.id];if(!C||f()['t_'+tr.id])return tb19(n);
+ if(typeof SCX!=='undefined'&&SCX&&!SCX.lead){tr.ch19=C;try{return await tb19(n)}finally{delete tr.ch19}}   // scène d'un ami (aventure à plusieurs) : on le rejoint sans redemander
  await say(tr.pre,tr.name,0,n.t);await say(`${ch19Txt(C)} Récompense : ${IT[C[2]][0]}${C[3]>1?' x'+C[3]:''}.`,tr.name,0,n.t);
- if(!await ask('Relever le défi ?')){n.los=0;await say('Pas de souci ! Reviens me voir quand tu veux.',tr.name,0,n.t);return null}
+ if(!await ask(`Relever le défi ? (${IT[C[2]][0]}${C[3]>1?' x'+C[3]:''})`,tr.name)){n.los=0;await say('Pas de souci ! Reviens me voir quand tu veux.',tr.name,0,n.t);return null}
  const pre=tr.pre,fl=tr.field;tr.pre=['C\'est parti !','En garde !','Voyons ce que tu vaux !'][rnd(0,2)];if(C[0]!=='aucun'&&!fl)tr.field='r19'+C[0];tr.ch19=C;
  try{return await tb19(n)}finally{tr.pre=pre;tr.field=fl;delete tr.ch19}}}
 // Règles appliquées au début du combat (via le terrain d'arène)

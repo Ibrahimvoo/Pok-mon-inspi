@@ -12,7 +12,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  at('ville',mum,0);pick(m=>m.title==='La voleuse de croissants'?1:null);await interact();unpick();ok(f().v19q1===2,'on laisse la famille tranquille');
  at('ville',A);await interact();ok(f().v19q1===5,'Augustin nourrira la famille');at('ville',mum,0);const b0=Object.values(G.bag).reduce((a,b)=>a+b,0);await interact();ok(Object.values(G.bag).reduce((a,b)=>a+b,0)===b0+1,'la maman Ratounet laisse un cadeau');
  // 2. Le dresseur d'autrefois
- nite();G.party=[mon('torrentor',65),mon('brasilion',65),mon('phalumine',65),mon('rocaroc',65),mon('bourdonnerre',65),mon('papivigne',65)];const gh=MAPS.bois.npcs.find(n=>n.name==='Dresseur d\'autrefois');at('bois',gh);ok(npcs(MAPS.bois).includes(gh),'le fantôme n\'apparaît que la nuit');await interact();ok(f().v19q2===1,'Albert gagne enfin son dernier combat');
+ nite();G.party=[mon('torrentor',85),mon('brasilion',85),mon('phalumine',85),mon('rocaroc',85),mon('bourdonnerre',85),mon('papivigne',85)];const gh=MAPS.bois.npcs.find(n=>n.name==='Dresseur d\'autrefois');at('bois',gh);ok(npcs(MAPS.bois).includes(gh),'le fantôme n\'apparaît que la nuit');await interact();ok(f().v19q2===1,'Albert gagne enfin son dernier combat');
  day();const od=MAPS.coteaux.npcs.find(n=>n.name==='Mamie Odette');at('coteaux',od);const r0=G.bag.ruban||0;await interact();ok(f().v19q2===2&&(G.bag.ruban||0)===r0+1,'Odette reçoit le message et donne le ruban');
  // 3. Course des Coteaux (téléportation vers l'arrivée pour le test)
  f().cot=1;const Z=MAPS.coteaux.npcs.find(n=>n.name==='Coureuse Zia');at('coteaux',Z);await interact();ok(RACE,'la course démarre');await SNAP('course');

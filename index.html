@@ -2088,7 +2088,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 18.2',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2670,7 +2670,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V18.2',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -6912,6 +6912,9 @@ function ruNew(k,p){RU.map=null;if(!encVis()||!fauOk(k)||Math.random()>p)return;
 setInterval(()=>{try{if(mode!=='world'||!G||RU.map!==G.map||busy&&!move)return;const M=MAPS[G.map],c=M.rows[RU.y]?.[RU.x],col=c===','?'#9ae07a':M.cave||c==='g'?'#9aa8b8':'#e8945a';
  for(let i=0;i<2;i++)AMB.push({k:'rl',x:RU.x*TS+6+Math.random()*20,y:RU.y*TS+20,vx:(Math.random()-.5)*1.8,vy:-1.6-Math.random()*1.2,l:20,c:col});
  if(Math.abs(RU.x-G.x)+Math.abs(RU.y-G.y)<=4&&Math.random()<.12)sfx('grass')}catch(e){}},170);
+// Les herbes frémissantes se voient bien : de petits traits qui tremblent au-dessus de la touffe, de jour comme de nuit
+{const dw19f=drawWorld;drawWorld=function(t){dw19f(t);if(mode!=='world'||!G||RU.map!==G.map)return;const sx=RU.x*TS-CAM[0],sy=RU.y*TS-CAM[1],k=(t/110|0)%10;if(k>6)return;const o=k%2?2:-1;
+ X.globalAlpha=.9;for(const[x,y,h]of[[3,10,6],[27,10,6],[8,4,5],[22,4,5],[15,0,4]])R(X,'#ffffff',sx+x+(x<15?-o:x>15?o:0),sy+y-(k%2),2,h);X.globalAlpha=1}}
 async function ruHit(){const M=MAPS[G.map];RU.map=null;RU.last=steps;if(!G.party.some(alive))return;const T=encTable(M,G.map).filter(encOk);if(!T.length)return;
  const S=[...T].sort((a,b)=>encW(a)-encW(b)),R=S.slice(0,Math.max(1,Math.ceil(S.length/3))),e=R[Math.random()*R.length|0],lv=Math.min(e[2]+1,rnd(e[1],e[2])+1);
  sfx('grass');for(let i=0;i<14;i++)AMB.push({k:'rl',x:G.x*TS+4+Math.random()*24,y:G.y*TS+18,vx:(Math.random()-.5)*3,vy:-2-Math.random()*2,l:26,c:'#9ae07a'});
@@ -6921,7 +6924,7 @@ async function ruHit(){const M=MAPS[G.map];RU.map=null;RU.last=steps;if(!G.party
 const fauTerr=k=>!!(PREY[k]||SP[k]?.bs[1]>=85)&&!SHY.has(k);
 async function fauCharge(){if(!encVis()||G.repel>0||!G.party.some(alive))return false;const M=MAPS[G.map],ld=G.party.find(alive),L=npcs(M);
  for(const n of L){if(!n.fauna||n.gone||n.slp||n.walk||!fauTerr(n.sp)||n.lv<ld.lv-8)continue;const dx=G.x-n.x,dy=G.y-n.y;if(dx&&dy)continue;const dist=Math.abs(dx)+Math.abs(dy);if(dist<1||dist>3)continue;
-  const d=dx>0?3:dx<0?2:dy>0?0:1;let ok=true;for(let i=1;i<dist;i++){const x=n.x+DX[d]*i,y=n.y+DY[d]*i,c=M.rows[y]?.[x];if(!c||SOLID.has(c)||L.some(o=>o!==n&&o.x===x&&o.y===y)){ok=false;break}}if(!ok)continue;
+  if((MAPS[G.map].cave||MAPS[G.map].dark)&&dist>2)continue;const d=dx>0?3:dx<0?2:dy>0?0:1;let ok=true;for(let i=1;i<dist;i++){const x=n.x+DX[d]*i,y=n.y+DY[d]*i,c=M.rows[y]?.[x];if(!c||SOLID.has(c)||L.some(o=>o!==n&&o.x===x&&o.y===y)){ok=false;break}}if(!ok)continue;
   n.d=d;n.walk=1;await emote(n,'!',420);for(let i=1;i<dist;i++)await npcStep(n,d,130);n.walk=0;n.rx=n.ry=null;
   tip('terr','Certaines créatures défendent leur territoire : si elles te voient de près, elles te chargent. Observe-les et contourne-les, ou relève le défi !');
   await say(`Le ${SP[n.sp].name} sauvage défend son territoire !`);await faunaMeet(n);return true}return false}
@@ -6982,8 +6985,9 @@ const RULE19={aucun:['Combat amical',''],express:['Défi Express','Gagne en {n} 
  eclipse:['Combat dans l\'ombre','OMBRE x1,5 pendant tout le combat.'],inverse:['Combat Inversé','Les faiblesses deviennent des résistances, et inversement !']};
 const ch19Txt=C=>{const[t,d]=RULE19[C[0]];return(t+(d?' : '+d.replace('{n}',C[1]):'.'))};
 {const tb19=trainerBattle;trainerBattle=async function(n){const tr=n?.tr,C=tr&&CH19[tr.id];if(!C||f()['t_'+tr.id])return tb19(n);
+ if(typeof SCX!=='undefined'&&SCX&&!SCX.lead){tr.ch19=C;try{return await tb19(n)}finally{delete tr.ch19}}   // scène d'un ami (aventure à plusieurs) : on le rejoint sans redemander
  await say(tr.pre,tr.name,0,n.t);await say(`${ch19Txt(C)} Récompense : ${IT[C[2]][0]}${C[3]>1?' x'+C[3]:''}.`,tr.name,0,n.t);
- if(!await ask('Relever le défi ?')){n.los=0;await say('Pas de souci ! Reviens me voir quand tu veux.',tr.name,0,n.t);return null}
+ if(!await ask(`Relever le défi ? (${IT[C[2]][0]}${C[3]>1?' x'+C[3]:''})`,tr.name)){n.los=0;await say('Pas de souci ! Reviens me voir quand tu veux.',tr.name,0,n.t);return null}
  const pre=tr.pre,fl=tr.field;tr.pre=['C\'est parti !','En garde !','Voyons ce que tu vaux !'][rnd(0,2)];if(C[0]!=='aucun'&&!fl)tr.field='r19'+C[0];tr.ch19=C;
  try{return await tb19(n)}finally{tr.pre=pre;tr.field=fl;delete tr.ch19}}}
 // Règles appliquées au début du combat (via le terrain d'arène)
@@ -7302,6 +7306,7 @@ async function solTrial(){const F=GV(),n=npcs(MAPS.mont).find(x=>x.sp==='solario
  if(r==='trial'){await cine(1);if(n)rays(n.x,n.y,C.goldL,2600);await say('Le soleil se voile doucement. Solarion replie ses ailes et incline sa tête immense devant toi.');
   await say('« Tu as tenu. Pas en frappant plus fort : en veillant sur les tiens. C\'est ce que j\'aurais dû faire, il y a mille ans. »','Solarion');await cine(0);await gv19Join('solarion','legS');
   await say('Partout dans Aurélys, ce matin-là, les gens jurent que l\'aube était plus dorée que d\'habitude.')}
+ else if(r==='catch'){F.legS=1;await say('Solarion a rejoint ton équipe. Prends soin de lui.')}   // combat en groupe (aventure à plusieurs) : épreuve classique
  else if(r==='win')await say('Solarion s\'élève, blessé dans sa fierté. « Tu n\'as rien compris. » Il reviendra demain au sommet.');}
 // --- Nocturion : les chaînes
 async function noc19Meet(){const F=GV(),n=npcs(MAPS.dome).find(x=>x.sp==='nocturion');await cine(1);if(n)await emote(n,'!',600);ui.shake=6;sfx('roar');
@@ -7331,6 +7336,7 @@ async function nocTrial(){const F=GV(),n=npcs(MAPS.dome).find(x=>x.sp==='nocturi
  if(r==='trial'){await cine(1);await say('Nocturion vacille… puis s\'arrête. Il te regarde longtemps, sans colère. Les fragments se brisent en poussière d\'étoiles.');
   await say('« Tu pouvais me faire tomber. Tu ne l\'as pas fait. Mille ans que j\'attendais quelqu\'un qui sache s\'arrêter. »','Nocturion');await cine(0);await gv19Join('nocturion','legN');
   await say('Cette nuit-là, au-dessus d\'Aurélys, le ciel est si clair que l\'on voit la Voie lactée depuis les rues de Volterre.')}
+ else if(r==='catch'){F.legN=1;await say('Nocturion a rejoint ton équipe. Prends soin de lui.')}
  else if(r==='win')await say('Nocturion s\'effondre… puis se dissout dans l\'ombre. Tu l\'as fait tomber. Il faudra revenir, une autre nuit, et savoir t\'arrêter.')}
 // --- Branchement sur les gardiens existants (Mont Braise le jour, dôme la nuit)
 {const lg19=legend;legend=async function(sp){const F=GV();
@@ -7369,11 +7375,9 @@ GDT.unshift([/Va à sa rencontre|Épreuve du Zénith/,()=>({...gN('mont',null,9,
 // - L'œuf de l'orage (Route 2) : le garder… ou le rendre. Les deux choix ont un prix.
 // - L'apprenti (Tito) : de ses premières leçons de types à un vrai combat d'élève contre maître.
 // - Les Défis d'Élite : trois dresseurs hors du chemin, une règle, une équipe pensée pour elle, une récompense rare.
-// Un « ! » doré flotte au-dessus de ceux qui ont quelque chose à te demander.
+// La bulle « ! » dorée du jeu flotte au-dessus de ceux qui ont quelque chose à te demander.
 // =====================================================================
 const QF=()=>f();const QG19=[];
-{const dw19q=drawWorld;drawWorld=function(t){dw19q(t);if(!G||mode!=='world'||!f().starter)return;for(const q of QG19){if(q.m!==G.map)continue;let on=false;try{on=q.on()}catch(e){}if(!on)continue;const n=q.n;if(!npcs(MAPS[G.map]).includes(n))continue;
- const sx=Math.round(n.x*TS+(n.ox||0)-CAM[0])+16,sy=Math.round(n.y*TS+(n.oy||0)-CAM[1])-26+Math.round(Math.sin(t/220)*2);rr(sx-7,sy-12,14,18,3,C.ink);rr(sx-5,sy-10,10,14,2,'#ffd23a');txt('!',sx,sy+1,C.ink,{al:'c'})}}}
 // ---------------------------------------------------------------- Le voleur de croissants
 {const do19q=drawObj;drawObj=function(k,sx,sy,t,n){if(k==='crumb19'){for(const[dx,dy]of[[10,20],[16,24],[21,19],[13,15]]){R(X,'#8a5a2a',sx+dx,sy+dy,3,2);R(X,'#e8b860',sx+dx,sy+dy,2,1)}if((t/250|0)%4===0)R(X,'#ffffff',sx+18,sy+16,2,2);return}
  if(k==='flag19'){X.drawImage(SHD2,sx+8,sy+24,16,5);R(X,C.ink,sx+13,sy-6,3,32);R(X,'#c8c0b0',sx+14,sy-5,1,30);const w=Math.round(Math.sin(t/160)*2);R(X,C.ink,sx+15,sy-6,14,11);R(X,'#e84a4a',sx+16,sy-5+w*0,12+w,9);R(X,'#ffffff',sx+19,sy-2,4,3);return}
@@ -7444,7 +7448,7 @@ async function q3End(){const F=QF(),R=RACE;RACE=null;const t=now()-R.t0,[g,s,b]=
 {const lm19q=loadMap;loadMap=function(...a){if(RACE&&a[0]!=='coteaux'){RACE=null}return lm19q.apply(this,a)}}
 {const st19q=onStep;onStep=async function(...a){await st19q.apply(this,a);if(RACE&&G.map==='coteaux'&&Math.abs(G.x-FLAG.x)+Math.abs(G.y-FLAG.y)<=1&&mode==='world')await q3End()}}
 {const dw19r=drawWorld;drawWorld=function(t){dw19r(t);if(!RACE||mode!=='world')return;const ms=now()-RACE.t0,s=`COURSE  ${fmtS(ms)}`,w=tw(s,2)+24,x=(W-w)/2,c=ms<=RACE.lim[0]?'#f6d870':ms<=RACE.lim[1]?'#d8dce8':ms<=RACE.lim[2]?'#d8945a':'#e86a6a';
- rr(x,6,w,26,3,C.ink);rr(x+2,8,w-4,22,2,'#2a2440');txt(s,x+12,26,c)}}
+ rr(x,H-40,w,26,3,C.ink);rr(x+2,H-38,w-4,22,2,'#2a2440');txt(s,x+12,H-20,c)}}
 // ---------------------------------------------------------------- L'œuf de l'orage (Route 2)
 const NEST={x:8,y:10,t:'obj',k:'nest19',cond:()=>QF().r2,fn:()=>q4Nest(),egg19:()=>!QF().v19q4||QF().v19q4===1};MAPS.route2.npcs.push(NEST);QG19.push({m:'route2',n:NEST,on:()=>!QF().v19q4});
 const MUM4={x:9,y:9,t:'mon',sp:'piafou',d:2,fix:1,cond:()=>QF().v19q4===2,fn:()=>q4Mum()};MAPS.route2.npcs.push(MUM4);
@@ -7497,6 +7501,8 @@ for(const E of ELITE19){const n={x:E.x,y:E.y,t:E.t,d:0,name:E.name,time:E.time,c
 async function elite19(E){const F=QF();if(F['v19'+E.id])return say(E.after,E.name,0,E.t);await say(E.pre,E.name,0,E.t);await say(`Défi d'Élite. ${ch19Txt(E.rule)} Récompense : ${IT[E.rule[2]][0]}.`,E.name,0,E.t);
  if(!await ask('Relever le Défi d\'Élite ?'))return say('Reviens quand tu te sentiras prêt.',E.name,0,E.t);const L=Math.max(20,Math.min(72,lvTop()));
  const r=await battle(team(E.team(L)),{tr:{name:E.name,look:E.t,money:3000,vs:1,boss:1,items:2,ev:1,field:'r19'+E.rule[0],ch19:E.rule,after:E.after}});if(r==='win'){F['v19'+E.id]=1;save()}}
+// La bulle « ! » dorée habituelle du jeu (qm) sur les personnages qui ont une quête à proposer
+for(const q of QG19)if(q.n.t!=='obj')q.n.qm=()=>{try{return!!f()?.starter&&q.on()}catch(e){return false}};
 // ---------------------------------------------------------------- Journal et rumeurs
 {const q19q=quests;quests=function(){const Q=q19q(),F=QF();
  if(F.v19q1)Q.push(['Le voleur de croissants',F.v19q1>=3&&(F.v19q1===5||F.v19q1r)?2:1,F.v19q1===1?`Suis la piste du voleur d'Augustin, à Cendreville. Indices : ${CRUMB.filter((_,i)=>F['v19c'+i]).length}/3.`:F.v19q1===2?'La voleuse est une maman Ratounet. Va en parler à Augustin.':F.v19q1===3?'La voleuse est partie. '+(F.v19q1r?'Augustin t\'a récompensé.':'Va le dire à Augustin.'):'Augustin nourrit la petite famille. La maman Ratounet te laisse parfois un cadeau, près de l\'étang.']);
@@ -7508,6 +7514,29 @@ async function elite19(E){const F=QF();if(F['v19'+E.id])return say(E.after,E.nam
  return Q}}
 {const h19q=headline19;headline19=function(){const g=QF(),h=h19q();if(g.badge&&!g.v19q1&&Math.random()<.35)return'Extra ! Le pâtissier Augustin, à Cendreville, se fait voler trois croissants chaque matin ! La police est perplexe.';
  if(g.badge3&&!g.v19q2&&Math.random()<.3)return'Extra ! Un dresseur fantôme hanterait le Bois Sépulcral, les nuits sans lune. Il défierait les passants !';return h}}
+
+// =====================================================================
+// 19 — LE MONDE SE SOUVIENT : la Grotte Écho porte bien son nom. Trois pierres veinées de bleu gardent les voix de ceux qui
+// sont passés par là : Kael enfant cherchant son frère, Valen faisant une promesse à Brume, Sélène choisissant de le suivre.
+// Rien à gagner, sinon comprendre qui est vraiment Vex.
+// =====================================================================
+{const do19m=drawObj;drawObj=function(k,sx,sy,t,n){if(k!=='echo19')return do19m(k,sx,sy,t,n);const done=n&&f()['v19ec'+n.e19],p=.25+.2*Math.sin(t/400+(n?.e19||0));
+ X.drawImage(SHD2,sx+4,sy+24,24,7);glowAt(sx+16,sy+12,done?18:34,done?.12:p);R(X,C.ink,sx+6,sy+6,20,20);R(X,'#5a6478',sx+7,sy+7,18,18);R(X,'#7a86a0',sx+8,sy+8,8,6);
+ R(X,done?'#5a7aa0':'#7ac8ff',sx+12,sy+10,2,12);R(X,done?'#5a7aa0':'#7ac8ff',sx+14,sy+15,7,2);R(X,done?'#5a7aa0':'#aee0ff',sx+19,sy+12,2,4);if(!done&&(t/180|0)%6===0)R(X,'#ffffff',sx+20,sy+8,2,2)}}
+const ECHO19=[{x:3,y:12,v:[['Une voix d\'enfant, aiguë, paniquée : « Valen ? VALEN ! Réponds-moi ! Je sais que tu es là ! »'],['Une voix de vieille dame, très douce : « Kael, mon grand… Rentre. Il fait noir. Ton frère reviendra quand il sera prêt. »'],['« Il a promis de m\'apprendre à pêcher… Il a PROMIS ! »']],
+  end:'L\'écho s\'éteint. Kael avait dix ans. Il a cherché son frère jusqu\'ici, tout seul, dans le noir.'},
+ {x:18,y:12,v:[['Une voix de jeune homme, cassée : « Brume… Tu m\'entends ? Je te le promets. Je vais réparer le ciel. »'],['« Plus jamais un jour trop long ne te volera. Plus jamais. »'],['Un tout petit cri d\'Ombrelin résonne, très loin… puis plus rien.']],
+  end:'L\'écho s\'éteint. Ce garçon-là n\'était pas encore Vex. Juste un frère, et quelqu\'un qui avait perdu son meilleur ami.'},
+ {x:9,y:3,v:[['Une voix de femme, calme : « Tu es sûr de toi, Valen ? Briser un sceau que les fondateurs ont posé… »'],['« Non. Mais si on ne fait rien, qui le fera ? Les créatures de l\'ombre s\'éteignent une à une, Sélène. »'],['Un long silence. Puis : « …Alors je viens avec toi. Quelqu\'un doit veiller sur toi. »']],
+  end:'L\'écho s\'éteint. Sélène ne l\'a jamais suivi par conviction. Elle l\'a suivi pour qu\'il ne soit pas seul.'}];
+ECHO19.forEach((E,i)=>MAPS.grotte.npcs.push({x:E.x,y:E.y,t:'obj',k:'echo19',e19:i,fn:()=>echo19(i)}));
+async function echo19(i){const E=ECHO19[i],F=f();if(F['v19ec'+i])return say('La pierre est silencieuse. Elle a déjà tout dit.');await cine(1);
+ await say('Une pierre veinée de bleu. Tu poses la main dessus… Elle vibre, et la grotte entière se met à murmurer.');sfx('shard');ui.flash=.5;ui.flashC='#7ac8ff';await wait(300);
+ for(const[l]of E.v){await say(l);await wait(150)}F['v19ec'+i]=1;await say(E.end);
+ const n=[0,1,2].filter(j=>F['v19ec'+j]).length;if(n===3&&!F.v19ecall){F.v19ecall=1;const ld=G.party.find(alive);if(ld)bondUp(ld,2);await say('Les trois pierres se sont tues. Tu comprends un peu mieux le garçon qui est devenu Vex… et pourquoi Kael ne renoncera jamais à lui.')}
+ else if(n<3)await say(`Pierres d'écho : ${n}/3. D'autres voix attendent quelque part dans la grotte.`);await cine(0);save()}
+{const M=MAPS.grotte,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);if(f().starter)tip('echo','On dit que les pierres bleues de la Grotte Écho gardent les voix de ceux qui sont passés par là. Approche-toi et appuie sur A.')}}
+{const q19m=quests;quests=function(){const Q=q19m(),F=f(),n=[0,1,2].filter(j=>F['v19ec'+j]).length;if(n)Q.push(['Les échos de la grotte',n>=3?2:1,n>=3?'Tu as entendu Kael, Valen et Sélène. La Grotte Écho n\'a plus rien à dire.':`${n}/3 pierres d'écho écoutées dans la Grotte Écho.`]);return Q}}
 
 // =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.
@@ -7527,6 +7556,17 @@ NEWS.unshift([()=>ICO.flag,'Flèche-guide et niveaux','Une flèche dorée montre
 NEWS.unshift([()=>ICO.star,'Nouvelle console','Une vraie console portable autour de l\'écran : croix d\'une pièce sur laquelle on glisse le doigt, boutons A et B, MENU. Console horizontale en paysage. Touche le logo sous l\'écran pour changer sa couleur.'],[()=>ICO.capsule,'Combats et rencontres','Les décors de combat remplissent tout l\'écran, sans bandes étirées. Moins de créatures sauvages dans les herbes et les grottes, quelques pas de répit après chaque combat, et l\'option RENCONTRES : RARES.'],
  [()=>ICO.lantern,'Grottes et déplacements','Mine et Grotte Écho élargies, lanterne qui éclaire bien plus loin, créatures visibles hors des couloirs, arbres transparents quand tu passes derrière. Option COURSE : TOUJOURS (par défaut sur écran tactile).']);
 {const norm182=normalize;normalize=function(g){g=norm182(g);if(g&&(g.v||0)<18.2){g.wn=1;g.v=18.2}return g}}
+
+// =====================================================================
+// VERSION 19 — en dernier : les nouveautés 19 en tête de l'écran des nouveautés, sauvegarde marquée 19.
+// =====================================================================
+NEWS.unshift([()=>ICO.dex,'La faune d\'Aurélys','Fini les combats-surprises : les créatures sauvages vivent à découvert, à toi de choisir qui affronter. Les herbes qui frémissent cachent une créature rare, les territoriales te chargent, les plus faibles s\'écartent. (OPTIONS DU JEU : RENCONTRES)'],
+ [()=>ICO.capsule,'Des combats qui comptent','Les dresseurs de route proposent des défis (Express, Duel, Sans Objet, météo, Combat Inversé) avec une vraie récompense, et tu peux refuser. Les boss réagissent en plein combat. L\'EXP suit ton niveau : plus besoin de farmer, plus de combats joués d\'avance.'],
+ [()=>ICO.book,'Perdre pour apprendre','Après une défaite, une analyse t\'explique ce qui n\'a pas marché et quoi essayer. Tu ne perds plus que 10 % de ton argent, et tu peux réessayer un boss sur place, équipe soignée.'],
+ [()=>ICO.map,'Un Acte I revisité','La leçon de Kael, les sentinelles de la Mine, le choix de Corvin (qui compte à Volterre), le silence de la Forêt Murmure, l\'ascension du Mont Braise, une nuit au coin du feu, et les échos de la Grotte.'],
+ [()=>ICO.moon,'Les Gardiens du Cycle','Solarion et Nocturion ne se capturent plus en trois lignes. Suis la piste de l\'aube, écoute ce que racontent les chaînes de Nocturion, et relève leurs épreuves : ils te choisiront… ou non.'],
+ [()=>ICO.star,'Quêtes et Défis d\'Élite','Le voleur de croissants, le dresseur d\'autrefois, la course des Coteaux, l\'œuf de l\'orage, l\'apprenti Tito et trois Défis d\'Élite. Un « ! » doré signale qui a besoin de toi, et les crieurs racontent l\'histoire du monde.']);
+{const norm19=normalize;normalize=function(g){g=norm19(g);if(g&&(g.v||0)<19){g.wn=1;g.v=19}return g}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 

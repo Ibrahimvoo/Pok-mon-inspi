@@ -6,11 +6,9 @@
 // - L'œuf de l'orage (Route 2) : le garder… ou le rendre. Les deux choix ont un prix.
 // - L'apprenti (Tito) : de ses premières leçons de types à un vrai combat d'élève contre maître.
 // - Les Défis d'Élite : trois dresseurs hors du chemin, une règle, une équipe pensée pour elle, une récompense rare.
-// Un « ! » doré flotte au-dessus de ceux qui ont quelque chose à te demander.
+// La bulle « ! » dorée du jeu flotte au-dessus de ceux qui ont quelque chose à te demander.
 // =====================================================================
 const QF=()=>f();const QG19=[];
-{const dw19q=drawWorld;drawWorld=function(t){dw19q(t);if(!G||mode!=='world'||!f().starter)return;for(const q of QG19){if(q.m!==G.map)continue;let on=false;try{on=q.on()}catch(e){}if(!on)continue;const n=q.n;if(!npcs(MAPS[G.map]).includes(n))continue;
- const sx=Math.round(n.x*TS+(n.ox||0)-CAM[0])+16,sy=Math.round(n.y*TS+(n.oy||0)-CAM[1])-26+Math.round(Math.sin(t/220)*2);rr(sx-7,sy-12,14,18,3,C.ink);rr(sx-5,sy-10,10,14,2,'#ffd23a');txt('!',sx,sy+1,C.ink,{al:'c'})}}}
 // ---------------------------------------------------------------- Le voleur de croissants
 {const do19q=drawObj;drawObj=function(k,sx,sy,t,n){if(k==='crumb19'){for(const[dx,dy]of[[10,20],[16,24],[21,19],[13,15]]){R(X,'#8a5a2a',sx+dx,sy+dy,3,2);R(X,'#e8b860',sx+dx,sy+dy,2,1)}if((t/250|0)%4===0)R(X,'#ffffff',sx+18,sy+16,2,2);return}
  if(k==='flag19'){X.drawImage(SHD2,sx+8,sy+24,16,5);R(X,C.ink,sx+13,sy-6,3,32);R(X,'#c8c0b0',sx+14,sy-5,1,30);const w=Math.round(Math.sin(t/160)*2);R(X,C.ink,sx+15,sy-6,14,11);R(X,'#e84a4a',sx+16,sy-5+w*0,12+w,9);R(X,'#ffffff',sx+19,sy-2,4,3);return}
@@ -81,7 +79,7 @@ async function q3End(){const F=QF(),R=RACE;RACE=null;const t=now()-R.t0,[g,s,b]=
 {const lm19q=loadMap;loadMap=function(...a){if(RACE&&a[0]!=='coteaux'){RACE=null}return lm19q.apply(this,a)}}
 {const st19q=onStep;onStep=async function(...a){await st19q.apply(this,a);if(RACE&&G.map==='coteaux'&&Math.abs(G.x-FLAG.x)+Math.abs(G.y-FLAG.y)<=1&&mode==='world')await q3End()}}
 {const dw19r=drawWorld;drawWorld=function(t){dw19r(t);if(!RACE||mode!=='world')return;const ms=now()-RACE.t0,s=`COURSE  ${fmtS(ms)}`,w=tw(s,2)+24,x=(W-w)/2,c=ms<=RACE.lim[0]?'#f6d870':ms<=RACE.lim[1]?'#d8dce8':ms<=RACE.lim[2]?'#d8945a':'#e86a6a';
- rr(x,6,w,26,3,C.ink);rr(x+2,8,w-4,22,2,'#2a2440');txt(s,x+12,26,c)}}
+ rr(x,H-40,w,26,3,C.ink);rr(x+2,H-38,w-4,22,2,'#2a2440');txt(s,x+12,H-20,c)}}
 // ---------------------------------------------------------------- L'œuf de l'orage (Route 2)
 const NEST={x:8,y:10,t:'obj',k:'nest19',cond:()=>QF().r2,fn:()=>q4Nest(),egg19:()=>!QF().v19q4||QF().v19q4===1};MAPS.route2.npcs.push(NEST);QG19.push({m:'route2',n:NEST,on:()=>!QF().v19q4});
 const MUM4={x:9,y:9,t:'mon',sp:'piafou',d:2,fix:1,cond:()=>QF().v19q4===2,fn:()=>q4Mum()};MAPS.route2.npcs.push(MUM4);
@@ -134,6 +132,8 @@ for(const E of ELITE19){const n={x:E.x,y:E.y,t:E.t,d:0,name:E.name,time:E.time,c
 async function elite19(E){const F=QF();if(F['v19'+E.id])return say(E.after,E.name,0,E.t);await say(E.pre,E.name,0,E.t);await say(`Défi d'Élite. ${ch19Txt(E.rule)} Récompense : ${IT[E.rule[2]][0]}.`,E.name,0,E.t);
  if(!await ask('Relever le Défi d\'Élite ?'))return say('Reviens quand tu te sentiras prêt.',E.name,0,E.t);const L=Math.max(20,Math.min(72,lvTop()));
  const r=await battle(team(E.team(L)),{tr:{name:E.name,look:E.t,money:3000,vs:1,boss:1,items:2,ev:1,field:'r19'+E.rule[0],ch19:E.rule,after:E.after}});if(r==='win'){F['v19'+E.id]=1;save()}}
+// La bulle « ! » dorée habituelle du jeu (qm) sur les personnages qui ont une quête à proposer
+for(const q of QG19)if(q.n.t!=='obj')q.n.qm=()=>{try{return!!f()?.starter&&q.on()}catch(e){return false}};
 // ---------------------------------------------------------------- Journal et rumeurs
 {const q19q=quests;quests=function(){const Q=q19q(),F=QF();
  if(F.v19q1)Q.push(['Le voleur de croissants',F.v19q1>=3&&(F.v19q1===5||F.v19q1r)?2:1,F.v19q1===1?`Suis la piste du voleur d'Augustin, à Cendreville. Indices : ${CRUMB.filter((_,i)=>F['v19c'+i]).length}/3.`:F.v19q1===2?'La voleuse est une maman Ratounet. Va en parler à Augustin.':F.v19q1===3?'La voleuse est partie. '+(F.v19q1r?'Augustin t\'a récompensé.':'Va le dire à Augustin.'):'Augustin nourrit la petite famille. La maman Ratounet te laisse parfois un cadeau, près de l\'étang.']);

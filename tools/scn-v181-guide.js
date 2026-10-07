@@ -19,8 +19,8 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  G.party=[mon('torrentor',5)];ok(lvWildCap(14)<=11,'équipe Nv 5 : rien au-dessus du Nv 11');G.party=[mon('torrentor',14)];
  {let lv=null;const p=run(()=>battle([mon('ombrelin',33,{wild:1})]));await until(()=>mode==='battle'&&B?.foe,8000);lv=B?.foe?.lv;await p;ok(lv&&lv<=16,'combat sauvage réel : Nv 33 ramené à '+lv)}
  {const n=MAPS.bois.npcs.find(n=>n.tr&&!n.tr.boss&&!n.tr.vs);let lv=null;const p=run(()=>battle(team(n.tr.team),{tr:{...n.tr,look:n.t}}));await until(()=>mode==='battle'&&B?.foe,8000);lv=Math.max(...B.foes.map(m=>m.lv));await p;ok(lv<=18,'dresseur ordinaire du Bois (Nv '+Math.max(...n.tr.team.map(x=>x[1]))+') ramené à '+lv)}
- {const n=MAPS.gym2.npcs.find(n=>n.tr?.id==='maelle');let lv=null;const p=run(()=>battle(team(n.tr.team),{tr:{...n.tr,look:n.t}}));await until(()=>mode==='battle'&&B?.foe,8000);lv=Math.max(...B.foes.map(m=>m.lv));await p;ok(lv===29,'les Champions gardent leurs niveaux (Maëlle '+lv+')')}
- G.flags={...st0};ok(lvCap()===15,'avant le 1er badge, plafond 15');G.party=[mon('torrentor',5)];{const m=G.party[0],e0=m.exp;await gainXp(m,40,1);ok(m.exp-e0>40,'rattrapage : '+(m.exp-e0)+' EXP au lieu de 40')}
+ {const n=MAPS.gym2.npcs.find(n=>n.tr?.id==='maelle');let lv=null;const p=run(()=>battle(team(n.tr.team),{tr:{...n.tr,look:n.t}}));await until(()=>mode==='battle'&&B?.foe,8000);lv=Math.max(...B.foes.map(m=>m.lv));await p;ok(lv===27,'les Champions gardent leurs niveaux (Maëlle '+lv+', abaissée de 2 en version 19)')}
+ G.flags={...st0};ok(lvCap()===14,'avant le 1er badge, plafond 14 (version 19)');G.party=[mon('torrentor',5)];{const m=G.party[0],e0=m.exp;await gainXp(m,40,1);ok(m.exp-e0>40,'rattrapage : '+(m.exp-e0)+' EXP au lieu de 40')}
  G.party=[mon('torrentor',30)];{const m=G.party[0],e0=m.exp;await gainXp(m,40,1);ok(m.exp-e0===40,'au-dessus du niveau conseillé : EXP normale')}
  G.flags={...st0,balance:1};ok(lvCap()===100,'après l\'histoire, plus de plafond');
  ok(lvZone('route1')[1]<=7,'niveaux affichés à l\'entrée : '+lvZone('route1'));
@@ -33,5 +33,5 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  while(QT.cur||QT.q.length)await wait(100);
  G.flags={...st0};delete G.qk;await wait(500);f().badge=1;await until(()=>QT.cur,4000);ok(QT.cur?.k==='new'&&QT.cur.t==='Les Coteaux d\'Aurore','le badge ouvre une quête : Les Coteaux d\'Aurore');ok(QT.q.some(q=>q.k==='goal'&&/Tito/.test(q.d)),'« NOUVEL OBJECTIF » quand l\'histoire avance (à la suite)');
  await until(()=>QT.cur?.k==='goal',9000);await wait(900);QT.hold=1;await SNAP('objectif');QT.hold=0;
- ok(NEWS.slice(0,4).some(n=>n[1]==='Flèche-guide et niveaux'),'nouveautés 18.1 parmi les plus récentes');
+ ok(NEWS.some(n=>n[1]==='Flèche-guide et niveaux'),'nouveautés 18.1 toujours dans l\'écran des nouveautés');
  L('done')}
