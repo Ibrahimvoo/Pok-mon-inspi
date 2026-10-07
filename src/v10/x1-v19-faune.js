@@ -11,7 +11,7 @@ const encVis=()=>!!G&&G.opt?.encV!==0;
 {const er19=encRoll;encRoll=function(M,tall){if(encVis())return false;return er19(M,tall)}}
 // Habitat : herbes hautes, et sol des grottes là où l'on rencontrait des créatures
 const fauHab=M=>{const L=[];M.rows.forEach((r,y)=>{for(let x=0;x<r.length;x++){const c=r[x];if(c===','||c==='v'||M.encAll&&c==='g')L.push([x,y])}});return L};
-const fauTarget=M=>Math.max(3,Math.min(7,2+Math.round(fauHab(M).length/22)));
+const fauTarget=M=>{const n=Math.max(3,Math.min(7,2+Math.round(fauHab(M).length/22)));return typeof fauAdj==='function'?fauAdj(M,n):n};
 const fauOk=k=>{const M=MAPS[k];return!!(M?.enc?.length&&!isInt(M)&&G?.party?.length&&!(k==='ruines'&&!f().balance))};
 const fauLive=M=>M.npcs.filter(n=>n.fauna&&!n.gone);
 function fauAdd(k,far){const M=MAPS[k];if(!fauOk(k))return null;const T=encTable(M,k).filter(encOk);if(!T.length)return null;const e=pickEnc(T);if(!e)return null;
