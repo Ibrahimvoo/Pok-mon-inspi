@@ -4453,7 +4453,10 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
  relayUp(r){this.ever=1;this.hi(1);this.send('who')},
  relayDown(r){},
  out(s){let n=0;for(const r of this.R)if(r.pub(s))n++;return n},
- send(k,o={},to,rel){if(!this.on)return rel?Promise.resolve(false):0;const m={...o,v:NETV,f:this.pid,s:++this.seq,k};delete m.to;delete m.r;if(to)m.to=to;if(rel)m.r=1;const s=JSON.stringify(m);this.out(s);if(k!=='p'&&k!=='hi')this.trace('>',k,m.s,to);
+ send(k,o={},to,rel){if(!this.on)return rel?Promise.resolve(false):0;
+  // Messages rapides et émotes : un exemplaire par ami, avec accusé de réception, pour qu'ils ne se perdent pas en route
+  if((k==='ch'||k==='em')&&!to&&!rel&&this.peers.size){for(const P of this.peers.values())this.send(k,o,P.pid,5);return 0}
+  const m={...o,v:NETV,f:this.pid,s:++this.seq,k};delete m.to;delete m.r;if(to)m.to=to;if(rel)m.r=1;const s=JSON.stringify(m);this.out(s);if(k!=='p'&&k!=='hi')this.trace('>',k,m.s,to);
   if(rel)return new Promise(res=>this.pend.set(m.s,{s,to,t:Date.now(),t0:Date.now(),max:(rel>1?rel:30)*1000,ok:()=>res(true),ko:()=>res(false)}));return m.s},
  ack(m){this.out(JSON.stringify({v:NETV,f:this.pid,s:++this.seq,k:'ack',a:m.s,to:m.f}))},
  recv(s){if(!this.on||s.length>60000)return;let m;try{m=JSON.parse(s)}catch(e){return}
@@ -5156,7 +5159,7 @@ function cbEngine(foes,o={}){const R=()=>Math.random(),FT=(Array.isArray(foes)?f
   for(const a of live())if(c[a.s].lv&&a.s!==0)leave_(a.s,'run');if(LB.ph==='end')return;
   if(!tr&&c[0]?.run&&A[0]&&!A[0].out){const ok=R()<.45+.4*SPD(0)/Math.max(1,SPD(CBF));E.push({k:'run',s:0,ok:ok?1:0});if(ok)return fin('run','run')}
   for(const a of live()){const x=c[a.s];if(x.it)item_(a.s,x.it,x.t)}
-  if(!tr)for(const a of live()){const x=c[a.s];if(x.ball&&IT[x.ball]?.[4]==='ball'&&ball_(a.s,x.ball))return}
+  if(!tr)for(const a of live().filter(a=>c[a.s].ball).sort((p,q)=>(c[p.s].at??1e15)-(c[q.s].at??1e15))){const x=c[a.s];if(IT[x.ball]?.[4]==='ball'&&ball_(a.s,x.ball))return}
   for(const a of live()){const x=c[a.s];if(x.w!=null){if(okSw(a.s,x.w))switch_(a.s,x.w);else c[a.s]=autoC(a.s)}}
   for(const a of live()){const x=c[a.s];if(x.w==null&&!x.it&&!x.ball&&!x.run&&x.e&&canEv_(a.s))awaken_(a.s)}
   let fIt=0;if(tr&&F.items>0&&F.m.hp>0&&F.m.hp<F.m._S.hp*.3&&(alv()===1||R()<.6)){fitem_();fIt=1}
@@ -5344,7 +5347,7 @@ NET.H['cb-jn']=(m,P)=>{if(typeof m.id!=='string'||!CBID.test(m.id))return;const 
  const rv=cbRvState(m.id);if(rv==='wait'){const j=mk();if(!j){NET.send('cb-no',{id:m.id,why:'bad'},P.pid,true);return}const L=PJB.get(m.id)||{L:[],t:Date.now()};L.L=L.L.filter(x=>x.pid!==P.pid);L.L.push(j);PJB.set(m.id,L);return}
  NET.send('cb-no',{id:m.id,why:rv==='none'?'none':'over'},P.pid,true)};
 NET.H['cb-jx']=(m,P)=>{const L=PJB.get(m.id);if(L)L.L=L.L.filter(x=>x.pid!==P.pid);const C=CB;if(!C||m.id!==C.id)return;C.pj=C.pj.filter(j=>j.pid!==P.pid);const a=C.vE?.A.find(x=>x&&x.pid===P.pid&&!x.out);if(a)C.pl.add(a.s);const e=C.exp?.get(P.pid);if(e)e.st='no'};
-NET.H['cb-ch']=(m,P)=>{const C=CB;if(!C||m.id!==C.id||!Number.isInteger(m.n)||!C.vE||m.n<=C.vE.n)return;const a=C.vE.A.find(x=>x&&x.pid===P.pid&&!x.out);if(!a)return;const c=cbSan(m.c);if(c.lv){C.pl.add(a.s);return}(C.ch[m.n]??={})[a.s]??=c};
+NET.H['cb-ch']=(m,P)=>{const C=CB;if(!C||m.id!==C.id||!Number.isInteger(m.n)||!C.vE||m.n<=C.vE.n)return;const a=C.vE.A.find(x=>x&&x.pid===P.pid&&!x.out);if(!a)return;const c=cbSan(m.c);if(c.lv){C.pl.add(a.s);return}c.at=Date.now();(C.ch[m.n]??={})[a.s]??=c};
 NET.H['cb-lv']=(m,P)=>{const C=CB;if(!C||m.id!==C.id)return;const a=C.vE?.A.find(x=>x&&x.pid===P.pid&&x.out!==1);if(a)C.pl.add(a.s)};
 NET.H['cb-ack']=(m,P)=>{const C=CB;if(!C||m.id!==C.id)return;const e=C.exp.get(P.pid);if(e&&!e.fol)e.st=m.ok?'yes':'no'};
 function cbBroadcast(C,r,nv,add){for(const a of nv.A)if(a&&a.s!==0&&a.out!==1&&NET.peers.has(a.pid)&&!r.add.some(x=>x.s===a.s))NET.send('cb-st',{id:C.id,n:nv.n,ev:r.ev,vw:nv},a.pid,90);
@@ -5365,7 +5368,7 @@ async function cbGather(C){const t0=Date.now(),pend=()=>{const L=[],dt=Date.now(
  let skip=0;while(!skip&&pend().length){const L=pend();show(`En attente de ${L.map(P=>P.name).join(', ')}… (B : commencer sans attendre)`,0);const k=await key(200);if(k==='b'){ui.text=null;if(await ask('Commencer sans les attendre ? Ils pourront te rejoindre en plein combat.'))skip=1}}ui.text=null;
  if(C.pj.length){const add=C.pj.splice(0,CBMAX),r=C.E.step({add,only:1}),nv=C.vE=C.E.view();cbBroadcast(C,r,nv,add);if(r.add.length)NET.hi(1);for(const e of r.ev)await cbEv(C,e);cbView(C,nv)}}
 async function cbHostLoop(C){for(;;){const v=C.v;if(!v||v.ph==='end'||C.end)break;const n=v.n+1,meA=v.A[0],need=!!meA&&meA.out===0&&(v.ph==='act'||!!meA.need);
-  let c=null;if(need)c=v.ph==='act'?await cbChoose(C,()=>false):await cbRep(C,()=>false);
+  let c=null;if(need){c=v.ph==='act'?await cbChoose(C,()=>false):await cbRep(C,()=>false);if(c)c.at=Date.now()}
   const lim=v.ph==='act'?45000:30000,t0=Date.now();let skip=0;
   const who=()=>(C.vE.A||[]).filter(a=>a&&a.s!==0&&!a.out&&(v.ph==='act'||a.need)&&!C.pg.has(a.s)&&!C.pl.has(a.s)&&!C.ch[n]?.[a.s]&&NET.peers.has(a.pid));
   while(who().length&&!skip&&Date.now()-t0<lim){const L=who();show(`En attente de ${L.map(a=>a.nm).join(', ')}… ${Math.ceil((lim-(Date.now()-t0))/1000)} s`,0);const k=await key(250);if(k==='b'){ui.text=null;if(await ask('Ne plus attendre ? Leurs créatures attaqueront toutes seules.'))skip=1}}ui.text=null;
@@ -5444,7 +5447,7 @@ async function cbFinish(C){const v=C.v||{},end=C.end||{w:'run',by:-1},me=C.me,Dm
   if(m){m.hp=Math.max(1,Math.round(k*st14(m).hp));m.st=C.foe.st==='slp'?null:C.foe.st;m.slp=0;delete m._S;B.foe=m;const nw=G.dex[m.sp]!==2;dex(m.sp,2);msEvt('cap',m.sp);await say(`Bravo ! ${nm(m)} est attrapé !`);if(m.item)await say(`${nm(m)} tenait ${IT[m.item][0]} !`);if(nw)await say(`Les données de ${nm(m)} sont ajoutées au Pixédex.`);
    if(m.nat&&NAT[m.nat])await say(`${nm(m)} a l'air ${NAT[m.nat][0].toLowerCase()}. ${NAT[m.nat][3]}`);if(G.party.length<6)G.party.push(m);else{G.box.push(m);await say(`${nm(m)} est envoyé dans la Boîte du Centre de Soins.`)}}else r='win'}
  else if(C.host&&C.wild&&!C.tr){B.foe=C.wild}
- if(end.w==='catch'&&end.by!==me&&!C.left&&(o.legend||o.roam)){const D=C.D?.[end.by];await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} ! Il en existe peut-être un autre pour toi, quelque part…`)}
+ if(end.w==='catch'&&end.by!==me&&!C.left){const D=C.D?.[end.by],lg=(o.legend||o.roam)&&advCode()&&lgTake(C.foe.sp,D?.nm);await say(`${D?.nm||'Ton ami'} a attrapé ${nm(C.foe)} en premier ! ${lg?'Il est à lui : il a quitté ton monde.':o.legend||o.roam?'Il en existe peut-être un autre pour toi, quelque part…':'Il est à lui.'}`)}
  if(!C.host)B.tr=C.tr;B.o=C.o||{};window.CBLAST={w:end.w,by:end.by,me,Nmax:v.Nmax|0,r,left:C.left?1:0,tr:C.tr?.name||''};return r}
 
 // --- Sauvegarde 16.0 (rien de nouveau à stocker hors des compteurs en ligne) : on montre les nouveautés
@@ -5675,6 +5678,158 @@ async function pickStarterCoop(sp){ui.panel=()=>{panel(152,10,176,190);const fl=
 ACH.push(['adv1','Aventure partagée','Battre un champion d\'arène avec un ami de ton aventure.',()=>!!G.net?.advL,['hyperpotion',3]]);
 {const eb17=endBattle;endBattle=async function(r){const b=B;if(r==='win'&&b?.coop&&b.tr&&LEADERS10.includes(b.tr.name)&&advCode()&&(b.coop.N>1||b.coop.v?.Nmax>1))NG().advL=1;return eb17(r)}}
 NEWS.unshift([()=>ICO.team,'Aventure à plusieurs','Toute l\'histoire avec tes amis ! Écran titre : AVENTURE À PLUSIEURS. Tutoriel contre Kael à plusieurs, scènes partagées, combats contre les dresseurs et les champions ensemble. Et chacun voit enfin sa propre apparence !']);
+
+// =====================================================================
+// EXTENSION 17.1 — Un seul monde pour toute l'aventure
+// - Légendaires uniques : le premier joueur de l'aventure qui en capture un le garde ; il disparaît aussitôt du monde des autres.
+// - Créatures visibles partagées : sur une même carte, tous les joueurs de l'aventure voient les mêmes créatures, aux mêmes endroits
+//   (et la même averse). Le premier arrivé sur la carte les fait vivre et les envoie aux autres ; qui touche une créature le premier l'affronte.
+// =====================================================================
+
+// --- Légendaires : espèce → drapeau qui la retire du monde (et ouvre la suite, comme une capture)
+const LGF={solarion:'legS',nocturion:'legN',crepuscel:'legC',presagelle:'legP',heliote:'legH',seleniote:'legL',wendigrave:'wendC',masquaserp:'masqOk',eclipsar:'legE',aurorelle:'legA',errenard:'legR'};
+const lgMine=()=>G?Object.keys(LGF).filter(sp=>G.dex?.[sp]===2&&!G.coop?.lg?.[sp]):[];
+// Un ami de l'aventure a capturé ce légendaire : il quitte ton monde
+function lgTake(sp,who){if(!G?.coop||!LGF[sp]||G.dex?.[sp]===2||G.coop.lg?.[sp])return false;(G.coop.lg??={})[sp]=netName(who)||'Ton ami';
+ f()[LGF[sp]]=1;if(sp==='errenard'){delete f().roamHp;delete f().roamSt}if(G.dex[sp]!==2)dex(sp,1);if(G.map)save();return true}
+function lgAnnounce(sp){if(!advCode()||!NET.on||!LGF[sp])return;for(const P of matePeers())if(isAdvMate(P))NET.send('lg',{sp},P.pid,true)}
+NET.H.lg=(m,P)=>{if(!isAdvMate(P)||!G||!LGF[m.sp])return;if(lgTake(m.sp,P.name))NET.note(`${P.name} a capturé ${SP[m.sp].name} ! Il a quitté ton monde.`)};
+// Capture seul (ou en hôte d'un combat de groupe)
+{const bt171=battle;battle=async function(foes,o={}){const r=await bt171(foes,o);if(r==='catch'&&!o.tr&&(o.legend||o.roam)){const sp=(Array.isArray(foes)?foes[0]:foes)?.sp;if(LGF[sp])lgAnnounce(sp)}return r}}
+// Capture en invité d'un combat de groupe
+{const cf171=cbFinish;cbFinish=async function(C){const r=await cf171(C),e=C.end||{},o=C.o||{},sp=C.foe?.sp;if(e.w==='catch'&&e.by===C.me&&!C.left&&(o.legend||o.roam)&&LGF[sp])lgAnnounce(sp);return r}}
+// Présence : les légendaires capturés voyagent avec le « hi », pour les amis qui n'étaient pas connectés
+{const s171=NET.send;NET.send=function(k,o={},to,rel){if(k==='hi'&&G&&advCode()){const L=lgMine();if(L.length)o={...o,lgc:L}}return s171.call(this,k,o,to,rel)}}
+{const h171=NET.H.hi;NET.H.hi=(m,P)=>{h171(m,P);if(!G||!isAdvMate(P)||!Array.isArray(m.lgc))return;for(const sp of m.lgc.slice(0,12))if(typeof sp==='string'&&LGF[sp]&&lgTake(sp,P.name))NET.note(`${P.name} a capturé ${SP[sp].name} ! Il a quitté ton monde.`)}}
+
+// =====================================================================
+// Créatures visibles partagées
+// =====================================================================
+const FA={map:'',own:true,src:'',got:0,t0:0,last:0,sent:'',ts:0,tk:null,by:{}};
+const FAID=/^[a-z0-9]{5}$/,faId=()=>rid6().slice(0,5);
+const faOn=()=>!!advCode()&&NET.on&&!!G&&!!G.map&&!NOGHOST.has(G.map)&&G.map!=='songe'&&!MAPS[G.map]?.dream&&!G.dream;
+const faMates=k=>matePeers().filter(P=>isAdvMate(P)&&P.dv===NETDV()&&P.map===k);
+const faList=()=>(MAPS[G.map]?.npcs||[]).filter(n=>n.fauna&&!n.gone);
+const faLead=()=>FA.src?NET.peers.get(FA.src):null;
+const FSP0=faunaSpawn;
+{faunaSpawn=function(k){FA.map=k;FA.got=0;FA.t0=Date.now();FA.sent='';FA.by={};
+ if(faOn()&&k===G.map&&faMates(k).length){for(const M of Object.values(MAPS))M.npcs=M.npcs.filter(n=>!n.fauna);FA.own=false;FA.src='';for(const P of faMates(k))NET.send('fa-q',{m:k},P.pid);return}
+ FA.own=true;FA.src='';FSP0(k);for(const n of MAPS[k].npcs)if(n.fauna&&!n.fid)n.fid=faId();FA.ts=0}}
+// Chez ceux qui suivent, les créatures ne bougent que sur ordre du meneur
+{const ft171=faunaTick;faunaTick=function(dt){if(faOn()&&!FA.own&&FA.map===G.map)return;return ft171(dt)}}
+function faState(){const L=faList().slice(0,8).map(n=>[n.fid||(n.fid=faId()),n.sp,n.lv,n.walk&&n.rx!=null?n.rx:n.x,n.walk&&n.ry!=null?n.ry:n.y,n.d&3,n.slp?1:0]);return{m:G.map,L,wx:G.wx?.k==='rain'?1:0}}
+function faSend(force){if(!faOn()||!FA.own||FA.map!==G.map||!faMates(G.map).length)return;const s=faState(),j=JSON.stringify(s),t=Date.now();
+ if(!force&&j===FA.sent&&t-FA.ts<1000)return;FA.sent=j;FA.ts=t;NET.send('fa-s',s)}
+setInterval(()=>{try{faSend(0);faPromote()}catch(e){console.error(e)}},250);
+NET.H['fa-q']=(m,P)=>{if(isAdvMate(P)&&faOn()&&FA.own&&m.m===G.map)faSend(1)};
+NET.H['fa-s']=(m,P)=>{if(!isAdvMate(P)||P.dv!==NETDV()||!faOn()||m.m!==G.map||FA.map!==G.map||!Array.isArray(m.L))return;
+ if(FA.own){if(!(P.pid<NET.pid))return;FA.own=false}
+ else if(FA.src&&FA.src!==P.pid){const L=faLead();if(L&&L.map===G.map&&FA.src<P.pid)return}
+ FA.src=P.pid;FA.got=1;FA.last=Date.now();faAdopt(m)};
+function faAdopt(m){const M=MAPS[G.map],seen=new Set();
+ for(const e of m.L.slice(0,8)){if(!Array.isArray(e))continue;const[id,sp,lv,x,y,d,slp]=e;if(typeof id!=='string'||!FAID.test(id)||!SP[sp]||!okXY(G.map,x,y))continue;seen.add(id);
+  let n=M.npcs.find(o=>o.fauna&&o.fid===id);
+  if(!n){n={x,y,x0:x,y0:y,d:d&3,t:'mon',sp,lv:Math.max(1,Math.min(100,lv|0)),fauna:1,wild:1,slp:!!slp,tt:1000,fn:faunaMeet,fid:id};M.npcs.push(n);continue}
+  if(n.gone)continue;n.slp=!!slp;
+  if(n.walk)continue;const dx=x-n.x,dy=y-n.y;
+  if(!dx&&!dy){n.d=d&3;continue}
+  if(Math.abs(dx)+Math.abs(dy)===1){const dd=dx>0?3:dx<0?2:dy>0?0:1;n.walk=1;n.rx=x;n.ry=y;npcStep(n,dd,300).then(()=>{n.walk=0;n.rx=n.ry=null;if(n.x!==x||n.y!==y){n.x=x;n.y=y}})}
+  else{n.x=x;n.y=y;n.d=d&3}}
+ for(const n of M.npcs.filter(o=>o.fauna&&!o.gone&&!seen.has(o.fid)))rmFauna(n);
+ if(m.wx&&!G.wx&&RAINY.has(G.map))G.wx={k:'rain',n:80};else if(!m.wx&&G.wx?.k==='rain')G.wx=null}
+// Le meneur est parti (autre carte, déconnexion) : on prend le relais avec les créatures déjà là
+function faPromote(){if(!faOn()||FA.own||FA.map!==G.map)return;const L=faLead(),t=Date.now();
+ if(L&&L.map===G.map&&NET.peers.has(L.pid)&&t-FA.last<6000)return;if(!FA.got&&t-FA.t0<3500)return;
+ FA.own=true;FA.src='';for(const n of faList())if(!n.fid)n.fid=faId();if(!FA.got&&!faList().length)FSP0(G.map);for(const n of faList())if(!n.fid)n.fid=faId();faSend(1)}
+// Qui touche une créature le premier l'affronte ; le meneur tranche
+{const fm171=faunaMeet;faunaMeet=async function(n){if(n.gone)return;
+ if(!faOn()||!n.fid||FA.map!==G.map)return fm171(n);
+ if(FA.own){FA.by[n.fid]=NG().n||'Ton ami';const r=fm171(n);faSend(1);return r}
+ const L=faLead();if(!L)return fm171(n);n.gone=1;const id=n.fid;FA.tk={id,ok:null,by:''};NET.send('fa-t',{m:G.map,id},L.pid,true);
+ const t0=Date.now();while(FA.tk?.ok==null&&Date.now()-t0<6000)await wait(40);const R=FA.tk;FA.tk=null;
+ if(R&&R.ok===0){rmFauna(n);sfx('back');await say(`Trop tard ! ${R.by||'Ton ami'} a trouvé ce ${SP[n.sp].name} avant toi.`);return}
+ // Sans réponse alors que le meneur est toujours là : on ne risque pas un combat en double, la créature reste et on peut réessayer
+ n.gone=0;if(R?.ok!==1&&NET.peers.has(L.pid)&&L.map===G.map)return;return fm171(n)}}
+NET.H['fa-t']=(m,P)=>{if(!isAdvMate(P)||typeof m.id!=='string'||!FAID.test(m.id))return;
+ if(!faOn()||!FA.own||m.m!==G.map){NET.send('fa-r',{id:m.id,ok:1},P.pid,true);return}
+ const n=(MAPS[G.map].npcs||[]).find(o=>o.fauna&&o.fid===m.id);
+ if(n&&!n.gone){n.gone=1;rmFauna(n);FA.by[m.id]=P.name;NET.send('fa-r',{id:m.id,ok:1},P.pid,true);faSend(1);return}
+ NET.send('fa-r',{id:m.id,ok:0,by:FA.by[m.id]||''},P.pid,true)};
+NET.H['fa-r']=(m,P)=>{const T=FA.tk;if(T&&T.id===m.id&&P.pid===FA.src){T.ok=m.ok?1:0;T.by=netName(m.by)||''}};
+
+// Les succès d'un légendaire restent à celui qui l'a capturé
+for(const e of ACH)if(LGF[e[0]]&&typeof e[3]==='function'){const c=e[3];e[3]=()=>c()&&!G.coop?.lg?.[e[0]]}
+// --- Sauvegarde 17.1 : légendaires pris par les amis vérifiés ; on montre les nouveautés
+{const norm171=normalize;normalize=function(g){g=norm171(g);if(!g)return g;if(g.coop){const lg=g.coop.lg;if(!lg||typeof lg!=='object')delete g.coop.lg;else for(const k of Object.keys(lg))if(!LGF[k]||typeof lg[k]!=='string')delete lg[k]}
+ if(g.v<17.1){g.wn=1;g.v=17.1}return g}}
+NEWS.unshift([()=>ICO.team,'Un seul monde','Aventure à plusieurs : vous voyez tous les mêmes créatures dans les herbes, aux mêmes endroits. Le premier qui en touche une l\'affronte (les autres le rejoignent). Et un légendaire n\'est qu\'à un seul joueur : le premier qui le capture le garde, il disparaît du monde des autres.']);
+
+// =====================================================================
+// COMMANDES DU CRÉATEUR — menu caché, protégé par un mot de passe.
+// Accès : MENU, choisir SAUVER trois fois de suite (en moins de 6 s), entrer le mot de passe.
+// L'appareil s'en souvient ensuite : CRÉATEUR apparaît en haut du MENU.
+// Pour changer le mot de passe : remplacer CREA_H par le résultat de creaHash('NOUVEAU') (console du navigateur).
+// =====================================================================
+const CREA_H='1ndsyy2r97q',CREA_K='pxe-crea',CREA_O='pxe-crea-opt';
+function creaCy(s,seed){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0;i<s.length;i++){const ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}
+ h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return(4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
+function creaHash(p){let h='pxe-crea:'+String(p).toUpperCase();for(let i=0;i<20000;i++)h=creaCy(h,i);return h}
+const creaGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},creaSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const creaOn=()=>creaGet(CREA_K)===CREA_H;
+const CH=(()=>{try{return{god:0,ko:0,cap:0,wall:0,spd:1,rep:0,xp:0,...JSON.parse(creaGet(CREA_O)||'{}')}}catch(e){return{god:0,ko:0,cap:0,wall:0,spd:1,rep:0,xp:0}}})();
+const chSave=()=>creaSet(CREA_O,JSON.stringify(CH)),chActive=()=>creaOn()&&!!G;
+
+// --- Effets permanents (seulement sur l'appareil déverrouillé)
+{const d0=dmg;dmg=function(a,d,...r){const o=d0(a,d,...r);if(!chActive())return o;if(CH.god&&G.party.includes(d))o.n=0;else if(CH.ko&&G.party.includes(a))o.n=99999;return o}}
+{const b0=ballMul;ballMul=function(k){return chActive()&&CH.cap?99999:b0(k)}}
+{const x0=gainXp;gainXp=function(m,n,q){return x0(m,chActive()&&CH.xp?n*10:n,q)}}
+{const t0=tryMove;tryMove=function(d){if(!chActive()||!CH.wall)return t0(d);const s=[...SOLID];SOLID.clear();try{return t0(d)}finally{for(const c of s)SOLID.add(c)}}}
+{const u0=updWorld;updWorld=function(dt){if(chActive()&&CH.spd>1&&move)move.t+=dt*(CH.spd-1)/(held.b?95:170);return u0(dt)}}
+setInterval(()=>{if(chActive()&&CH.rep&&mode==='world')G.repel=Math.max(G.repel|0,999)},1000);
+
+// --- Accès caché depuis le MENU
+const CREA_T=[];
+{const c0=choose;choose=async function(opts,o={}){const pause=Array.isArray(opts)&&opts.includes('SAUVER')&&opts.includes('TITRE')&&opts.includes('FERMER')&&!opts.includes('CRÉATEUR');
+ if(!pause)return c0(opts,o);
+ if(creaOn()){const i=await c0(['CRÉATEUR',...opts],{...o,icons:o.icons?[ICO.gear,...o.icons]:o.icons,rh:22,vis:Math.max(o.vis||10,11)});if(i===0){ui.panel=null;await creatorMenu();return opts.length}return i<0?i:i-1}
+ while(CREA_T.length&&Date.now()-CREA_T[0]>30000)CREA_T.shift();
+ const i=await c0(opts,CREA_T.length?{...o,i:opts.indexOf('SAUVER')}:o);if(opts[i]!=='SAUVER'){CREA_T.length=0;return i}const t=Date.now();CREA_T.push(t);
+ if(CREA_T.length<3)return i;CREA_T.length=0;ui.panel=null;const p=await kbInput('MOT DE PASSE',12,[...NETAB],{cols:8,kw:44});
+ if(p&&creaHash(p)===CREA_H){creaSet(CREA_K,CREA_H);sfx('ok');await say('Accès créateur activé sur cet appareil ! Ouvre le MENU : CRÉATEUR est tout en haut.')}else if(p)sfx('back');return opts.length}}
+
+// --- Le menu
+const onOff=v=>v?'OUI':'NON';
+function creaSpot(k){const M=MAPS[k],h=M.rows.length,w=M.rows[0].length,cx=w>>1,cy=h>>1,N=npcs(M);let best=null,bd=1e9;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=M.rows[y][x];if(SOLID.has(c)||c==='E'||M.doors?.[x+','+y]||N.some(n=>n.x===x&&n.y===y))continue;const dd=Math.abs(x-cx)+Math.abs(y-cy);if(dd<bd){bd=dd;best=[x,y]}}return best}
+async function creaPickSp(title){const L=DEX.filter(k=>SP[k]);const i=await choose(L.map(k=>SP[k].name),{x:W-232,y:8,w:224,vis:12,title});return i<0?null:L[i]}
+async function creaPickLv(){const V=[5,15,30,50,75,100],i=await choose(V.map(v=>'Niveau '+v),{x:W-182,y:8,w:174,title:'Niveau'});return i<0?null:V[i]}
+const creaLeg=sp=>typeof LGF!=='undefined'&&LGF[sp]&&typeof advCode==='function'&&advCode();
+async function creatorMenu(){let last=0;for(;;){
+ const O=[['SOIN TOTAL',()=>{healAll();sfx('heal');return'Équipe soignée !'}],
+  [`INVINCIBLE : ${onOff(CH.god)}`,()=>{CH.god^=1}],
+  [`K.O. EN UN COUP : ${onOff(CH.ko)}`,()=>{CH.ko^=1}],
+  [`CAPTURE GARANTIE : ${onOff(CH.cap)}`,()=>{CH.cap^=1}],
+  [`TRAVERSER LES MURS : ${onOff(CH.wall)}`,()=>{CH.wall^=1}],
+  [`VITESSE : x${CH.spd}`,()=>{CH.spd=CH.spd>=4?1:CH.spd*2}],
+  [`REPOUSSE INFINI : ${onOff(CH.rep)}`,()=>{CH.rep^=1;if(!CH.rep)G.repel=0}],
+  [`EXP x10 : ${onOff(CH.xp)}`,()=>{CH.xp^=1}],
+  ['ARGENT +100 000',()=>{G.money=Math.min(9999999,(G.money|0)+100000);jingle('item');return`Tu as maintenant ${G.money} ¥.`}],
+  ['TOUS LES OBJETS x99',()=>{for(const k of Object.keys(IT))if(IT[k][4]!=='quest')G.bag[k]=99;jingle('item');return'Sac rempli : 99 de chaque objet.'}],
+  ['ÉQUIPE NIVEAU 100',()=>{for(const m of G.party){m.lv=100;m.exp=xpFor(100)}healAll();sfx('ok');return'Toute l\'équipe est niveau 100 !'}],
+  ['ÉQUIPE CHROMATIQUE',()=>{for(const m of G.party)m.sh=1;sfx('shard');return'Toute l\'équipe brille !'}],
+  ['DONNER UNE CRÉATURE',async()=>{const sp=await creaPickSp('Quelle créature ?');if(!sp)return;const lv=await creaPickLv();if(!lv)return;const m=mon(sp,lv);dex(sp,creaLeg(sp)?1:2);
+   if(G.party.length<6){G.party.push(m);jingle('item');return`${SP[sp].name} (Nv ${lv}) rejoint ton équipe !`}G.box.push(m);jingle('item');return`${SP[sp].name} (Nv ${lv}) est envoyé dans la Boîte.`}],
+  ['COMBATTRE UNE CRÉATURE',async()=>{const sp=await creaPickSp('Affronter qui ?');if(!sp)return;const lv=await creaPickLv();if(!lv)return;if(!G.party.some(m=>m.hp>0))return'Il te faut une créature en forme.';
+   ui.panel=null;await battle([mon(sp,lv,{wild:1})],{});return null}],
+  ['PIXÉDEX COMPLET',()=>{for(const k of DEX)if(SP[k])G.dex[k]=Math.max(G.dex[k]|0,creaLeg(k)?1:2);G.keys.dex=1;sfx('ok');return'Pixédex complété !'}],
+  ['TOUTES LES CLÉS',()=>{for(const k of['dex','carte','boussole','bracelet','brv2','camera','charme','couveuse','lantern','rod','rod2','rod3','sablier'])G.keys[k]=1;sfx('ok');return'Tous les objets clés débloqués (canne, bracelet, sablier…).'}],
+  ['TÉLÉPORTATION',async()=>{const L=Object.keys(MAPS).filter(k=>MAPS[k].name&&!MAPS[k].dream&&k!=='songe'&&k!==G.map);const i=await choose(L.map(k=>MAPS[k].name),{x:W-232,y:8,w:224,vis:12,title:'Aller où ?'});if(i<0)return;
+   const s=creaSpot(L[i]);if(!s)return'Impossible d\'aller là.';ui.panel=null;sfx('door');await fadeTo(1,220);loadMap(L[i],s[0],s[1],0);await fadeTo(0,220);if(NET.on)NET.hi(1);return'exit'}],
+  [`PLUIE : ${onOff(G.wx?.k==='rain')}`,()=>{G.wx=G.wx?.k==='rain'?null:{k:'rain',n:600}}],
+  ['VERROUILLER L\'ACCÈS',async()=>{if(!await ask('Retirer l\'accès créateur de cet appareil ? (il faudra retaper le mot de passe)'))return;creaSet(CREA_K,null);return'exit'}],
+  ['FERMER',()=>'exit']];
+ const i=await choose(O.map(o=>o[0]),{x:W-262,y:8,w:254,vis:11,title:'CRÉATEUR',i:last});if(i<0)return;last=i;
+ const r=await O[i][1]();chSave();if(r==='exit')return;if(r)await say(r)}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 
