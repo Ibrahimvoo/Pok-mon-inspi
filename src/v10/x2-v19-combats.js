@@ -112,7 +112,7 @@ function an19(b){const A=b.a19||{me:[],foe:[],slow:0,turns:0},L=[],foes=b.foes||
   if(C[4])await say(C[4],b.tr.name,0,b.tr.look);return res}
  inv19Off();
  if(!(b&&r==='lose'&&!b.o?.noLose&&!b.coop&&!b.pvp&&G.party))return eb19(r);
- b.ph19=ph19;const L=an19(b),boss=!!b.tr;sfx('back');await say('Ton équipe est à terre… Voyons ce qui n\'a pas marché.',0,1);
+ b.ph19=ph19;const L=an19(b),boss=!!(b.tr||b.o?.trial);sfx('back');await say('Ton équipe est à terre… Voyons ce qui n\'a pas marché.',0,1);
  for(let i=0;i<L.length;i++)await say((i?'Et aussi : ':'Analyse : ')+L[i]);
  b.o.noLose=1;b.o.loseMsg='Ton équipe a besoin de repos.';const res=await eb19(r);
  const l=Math.floor(G.money*.1);G.money-=l;if(l)await say(`Dans la panique, tu perds ${l} pièces.`);
