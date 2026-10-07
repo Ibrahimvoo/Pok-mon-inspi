@@ -64,9 +64,9 @@ function inv19Off(){if(!INV19)return;for(const a of Object.keys(INV19)){if(INV19
  return um19.apply(this,arguments)}}
 // --- Boss : répliques et retournements en plein combat
 const PH19=[
- [t=>t.name==='Championne Brasia',['Rocaroc ! Montre-lui ce qu\'est un vrai rempart !','def'],['Tu tiens bon… La roche s\'use, mais elle ne cède pas si facilement !'],'Brasia : créatures ROC, très résistantes. L\'EAU et la PLANTE les font fondre ; le FEU et le NORMAL rebondissent dessus.'],
+ [t=>t.name==='Championne Brasia',['Rocaroc ! Montre-lui ce qu\'est un vrai rempart !'],['Tu tiens bon… La roche s\'use, mais elle ne cède pas si facilement !'],'Brasia : créatures ROC, très résistantes. L\'EAU et la PLANTE les font fondre ; le FEU et le NORMAL rebondissent dessus.'],
  [t=>t.name==='Lieutenant Corvin',['Magmor, fais chauffer la galerie !','sun'],['Pas question de rentrer bredouille devant le chef !'],'Corvin : OMBRE, ROC puis Magmor (FEU), qui fait monter la chaleur. Garde une créature EAU ou ROC pour la fin.'],
- [t=>t.name==='Kael'&&t.money===800,['On s\'est entraînés jour et nuit, mon partenaire et moi !','atk'],['Pas encore… Je refuse de perdre contre toi !'],'Kael : son partenaire a l\'avantage sur ta créature de départ. Fais-le affronter par une autre créature.'],
+ [t=>t.name==='Kael'&&t.money===800,['On s\'est entraînés jour et nuit, mon partenaire et moi !'],['Pas encore… Je refuse de perdre contre toi !'],'Kael : son partenaire a l\'avantage sur ta créature de départ. Fais-le affronter par une autre créature.'],
  [t=>t.name==='Kael'&&t.money>800,['Regarde bien ! C\'est pour Valen que je deviens plus fort !','atk'],['Encore ! Je n\'ai pas dit mon dernier mot !'],'Kael : une équipe variée, menée par son partenaire. Prépare une réponse à chacun de ses types.'],
  [t=>t.name==='Chef Vex',['Regarde bien. Voilà ce que la nuit a de plus noir.','eclipse'],['…Tu crois défendre le soleil. Tu ne sais même pas ce qu\'il a coûté.'],'Vex : créatures OMBRE, et une éclipse qui les renforce. La LUMIÈRE dissipe l\'éclipse et frappe fort l\'OMBRE.'],
  [t=>t.name==='Admin Sélène',['Je ne me bats pas pour Vex. Je me bats pour ce qu\'il était.','spd'],['Tu as de la lumière dans les yeux… Comme lui, avant.'],'Sélène : OMBRE et FEU, rapides. Un statut (paralysie, sommeil) la ralentit beaucoup.'],
@@ -83,7 +83,7 @@ const PH19=[
 const ph19=()=>B?.tr&&!B.coop?PH19.find(p=>{try{return p[0](B.tr)}catch(e){return false}}):null;
 async function ph19Fx(k){if(!B?.foe||B.foe.hp<=0)return;
  if(['atk','def','spd'].includes(k))return statChange(1,k,1);
- if(k==='sun'||k==='eclipse'){B.sky={k,n:4};ui.flash=.5;ui.flashC=SKY[k][1];sfx('shard');return say(SKY[k][2],0,1)}
+ if(k==='sun'||k==='eclipse'){B.sky={k,n:3};ui.flash=.5;ui.flashC=SKY[k][1];sfx('shard');return say(SKY[k][2],0,1)}
  if(k==='kael'){await say('…Kael.',B.tr.name,0,B.tr.look);await say(`${nm(B.foe)} hésite… Sa colère vacille !`,0,1);return statChange(1,'atk',-2)}}
 {const sf19=sendFoe;sendFoe=async function(...a){const r=await sf19.apply(this,a);const P=ph19();if(P&&B.foes.length>1&&B.foe===B.foes[B.foes.length-1]&&!B.ph19a){B.ph19a=1;await say(P[1][0],B.tr.name,0,B.tr.look);if(P[1][1])await ph19Fx(P[1][1])}return r}}
 {const et19=endTurn;endTurn=async function(...a){const r=await et19.apply(this,a);if(r||!B?.foe)return r;const P=ph19();

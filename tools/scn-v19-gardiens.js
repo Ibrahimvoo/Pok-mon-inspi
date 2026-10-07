@@ -23,4 +23,6 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  G.party=[mon('phalumine',70),mon('rocaroc',70,{moves:['durcir']})];{const um=useMove;useMove=async function(s,id){if(B?.o?.trial&&s===0&&B.turn>=2&&B.foe.hp>0){B.foe.hp=Math.floor(st(B.foe).hp*.2);id='durcir'}return um.call(this,s,id)};const et=useMove;
   loadMap('dome',dn.x,dn.y+1,1);ok(npcs(MAPS.dome).includes(dn),'Nocturion attend');await interact();useMove=um}
  ok(SAID.some(s=>/se perd dans l'ombre/.test(s)),'les attaques LUMIÈRE sont refusées');ok(f().legN&&G.party.some(m=>m.sp==='nocturion'),'Épreuve de la Nuit réussie : Nocturion t\'a choisi');
- ok(!/Gardiens/.test(goal()),'objectif suivant : '+goal());L('fin')}
+ ok(!/Gardiens/.test(goal()),'objectif suivant : '+goal());
+ // 7. Au Sanctuaire, les deux frères se réconcilient avant Crépuscel
+ day();G.party=[mon('torrentor',90),mon('brasilion',90)];const cr=MAPS.sanctuaire.npcs.find(n=>n.sp==='crepuscel');loadMap('sanctuaire',cr.x,cr.y+1,1);await interact();ok(f().v19rec2&&SAID.some(s=>/partager le ciel/.test(s)),'Solarion et Nocturion se réconcilient : Crépuscel apparaît');L('fin')}

@@ -7006,9 +7006,9 @@ function inv19Off(){if(!INV19)return;for(const a of Object.keys(INV19)){if(INV19
  return um19.apply(this,arguments)}}
 // --- Boss : répliques et retournements en plein combat
 const PH19=[
- [t=>t.name==='Championne Brasia',['Rocaroc ! Montre-lui ce qu\'est un vrai rempart !','def'],['Tu tiens bon… La roche s\'use, mais elle ne cède pas si facilement !'],'Brasia : créatures ROC, très résistantes. L\'EAU et la PLANTE les font fondre ; le FEU et le NORMAL rebondissent dessus.'],
+ [t=>t.name==='Championne Brasia',['Rocaroc ! Montre-lui ce qu\'est un vrai rempart !'],['Tu tiens bon… La roche s\'use, mais elle ne cède pas si facilement !'],'Brasia : créatures ROC, très résistantes. L\'EAU et la PLANTE les font fondre ; le FEU et le NORMAL rebondissent dessus.'],
  [t=>t.name==='Lieutenant Corvin',['Magmor, fais chauffer la galerie !','sun'],['Pas question de rentrer bredouille devant le chef !'],'Corvin : OMBRE, ROC puis Magmor (FEU), qui fait monter la chaleur. Garde une créature EAU ou ROC pour la fin.'],
- [t=>t.name==='Kael'&&t.money===800,['On s\'est entraînés jour et nuit, mon partenaire et moi !','atk'],['Pas encore… Je refuse de perdre contre toi !'],'Kael : son partenaire a l\'avantage sur ta créature de départ. Fais-le affronter par une autre créature.'],
+ [t=>t.name==='Kael'&&t.money===800,['On s\'est entraînés jour et nuit, mon partenaire et moi !'],['Pas encore… Je refuse de perdre contre toi !'],'Kael : son partenaire a l\'avantage sur ta créature de départ. Fais-le affronter par une autre créature.'],
  [t=>t.name==='Kael'&&t.money>800,['Regarde bien ! C\'est pour Valen que je deviens plus fort !','atk'],['Encore ! Je n\'ai pas dit mon dernier mot !'],'Kael : une équipe variée, menée par son partenaire. Prépare une réponse à chacun de ses types.'],
  [t=>t.name==='Chef Vex',['Regarde bien. Voilà ce que la nuit a de plus noir.','eclipse'],['…Tu crois défendre le soleil. Tu ne sais même pas ce qu\'il a coûté.'],'Vex : créatures OMBRE, et une éclipse qui les renforce. La LUMIÈRE dissipe l\'éclipse et frappe fort l\'OMBRE.'],
  [t=>t.name==='Admin Sélène',['Je ne me bats pas pour Vex. Je me bats pour ce qu\'il était.','spd'],['Tu as de la lumière dans les yeux… Comme lui, avant.'],'Sélène : OMBRE et FEU, rapides. Un statut (paralysie, sommeil) la ralentit beaucoup.'],
@@ -7025,7 +7025,7 @@ const PH19=[
 const ph19=()=>B?.tr&&!B.coop?PH19.find(p=>{try{return p[0](B.tr)}catch(e){return false}}):null;
 async function ph19Fx(k){if(!B?.foe||B.foe.hp<=0)return;
  if(['atk','def','spd'].includes(k))return statChange(1,k,1);
- if(k==='sun'||k==='eclipse'){B.sky={k,n:4};ui.flash=.5;ui.flashC=SKY[k][1];sfx('shard');return say(SKY[k][2],0,1)}
+ if(k==='sun'||k==='eclipse'){B.sky={k,n:3};ui.flash=.5;ui.flashC=SKY[k][1];sfx('shard');return say(SKY[k][2],0,1)}
  if(k==='kael'){await say('…Kael.',B.tr.name,0,B.tr.look);await say(`${nm(B.foe)} hésite… Sa colère vacille !`,0,1);return statChange(1,'atk',-2)}}
 {const sf19=sendFoe;sendFoe=async function(...a){const r=await sf19.apply(this,a);const P=ph19();if(P&&B.foes.length>1&&B.foe===B.foes[B.foes.length-1]&&!B.ph19a){B.ph19a=1;await say(P[1][0],B.tr.name,0,B.tr.look);if(P[1][1])await ph19Fx(P[1][1])}return r}}
 {const et19=endTurn;endTurn=async function(...a){const r=await et19.apply(this,a);if(r||!B?.foe)return r;const P=ph19();
@@ -7366,6 +7366,16 @@ GDT.unshift([/Va à sa rencontre|Épreuve du Zénith/,()=>({...gN('mont',null,9,
 // Valen, quand Nocturion t'a choisi
 {const vt19=valenTalk;valenTalk=async function(...a){const F=GV();if(F.legN&&!F.v19val){F.v19val=1;await cine(1);await say('…Nocturion t\'a choisi. Je l\'ai senti, cette nuit-là. Le ciel était si clair.','Valen',0,'valen');
  await say('J\'ai voulu le libérer en cassant tout. Toi, tu l\'as écouté. C\'est toute la différence, je crois.','Valen',0,'valen');await say('Brume aurait été fier de toi. …Moi aussi, je crois.','Valen',0,'valen');await cine(0);save();return}return vt19.apply(this,a)}}
+// --- Crépuscel : avant le combat, les deux frères se parlent enfin (une seule fois)
+{const l2_19=legend2;legend2=async function(sp,lv,flag,col){const F=GV();if(sp!=='crepuscel'||F.v19rec2||F.legC)return l2_19.apply(this,arguments);const S='sanctuaire';
+ await cine(1);const so=tmpN(S,{x:4,y:5,t:'mon',sp:'solarion',d:3}),no=tmpN(S,{x:8,y:5,t:'mon',sp:'nocturion',d:2});sfx('ball');puff(4,5,'#ffe8a0',16);puff(8,5,'#b080e0',16);await wait(500);
+ await say('Solarion et Nocturion jaillissent de leurs capsules. Pour la première fois depuis mille ans, les deux gardiens se font face.');await emote(no,'…',900);
+ await say('« Frère. Pendant mille ans, j\'ai brillé au-dessus de ta prison. Je me répétais que c\'était le prix des moissons. »','Solarion');
+ await say('« Je ne te demande pas de pardonner. Je te demande de partager le ciel. Comme avant. »','Solarion');await emote(no,'…',900);
+ await say('« Un enfant m\'a écouté quand tu détournais les yeux. Il aurait pu me faire tomber, et il s\'est arrêté. »','Nocturion');
+ await say('« Si un enfant le peut… un gardien aussi. »','Nocturion');await walk(so,'r',400);await walk(no,'l',400);
+ ui.flash=.8;ui.flashC='#ffffff';sfx('shard');rays(6,4,C.goldL,2600);rays(6,4,'#c060ff',2600);ui.shake=10;await wait(700);rmN(S,so);rmN(S,no);
+ await say('La lumière et l\'ombre s\'enroulent l\'une autour de l\'autre au-dessus de l\'autel… et prennent forme.');F.v19rec2=1;save();await cine(0);return l2_19.apply(this,arguments)}}
 
 // =====================================================================
 // 19 — QUÊTES ANNEXES ÉCRITES : peu nombreuses, mais chacune avec un personnage, une petite histoire et une mécanique à elle.

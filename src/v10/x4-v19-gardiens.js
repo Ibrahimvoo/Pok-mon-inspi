@@ -109,3 +109,13 @@ GDT.unshift([/Va à sa rencontre|Épreuve du Zénith/,()=>({...gN('mont',null,9,
 // Valen, quand Nocturion t'a choisi
 {const vt19=valenTalk;valenTalk=async function(...a){const F=GV();if(F.legN&&!F.v19val){F.v19val=1;await cine(1);await say('…Nocturion t\'a choisi. Je l\'ai senti, cette nuit-là. Le ciel était si clair.','Valen',0,'valen');
  await say('J\'ai voulu le libérer en cassant tout. Toi, tu l\'as écouté. C\'est toute la différence, je crois.','Valen',0,'valen');await say('Brume aurait été fier de toi. …Moi aussi, je crois.','Valen',0,'valen');await cine(0);save();return}return vt19.apply(this,a)}}
+// --- Crépuscel : avant le combat, les deux frères se parlent enfin (une seule fois)
+{const l2_19=legend2;legend2=async function(sp,lv,flag,col){const F=GV();if(sp!=='crepuscel'||F.v19rec2||F.legC)return l2_19.apply(this,arguments);const S='sanctuaire';
+ await cine(1);const so=tmpN(S,{x:4,y:5,t:'mon',sp:'solarion',d:3}),no=tmpN(S,{x:8,y:5,t:'mon',sp:'nocturion',d:2});sfx('ball');puff(4,5,'#ffe8a0',16);puff(8,5,'#b080e0',16);await wait(500);
+ await say('Solarion et Nocturion jaillissent de leurs capsules. Pour la première fois depuis mille ans, les deux gardiens se font face.');await emote(no,'…',900);
+ await say('« Frère. Pendant mille ans, j\'ai brillé au-dessus de ta prison. Je me répétais que c\'était le prix des moissons. »','Solarion');
+ await say('« Je ne te demande pas de pardonner. Je te demande de partager le ciel. Comme avant. »','Solarion');await emote(no,'…',900);
+ await say('« Un enfant m\'a écouté quand tu détournais les yeux. Il aurait pu me faire tomber, et il s\'est arrêté. »','Nocturion');
+ await say('« Si un enfant le peut… un gardien aussi. »','Nocturion');await walk(so,'r',400);await walk(no,'l',400);
+ ui.flash=.8;ui.flashC='#ffffff';sfx('shard');rays(6,4,C.goldL,2600);rays(6,4,'#c060ff',2600);ui.shake=10;await wait(700);rmN(S,so);rmN(S,no);
+ await say('La lumière et l\'ombre s\'enroulent l\'une autour de l\'autre au-dessus de l\'autel… et prennent forme.');F.v19rec2=1;save();await cine(0);return l2_19.apply(this,arguments)}}
