@@ -40,6 +40,18 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 19.3 : La fin du Cycle
+
+![Aperçu de la version 19.3](apercus/v193-fin.png)
+
+La fin de l'histoire reçoit le même soin que l'Acte II : la Faille devient le dernier chapitre de la Team Éclipse, et le Sanctuaire offre enfin une vraie conclusion.
+
+- **Le dernier carré** : sur les Coteaux, Sélène se souvient de ce qui s'est passé à l'Observatoire. Dans la Faille, Corvin revient : repenti, il baisse un des deux leviers pour toi ; resté sbire, il garde le chantier de Caïus, et après le combat on peut lui dire qu'il est encore temps.
+- **Les mots pour Caïus** : quand Caïus envoie sa dernière créature, ce que tu as vécu devient des mots (la peur, Sélène, Valen, Corvin, Faustine, les Gardiens). Avec assez de mots, sa créature hésite, et Caïus ne veut plus voler la lumière de Crépuscel : seulement la voir. Valen vient lui aussi lui tendre la main.
+- **Crépuscel attend que Caïus soit arrêté** (il creusait sous le Sanctuaire), et l'objectif suit maintenant l'ordre de l'histoire.
+- **La première aube partagée** : après Crépuscel, tous ceux que tu as aidés montent au Sanctuaire (Kael, Valen, Sélène, et Caïus ou Corvin selon tes choix). Un dernier épilogue raconte ce que tes choix ont changé, puis l'écran FIN. L'aventure continue ensuite.
+- Le journal garde la trace de ces moments (le voleur démasqué, le fil de Faustine, Corvin, les mots pour Caïus, la première aube).
+
 ## Version 19.2 : Ensemble, et le Carnaval revisité
 
 ![Aperçu de la version 19.2](apercus/v192-carnaval.png)

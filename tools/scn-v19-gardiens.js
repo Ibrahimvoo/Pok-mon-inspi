@@ -25,4 +25,4 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  ok(SAID.some(s=>/se perd dans l'ombre/.test(s)),'les attaques LUMIÈRE sont refusées');ok(f().legN&&G.party.some(m=>m.sp==='nocturion'),'Épreuve de la Nuit réussie : Nocturion t\'a choisi');
  ok(!/Gardiens/.test(goal()),'objectif suivant : '+goal());
  // 7. Au Sanctuaire, les deux frères se réconcilient avant Crépuscel
- day();G.party=[mon('torrentor',90),mon('brasilion',90)];const cr=MAPS.sanctuaire.npcs.find(n=>n.sp==='crepuscel');loadMap('sanctuaire',cr.x,cr.y+1,1);await interact();ok(f().v19rec2&&SAID.some(s=>/partager le ciel/.test(s)),'Solarion et Nocturion se réconcilient : Crépuscel apparaît');L('fin')}
+ day();f().failleDone=1;G.party=[mon('torrentor',90),mon('brasilion',90)];const cr=MAPS.sanctuaire.npcs.find(n=>n.sp==='crepuscel');loadMap('sanctuaire',cr.x,cr.y+1,1);await interact();ok(f().v19rec2&&SAID.some(s=>/partager le ciel/.test(s)),'Solarion et Nocturion se réconcilient : Crépuscel apparaît');L('fin')}
