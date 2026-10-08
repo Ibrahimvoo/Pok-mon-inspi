@@ -40,6 +40,12 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 19.4 : Ensemble jusqu'au bout
+
+- **Les choix se votent** dans l'aventure à plusieurs : pendant une scène partagée, les choix qui changent l'histoire commune (Corvin dans la Mine et dans la Faille, ce qu'on dit à Kael, ce qu'on dit à Faustine) passent au vote. Chacun vote ; la majorité l'emporte ; en cas d'égalité, le sort décide. Tout le monde voit qui a voté quoi, et le résultat vaut pour tout le groupe. Un joueur qui ne vote pas dans les 30 secondes ne bloque personne. Les choix personnels (le petit Ombrelin…) restent personnels, et en solo rien ne change.
+- **Chacun ses mots** : en combat de groupe contre Valen ou Caïus, chaque joueur trouve ses propres mots ; ils comptent pour sa propre fin.
+- **La première aube pour tous** : quand un ami capture Crépuscel, les autres joueurs vivent eux aussi la scène finale au Sanctuaire.
+
 ## Version 19.3 : La fin du Cycle
 
 ![Aperçu de la version 19.3](apercus/v193-fin.png)

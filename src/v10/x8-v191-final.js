@@ -62,7 +62,7 @@ async function selene191(n,tb){const F=F191(),S='Admin Sélène';await cine(1);f
 // ---------------------------------------------------------------- Combat final : « Que dis-tu à Valen ? »
 {const sf191=sendFoe;sendFoe=async function(...a){const r=await sf191.apply(this,a);try{if(B&&!B.coop&&!B.pvp&&B.tr?.name==='Vex'&&B.foe?.sp==='nocturion'&&!B.w191){B.w191=1;await words191()}}catch(e){console.error(e)}return r}}
 {const um191=useMove;useMove=async function(s,id){if(s===1&&B?.hes191>0&&B.foe?.sp==='nocturion'&&B.foe.hp>0){B.hes191--;await say('Nocturion n\'attaque pas. Il regarde Valen, immobile.',0,1);return null}return um191.apply(this,arguments)}}
-async function words191(){const F=F191(),V='Valen',lk='vex',A=[];
+async function words191(grp){const F=F191(),V='Valen',lk='vex',A=[];
  if(F.badge2)A.push(['LE PONTON',async()=>{await say('"Maëlle t\'attend sur le ponton. Elle m\'a fait promettre de te le dire."');await say('…Le ponton. On y pêchait des nuits entières sans jamais rien attraper.',V,0,lk);return 1}]);
  if(F.v19ec1)A.push(['LA PROMESSE À BRUME',async()=>{await say('"Dans la Grotte Écho, j\'ai entendu ta promesse à Brume. Tu voulais réparer le ciel. Pas l\'éteindre."');await say('Tu… as entendu ça ? Personne n\'était censé l\'entendre.',V,0,lk);return 1}]);
  A.push(['KAEL',async()=>{const k=F.v19k;await say(k===1?'"Kael a cru pendant des années que c\'était sa faute si tu étais parti."':k===2?'"Tu avais raison sur la nuit. Mais pas comme ça. Pas en faisant payer tout le reste."':'"Kael n\'est pas venu te battre. Il est venu te ramener à la maison."');
@@ -76,6 +76,7 @@ async function words191(){const F=F191(),V='Valen',lk='vex',A=[];
  let d=0;for(;;){const c=await choose([...A.map(a=>a[0]),'SE BATTRE'],{w:300,title:'Que dis-tu à Valen ?'});if(c<0||c>=A.length)break;
   const[lbl,fn]=A.splice(c,1)[0];d+=await fn();(F.v191w??=[]).includes(lbl)||F.v191w.push(lbl);if(!A.length)break}
  F.v191d=Math.max(F.v191d|0,d);if(!d)return;
+ if(grp)return say(d>=3?'Valen relâche son emprise. Sa voix se brise, et Nocturion hésite : tout le groupe le sent.':'Valen vacille… puis se reprend.');
  if(d>=3){if(B.sky?.k==='eclipse'){B.sky=null;ui.flash=.5;ui.flashC=C.goldL}await say('Valen relâche son emprise. L\'éclipse se dissipe : Nocturion se bat seul, et sa colère retombe.');if(B.foe.hp>0)await statChange(1,'atk',-1);
   if(d>=5){await say('Valen n\'ordonne plus rien. Il regarde Nocturion… et Nocturion le regarde.');if(B.foe.hp>0)await statChange(1,'spd',-1)}}
  else await say('Valen vacille… puis se reprend. Il faudrait plus que des mots pour l\'atteindre. Des souvenirs, peut-être, que tu n\'as pas trouvés en chemin.')}

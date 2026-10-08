@@ -33,7 +33,7 @@ async function corvinFaille193(n){const F=f(),C='Corvin',v=F.v19cor;await cine(1
  await say('Je garde son chantier. Personne ne passe. Pas même toi.',C,0,'grunt');await cine(0);
  const r=await battle(team([['nocturelle',50],['rocaroc',51,null,'pierredure'],['magmor',52,null,'charbon']]),{tr:{name:'Contremaître Corvin',look:'grunt',money:2500,vs:1,items:1,after:'…Toujours toi. Toujours.'}});if(r!=='win')return r;
  await cine(1);await say('Tu sais ce qui est drôle ? Je creuse depuis des semaines, et je n\'ai jamais rien trouvé. Juste des cailloux. Et des Grumeroc.',C,0,'grunt');
- const c=await choose(['IL EST ENCORE TEMPS','VA-T\'EN'],{w:260,title:'Corvin'});
+ const c=await voteChoose(['IL EST ENCORE TEMPS','VA-T\'EN'],{w:260,title:'Corvin'});
  if(c===0){F.v193cor=1;await say('"Il est encore temps. À Cendreville, Tito cherche quelqu\'un qui sait étayer une galerie."');await emote(n,'…',900);
   await say('Le petit mineur ? Celui dont j\'ai fait sauter la galerie ? …Il me recevrait, moi ?',C,0,'grunt');await say('Hmpf. On verra. Je sors d\'ici. Mais pas pour Caïus.',C,0,'grunt')}
  else{F.v193cor=2;await say('Ouais. C\'est ce que tout le monde me dit.',C,0,'grunt')}
@@ -41,7 +41,7 @@ async function corvinFaille193(n){const F=f(),C='Corvin',v=F.v19cor;await cine(1
 MAPS.faille.npcs.push({x:14,y:3,t:'grunt',d:2,name:'Corvin',cond:()=>[1,2,4].includes(f().v19cor)&&!f().v193cor&&!f().failleDone,fn:n=>corvinFaille193(n)});
 
 // ---------------------------------------------------------------- Caïus : les mots, puis la fin du combat
-async function words193(){const F=f(),C='Caïus',lk='caius',A=[];
+async function words193(grp){const F=f(),C='Caïus',lk='caius',A=[];
  A.push(['LA PEUR',async()=>{await say('"Tu n\'as pas peur de la nuit, Caïus. Tu as peur que quelqu\'un décide à ta place."');await say('…Tais-toi. Tu ne sais rien de moi.',C,0,lk);return 1}]);
  if(F.v191sel)A.push(['SÉLÈNE',async()=>{await say('"Sélène attend dehors. Elle n\'est pas venue te battre. Elle est venue te chercher."');await say('Sélène… Elle a toujours été la plus courageuse de nous trois.',C,0,lk);return 1}]);
  if((F.v191d|0)>=3)A.push(['VALEN',async()=>{await say('"Valen est rentré chez lui. Personne ne lui a rien pris. On l\'a juste retrouvé."');await say('Rentré… Comme si c\'était si simple.',C,0,lk);return 1}]);
@@ -52,6 +52,7 @@ async function words193(){const F=f(),C='Caïus',lk='caius',A=[];
  let d=0;for(;;){const c=await choose([...A.map(a=>a[0]),'SE BATTRE'],{w:300,title:'Que dis-tu à Caïus ?'});if(c<0||c>=A.length)break;
   const[lbl,fn]=A.splice(c,1)[0];d+=await fn();(F.v193w??=[]).includes(lbl)||F.v193w.push(lbl);if(!A.length)break}
  F.v193d=Math.max(F.v193d|0,d);if(!d)return;
+ if(grp)return say(d>=3?'Caïus baisse les yeux. Ses ordres arrivent en retard : tout le groupe le sent.':'Caïus secoue la tête et se reprend.');
  if(d>=3){await say('Caïus baisse les yeux. Ses ordres arrivent en retard : sa créature hésite.');if(B.foe.hp>0)await statChange(1,'atk',-1);if(d>=4&&B.foe.hp>0)await statChange(1,'spd',-1)}
  else await say('Caïus secoue la tête et se reprend. Il faudrait d\'autres mots… ceux des gens que tu as aidés en chemin.')}
 {const sf193=sendFoe;sendFoe=async function(...a){const r=await sf193.apply(this,a);try{if(B&&!B.coop&&!B.pvp&&B.tr?.name==='Admin Caïus'&&B.foe?.sp==='anubrume'&&!B.w193){B.w193=1;await words193()}}catch(e){console.error(e)}return r}}
@@ -88,8 +89,8 @@ async function caius193(n){const F=f(),C='Caïus',P='faille';await cine(1);faceT
 // ---------------------------------------------------------------- La première aube partagée, puis FIN
 let CR193=null;
 {const ob=battle;battle=async function(foes,o){const r=await ob.apply(this,arguments);if(o?.legend&&foes?.[0]?.sp==='crepuscel')CR193=r;return r}}
-{const l2=legend2;legend2=async function(sp){CR193=null;const r=await l2.apply(this,arguments);if(sp==='crepuscel'&&(CR193==='win'||CR193==='catch')&&!f().v193fin)await finale193();return r}}
-async function finale193(){const F=f(),S='sanctuaire',L=[];await cine(1);musPlay('title');
+{const l2=legend2;legend2=async function(sp){CR193=null;const r=await l2.apply(this,arguments);if(sp==='crepuscel'&&(CR193==='win'||CR193==='catch'||f().legC)&&!f().v193fin)await finale193();return r}}
+async function finale193(){const F=f(),S='sanctuaire',L=[],mine=[...G.party,...G.box].some(m=>m.sp==='crepuscel'),who=G.coop?.lg?.crepuscel;await cine(1);musPlay('title');
  await say('Au-dessus de l\'autel, le soleil et la lune brillent ensemble. Pour la première fois depuis mille ans, Aurélys connaît un vrai crépuscule.');
  await fadeTo(1,500);const add=(x,t,name)=>L.push(tmpN(S,{x,y:7,t,d:1,name}));add(4,'selene','Sélène');add(5,'rival','Kael');add(7,'valen','Valen');
  if(F.v193cai===2)add(8,'caius','Caïus');if(F.v19cor===3||F.v193cor===1)add(9,'grunt','Corvin');await fadeTo(0,500);
@@ -99,9 +100,9 @@ async function finale193(){const F=f(),S='sanctuaire',L=[];await cine(1);musPlay
  await say(F.v191sel?'Ma dette est réglée. Je crois que je vais enfin dormir la nuit.':'Je suis partie sans un mot, à l\'Observatoire. Alors je le dis maintenant : merci.','Sélène',0,'selene');
  if(F.v193cai===2)await say('C\'est… plus beau que tout ce que j\'aurais pu voler.','Caïus',0,'caius');
  if(F.v19cor===3||F.v193cor===1)await say('Avec Tito, on a étayé le sentier jusqu\'ici. Ça tiendra mille ans. Promis.','Corvin',0,'grunt');
- if(F.legC)await say('Crépuscel se pose près de toi. Une moitié de lui brille comme le jour, l\'autre comme la nuit… et toutes les deux te regardent.');
+ if(mine)await say('Crépuscel se pose près de toi. Une moitié de lui brille comme le jour, l\'autre comme la nuit… et toutes les deux te regardent.');
  await fadeTo(1,700);PV193.on=1;await fadeTo(0,900);
- const E=[F.legC?'Crépuscel a choisi de te suivre. Mais chaque soir, à l\'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.':'Crépuscel est reparti dans la lumière. On dit qu\'il veille sur chaque aube et chaque crépuscule d\'Aurélys.'];
+ const E=[mine?'Crépuscel a choisi de te suivre. Mais chaque soir, à l\'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.':who?`Crépuscel a choisi de suivre ${who}. Mais chaque soir, à l'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.`:'Crépuscel est reparti dans la lumière. On dit qu\'il veille sur chaque aube et chaque crépuscule d\'Aurélys.'];
  E.push(F.v193cai===2?'Caïus a rebouché la Faille de ses propres mains. Il vit à Lunévie, chez la grand-mère de Valen. Il dort la nuit, maintenant.':'Caïus a accepté la soupe. Une seule. Puis une deuxième. On dit qu\'il n\'est jamais reparti de Lunévie.');
  if(F.v193cor===1)E.push('À Cendreville, un ancien lieutenant étaie les galeries avec Tito. Il ne parle jamais de sa capuche violette.');else if(F.v193cor===2)E.push('Corvin a disparu dans les galeries de la Faille. Les Grumeroc, eux, ont un nouveau gardien bourru.');
  E.push((F.v191d|0)>=3?'Kael et Valen ont repeint ensemble la maison de leur grand-mère. Elle dit qu\'elle n\'a jamais eu autant de bols à laver.':'Kael et Valen se parlent encore peu. Mais chaque soir, ils regardent le même ciel.');

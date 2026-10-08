@@ -33,9 +33,9 @@ async function dancer192(i){const F=f(),[,,N,p,g,h,il]=DN192[i];await cine(1);
   give('pierrechance',1);jingle('item');await say('Tu reçois une Pierre Chance !');await cine(0);save();return}
  const r=await mt.apply(this,arguments);
  if(dgHas('eclipse')&&!F.v18faus&&!F.v192mi){F.v192mi=1;await say('Et si tu croises Faustine… dis-lui que sa place à l\'atelier l\'attend toujours. Son dé à coudre aussi.',M,0,'mirella');save()}return r}}
-async function faustineWords192(F){const O=F.v192mi?['MIRELLA T\'ATTEND','RENDS-TOI !']:['RENDS-TOI !','POURQUOI ?'],FA='Faustine',c=Math.max(0,await choose(O,{w:280,title:'Que dis-tu à Faustine ?'}));
- if(O[c]==='MIRELLA T\'ATTEND'){F.v192fa=1;await say('… Mirella ? Elle a dit ça ? Après tout ce que j\'ai fait ?',FA,0,'faustine');await say('Elle a gardé mon dé à coudre, je parie. Elle garde tout. … Ne la fais pas attendre pour moi. Je lui dirai moi-même. Un jour.',FA,0,'faustine')}
- else if(O[c]==='POURQUOI ?'){F.v192fa=3;await say('Pourquoi ? Parce que Vex m\'a promis une robe taillée dans la nuit elle-même. Demande donc à ma chère Mirella ce que ça fait, d\'être oubliée.',FA,0,'faustine')}
+async function faustineWords192(F){const O=F.v192mi?['MIRELLA T\'ATTEND','RENDS-TOI !']:['RENDS-TOI !','POURQUOI ?'],FA='Faustine',c=await voteLabel(O,{w:280,title:'Que dis-tu à Faustine ?',all:['MIRELLA T\'ATTEND','RENDS-TOI !','POURQUOI ?']});
+ if(c==='MIRELLA T\'ATTEND'){F.v192fa=1;await say('… Mirella ? Elle a dit ça ? Après tout ce que j\'ai fait ?',FA,0,'faustine');await say('Elle a gardé mon dé à coudre, je parie. Elle garde tout. … Ne la fais pas attendre pour moi. Je lui dirai moi-même. Un jour.',FA,0,'faustine')}
+ else if(c==='POURQUOI ?'){F.v192fa=3;await say('Pourquoi ? Parce que Vex m\'a promis une robe taillée dans la nuit elle-même. Demande donc à ma chère Mirella ce que ça fait, d\'être oubliée.',FA,0,'faustine')}
  else{F.v192fa=2;await say('Me rendre ? À un enfant déguisé ? Le rideau tombe, petit. Mais pas sur moi.',FA,0,'faustine')}}
 {const bt=barnabeTalk;barnabeTalk=async function(){const F=f();if(F.v192v===2&&!F.v192ba){F.v192ba=1;await cine(1);await say('Pipo est au violon ! Il chante l\'hymne de la Team Éclipse à tue-tête, c\'est insupportable. Tiens, pour ton aide.','Commissaire Barnabé',0,'sailor');
   give('festicapsule',3);await say('Tu reçois 3 Festi Capsules !');await cine(0);save()}return bt.apply(this,arguments)}}

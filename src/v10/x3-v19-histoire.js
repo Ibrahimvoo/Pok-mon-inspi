@@ -44,7 +44,7 @@ setInterval(()=>{try{if(mode!=='world'||busy||move||!G||G.map!=='mine'||F19().mi
  await say('Oups. Oublie ce que je viens de dire ! Repli !','Lieutenant Corvin');await cinema('mine');
  ui.shake=12;sfx('hit');debris(c.x,c.y,'#a08a78',22);c.d=0;await wait(300);await say('AAARGH ! Ma jambe ! La poutre…','Lieutenant Corvin');await emote(c,'…',700);
  await say('Le plafond craque encore. Corvin est coincé sous une poutre, à deux pas des éboulis. Il serre les dents pour ne pas crier.');
- const i=await choose(['L\'AIDER','LE LAISSER LÀ'],{w:220,title:'Corvin est coincé'});const ld=G.party.find(alive);
+ const i=await voteChoose(['L\'AIDER','LE LAISSER LÀ'],{w:220,title:'Corvin est coincé'});const ld=G.party.find(alive);
  if(i!==1){F19().v19cor=1;await say(`${ld?nm(ld):'Ta créature'} glisse son dos sous la poutre et pousse de toutes ses forces…`);ui.shake=8;sfx('bump');puff(c.x,c.y,'#c8b8a0',12);await wait(400);
   await say('La poutre roule sur le côté. Corvin se relève en grimaçant.');faceTo(c,G.x,G.y);await emote(c,'?',700);
   await say('…Pourquoi t\'as fait ça ? Je suis ton ennemi, gamin. J\'ai fait sauter la galerie de ton copain.','Lieutenant Corvin');await emote(c,'…',900);
@@ -134,7 +134,7 @@ async function campfire19(){const F=F19();F.v19feu=1;const V='ville',[fx,fy]=nea
  await emote(k,'…',900);await say('…Tu sais ce qui est bizarre ? Je l\'ai reconnu à sa façon de pencher la tête. Il faisait pareil quand il réparait mon vélo.','Kael');
  await say('Valen avait un Ombrelin. Brume. Il le portait sur son épaule partout, même à table. Un matin d\'été, Brume ne s\'est pas réveillé.','Kael');
  await say('Valen a dit que c\'était la faute du soleil. Que les jours trop longs tuaient les créatures de l\'ombre. Il est parti le lendemain. J\'avais dix ans.','Kael');
- const a=await choose(['ON VA LE RAMENER','TU N\'Y ES POUR RIEN','ET SI IL AVAIT RAISON ?'],{w:300,title:'Que dis-tu à Kael ?'});F.v19k=a<0?0:a;
+ const a=await voteChoose(['ON VA LE RAMENER','TU N\'Y ES POUR RIEN','ET SI IL AVAIT RAISON ?'],{w:300,title:'Que dis-tu à Kael ?'});F.v19k=a<0?0:a;
  if(a===2){await emote(k,'!',500);await say('…Peut-être. Je ne sais pas. Mais même s\'il avait raison, il n\'avait pas le droit de faire ça. Pas comme ça.','Kael');await say('Il y a forcément un autre moyen. Un moyen où personne ne paie à la place des autres.','Kael')}
  else if(a===1){await emote(k,'…',700);await say('J\'ai longtemps cru que s\'il était parti, c\'était parce que je n\'étais pas assez fort pour le retenir.','Kael');await say('…Merci. Vraiment.','Kael')}
  else{await emote(k,'♪',600);await say('Ouais. On va le ramener. Même s\'il faut le traîner par la cape jusqu\'à la maison.','Kael')}
