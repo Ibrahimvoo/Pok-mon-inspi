@@ -158,11 +158,12 @@ async function faustineFight(n){const F=f(),FA='Faustine';await cine(1);await ba
  await say('Tiens, tiens. Un sbire que je n\'ai pas recruté. Et cet uniforme… ces coutures… C\'est du Mirella. Je reconnaîtrais son point de croix entre mille.',FA,0,'faustine');
  await say('Je suis Faustine, la couturière de la Team Éclipse. Les masques, les uniformes, les fausses barbes : c\'est moi. Et la clé du téléphérique… aussi.',FA,0,'faustine');
  await say(F.obsScene?'Vex a perdu ? Peut-être. Mais moi, je n\'ai pas fini mon défilé. Un jour, l\'Éclipse reviendra, et j\'aurai la plus belle robe.':'Vex doit finir son rituel à l\'Observatoire. Personne ne montera. Personne ! Et surtout pas un enfant déguisé avec les chutes de tissu de mon ancienne maîtresse.',FA,0,'faustine');
+ if(F.v192v===2)await say('Et cet Orbe que Pipo m\'a « emprunté »… Ce bavard t\'a tout raconté, hein ? Peu importe.',FA,0,'faustine');else if(F.v192v===3)await say('Pipo m\'a prévenue qu\'un petit curieux posait des questions sur la Place. Je t\'attendais.',FA,0,'faustine');
  await say('Voyons si tu sais porter un costume… sous les projecteurs !',FA,0,'faustine');await cine(0);
- const r=await battle(team([['nocturaile',37,null,'baiesoin'],['possedrap',37],['deltamk',38,null,'baiesoin'],['masquetotem',38,['mascarade','masquesolaire','mirage','prisme'],'orbe']]),{tr:{name:'Couturière Faustine',look:'faustine',money:6000,vs:1,boss:1,items:2,ev:1,after:'Mes coutures… ont craqué ?!'}});
+ const r=await battle(team([['nocturaile',37,null,'baiesoin'],['possedrap',37],['deltamk',38,null,'baiesoin'],['masquetotem',38,['mascarade','masquesolaire','mirage','prisme'],F.v192v===2?null:'orbe']]),{tr:{name:'Couturière Faustine',look:'faustine',money:6000,vs:1,boss:1,items:F.v192v===3?3:2,ev:1,after:'Mes coutures… ont craqué ?!'}});
  if(r!=='win')return r;F.v18faus=1;await cine(1);
  await say('Bravo. Vraiment. Tiens, ta précieuse clé. Je n\'en ai plus besoin : j\'ai gagné assez de temps.',FA,0,'faustine');G.bag.clecabine=1;jingle('item');ui.pop={ic:ICO.clecabine,t0:now()};await say('Tu récupères la CLÉ DU TÉLÉPHÉRIQUE !');
- await cinema('mascarade');rmN('repaire2',n);
+ if(typeof faustineWords192==='function')await faustineWords192(F);await cinema('mascarade');rmN('repaire2',n);
  await say(F.obsScene?'Faustine a disparu. Rapporte la clé à Ambroise, à Volterre.':'Faustine a disparu. Il faut rapporter la clé à Ambroise, à Volterre… vite !');rep('volterre',2);await cine(0);save();return r}
 async function barnabeTalk(){const F=f(),B='Commissaire Barnabé';
  if(F.v18faus&&!F.v18barn){F.v18barn=1;await cine(1);await say('C\'est toi qui as mis la Team Éclipse en déroute sous le Théâtre ? Au nom de toute la police de Carnavelle : merci ! Accepte ces quelques cadeaux.',B,0,'sailor');

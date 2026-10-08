@@ -2088,7 +2088,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19.1',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19.2',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2670,7 +2670,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19.1',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19.2',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -6132,11 +6132,12 @@ async function faustineFight(n){const F=f(),FA='Faustine';await cine(1);await ba
  await say('Tiens, tiens. Un sbire que je n\'ai pas recruté. Et cet uniforme… ces coutures… C\'est du Mirella. Je reconnaîtrais son point de croix entre mille.',FA,0,'faustine');
  await say('Je suis Faustine, la couturière de la Team Éclipse. Les masques, les uniformes, les fausses barbes : c\'est moi. Et la clé du téléphérique… aussi.',FA,0,'faustine');
  await say(F.obsScene?'Vex a perdu ? Peut-être. Mais moi, je n\'ai pas fini mon défilé. Un jour, l\'Éclipse reviendra, et j\'aurai la plus belle robe.':'Vex doit finir son rituel à l\'Observatoire. Personne ne montera. Personne ! Et surtout pas un enfant déguisé avec les chutes de tissu de mon ancienne maîtresse.',FA,0,'faustine');
+ if(F.v192v===2)await say('Et cet Orbe que Pipo m\'a « emprunté »… Ce bavard t\'a tout raconté, hein ? Peu importe.',FA,0,'faustine');else if(F.v192v===3)await say('Pipo m\'a prévenue qu\'un petit curieux posait des questions sur la Place. Je t\'attendais.',FA,0,'faustine');
  await say('Voyons si tu sais porter un costume… sous les projecteurs !',FA,0,'faustine');await cine(0);
- const r=await battle(team([['nocturaile',37,null,'baiesoin'],['possedrap',37],['deltamk',38,null,'baiesoin'],['masquetotem',38,['mascarade','masquesolaire','mirage','prisme'],'orbe']]),{tr:{name:'Couturière Faustine',look:'faustine',money:6000,vs:1,boss:1,items:2,ev:1,after:'Mes coutures… ont craqué ?!'}});
+ const r=await battle(team([['nocturaile',37,null,'baiesoin'],['possedrap',37],['deltamk',38,null,'baiesoin'],['masquetotem',38,['mascarade','masquesolaire','mirage','prisme'],F.v192v===2?null:'orbe']]),{tr:{name:'Couturière Faustine',look:'faustine',money:6000,vs:1,boss:1,items:F.v192v===3?3:2,ev:1,after:'Mes coutures… ont craqué ?!'}});
  if(r!=='win')return r;F.v18faus=1;await cine(1);
  await say('Bravo. Vraiment. Tiens, ta précieuse clé. Je n\'en ai plus besoin : j\'ai gagné assez de temps.',FA,0,'faustine');G.bag.clecabine=1;jingle('item');ui.pop={ic:ICO.clecabine,t0:now()};await say('Tu récupères la CLÉ DU TÉLÉPHÉRIQUE !');
- await cinema('mascarade');rmN('repaire2',n);
+ if(typeof faustineWords192==='function')await faustineWords192(F);await cinema('mascarade');rmN('repaire2',n);
  await say(F.obsScene?'Faustine a disparu. Rapporte la clé à Ambroise, à Volterre.':'Faustine a disparu. Il faut rapporter la clé à Ambroise, à Volterre… vite !');rep('volterre',2);await cine(0);save();return r}
 async function barnabeTalk(){const F=f(),B='Commissaire Barnabé';
  if(F.v18faus&&!F.v18barn){F.v18barn=1;await cine(1);await say('C\'est toi qui as mis la Team Éclipse en déroute sous le Théâtre ? Au nom de toute la police de Carnavelle : merci ! Accepte ces quelques cadeaux.',B,0,'sailor');
@@ -7834,6 +7835,8 @@ async function epilogue191(){const F=F191();PV191.epi=1;musPlay('nuit');await fa
  if(F.v191ph||F.badge2)L.push(F.v191tor===2?'À Port-Miroir, Gédéon rallume le phare chaque soir. Un Torrentor escorte parfois les barques jusqu\'au quai : les pêcheurs l\'appellent "le Calme".':'À Port-Miroir, Gédéon rallume le phare chaque soir. Plus aucun bateau ne s\'est perdu depuis.');
  if(F.v19forDone)L.push('Dans la Forêt Murmure, Iris a planté un jardin là où se dressaient les machines. Les créatures y chantent plus fort qu\'ailleurs.');
  if(F.v19cor===3)L.push('Corvin a raccroché sa capuche violette. À Cendreville, Tito lui apprend à creuser… pour de vrai.');else if(F.v19cor)L.push('Le lieutenant Corvin a disparu avec les derniers sbires. Certains jurent l\'avoir vu rôder du côté des Coteaux.');
+ if(F.v192v===2)L.push('Pipo, le voleur masqué, balaie la Place du Carnaval chaque matin. Il dit que c\'est le plus beau déguisement qu\'il ait porté : celui d\'honnête homme.');else if(F.v192v===3)L.push('Le voleur masqué court toujours. Chaque année, au Carnaval, quelqu\'un jure l\'avoir reconnu dans la foule.');
+ if(F.v192fa===1)L.push('Un soir, Faustine a frappé à la porte de l\'Atelier Mirella. Elles cousent ensemble les costumes du prochain Carnaval.');else if(F.v192fa)L.push('Faustine n\'a jamais été retrouvée. Mais au Grand Bal, une robe de nuit étoilée danse toujours un peu à l\'écart.');
  if(F.v191gh===1)L.push('Le Commandant Orso raconte encore qu\'un fantôme a traversé sa Centrale sans déclencher une seule alarme. Personne ne le croit.');
  L.push(F.v191sel?'Sélène est restée près du dôme, entre Valen et Nocturion. Elle dit qu\'il lui reste une dette à régler : Caïus.':'Sélène a quitté l\'Observatoire sans un mot. On dit qu\'elle est partie vers le nord, sur la piste de Caïus.');
  if((F.v191d|0)>=3)L.push('Valen ne parle pas beaucoup de cette nuit-là. Mais il répète souvent qu\'on ne l\'a pas battu : on l\'a retrouvé.');
@@ -7875,6 +7878,48 @@ const coMateFight=()=>coN()>1&&!CB&&!CBG&&!CBJ?matePeers().find(P=>isAdvMate(P)&
  for(const P of NET.peers.values())if(isAdvMate(P)&&P.dv&&P.dv!==NETDV()&&!COV.has(P.pid)){COV.add(P.pid);NET.note(`${P.name} n'a pas la même version du jeu : rechargez tous les deux la page pour combattre ensemble.`)}},3000)}
 
 // =====================================================================
+// Version 19.2 : le Carnaval revisité
+//  - le voleur masqué (celui de la clé, à Volterre) se cache parmi quatre danseurs de la Place : observer, puis accuser (3 essais)
+//    démasqué (v192v=2) : combat contre Pipo, il rend l'Orbe de Faustine (son Masquetotem ne l'a plus) et Barnabé l'embarque
+//    enfui (v192v=3) : Faustine est prévenue et garde un objet de plus
+//  - Mirella confie que Faustine était son apprentie (v192mi) ; après le combat : « Que dis-tu à Faustine ? » (v192fa 1/2/3)
+//  - conséquences : Barnabé, Mirella après le chapitre, et l'épilogue de la fin
+// =====================================================================
+const DN192=[[11,17,'Danseur au masque de lune','rouge',0,1,'il'],[19,18,'Danseur au masque de soleil','bleue',1,1,'il'],[12,11,'Danseur au masque de chat','rouge',1,1,'il'],[17,21,'Danseuse au masque d\'oiseau','rouge',1,0,'elle']];
+const DNX192=['Moi ? Un voleur ? Je suis pâtissier ! Regarde, j\'ai encore du sucre glace sous le masque.','Quelle honte ! Je danse au Carnaval depuis quarante ans ! Mes étincelles viennent des feux d\'artifice, figure-toi.',null,'Accuser une dame qui danse ? Ton costume est joli, mais tes manières, beaucoup moins !'];
+async function dancer192(i){const F=f(),[,,N,p,g,h,il]=DN192[i];await cine(1);
+ await say(`Tu observes discrètement : une plume ${p} sur le masque, des gants ${g?'couverts de poudre d\'étincelles':'tout propres'}, et ${h?`${il} fredonne un air entêtant`:`${il} ne fait aucun bruit`}.`);
+ const c=await choose(['L\'ACCUSER','LAISSER'],{w:200,title:N});if(c!==0){await cine(0);return}
+ if(i!==2){F.v192e=(F.v192e|0)+1;await say(DNX192[i],N,0,'dgmasque');
+  if(F.v192e>=3){F.v192v=3;await say('Pendant que tu accusais un innocent, le danseur au masque de chat s\'est éclipsé dans la foule… Le voleur a filé !');await say('Il est parti ! Il va sûrement tout raconter à sa cheffe…','Petit Léo',0,'kid')}
+  else await say(`Raté ! Il te reste ${3-F.v192e} essai${3-F.v192e>1?'s':''} avant que le voleur ne file. Relis bien les indices de Léo.`);await cine(0);save();return}
+ await say('Le danseur au masque de chat sursaute… puis arrache son masque : c\'est un sbire de la Team Éclipse !');
+ await say('Pipo, pour vous servir ! Enfin, pour servir Faustine. La clé du téléphérique ? Déjà livrée à la patronne, hé hé ! Et toi, tu vas danser… avec mes créatures !','Pipo le voleur',0,'grunt');await cine(0);
+ const r=await battle(team([['hyenou',34],['chatoeil',35]]),{tr:{name:'Pipo le voleur',look:'grunt',money:1500,after:'Pas les gants ! Ils sont neufs !'}});if(r!=='win'){save();return r}
+ F.v192v=2;await cine(1);await say('D\'accord, d\'accord ! La clé est au Repaire, sous le Théâtre, dans le bureau de Faustine. Et ça… c\'est l\'Orbe de son Masquetotem. Je l\'avais « emprunté ». Prends-le, il me porte malheur.','Pipo le voleur',0,'grunt');
+ give('orbe',1);jingle('item');await say('Tu récupères l\'ORBE de Faustine ! Son Masquetotem sera moins redoutable.');
+ await say('Pipo ! Au nom de la loi du Carnaval, tu es… euh… arrêté ! Merci, jeune dresseur.','Commissaire Barnabé',0,'sailor');await cine(0);save();return r}
+{const M=MAPS.carnaval;DN192.forEach(([x,y,N],i)=>M.npcs.push({x,y,t:'dgmasque',d:[0,3,2,1][i],name:N,cond:()=>f().v192v===1&&!f().v18faus,fn:()=>dancer192(i)}));
+ M.npcs.push({x:16,y:9,t:'kid',d:0,name:'Petit Léo',cond:()=>!!f().v192v&&!f().v18done,say:()=>{const v=f().v192v;return v===1?`Le voleur : plume ROUGE, gants pleins de poudre d'ÉTINCELLES, et il FREDONNE. Il se cache parmi les quatre danseurs masqués !${f().v192e?` (encore ${3-f().v192e} essai${3-f().v192e>1?'s':''})`:''}`:v===2?'Tu l\'as démasqué ! Quand je serai grand, je serai détective. Ou danseur. Ou les deux !':'Il a filé… La prochaine fois, on l\'aura !'}});
+ const e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);const F=f();if(!F.v18arr||F.v192v||F.v18faus||F.v18done)return;F.v192v=1;await cine(1);sfx('alert');
+  await say('Hé ! Toi, avec le masque ! J\'ai vu le voleur de Volterre, celui de la clé ! Il est ici, déguisé en danseur !','Petit Léo',0,'kid');
+  await say('Il avait une plume ROUGE sur le masque, des gants pleins de poudre d\'ÉTINCELLES… et il FREDONNE tout le temps. Il se cache parmi les quatre danseurs masqués de la Place. Démasque-le ! Mais si tu te trompes trop souvent, il filera.','Petit Léo',0,'kid');
+  tip('v192v','Observe chaque danseur (A), puis accuse celui qui correspond aux trois indices. Trois erreurs, et le voleur s\'enfuit.');await cine(0);save()}}
+{const cg=c18Goal;c18Goal=function(g){if(g.v192v===1&&g.v18arr&&!g.v18ecoute&&!g.v18faus)return'Le voleur masqué se cache parmi les danseurs de la Place du Carnaval : plume rouge, gants pleins d\'étincelles, il fredonne. Démasque-le !';return cg(g)}}
+// Mirella : Faustine était son apprentie ; après le chapitre, la réponse de Faustine
+{const mt=mirellaTalk;mirellaTalk=async function(){const F=f(),M='Mirella';
+ if(F.v192fa===1&&F.v18faus&&!F.v192mr){F.v192mr=1;await cine(1);await say('Faustine m\'a écrit. Juste quatre mots : « Garde-moi ma place. » Je ne sais pas ce que tu lui as dit… Merci. Prends ça : c\'est elle qui l\'avait taillée, autrefois.',M,0,'mirella');
+  give('pierrechance',1);jingle('item');await say('Tu reçois une Pierre Chance !');await cine(0);save();return}
+ const r=await mt.apply(this,arguments);
+ if(dgHas('eclipse')&&!F.v18faus&&!F.v192mi){F.v192mi=1;await say('Et si tu croises Faustine… dis-lui que sa place à l\'atelier l\'attend toujours. Son dé à coudre aussi.',M,0,'mirella');save()}return r}}
+async function faustineWords192(F){const O=F.v192mi?['MIRELLA T\'ATTEND','RENDS-TOI !']:['RENDS-TOI !','POURQUOI ?'],FA='Faustine',c=Math.max(0,await choose(O,{w:280,title:'Que dis-tu à Faustine ?'}));
+ if(O[c]==='MIRELLA T\'ATTEND'){F.v192fa=1;await say('… Mirella ? Elle a dit ça ? Après tout ce que j\'ai fait ?',FA,0,'faustine');await say('Elle a gardé mon dé à coudre, je parie. Elle garde tout. … Ne la fais pas attendre pour moi. Je lui dirai moi-même. Un jour.',FA,0,'faustine')}
+ else if(O[c]==='POURQUOI ?'){F.v192fa=3;await say('Pourquoi ? Parce que Vex m\'a promis une robe taillée dans la nuit elle-même. Demande donc à ma chère Mirella ce que ça fait, d\'être oubliée.',FA,0,'faustine')}
+ else{F.v192fa=2;await say('Me rendre ? À un enfant déguisé ? Le rideau tombe, petit. Mais pas sur moi.',FA,0,'faustine')}}
+{const bt=barnabeTalk;barnabeTalk=async function(){const F=f();if(F.v192v===2&&!F.v192ba){F.v192ba=1;await cine(1);await say('Pipo est au violon ! Il chante l\'hymne de la Team Éclipse à tue-tête, c\'est insupportable. Tiens, pour ton aide.','Commissaire Barnabé',0,'sailor');
+  give('festicapsule',3);await say('Tu reçois 3 Festi Capsules !');await cine(0);save()}return bt.apply(this,arguments)}}
+
+// =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.
 // =====================================================================
 NEWS.unshift(...NEWS18);
@@ -7912,6 +7957,14 @@ NEWS.unshift([()=>ICO.lantern,'La nuit des bateaux perdus','À Port-Miroir, le p
  [()=>ICO.ecl,'De Volterre au dôme','Dans la Centrale, les sbires montent la garde : passe sans te faire voir et Orso sera pris de court. À l\'Observatoire, le sceau cède, Kael te couvre et Sélène peut être convaincue.'],
  [()=>ICO.heart,'Les mots pour Valen','En plein combat final, ce que tu as vécu devient des mots pour atteindre Valen. Et après la victoire, un épilogue raconte ce que tes choix ont changé.']);
 {const norm191=normalize;normalize=function(g){g=norm191(g);if(g&&(g.v||0)<19.1){g.wn=1;g.v=19.1}return g}}
+
+// =====================================================================
+// VERSION 19.2 — en dernier : les nouveautés 19.2 en tête de l'écran des nouveautés, sauvegarde marquée 19.2.
+// =====================================================================
+NEWS.unshift([()=>ICO.heart,'Vraiment ensemble','Aventure à plusieurs : quand un joueur entre en combat, toute l\'équipe le rejoint aussitôt. Si l\'équipe gagne, personne n\'a perdu : ta dernière créature se relève avec 1 PV. Les rencontres sont moins fréquentes à plusieurs.'],
+ [()=>ICO.dg_masque,'Le voleur dans la foule','Au Carnaval, le voleur de la clé se cache parmi quatre danseurs masqués. Observe, recoupe les indices du petit Léo et démasque-le avant qu\'il ne file : Faustine s\'en souviendra.'],
+ [()=>ICO.star,'Le fil de Faustine','Mirella a un secret sur la couturière de la Team Éclipse. Après le combat, choisis ce que tu dis à Faustine : la fin de l\'aventure s\'en souviendra.']);
+{const norm192=normalize;normalize=function(g){g=norm192(g);if(g&&(g.v||0)<19.2){g.wn=1;g.v=19.2}return g}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 

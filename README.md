@@ -40,6 +40,14 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 19.2 : Ensemble, et le Carnaval revisité
+
+![Aperçu de la version 19.2](apercus/v192-carnaval.png)
+
+- **Aventure à plusieurs, vraiment ensemble** : quand un joueur entre en combat, toute l'équipe le rejoint aussitôt, sans question (même avec le réglage DEMANDER, réservé aux salons entre amis). Toucher une créature pendant le combat d'un ami fait rejoindre son combat. Si l'équipe gagne, personne n'a perdu : une équipe K.O. se relève sur place avec 1 PV. Les rencontres sont divisées par le nombre de joueurs (faune moins nombreuse, charges et herbes frémissantes plus rares). Un joueur qui n'a pas la même version est prévenu de recharger la page.
+- **Le voleur dans la foule** : sur la Place du Carnaval, le petit Léo a vu le voleur de la clé. Il se cache parmi quatre danseurs masqués : observer, recouper les trois indices, accuser (trois essais). Démasqué, Pipo rend l'Orbe de Faustine (son Masquetotem est moins redoutable) et Barnabé l'embarque ; enfui, il prévient Faustine.
+- **Le fil de Faustine** : Mirella demande de dire à son ancienne apprentie que sa place l'attend. Après le combat, « Que dis-tu à Faustine ? » : la réponse change ce que Mirella raconte ensuite et l'épilogue de la fin.
+
 ## Version 19.1 : L'Acte II revisité
 
 ![Aperçu de la version 19.1](apercus/v191-acte2.png)
