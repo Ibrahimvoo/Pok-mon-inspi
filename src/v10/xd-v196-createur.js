@@ -17,7 +17,7 @@ async function creaEdit(m){let last=0;for(;;){if(!G.party.includes(m)&&!G.box.in
   [`OBJET TENU : ${m.item&&IT[m.item]?IT[m.item][0]:'AUCUN'}`,async()=>{const L=Object.keys(IT).filter(k=>IT[k][4]==='held').sort((a,b)=>IT[a][0].localeCompare(IT[b][0],'fr')),k=await choose(['AUCUN',...L.map(x=>IT[x][0])],{...creaBox,title:'Objet tenu'});if(k<0)return;m.item=k?L[k-1]:null;sfx('ok')}],
   [`NATURE : ${NAT[m.nat]?.[0]||'AUCUNE'}`,async()=>{const L=Object.keys(NAT),k=await choose(L.map(x=>NAT[x][0]),{...creaBox,title:'Nature'});if(k<0)return;m.nat=L[k];creaKeep(m);sfx('ok')}],
   [`CHROMATIQUE : ${onOff(m.sh)}`,()=>{m.sh=m.sh?0:1;sfx('shard')}],
-  ['ÉVOLUER MAINTENANT',async()=>{const to=evoTarget(m);if(!to)return`${nm(m)} ne peut pas évoluer pour l'instant.`;ui.panel=null;await evolve(m,to);creaKeep(m);return null}],
+  ['ÉVOLUER MAINTENANT',async()=>{const to=evoTarget(m);if(!to)return`${nm(m)} ne peut pas évoluer pour l'instant.`;ui.panel=null;await evolve(m,to);await fadeTo(0,250);creaKeep(m);save();return null}],
   ['SOIGNER',()=>{fullHeal(m);m.st=null;m.slp=0;sfx('heal');return`${nm(m)} est en pleine forme.`}],
   ['COPIER',()=>{const c=JSON.parse(JSON.stringify(m));delete c._S;c.eq=null;const p=G.party.length<6;(p?G.party:G.box).push(c);folReset();sfx('ok');return`Une copie de ${nm(c)} ${p?'rejoint ton équipe':'part dans la Boîte'}.`}],
   ['RELÂCHER',async()=>{if(G.party.includes(m)&&!G.party.some(x=>x!==m&&alive(x)))return'Garde au moins une autre créature en forme dans ton équipe.';if(!await ask(`Relâcher ${nm(m)} ? C'est définitif.`))return;
