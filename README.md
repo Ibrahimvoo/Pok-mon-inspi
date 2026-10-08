@@ -51,6 +51,7 @@ La fin de l'histoire reçoit le même soin que l'Acte II : la Faille devient le 
 - **Crépuscel attend que Caïus soit arrêté** (il creusait sous le Sanctuaire), et l'objectif suit maintenant l'ordre de l'histoire.
 - **La première aube partagée** : après Crépuscel, tous ceux que tu as aidés montent au Sanctuaire (Kael, Valen, Sélène, et Caïus ou Corvin selon tes choix). Un dernier épilogue raconte ce que tes choix ont changé, puis l'écran FIN. L'aventure continue ensuite.
 - Le journal garde la trace de ces moments (le voleur démasqué, le fil de Faustine, Corvin, les mots pour Caïus, la première aube).
+- **En ligne, plus solide** : quand un des relais tombe, un ami encore connecté par un autre relais ne « quitte » plus le salon (avant, le message d'adieu automatique du relais tombé le faisait disparaître un instant, ce qui pouvait couper un combat en groupe).
 
 ## Version 19.2 : Ensemble, et le Carnaval revisité
 

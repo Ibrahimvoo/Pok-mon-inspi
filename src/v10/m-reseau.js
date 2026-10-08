@@ -59,7 +59,9 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
   if(!m||typeof m!=='object'||m.v!==NETV||typeof m.f!=='string'||!/^[a-z0-9]{8}$/.test(m.f)||m.f===this.pid||typeof m.k!=='string'||!Number.isInteger(m.s)||m.s<0)return;
   if(m.to!=null&&m.to!==this.pid)return;const key=m.f+':'+m.s;if(this.seen.has(key)){if(m.r)this.ack(m);return}this.seen.set(key,Date.now());if(m.r)this.ack(m);
   if(m.k==='ack'){const p=this.pend.get(m.a);if(p&&p.to===m.f){this.pend.delete(m.a);p.ok()}return}
-  if(m.k==='bye'){const P=this.peers.get(m.f);if(P)this.drop(P,'a quitté le salon.');return}
+  if(m.k==='bye'){const P=this.peers.get(m.f);if(!P)return;
+   // « bye » de dernière volonté (s=0) : un seul relais a perdu ce joueur ; s'il parle encore par un autre relais, il reste
+   if(m.s===0&&this.R.filter(r=>r.up).length>1){this.seen.delete(key);P.bye=Date.now();this.trace('bye?',P.name)}else this.drop(P,'a quitté le salon.');return}
   let P=this.peers.get(m.f);if(!P){if(m.k!=='hi'){if(m.k!=='p'&&Date.now()-(this.lwhoS||0)>2000){this.lwhoS=Date.now();this.send('who')}return}if(this.peers.size>=8)return;P={pid:m.f,name:'Ami',look:'hero',map:'',x:0,y:0,d:0,q:[],t:0,ps:-1,b:0,dv:'',bz:0};this.peers.set(m.f,P);P.nw=1}
   P.t=Date.now();if(m.k!=='p'&&m.k!=='hi')this.trace('<',m.k,m.s,P.name);try{if(Object.prototype.hasOwnProperty.call(this.H,m.k))this.H[m.k](m,P)}catch(e){console.error(e)}},
  trace(...a){this.dbg.push(a.join(' '));if(this.dbg.length>80)this.dbg.shift()},
@@ -70,7 +72,7 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
  tick(){if(!this.on)return;if(!G){this.leave(true);return}const t=Date.now();for(const r of this.R)r.tick(t);
   for(const[k,p]of this.pend)if(t-p.t>1200){if(t-p.t0>p.max){this.pend.delete(k);p.ko()}else{p.t=t;this.out(p.s)}}
   if(this.seen.size>3000||t-(this.lsp||0)>20000){this.lsp=t;for(const[k,v]of this.seen)if(t-v>120000)this.seen.delete(k)}
-  for(const P of[...this.peers.values()])if(t-P.t>(this.act&&this.act.with===P.pid?60000:18000))this.drop(P,'a perdu la connexion.');
+  for(const P of[...this.peers.values()])if(t-P.t>(this.act&&this.act.with===P.pid?60000:18000))this.drop(P,'a perdu la connexion.');else if(P.bye&&P.t<=P.bye&&t-P.bye>8000)this.drop(P,'a quitté le salon.');
   if(!this.up())return;this.hi();
   if(G&&mode==='world'){const k=G.map+','+G.x+','+G.y+','+G.dir;if(k!==this.lk){this.lk=k;if(G.map!==this.lm){this.lm=G.map;this.path=[];this.send('p',{m:G.map,p:[[G.x,G.y,G.dir]],j:1});this.lf=t}else this.path.push([G.x,G.y,G.dir])}}
   if(this.path.length&&t-this.lf>180){this.lf=t;this.send('p',{m:G.map,p:this.path.slice(-10),rn:running()?1:0});this.path=[]}}};
