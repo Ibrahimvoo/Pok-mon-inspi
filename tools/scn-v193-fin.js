@@ -23,4 +23,9 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  ok(!MAPS.sanctuaire.npcs.some(n=>n.fix&&['Kael','Valen','Caïus','Corvin'].includes(n.name)),'les invités sont repartis');
  ok(['Les mots pour Caïus','Il est encore temps','La première aube partagée','Le fil de Faustine'].every(t=>quests().some(q=>q[0]===t)),'le journal s\'en souvient');
  // 6. Une partie déjà finie avant la 19.3 : la première aube se joue en revenant au Sanctuaire
- Object.assign(f(),{v193fin:0,legC:1});await warp('coteaux',21,2,0);await warp('sanctuaire',6,10,1);ok(f().v193fin===1&&!PV193.on,'partie déjà finie : la première aube se joue au retour au Sanctuaire');L('done')}
+ Object.assign(f(),{v193fin:0,legC:1});await warp('coteaux',21,2,0);await warp('sanctuaire',6,10,1);ok(f().v193fin===1&&!PV193.on,'partie déjà finie : la première aube se joue au retour au Sanctuaire');
+ // 7. Aventure à plusieurs : un ami capture Crépuscel ; pour moi le combat finit en « fuite », mais la première aube se joue quand même
+ Object.assign(f(),{v193fin:0,legC:0});G.coop={code:'AUBE',t0:Date.now(),mates:{}};G.dex.crepuscel=1;for(const k of['party','box'])G[k]=G[k].filter(m=>m.sp!=='crepuscel');
+ {const ob=battle;battle=async(foes,o)=>{if(o?.legend&&foes[0].sp==='crepuscel'){lgTake('crepuscel','Alice');return'run'}return ob(foes,o)};const L0=SAID.length;await legend2('crepuscel',55,'legC','#ffffff');battle=ob;
+  ok(f().v193fin===1&&SAID.slice(L0).some(s=>/Crépuscel a choisi de suivre Alice/.test(s))&&!SAID.slice(L0).some(s=>/se pose près de toi/.test(s)),'un ami capture Crépuscel : la première aube se joue aussi pour moi')}
+ L('done')}
