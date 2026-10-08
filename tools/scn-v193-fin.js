@@ -21,4 +21,6 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  const p=interact();while(!PV193.on)await wait(40);AUTO.off=1;await wait(300);await SNAP('aube');AUTO.off=0;while(!PV193.fin)await wait(30);AUTO.off=1;await wait(200);await SNAP('fin');AUTO.off=0;await p;
  ok(f().v193fin&&!PV193.on&&SAID.some(s=>/Ils sont venus/.test(s))&&SAID.some(s=>/Caïus a rebouché la Faille/.test(s))&&SAID.some(s=>/ancien lieutenant/.test(s)),'la première aube partagée, l\'épilogue, puis FIN');
  ok(!MAPS.sanctuaire.npcs.some(n=>n.fix&&['Kael','Valen','Caïus','Corvin'].includes(n.name)),'les invités sont repartis');
- ok(['Les mots pour Caïus','Il est encore temps','La première aube partagée','Le fil de Faustine'].every(t=>quests().some(q=>q[0]===t)),'le journal s\'en souvient');L('done')}
+ ok(['Les mots pour Caïus','Il est encore temps','La première aube partagée','Le fil de Faustine'].every(t=>quests().some(q=>q[0]===t)),'le journal s\'en souvient');
+ // 6. Une partie déjà finie avant la 19.3 : la première aube se joue en revenant au Sanctuaire
+ Object.assign(f(),{v193fin:0,legC:1});await warp('coteaux',21,2,0);await warp('sanctuaire',6,10,1);ok(f().v193fin===1&&!PV193.on,'partie déjà finie : la première aube se joue au retour au Sanctuaire');L('done')}

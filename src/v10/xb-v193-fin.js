@@ -81,7 +81,7 @@ async function caius193(n){const F=f(),C='Caïus',P='faille';await cine(1);faceT
 
 // ---------------------------------------------------------------- Le Sanctuaire : Crépuscel attend que Caïus soit arrêté
 {const cr=MAPS.sanctuaire.npcs.find(n=>n.sp==='crepuscel');if(cr){const c0=cr.cond;cr.cond=()=>c0()&&!!f().failleDone}
- const M=MAPS.sanctuaire,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);const F=f();if(F.legS&&F.legN&&!F.failleDone&&!F.v193gr){F.v193gr=1;ui.shake=4;sfx('bump');
+ const M=MAPS.sanctuaire,e0=M.enter;M.enter=async function(){if(e0)await e0.apply(this,arguments);const F=f();if(F.legC&&F.failleDone&&!F.v193fin){await finale193();return}if(F.legS&&F.legN&&!F.failleDone&&!F.v193gr){F.v193gr=1;ui.shake=4;sfx('bump');
   await say('Sous l\'autel, la roche gronde. Des coups de pioche résonnent, très loin en dessous… Quelqu\'un creuse sous le Sanctuaire.');await say('Une voix douce, dans le vent : "Arrête celui qui creuse. Ensuite, je viendrai."')}}}
 {const pg=postGoal;postGoal=function(g){if(g.balance&&g.legS&&g.legN&&g.failleDone&&!g.legC&&!g.v193fin)return'Caïus a renoncé. Monte au Sanctuaire du Cycle, en haut des Coteaux d\'Aurore : Solarion et Nocturion y attendent leur frère de lumière.';return pg(g)}}
 
