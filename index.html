@@ -2088,7 +2088,7 @@ const CREDITS=['Graphismes libres du projet Tuxemon et de ses artistes :','githu
  'tamashihoshi, Pixel Scuba, pixelartm, luke83, PastTheFuture, Midi,','RedVoxel, Superpowers Asset Packs et tous les contributeurs.','',
  'Licences : CC BY-SA 4.0 (partage à l\'identique), CC BY 3.0 / 4.0,','CC0 et XYG. Les images du jeu en dérivent et gardent ces licences.','',
  'Liste complète des auteurs : fichier CREDITS.md du projet.'];
-async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19.3',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
+async function whatsNew(){let pg=0;ui.panel=()=>{panel(8,8,464,304);X.drawImage(pg?ICO.board:ICO.star,24,22,16,16);txt(pg?'CRÉDITS':'NOUVEAUTÉS 19.5',46,36,C.acc,{sh:0});txt(pg?'A / B : FERMER':'A : CRÉDITS   B : FERMER',456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);
   if(pg)CREDITS.forEach((l,k)=>txt(l,28,66+k*18,k<2?C.ink:C.ink2,{s:1,sh:0}));else newsBody()};
  for(;;){const k=await key();if(k==='a'&&!pg){pg=1;continue}if(k==='a'||k==='b')break}ui.panel=null}
 // Guide : table des types (ligne = attaque, colonne = défense) et rappel des mécaniques
@@ -2217,9 +2217,9 @@ async function regionMap(){const cur=RPAR[G.map]||G.map,seen=k=>G.seen?.[k]||Obj
   const[cx,cy]=RMAP[cur]||RMAP.bourg;if((t/300|0)%2){X.drawImage(ICO.pin,cx-8,cy-26,16,16)}rr(cx-9,cy-9,18,18,3,C.gold);R(X,C.acc,cx-5,cy-5,10,10);
   txt('AURÉLYS',24,36,C.acc,{sh:0});X.drawImage(ICO.flag,24,276,14,14);wrap(goal(),400,1).slice(0,2).forEach((l,i)=>txt(l,44,286+i*10,C.ink,{s:1,sh:0}));txt('A / B : FERMER',456,300,C.mute,{mini:1,al:'r'})};
  for(;;){const k=await key();if(k==='a'||k==='b')break}ui.panel=null}
-async function options(){for(;;){const o=G.opt,bar=v=>(v??4)?(v??4)+'/4':'COUPÉ',O=[`SON : ${o.snd?'OUI':'NON'}`,`MUSIQUE : ${bar(o.mv)}`,`EFFETS : ${bar(o.sv)}`,`COMPAGNON : ${o.fol!==0?'OUI':'NON'}`,`TEXTE : ${o.txt===2?'RAPIDE':'NORMAL'}`,`COMBATS : ${o.fast?'RAPIDES':'NORMAUX'}`,'RETOUR'];
- const i=await choose(O,{x:W-252,y:8,w:244,title:'Options'});if(i<0||i===6)return;if(i===5)o.fast=o.fast?0:1;
- if(i===0){o.snd=o.snd?0:1;if(o.snd)musPlay(mapMus(MAPS[G.map]));else musStop()}if(i===1){o.mv=((o.mv??4)+1)%5;if(mus.gain)mus.gain.gain.value=VOL('mv')}if(i===2){o.sv=((o.sv??4)+1)%5;sfx('ok')}if(i===3){o.fol=o.fol===0?1:0;folReset()}if(i===4)o.txt=o.txt===2?1:2;save()}}
+async function options(){for(;;){const o=G.opt,bar=v=>(v??4)?(v??4)+'/4':'COUPÉ',O=[`SON : ${o.snd?'OUI':'NON'}`,`EFFETS : ${bar(o.sv)}`,`COMPAGNON : ${o.fol!==0?'OUI':'NON'}`,`TEXTE : ${o.txt===2?'RAPIDE':'NORMAL'}`,`COMBATS : ${o.fast?'RAPIDES':'NORMAUX'}`,'RETOUR'];
+ const i=await choose(O,{x:W-252,y:8,w:244,title:'Options'});if(i<0||i===5)return;if(i===4)o.fast=o.fast?0:1;
+ if(i===0){o.snd=o.snd?0:1;if(o.snd)sfx('ok')}if(i===1){o.sv=((o.sv??4)+1)%5;sfx('ok')}if(i===2){o.fol=o.fol===0?1:0;folReset()}if(i===3)o.txt=o.txt===2?1:2;save()}}
 async function journal(){const Q0=quests(),Q=[Q0[0],...Q0.slice(1).sort((a,b)=>(a[1]===2)-(b[1]===2))],P=[[]];let y=56;
  for(const q of Q){const hg=32+Math.min(3,wrap(q[2],404,1).length)*10;if(y+hg>292&&P[P.length-1].length){P.push([]);y=56}P[P.length-1].push(q);y+=hg}let pg=0;
  ui.panel=()=>{panel(8,8,464,304);X.drawImage(ICO.book,24,22,16,16);txt('JOURNAL',46,36,C.acc,{sh:0});if(P.length>1)txt(`PAGE ${pg+1}/${P.length}`,456,34,C.mute,{mini:1,al:'r'});R(X,C.paper2,20,44,440,2);let y=56;
@@ -2670,7 +2670,7 @@ function drawScene(t,night){X.drawImage(SCN,0,0,W,H);STARS.forEach(([x,y,i])=>{i
  for(let x=0;x<480;x+=32)X.drawImage(TG[((t/520+x*.02)|0)%2],x,288,TS,TS);if(night){X.fillStyle='rgba(10,8,30,.35)';X.fillRect(0,0,W,H)}}
 function logo(){const y=92;txt('PIXÉMON',W/2,y,C.gold,{s:6,al:'c',ol:C.ink,olw:4,drop:1});X.save();X.beginPath();X.rect(0,0,W,y-24);X.clip();txt('PIXÉMON',W/2,y,C.goldL,{s:6,al:'c',sh:0});X.restore();
  const w=tw('ÉCLIPSE',3,0,2),bx=ev(W/2-w/2-14);rr(bx,y+8,ev(w+28),40,4,C.ink);rr(bx+2,y+10,ev(w+24),36,2,C.acc);R(X,'#ff8a8a',bx+4,y+10,ev(w+20),2);R(X,'#a8303a',bx+4,y+42,ev(w+20),2);txt('ÉCLIPSE',W/2,y+40,'#ffffff',{s:3,al:'c',ls:2,sh:C.ink})}
-function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19.3',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
+function drawTitle(t){drawScene(t);logo();[['flamiot',-22,1],['goutelin',374,0]].forEach(([s,x,fl],i)=>{const bob=((t/380|0)+i)%2*2;X.drawImage(SHD,x+36,268,56,12);X.drawImage(fl?monOW(s,3):monSpr(s,0,128),x,150-bob,128,128)});txt('V19.5',W-10,H-8,'#c9c2d6',{mini:1,al:'r'})}
 function drawIntro(t){const sl=ui.slide;if(sl===3){R(X,'#07051a',0,0,W,H);for(let i=0;i<90;i++){const tw2=((t/500|0)+i)%11;if(tw2)R(X,i%7?'#c8c2e6':'#ffe8a0',(i*97)%W,(i*53+(i%3)*7)%H,i%13?1:2,i%13?1:2)}
   const k=(Math.sin(t/1100)+1)/2,dy=Math.round(Math.sin(t/1700)*6);X.globalCompositeOperation='lighter';X.globalAlpha=.18+.12*k;X.drawImage(GLOWY,240-120,120-120+dy,240,240);X.globalCompositeOperation='source-over';
   X.globalAlpha=.55+.25*k;X.drawImage(silh(monSpr('nocturion',0,128),'#1a1238'),176,50+dy,128,128);X.globalAlpha=1;if((t/900|0)%6)for(const ex of[214,226])R(X,'#c070ff',ex,96+dy,3,2);
@@ -6309,7 +6309,7 @@ CINE.djinn=async A=>{const s={sm:0,dj:0};A.m('ecl');
 askLook=async function(){const cur=Math.max(0,LOOKS.indexOf(NG().lk)),c=7,x0=ev((W-c*62)/2);ui.panel=()=>{panel(8,8,W-16,H-16);txt('TON APPARENCE',24,36,C.acc,{sh:0});txt('C\'est toi dans le monde : tu te vois ainsi, et tes amis aussi.',24,56,C.ink2,{s:1,sh:0})};
  const i=await choose(LOOKS,{i:cur,bare:1,cols:c,rect:i=>[x0+(i%c)*62,74+(i/c|0)*110,58,104],draw:(i,[x,y,w,h],sel,pr)=>{rr(x,y,w,h,3,C.ink);rr(x+2,y+2,w-4,h-4,2,pr?C.acc:sel?C.accL:'#efe6d2');X.drawImage(chr(LOOKS[i],0,sel?1+(now()/200|0)%2:0),x+w/2-16,y+18,32,64);if(LOOKS[i]===NG().lk)X.drawImage(ICO.star,x+w-18,y+6,12,12)}});
  ui.panel=null;if(i>=0){NG().lk=LOOKS[i];profSave();if(G.map)save();if(NET.on)NET.hi(1)}};
-{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, rencontres, course, flèche-guide, son, musique, texte, vitesse des combats…','Fermer.'][j]})});
+{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, rencontres, course, flèche-guide, son, texte, vitesse des combats…','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0){await askLook();continue}return OP17()}}}
 // Profil de l'appareil : pseudo et apparence proposés d'office dans les nouvelles parties en ligne
 const PROF=(()=>{try{const o=JSON.parse(lsGet('pixemon-profile')||'{}');return{n:netName(o.n),lk:LOOKS.includes(o.lk)?o.lk:''}}catch(e){return{n:'',lk:''}}})();
@@ -7118,7 +7118,7 @@ setInterval(()=>{try{if(mode!=='world'||busy||move||!G||G.map!=='mine'||F19().mi
  await say('Oups. Oublie ce que je viens de dire ! Repli !','Lieutenant Corvin');await cinema('mine');
  ui.shake=12;sfx('hit');debris(c.x,c.y,'#a08a78',22);c.d=0;await wait(300);await say('AAARGH ! Ma jambe ! La poutre…','Lieutenant Corvin');await emote(c,'…',700);
  await say('Le plafond craque encore. Corvin est coincé sous une poutre, à deux pas des éboulis. Il serre les dents pour ne pas crier.');
- const i=await choose(['L\'AIDER','LE LAISSER LÀ'],{w:220,title:'Corvin est coincé'});const ld=G.party.find(alive);
+ const i=await voteChoose(['L\'AIDER','LE LAISSER LÀ'],{w:220,title:'Corvin est coincé'});const ld=G.party.find(alive);
  if(i!==1){F19().v19cor=1;await say(`${ld?nm(ld):'Ta créature'} glisse son dos sous la poutre et pousse de toutes ses forces…`);ui.shake=8;sfx('bump');puff(c.x,c.y,'#c8b8a0',12);await wait(400);
   await say('La poutre roule sur le côté. Corvin se relève en grimaçant.');faceTo(c,G.x,G.y);await emote(c,'?',700);
   await say('…Pourquoi t\'as fait ça ? Je suis ton ennemi, gamin. J\'ai fait sauter la galerie de ton copain.','Lieutenant Corvin');await emote(c,'…',900);
@@ -7208,7 +7208,7 @@ async function campfire19(){const F=F19();F.v19feu=1;const V='ville',[fx,fy]=nea
  await emote(k,'…',900);await say('…Tu sais ce qui est bizarre ? Je l\'ai reconnu à sa façon de pencher la tête. Il faisait pareil quand il réparait mon vélo.','Kael');
  await say('Valen avait un Ombrelin. Brume. Il le portait sur son épaule partout, même à table. Un matin d\'été, Brume ne s\'est pas réveillé.','Kael');
  await say('Valen a dit que c\'était la faute du soleil. Que les jours trop longs tuaient les créatures de l\'ombre. Il est parti le lendemain. J\'avais dix ans.','Kael');
- const a=await choose(['ON VA LE RAMENER','TU N\'Y ES POUR RIEN','ET SI IL AVAIT RAISON ?'],{w:300,title:'Que dis-tu à Kael ?'});F.v19k=a<0?0:a;
+ const a=await voteChoose(['ON VA LE RAMENER','TU N\'Y ES POUR RIEN','ET SI IL AVAIT RAISON ?'],{w:300,title:'Que dis-tu à Kael ?'});F.v19k=a<0?0:a;
  if(a===2){await emote(k,'!',500);await say('…Peut-être. Je ne sais pas. Mais même s\'il avait raison, il n\'avait pas le droit de faire ça. Pas comme ça.','Kael');await say('Il y a forcément un autre moyen. Un moyen où personne ne paie à la place des autres.','Kael')}
  else if(a===1){await emote(k,'…',700);await say('J\'ai longtemps cru que s\'il était parti, c\'était parce que je n\'étais pas assez fort pour le retenir.','Kael');await say('…Merci. Vraiment.','Kael')}
  else{await emote(k,'♪',600);await say('Ouais. On va le ramener. Même s\'il faut le traîner par la cape jusqu\'à la maison.','Kael')}
@@ -7806,7 +7806,7 @@ async function selene191(n,tb){const F=F191(),S='Admin Sélène';await cine(1);f
 // ---------------------------------------------------------------- Combat final : « Que dis-tu à Valen ? »
 {const sf191=sendFoe;sendFoe=async function(...a){const r=await sf191.apply(this,a);try{if(B&&!B.coop&&!B.pvp&&B.tr?.name==='Vex'&&B.foe?.sp==='nocturion'&&!B.w191){B.w191=1;await words191()}}catch(e){console.error(e)}return r}}
 {const um191=useMove;useMove=async function(s,id){if(s===1&&B?.hes191>0&&B.foe?.sp==='nocturion'&&B.foe.hp>0){B.hes191--;await say('Nocturion n\'attaque pas. Il regarde Valen, immobile.',0,1);return null}return um191.apply(this,arguments)}}
-async function words191(){const F=F191(),V='Valen',lk='vex',A=[];
+async function words191(grp){const F=F191(),V='Valen',lk='vex',A=[];
  if(F.badge2)A.push(['LE PONTON',async()=>{await say('"Maëlle t\'attend sur le ponton. Elle m\'a fait promettre de te le dire."');await say('…Le ponton. On y pêchait des nuits entières sans jamais rien attraper.',V,0,lk);return 1}]);
  if(F.v19ec1)A.push(['LA PROMESSE À BRUME',async()=>{await say('"Dans la Grotte Écho, j\'ai entendu ta promesse à Brume. Tu voulais réparer le ciel. Pas l\'éteindre."');await say('Tu… as entendu ça ? Personne n\'était censé l\'entendre.',V,0,lk);return 1}]);
  A.push(['KAEL',async()=>{const k=F.v19k;await say(k===1?'"Kael a cru pendant des années que c\'était sa faute si tu étais parti."':k===2?'"Tu avais raison sur la nuit. Mais pas comme ça. Pas en faisant payer tout le reste."':'"Kael n\'est pas venu te battre. Il est venu te ramener à la maison."');
@@ -7820,6 +7820,7 @@ async function words191(){const F=F191(),V='Valen',lk='vex',A=[];
  let d=0;for(;;){const c=await choose([...A.map(a=>a[0]),'SE BATTRE'],{w:300,title:'Que dis-tu à Valen ?'});if(c<0||c>=A.length)break;
   const[lbl,fn]=A.splice(c,1)[0];d+=await fn();(F.v191w??=[]).includes(lbl)||F.v191w.push(lbl);if(!A.length)break}
  F.v191d=Math.max(F.v191d|0,d);if(!d)return;
+ if(grp)return say(d>=3?'Valen relâche son emprise. Sa voix se brise, et Nocturion hésite : tout le groupe le sent.':'Valen vacille… puis se reprend.');
  if(d>=3){if(B.sky?.k==='eclipse'){B.sky=null;ui.flash=.5;ui.flashC=C.goldL}await say('Valen relâche son emprise. L\'éclipse se dissipe : Nocturion se bat seul, et sa colère retombe.');if(B.foe.hp>0)await statChange(1,'atk',-1);
   if(d>=5){await say('Valen n\'ordonne plus rien. Il regarde Nocturion… et Nocturion le regarde.');if(B.foe.hp>0)await statChange(1,'spd',-1)}}
  else await say('Valen vacille… puis se reprend. Il faudrait plus que des mots pour l\'atteindre. Des souvenirs, peut-être, que tu n\'as pas trouvés en chemin.')}
@@ -7914,9 +7915,9 @@ async function dancer192(i){const F=f(),[,,N,p,g,h,il]=DN192[i];await cine(1);
   give('pierrechance',1);jingle('item');await say('Tu reçois une Pierre Chance !');await cine(0);save();return}
  const r=await mt.apply(this,arguments);
  if(dgHas('eclipse')&&!F.v18faus&&!F.v192mi){F.v192mi=1;await say('Et si tu croises Faustine… dis-lui que sa place à l\'atelier l\'attend toujours. Son dé à coudre aussi.',M,0,'mirella');save()}return r}}
-async function faustineWords192(F){const O=F.v192mi?['MIRELLA T\'ATTEND','RENDS-TOI !']:['RENDS-TOI !','POURQUOI ?'],FA='Faustine',c=Math.max(0,await choose(O,{w:280,title:'Que dis-tu à Faustine ?'}));
- if(O[c]==='MIRELLA T\'ATTEND'){F.v192fa=1;await say('… Mirella ? Elle a dit ça ? Après tout ce que j\'ai fait ?',FA,0,'faustine');await say('Elle a gardé mon dé à coudre, je parie. Elle garde tout. … Ne la fais pas attendre pour moi. Je lui dirai moi-même. Un jour.',FA,0,'faustine')}
- else if(O[c]==='POURQUOI ?'){F.v192fa=3;await say('Pourquoi ? Parce que Vex m\'a promis une robe taillée dans la nuit elle-même. Demande donc à ma chère Mirella ce que ça fait, d\'être oubliée.',FA,0,'faustine')}
+async function faustineWords192(F){const O=F.v192mi?['MIRELLA T\'ATTEND','RENDS-TOI !']:['RENDS-TOI !','POURQUOI ?'],FA='Faustine',c=await voteLabel(O,{w:280,title:'Que dis-tu à Faustine ?',all:['MIRELLA T\'ATTEND','RENDS-TOI !','POURQUOI ?']});
+ if(c==='MIRELLA T\'ATTEND'){F.v192fa=1;await say('… Mirella ? Elle a dit ça ? Après tout ce que j\'ai fait ?',FA,0,'faustine');await say('Elle a gardé mon dé à coudre, je parie. Elle garde tout. … Ne la fais pas attendre pour moi. Je lui dirai moi-même. Un jour.',FA,0,'faustine')}
+ else if(c==='POURQUOI ?'){F.v192fa=3;await say('Pourquoi ? Parce que Vex m\'a promis une robe taillée dans la nuit elle-même. Demande donc à ma chère Mirella ce que ça fait, d\'être oubliée.',FA,0,'faustine')}
  else{F.v192fa=2;await say('Me rendre ? À un enfant déguisé ? Le rideau tombe, petit. Mais pas sur moi.',FA,0,'faustine')}}
 {const bt=barnabeTalk;barnabeTalk=async function(){const F=f();if(F.v192v===2&&!F.v192ba){F.v192ba=1;await cine(1);await say('Pipo est au violon ! Il chante l\'hymne de la Team Éclipse à tue-tête, c\'est insupportable. Tiens, pour ton aide.','Commissaire Barnabé',0,'sailor');
   give('festicapsule',3);await say('Tu reçois 3 Festi Capsules !');await cine(0);save()}return bt.apply(this,arguments)}}
@@ -7956,7 +7957,7 @@ async function corvinFaille193(n){const F=f(),C='Corvin',v=F.v19cor;await cine(1
  await say('Je garde son chantier. Personne ne passe. Pas même toi.',C,0,'grunt');await cine(0);
  const r=await battle(team([['nocturelle',50],['rocaroc',51,null,'pierredure'],['magmor',52,null,'charbon']]),{tr:{name:'Contremaître Corvin',look:'grunt',money:2500,vs:1,items:1,after:'…Toujours toi. Toujours.'}});if(r!=='win')return r;
  await cine(1);await say('Tu sais ce qui est drôle ? Je creuse depuis des semaines, et je n\'ai jamais rien trouvé. Juste des cailloux. Et des Grumeroc.',C,0,'grunt');
- const c=await choose(['IL EST ENCORE TEMPS','VA-T\'EN'],{w:260,title:'Corvin'});
+ const c=await voteChoose(['IL EST ENCORE TEMPS','VA-T\'EN'],{w:260,title:'Corvin'});
  if(c===0){F.v193cor=1;await say('"Il est encore temps. À Cendreville, Tito cherche quelqu\'un qui sait étayer une galerie."');await emote(n,'…',900);
   await say('Le petit mineur ? Celui dont j\'ai fait sauter la galerie ? …Il me recevrait, moi ?',C,0,'grunt');await say('Hmpf. On verra. Je sors d\'ici. Mais pas pour Caïus.',C,0,'grunt')}
  else{F.v193cor=2;await say('Ouais. C\'est ce que tout le monde me dit.',C,0,'grunt')}
@@ -7964,7 +7965,7 @@ async function corvinFaille193(n){const F=f(),C='Corvin',v=F.v19cor;await cine(1
 MAPS.faille.npcs.push({x:14,y:3,t:'grunt',d:2,name:'Corvin',cond:()=>[1,2,4].includes(f().v19cor)&&!f().v193cor&&!f().failleDone,fn:n=>corvinFaille193(n)});
 
 // ---------------------------------------------------------------- Caïus : les mots, puis la fin du combat
-async function words193(){const F=f(),C='Caïus',lk='caius',A=[];
+async function words193(grp){const F=f(),C='Caïus',lk='caius',A=[];
  A.push(['LA PEUR',async()=>{await say('"Tu n\'as pas peur de la nuit, Caïus. Tu as peur que quelqu\'un décide à ta place."');await say('…Tais-toi. Tu ne sais rien de moi.',C,0,lk);return 1}]);
  if(F.v191sel)A.push(['SÉLÈNE',async()=>{await say('"Sélène attend dehors. Elle n\'est pas venue te battre. Elle est venue te chercher."');await say('Sélène… Elle a toujours été la plus courageuse de nous trois.',C,0,lk);return 1}]);
  if((F.v191d|0)>=3)A.push(['VALEN',async()=>{await say('"Valen est rentré chez lui. Personne ne lui a rien pris. On l\'a juste retrouvé."');await say('Rentré… Comme si c\'était si simple.',C,0,lk);return 1}]);
@@ -7975,6 +7976,7 @@ async function words193(){const F=f(),C='Caïus',lk='caius',A=[];
  let d=0;for(;;){const c=await choose([...A.map(a=>a[0]),'SE BATTRE'],{w:300,title:'Que dis-tu à Caïus ?'});if(c<0||c>=A.length)break;
   const[lbl,fn]=A.splice(c,1)[0];d+=await fn();(F.v193w??=[]).includes(lbl)||F.v193w.push(lbl);if(!A.length)break}
  F.v193d=Math.max(F.v193d|0,d);if(!d)return;
+ if(grp)return say(d>=3?'Caïus baisse les yeux. Ses ordres arrivent en retard : tout le groupe le sent.':'Caïus secoue la tête et se reprend.');
  if(d>=3){await say('Caïus baisse les yeux. Ses ordres arrivent en retard : sa créature hésite.');if(B.foe.hp>0)await statChange(1,'atk',-1);if(d>=4&&B.foe.hp>0)await statChange(1,'spd',-1)}
  else await say('Caïus secoue la tête et se reprend. Il faudrait d\'autres mots… ceux des gens que tu as aidés en chemin.')}
 {const sf193=sendFoe;sendFoe=async function(...a){const r=await sf193.apply(this,a);try{if(B&&!B.coop&&!B.pvp&&B.tr?.name==='Admin Caïus'&&B.foe?.sp==='anubrume'&&!B.w193){B.w193=1;await words193()}}catch(e){console.error(e)}return r}}
@@ -8011,8 +8013,8 @@ async function caius193(n){const F=f(),C='Caïus',P='faille';await cine(1);faceT
 // ---------------------------------------------------------------- La première aube partagée, puis FIN
 let CR193=null;
 {const ob=battle;battle=async function(foes,o){const r=await ob.apply(this,arguments);if(o?.legend&&foes?.[0]?.sp==='crepuscel')CR193=r;return r}}
-{const l2=legend2;legend2=async function(sp){CR193=null;const r=await l2.apply(this,arguments);if(sp==='crepuscel'&&(CR193==='win'||CR193==='catch')&&!f().v193fin)await finale193();return r}}
-async function finale193(){const F=f(),S='sanctuaire',L=[];await cine(1);musPlay('title');
+{const l2=legend2;legend2=async function(sp){CR193=null;const r=await l2.apply(this,arguments);if(sp==='crepuscel'&&(CR193==='win'||CR193==='catch'||f().legC)&&!f().v193fin)await finale193();return r}}
+async function finale193(){const F=f(),S='sanctuaire',L=[],mine=[...G.party,...G.box].some(m=>m.sp==='crepuscel'),who=G.coop?.lg?.crepuscel;await cine(1);musPlay('title');
  await say('Au-dessus de l\'autel, le soleil et la lune brillent ensemble. Pour la première fois depuis mille ans, Aurélys connaît un vrai crépuscule.');
  await fadeTo(1,500);const add=(x,t,name)=>L.push(tmpN(S,{x,y:7,t,d:1,name}));add(4,'selene','Sélène');add(5,'rival','Kael');add(7,'valen','Valen');
  if(F.v193cai===2)add(8,'caius','Caïus');if(F.v19cor===3||F.v193cor===1)add(9,'grunt','Corvin');await fadeTo(0,500);
@@ -8022,9 +8024,9 @@ async function finale193(){const F=f(),S='sanctuaire',L=[];await cine(1);musPlay
  await say(F.v191sel?'Ma dette est réglée. Je crois que je vais enfin dormir la nuit.':'Je suis partie sans un mot, à l\'Observatoire. Alors je le dis maintenant : merci.','Sélène',0,'selene');
  if(F.v193cai===2)await say('C\'est… plus beau que tout ce que j\'aurais pu voler.','Caïus',0,'caius');
  if(F.v19cor===3||F.v193cor===1)await say('Avec Tito, on a étayé le sentier jusqu\'ici. Ça tiendra mille ans. Promis.','Corvin',0,'grunt');
- if(F.legC)await say('Crépuscel se pose près de toi. Une moitié de lui brille comme le jour, l\'autre comme la nuit… et toutes les deux te regardent.');
+ if(mine)await say('Crépuscel se pose près de toi. Une moitié de lui brille comme le jour, l\'autre comme la nuit… et toutes les deux te regardent.');
  await fadeTo(1,700);PV193.on=1;await fadeTo(0,900);
- const E=[F.legC?'Crépuscel a choisi de te suivre. Mais chaque soir, à l\'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.':'Crépuscel est reparti dans la lumière. On dit qu\'il veille sur chaque aube et chaque crépuscule d\'Aurélys.'];
+ const E=[mine?'Crépuscel a choisi de te suivre. Mais chaque soir, à l\'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.':who?`Crépuscel a choisi de suivre ${who}. Mais chaque soir, à l'heure où le jour et la nuit se croisent, il retourne veiller au Sanctuaire.`:'Crépuscel est reparti dans la lumière. On dit qu\'il veille sur chaque aube et chaque crépuscule d\'Aurélys.'];
  E.push(F.v193cai===2?'Caïus a rebouché la Faille de ses propres mains. Il vit à Lunévie, chez la grand-mère de Valen. Il dort la nuit, maintenant.':'Caïus a accepté la soupe. Une seule. Puis une deuxième. On dit qu\'il n\'est jamais reparti de Lunévie.');
  if(F.v193cor===1)E.push('À Cendreville, un ancien lieutenant étaie les galeries avec Tito. Il ne parle jamais de sa capuche violette.');else if(F.v193cor===2)E.push('Corvin a disparu dans les galeries de la Faille. Les Grumeroc, eux, ont un nouveau gardien bourru.');
  E.push((F.v191d|0)>=3?'Kael et Valen ont repeint ensemble la maison de leur grand-mère. Elle dit qu\'elle n\'a jamais eu autant de bols à laver.':'Kael et Valen se parlent encore peu. Mais chaque soir, ils regardent le même ciel.');
@@ -8039,6 +8041,37 @@ async function finale193(){const F=f(),S='sanctuaire',L=[];await cine(1);musPlay
  if(F.v193cor===1)Q.push(['Il est encore temps',2,'Dans la Faille, Corvin a quitté la Team Éclipse pour de bon.']);
  if(F.v193w?.length)Q.push(['Les mots pour Caïus',2,`En plein combat, tu as parlé à Caïus : ${F.v193w.join(', ').toLowerCase()}.`]);
  if(F.v193fin)Q.push(['La première aube partagée',2,'Au Sanctuaire du Cycle, tu as vu le premier vrai crépuscule avec tous ceux que tu as aidés.']);return Q}}
+
+// =====================================================================
+// Version 19.4 : dans l'aventure à plusieurs, les choix de l'histoire commune se votent
+//  - pendant une scène partagée, chacun vote ; le meneur de la scène compte (majorité ; égalité : tirage au sort)
+//    puis annonce le résultat à tous. Sans réponse au bout de 30 s, on décide sans les absents.
+//  - en solo (ou si la scène n'est pas partagée) : le choix habituel
+//  - en combat de groupe, chacun trouve ses propres mots pour Valen et pour Caïus (sans effet sur le combat partagé)
+// =====================================================================
+const VT={v:new Map(),r:new Map()};
+const vtId=s=>typeof s==='string'&&/^[a-z0-9]{6}:\d{1,3}$/.test(s),vtL=s=>typeof s==='string'&&s.length>0&&s.length<=40;
+NET.H['vt-v']=(m,P)=>{if(!isAdvMate(P)||!vtId(m.id)||!vtL(m.l))return;let M=VT.v.get(m.id);if(!M)VT.v.set(m.id,M=new Map());M.set(P.pid,m.l);M.t=Date.now()};
+NET.H['vt-r']=(m,P)=>{if(!isAdvMate(P)||!vtId(m.id)||!vtL(m.l))return;
+ const L=Array.isArray(m.L)?m.L.slice(0,4).filter(x=>Array.isArray(x)&&vtL(x[0])&&vtL(x[1])).map(x=>[x[0].slice(0,16),x[1]]):[];VT.r.set(m.id,{l:m.l,tie:!!m.tie,L,t:Date.now()})};
+setInterval(()=>{const t=Date.now();for(const K of[VT.v,VT.r])for(const[k,v]of K)if(t-(v.t||0)>300000)K.delete(k)},30000);
+async function voteLabel(opts,o={}){const S=SCX,all=o.all||opts,grp=!!(S&&S.sid&&NET.on&&typeof advCode==='function'&&advCode());
+ const c=await choose(opts,grp?{...o,info:()=>({s:'Vote du groupe : la majorité l\'emporte. En cas d\'égalité, le sort décide.'})}:o),mine=opts[Math.max(0,c)];if(!grp)return mine;
+ const id=S.sid+':'+(S.vi=(S.vi|0)+1);let res;
+ if(S.lead){const fol=()=>[...S.fol].filter(pid=>NET.peers.has(pid)),miss=()=>fol().filter(pid=>!VT.v.get(id)?.has(pid)),t0=Date.now();if(!fol().length)return mine;
+  while(miss().length&&Date.now()-t0<30000){show(`Vote : en attente de ${miss().map(pid=>NET.peers.get(pid)?.name||'?').join(', ')}… ${Math.ceil((30000-(Date.now()-t0))/1000)} s (B : décider sans attendre)`,0);if(await key(250)==='b')break}ui.text=null;
+  const M=VT.v.get(id)||new Map(),L=[[NG().n||'Toi',mine]];for(const pid of fol()){const l=M.get(pid);if(l&&all.includes(l))L.push([NET.peers.get(pid)?.name||'Ami',l])}VT.v.delete(id);
+  const n={};for(const[,l]of L)n[l]=(n[l]|0)+1;const top=Math.max(...Object.values(n)),C=Object.keys(n).filter(l=>n[l]===top);
+  res={l:C[Math.random()*C.length|0],tie:C.length>1,L};for(const pid of fol())NET.send('vt-r',{id,l:res.l,tie:res.tie?1:0,L},pid,true)}
+ else{NET.send('vt-v',{id,l:mine},S.leader,true);const t0=Date.now();
+  while(!VT.r.has(id)&&Date.now()-t0<60000&&NET.peers.has(S.leader)){show('Vote envoyé ! En attente des autres joueurs…',0);await key(250)}ui.text=null;
+  res=VT.r.get(id);VT.r.delete(id);if(!res||!all.includes(res.l))return mine}
+ if(res.L.length>1)await say(`Votes : ${res.L.map(([n,l])=>`${n} : ${l}`).join(' · ')}.`);
+ await say(res.tie?`Égalité ! Le sort a choisi : ${res.l}.`:`Le groupe a choisi : ${res.l}.`);return res.l}
+async function voteChoose(opts,o={}){return opts.indexOf(await voteLabel(opts,o))}
+// Combat de groupe contre Valen ou Caïus : les mots de chacun, quand le boss envoie sa dernière créature
+{const ce=cbEv;cbEv=async function(C,e){const r=await ce.apply(this,arguments);
+ try{if(e?.k==='fsend'&&C?.foe&&mode==='battle'){const tn=C.tr?.name;if(tn==='Vex'&&C.foe.sp==='nocturion'&&!C.w191){C.w191=1;await words191(1)}else if(tn==='Admin Caïus'&&C.foe.sp==='anubrume'&&!C.w193){C.w193=1;await words193(1)}}}catch(err){console.error(err)}return r}}
 
 // =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.
@@ -8094,6 +8127,21 @@ NEWS.unshift([()=>ICO.ecl,'Le dernier carré','Dans la Faille, Sélène se souvi
  [()=>ICO.heart,'Les mots pour Caïus','En plein combat, ce que tu as vécu devient des mots pour atteindre Caïus. Assez de mots, et il ne voudra plus voler la lumière de Crépuscel : seulement la voir.'],
  [()=>ICO.sun,'La première aube partagée','Crépuscel attend que Caïus soit arrêté. Après lui, au Sanctuaire, tous ceux que tu as aidés viennent voir le premier vrai crépuscule. Puis un dernier épilogue… et FIN.']);
 {const norm193=normalize;normalize=function(g){g=norm193(g);if(g&&(g.v||0)<19.3){g.wn=1;g.v=19.3}return g}}
+
+// =====================================================================
+// VERSION 19.4 — en dernier : les nouveautés 19.4 en tête de l'écran des nouveautés, sauvegarde marquée 19.4.
+// =====================================================================
+NEWS.unshift([()=>ICO.net,'Les choix se votent','Aventure à plusieurs : pendant une scène partagée, les choix qui changent l\'histoire commune (Corvin, Kael, Faustine) se votent. La majorité l\'emporte ; en cas d\'égalité, le sort décide. Le résultat vaut pour tout le groupe.'],
+ [()=>ICO.heart,'Chacun ses mots','En combat de groupe contre Valen ou Caïus, chaque joueur trouve ses propres mots. Et quand un ami capture Crépuscel, tout le groupe vit la première aube partagée.']);
+{const norm194=normalize;normalize=function(g){g=norm194(g);if(g&&(g.v||0)<19.4){g.wn=1;g.v=19.4}return g}}
+
+// =====================================================================
+// VERSION 19.5 — tout à la fin : le jeu n'a plus de musique (ni musique de fond, ni mélodies d'objets) ; les effets sonores restent.
+// =====================================================================
+musPlay=function(){musStop()};
+jingle=async function(){sfx('ok')};
+NEWS.unshift([()=>ICO.star,'Sans musique','Le jeu n\'a plus de musique : ni musique de fond, ni petites mélodies. Seuls les effets sonores restent (réglables dans les options).']);
+{const norm195=normalize;normalize=function(g){g=norm195(g);if(g&&(g.v||0)<19.5){g.wn=1;g.v=19.5}return g}}
 
 Promise.all([PIXREADY,ARTREADY]).then(()=>{requestAnimationFrame(loop);run(titleScreen)});
 
