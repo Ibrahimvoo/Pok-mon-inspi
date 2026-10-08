@@ -13,7 +13,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  ok(f().t_corvin&&f().v19cor===1,'Corvin battu, puis sauvé de la poutre');ok(SAID.some(s=>/n'oublie jamais une dette/.test(s)),'Corvin promet de payer sa dette');
  loadMap('mine',11,2,1);await titoTalk(MAPS.mine.npcs.find(n=>n.name==='Tito'));ok(f().mine,'Tito sauvé');ok(SAID.some(s=>/boitant vers les vieux puits/.test(s)),'les mineurs parlent de Corvin');
  // 3. Forêt : le silence
- await warp('foret',0,8,3);ok(f().v19for,'Iris demande de l\'aide');ok(mus.want==='silence19','la forêt est silencieuse');await SNAP('foret-silence');
+ await warp('foret',0,8,3);ok(f().v19for,'Iris demande de l\'aide');ok(!mus.tm,'la forêt est silencieuse (le jeu n\'a plus de musique)');await SNAP('foret-silence');
  ok(MAPS.foret.npcs.filter(n=>n.fauna&&!n.gone).length<=2,'presque plus aucune créature visible');ok(/Rends sa voix/.test(goal()),'objectif : '+goal());
  loadMap('foret',19,3,1);await rival2();ok(!f().rival2&&G.y===4,'Kael garde le sentier tant que la forêt est malade');
  // machine 1 (cachée) : ta créature la flaire
@@ -25,7 +25,7 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  ok(f().v19d1,'machine 2 éteinte');ok(G.party.length+G.box.length===n2+1&&[...G.party,...G.box].some(m=>m.sp==='hiboulume'),'le Hiboulume libéré rejoint l\'équipe');
  // machine 3 : le sbire et l'ordre de Vex
  loadMap('foret',22,8,1);pick(m=>m.title==='Quel fil couper ?'?0:null);await interact();unpick();await SNAP('foret-reveil');
- ok(f().v19d2&&f().v19forDone,'les trois machines sont éteintes, la forêt se réveille');ok(SAID.some(s=>/ORDRE DE VEX/.test(s)),'l\'ordre de Vex est découvert');ok(mus.want!=='silence19','la musique revient');
+ ok(f().v19d2&&f().v19forDone,'les trois machines sont éteintes, la forêt se réveille');ok(SAID.some(s=>/ORDRE DE VEX/.test(s)),'l\'ordre de Vex est découvert');ok(!mus.tm,'toujours aucune musique');
  loadMap('foret',19,3,1);await rival2();ok(f().rival2,'Kael : le combat du sentier');
  // 4. Mont Braise : l'ascension
  loadMap('mont',9,16,1);await MAPS.mont.step();ok(f().v19t1,'le Mont gronde');loadMap('mont',9,10,1);await MAPS.mont.step();ok(f().v19t2,'Solarion veille au sommet');

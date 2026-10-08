@@ -13,7 +13,7 @@
 askLook=async function(){const cur=Math.max(0,LOOKS.indexOf(NG().lk)),c=7,x0=ev((W-c*62)/2);ui.panel=()=>{panel(8,8,W-16,H-16);txt('TON APPARENCE',24,36,C.acc,{sh:0});txt('C\'est toi dans le monde : tu te vois ainsi, et tes amis aussi.',24,56,C.ink2,{s:1,sh:0})};
  const i=await choose(LOOKS,{i:cur,bare:1,cols:c,rect:i=>[x0+(i%c)*62,74+(i/c|0)*110,58,104],draw:(i,[x,y,w,h],sel,pr)=>{rr(x,y,w,h,3,C.ink);rr(x+2,y+2,w-4,h-4,2,pr?C.acc:sel?C.accL:'#efe6d2');X.drawImage(chr(LOOKS[i],0,sel?1+(now()/200|0)%2:0),x+w/2-16,y+18,32,64);if(LOOKS[i]===NG().lk)X.drawImage(ICO.star,x+w-18,y+6,12,12)}});
  ui.panel=null;if(i>=0){NG().lk=LOOKS[i];profSave();if(G.map)save();if(NET.on)NET.hi(1)}};
-{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, rencontres, course, flèche-guide, son, musique, texte, vitesse des combats…','Fermer.'][j]})});
+{const OP17=options;options=async function(){for(;;){const i=await choose(['APPARENCE','OPTIONS DU JEU…','RETOUR'],{x:W-252,y:8,w:244,title:'Options',info:j=>({s:['Choisis ton apparence : c\'est ainsi que tu apparais dans le monde, pour toi comme pour tes amis.','Difficulté, rencontres, course, flèche-guide, son, texte, vitesse des combats…','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0){await askLook();continue}return OP17()}}}
 // Profil de l'appareil : pseudo et apparence proposés d'office dans les nouvelles parties en ligne
 const PROF=(()=>{try{const o=JSON.parse(lsGet('pixemon-profile')||'{}');return{n:netName(o.n),lk:LOOKS.includes(o.lk)?o.lk:''}}catch(e){return{n:'',lk:''}}})();
