@@ -465,10 +465,10 @@ async function cbHostLoop(C){for(;;){const v=C.v;if(!v||v.ph==='end'||C.end)brea
 function cbFree(){return NET.on&&!!G&&mode==='world'&&!busy&&!move&&!ui.menus.length&&!ui.text&&!waiters.length&&!NET.inv&&!NET.act&&!CB&&!CBG&&!CBJ&&!SCX&&G.party.some(alive)}
 NET.H['cb-call']=(m,P)=>{if(typeof m.id!=='string'||!CBID.test(m.id))return;const ok=isMate(P)&&P.dv===NETDV()&&SP[m.sp];
  if(ok&&!P.cb)P.cb={i:m.id,sp:m.sp,lv:Math.max(1,Math.min(100,m.lv|0)),n:Math.max(1,Math.min(CBMAX,m.n|0)),tr:typeof m.tr==='string'?netTr(m.tr):''};
- NET.send('cb-ack',{id:m.id,ok:ok&&cbFree()&&NG().aj!=='ask'&&!CBSKIP.has(m.id)?1:0},P.pid,true)};
+ NET.send('cb-ack',{id:m.id,ok:ok&&cbFree()&&(NG().aj!=='ask'||isAdvMate(P))&&!CBSKIP.has(m.id)?1:0},P.pid,true)};
 setInterval(()=>{if(!cbFree())return;for(const P of matePeers())if(P.cb&&P.dv===NETDV()&&!CBSKIP.has(P.cb.i)&&P.cb.n<CBMAX){CBSKIP.add(P.cb.i);run(()=>cbAuto(P));return}},200);
 async function cbAuto(P){const c=P.cb;if(!c||!NET.peers.has(P.pid))return;const vs=c.tr?`contre ${c.tr}`:`un ${SP[c.sp].name} sauvage (Nv ${c.lv})`;
- if(NG().aj==='ask'){sfx('alert');show(`${P.name} affronte ${vs} ! Le rejoindre ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;if(r!==0)return}else{sfx('alert');NET.note(`${P.name} affronte ${vs} : tu le rejoins !`)}
+ if(NG().aj==='ask'&&!isAdvMate(P)){sfx('alert');show(`${P.name} affronte ${vs} ! Le rejoindre ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;if(r!==0)return}else{sfx('alert');NET.note(isAdvMate(P)?`${P.name} affronte ${vs} : toute l'équipe le rejoint !`:`${P.name} affronte ${vs} : tu le rejoins !`)}
  await cbJoin(P,c.i)}
 NET.H['cb-in']=(m,P)=>{const J=CBJ;if(J&&m.id===J.id&&P.pid===J.host&&!J.st&&m.st&&typeof m.st==='object'&&m.vw&&Number.isInteger(m.sl))J.st=m};
 NET.H['cb-no']=(m,P)=>{const J=CBJ;if(J&&m.id===J.id&&P.pid===J.host){J.no=['full','bad','none'].includes(m.why)?m.why:'over';J.w=['win','catch','run','lose'].includes(m.w)?m.w:'';J.by=Number.isInteger(m.by)?m.by:-1}};

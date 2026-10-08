@@ -5492,10 +5492,10 @@ async function cbHostLoop(C){for(;;){const v=C.v;if(!v||v.ph==='end'||C.end)brea
 function cbFree(){return NET.on&&!!G&&mode==='world'&&!busy&&!move&&!ui.menus.length&&!ui.text&&!waiters.length&&!NET.inv&&!NET.act&&!CB&&!CBG&&!CBJ&&!SCX&&G.party.some(alive)}
 NET.H['cb-call']=(m,P)=>{if(typeof m.id!=='string'||!CBID.test(m.id))return;const ok=isMate(P)&&P.dv===NETDV()&&SP[m.sp];
  if(ok&&!P.cb)P.cb={i:m.id,sp:m.sp,lv:Math.max(1,Math.min(100,m.lv|0)),n:Math.max(1,Math.min(CBMAX,m.n|0)),tr:typeof m.tr==='string'?netTr(m.tr):''};
- NET.send('cb-ack',{id:m.id,ok:ok&&cbFree()&&NG().aj!=='ask'&&!CBSKIP.has(m.id)?1:0},P.pid,true)};
+ NET.send('cb-ack',{id:m.id,ok:ok&&cbFree()&&(NG().aj!=='ask'||isAdvMate(P))&&!CBSKIP.has(m.id)?1:0},P.pid,true)};
 setInterval(()=>{if(!cbFree())return;for(const P of matePeers())if(P.cb&&P.dv===NETDV()&&!CBSKIP.has(P.cb.i)&&P.cb.n<CBMAX){CBSKIP.add(P.cb.i);run(()=>cbAuto(P));return}},200);
 async function cbAuto(P){const c=P.cb;if(!c||!NET.peers.has(P.pid))return;const vs=c.tr?`contre ${c.tr}`:`un ${SP[c.sp].name} sauvage (Nv ${c.lv})`;
- if(NG().aj==='ask'){sfx('alert');show(`${P.name} affronte ${vs} ! Le rejoindre ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;if(r!==0)return}else{sfx('alert');NET.note(`${P.name} affronte ${vs} : tu le rejoins !`)}
+ if(NG().aj==='ask'&&!isAdvMate(P)){sfx('alert');show(`${P.name} affronte ${vs} ! Le rejoindre ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;if(r!==0)return}else{sfx('alert');NET.note(isAdvMate(P)?`${P.name} affronte ${vs} : toute l'équipe le rejoint !`:`${P.name} affronte ${vs} : tu le rejoins !`)}
  await cbJoin(P,c.i)}
 NET.H['cb-in']=(m,P)=>{const J=CBJ;if(J&&m.id===J.id&&P.pid===J.host&&!J.st&&m.st&&typeof m.st==='object'&&m.vw&&Number.isInteger(m.sl))J.st=m};
 NET.H['cb-no']=(m,P)=>{const J=CBJ;if(J&&m.id===J.id&&P.pid===J.host){J.no=['full','bad','none'].includes(m.why)?m.why:'over';J.w=['win','catch','run','lose'].includes(m.w)?m.w:'';J.by=Number.isInteger(m.by)?m.by:-1}};
@@ -6393,7 +6393,7 @@ drawNet=function(){if(!NET.on||!G)return;const t=Date.now(),adv=advCode();
 // Menu EN LIGNE : salon ou aventure, joueurs, amis, réglages
 // =====================================================================
 async function netSettings(){for(;;){const N=NG(),O=[`COMBATS DES AMIS : ${N.aj==='ask'?'DEMANDER':'REJOINDRE'}`,`SCÈNES DE L'HISTOIRE : ${N.fs===0?'NE PAS SUIVRE':'SUIVRE'}`,'RETOUR'];
- const i=await choose(O,{x:W-368,y:8,w:360,title:'Réglages en ligne',info:j=>({s:['Quand un ami (ou un joueur de ton aventure) commence un combat : le rejoindre tout de suite, ou te demander d\'abord.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
+ const i=await choose(O,{x:W-368,y:8,w:360,title:'Réglages en ligne',info:j=>({s:['Quand un ami de ton salon commence un combat : le rejoindre tout de suite, ou te demander d\'abord. Dans une aventure à plusieurs, toute l\'équipe rejoint toujours le combat.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0)N.aj=N.aj==='ask'?'auto':'ask';if(i===1)N.fs=N.fs===0?1:0;save()}}
 onlineMenu=async function(){if(!NG().n){await say('EN LIGNE, tu peux retrouver tes amis dans Aurélys : vous vous voyez sur la carte, vous vous défiez, vous échangez vos créatures et vous combattez ensemble.');if(!await askName())return;await askLook();await say('C\'est noté ! Crée un salon, ou rejoins celui d\'un ami avec son code.')}
  for(;;){const adv=advCode();
@@ -7848,6 +7848,31 @@ MAPS.dome.npcs.push({x:3,y:5,t:'mon',sp:'ombrelin',d:2,a:.9,cond:()=>!!F191().ba
 {const q191b=quests;quests=function(){const Q=q191b(),F=F191();if(F.baseDone&&F.v191gh===1)Q.push(['Le fantôme de la Centrale',2,'Tu as traversé la Centrale de Volterre sans te faire voir une seule fois. Orso n\'en revient toujours pas.']);
  if(F.v191sel)Q.push(['Les mots de Sélène',2,'Tu as convaincu Sélène sans combattre. Elle est entrée au dôme avec toi.']);
  if(F.v191w?.length)Q.push(['Les mots pour Valen',2,`En plein combat, tu as parlé à Valen : ${F.v191w.join(', ').toLowerCase()}.`]);return Q}}
+
+// =====================================================================
+// Version 19.2 : l'aventure à plusieurs, vraiment ensemble
+//  - dans une aventure, le combat d'un joueur appelle TOUTE l'équipe, sans question (ralliement dès qu'on est libre)
+//  - si l'équipe gagne, personne n'a perdu : ta dernière créature se relève avec 1 PV, sur place
+//  - moins de rencontres à plusieurs, puisque chaque combat réunit tout le monde
+//  - toucher une créature pendant le combat d'un ami : on rejoint plutôt le combat de l'ami
+//  - un joueur de l'aventure n'a pas la même version : on prévient (recharger la page)
+// =====================================================================
+const coN=()=>{if(!G||typeof advCode!=='function'||!advCode()||!NET.on)return 1;return Math.min(4,1+matePeers().filter(P=>isAdvMate(P)&&P.dv===NETDV()).length)};
+const coK=()=>1/coN();
+// Rencontres classiques : une chance sur N ; faune visible : moins nombreuse, charges et herbes frémissantes plus rares
+{const er=encRoll;encRoll=function(M,tall){const r=er(M,tall);return r&&(coN()<2||Math.random()<coK())}}
+{const fc=fauCharge;fauCharge=async function(){if(coN()>1&&Math.random()>coK())return false;return fc()}}
+{const rn=ruNew;ruNew=function(k,p){return rn(k,p*coK())}}
+{const fa=fauAdj;fauAdj=function(M,n){n=fa(M,n);const N=coN();return N>1?Math.max(2,Math.round(n/Math.sqrt(N))):n}}
+// Un ami est déjà en combat : on le rejoint au lieu d'ouvrir un second combat
+const coMateFight=()=>coN()>1&&!CB&&!CBG&&!CBJ?matePeers().find(P=>isAdvMate(P)&&P.cb&&P.dv===NETDV()&&P.cb.n<CBMAX&&!CBSKIP.has(P.cb.i)):null;
+{const fm=faunaMeet;faunaMeet=async function(n){const P=coMateFight();if(P&&G.party.some(alive)){sfx('alert');NET.note(`${P.name} est déjà en combat : tu le rejoins !`);await cbJoin(P,P.cb.i);return}return fm.apply(this,arguments)}}
+// L'équipe a gagné : on ne perd jamais tant que les amis tiennent bon
+{const eb=endBattle;endBattle=async function(r){if(r!=='lose'&&B&&!B.pvp&&coN()>1&&G.party.length&&!G.party.some(alive)){const m=B.me&&G.party.includes(B.me)?B.me:G.party[0];m.hp=1;m.st=null;m.slp=0;
+  await say(`Ton équipe a gagné ! Tant que tes amis tiennent bon, tu ne perds jamais : ${nm(m)} se relève avec 1 PV.`)}return eb.apply(this,arguments)}}
+// Versions différentes dans la même aventure : impossible de combattre ensemble, on le dit une fois
+{const COV=new Set();setInterval(()=>{if(!G||typeof advCode!=='function'||!advCode()||!NET.on||mode!=='world')return;
+ for(const P of NET.peers.values())if(isAdvMate(P)&&P.dv&&P.dv!==NETDV()&&!COV.has(P.pid)){COV.add(P.pid);NET.note(`${P.name} n'a pas la même version du jeu : rechargez tous les deux la page pour combattre ensemble.`)}},3000)}
 
 // =====================================================================
 // EXTENSION 18.0 — derniers réglages, après tous les autres modules : les nouveautés 18.0 en tête de l'écran des nouveautés.

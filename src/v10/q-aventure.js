@@ -100,7 +100,7 @@ drawNet=function(){if(!NET.on||!G)return;const t=Date.now(),adv=advCode();
 // Menu EN LIGNE : salon ou aventure, joueurs, amis, réglages
 // =====================================================================
 async function netSettings(){for(;;){const N=NG(),O=[`COMBATS DES AMIS : ${N.aj==='ask'?'DEMANDER':'REJOINDRE'}`,`SCÈNES DE L'HISTOIRE : ${N.fs===0?'NE PAS SUIVRE':'SUIVRE'}`,'RETOUR'];
- const i=await choose(O,{x:W-368,y:8,w:360,title:'Réglages en ligne',info:j=>({s:['Quand un ami (ou un joueur de ton aventure) commence un combat : le rejoindre tout de suite, ou te demander d\'abord.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
+ const i=await choose(O,{x:W-368,y:8,w:360,title:'Réglages en ligne',info:j=>({s:['Quand un ami de ton salon commence un combat : le rejoindre tout de suite, ou te demander d\'abord. Dans une aventure à plusieurs, toute l\'équipe rejoint toujours le combat.','Aventure à plusieurs : quand un ami déclenche une scène de l\'histoire, tu la vis avec lui (tu es transporté près de lui).','Fermer.'][j]})});
  if(i<0||i===2)return;if(i===0)N.aj=N.aj==='ask'?'auto':'ask';if(i===1)N.fs=N.fs===0?1:0;save()}}
 onlineMenu=async function(){if(!NG().n){await say('EN LIGNE, tu peux retrouver tes amis dans Aurélys : vous vous voyez sur la carte, vous vous défiez, vous échangez vos créatures et vous combattez ensemble.');if(!await askName())return;await askLook();await say('C\'est noté ! Crée un salon, ou rejoins celui d\'un ami avec son code.')}
  for(;;){const adv=advCode();
