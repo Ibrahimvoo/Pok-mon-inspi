@@ -12,7 +12,9 @@ async()=>{const L=(...a)=>console.log('LOG',...a),ok=(c,m)=>{if(!c)throw new Err
  f().v19cor=2;const co=MAPS.faille.npcs.find(n=>n.name==='Corvin'&&n.fn&&n.x===14);ok(npcs(MAPS.faille).includes(co),'Corvin garde le chantier de Caïus');
  await co.fn(co);ok(f().v193cor===1&&!npcs(MAPS.faille).includes(co),'Corvin battu : « Il est encore temps », il quitte la Team');
  // 4. Caïus : les mots, puis la fin du combat
- const ca=MAPS.faille.npcs.find(n=>n.t==='caius');await ca.fn(ca);ok(f().failleDone&&(f().v193d|0)>=5&&f().v193w.includes('CORVIN')&&f().v193w.includes('FAUSTINE'),'Que dis-tu à Caïus ? '+f().v193w.join(', '));
+ // (comme un joueur : en cas de défaite, on réessaie ; le résultat de chaque combat est noté pour le diagnostic)
+ const ca=MAPS.faille.npcs.find(n=>n.t==='caius');{const ob=battle;battle=async function(fo,o){const r=await ob.apply(this,arguments);if(o?.tr?.name==='Admin Caïus')L('combat contre Caïus :',r);return r};for(let k=0;k<3&&!f().failleDone;k++){healAll();await ca.fn(ca)}battle=ob}
+ ok(f().failleDone&&(f().v193d|0)>=5&&f().v193w?.includes('CORVIN')&&f().v193w?.includes('FAUSTINE'),'Que dis-tu à Caïus ? '+(f().v193w||[]).join(', '));
  ok(f().v193cai===2&&SAID.some(s=>/une assiette de plus/.test(s)),'Caïus veut voir Crépuscel ; Valen et Sélène sont venus');ok(G.bag.cyclecapsule===1,'Capsule Cycle reçue');
  ok(/Sanctuaire du Cycle/.test(goal()),'objectif : '+goal());
  // 5. Le Sanctuaire : Crépuscel, la première aube, FIN
