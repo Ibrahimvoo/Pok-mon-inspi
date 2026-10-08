@@ -74,7 +74,7 @@ friendMenu=async function(pid){const P=NET.peers.get(pid);if(!P)return say('Ce j
  if(k==='ALLER LE VOIR'){await advGoTo(P);return true}
  if(!same){await say(`${P.name} n'a pas la même version du jeu que toi. Rechargez tous les deux la page pour avoir la dernière version.`);return true}
  if(k==='REJOINDRE SON COMBAT'){CBSKIP.add(P.cb.i);await cbJoin(P,P.cb.i);return true}
- if(k==='ÉCHANGE'){if(G.party.length<2){await say('Il te faut au moins deux créatures dans ton équipe pour échanger.');return true}const r=await netInvite(P,'tr',{});if(r)await tradeFlow(P,r,1);return true}
+ if(k==='ÉCHANGE'){if(!G.party.length){await say('Il te faut au moins une créature dans ton équipe pour échanger.');return true}const r=await netInvite(P,'tr',{});if(r)await tradeFlow(P,r,1);return true}
  if(G.party.length<1)return say('Il te faut au moins une créature !');
  const fm=await choose(['3 CONTRE 3','6 CONTRE 6','RETOUR'],{x:W-252,y:8,w:244,title:'Format du combat',info:j=>({s:['Chacun choisit 3 créatures de son équipe. Rapide et tactique !','Toute l\'équipe, jusqu\'à 6 créatures chacun.','Annuler.'][j]})});if(fm<0||fm===2)return true;
  const lv=await choose(['TOUS AU NIVEAU 50','NIVEAUX RÉELS','RETOUR'],{x:W-252,y:8,w:244,title:'Niveaux',info:j=>({s:['Toutes les créatures passent au niveau 50 : idéal entre amis qui n\'en sont pas au même point de l\'aventure.','Chaque créature garde son vrai niveau.','Annuler.'][j]})});if(lv<0||lv===2)return true;

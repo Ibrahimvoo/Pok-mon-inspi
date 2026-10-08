@@ -57,7 +57,7 @@ async function friendMenu(pid){const P=NET.peers.get(pid);if(!P)return say('Ce j
  if(i<0||i===3)return false;if(!NET.peers.has(pid))return say(`${P.name} n'est plus dans le salon.`);
  if(i===2){const j=await choose(QCHAT,{x:W-252,y:8,w:244,vis:9,title:'Message rapide'});if(j>=0){NET.send('ch',{c:j});ME15.say={s:QCHAT[j],t0:now()};NET.log.push('Toi : '+QCHAT[j])}return true}
  if(P.dv!==NETDV()){await say(`${P.name} n'a pas la même version du jeu que toi. Rechargez tous les deux la page pour avoir la dernière version.`);return true}
- if(i===1){if(G.party.length<2){await say('Il te faut au moins deux créatures dans ton équipe pour échanger.');return true}const r=await netInvite(P,'tr',{});if(r)await tradeFlow(P,r,1);return true}
+ if(i===1){if(!G.party.length){await say('Il te faut au moins une créature dans ton équipe pour échanger.');return true}const r=await netInvite(P,'tr',{});if(r)await tradeFlow(P,r,1);return true}
  if(G.party.length<1)return say('Il te faut au moins une créature !');
  const fm=await choose(['3 CONTRE 3','6 CONTRE 6','RETOUR'],{x:W-252,y:8,w:244,title:'Format du combat',info:j=>({s:['Chacun choisit 3 créatures de son équipe. Rapide et tactique !','Toute l\'équipe, jusqu\'à 6 créatures chacun.','Annuler.'][j]})});if(fm<0||fm===2)return true;
  const lv=await choose(['TOUS AU NIVEAU 50','NIVEAUX RÉELS','RETOUR'],{x:W-252,y:8,w:244,title:'Niveaux',info:j=>({s:['Toutes les créatures passent au niveau 50 : idéal entre amis qui n\'en sont pas au même point de l\'aventure.','Chaque créature garde son vrai niveau.','Annuler.'][j]})});if(lv<0||lv===2)return true;
@@ -76,10 +76,10 @@ NET.H.inv=(m,P)=>{const ok=typeof m.id==='string'&&m.id.length<=12&&(m.t==='bt'|
 NET.H.invr=(m,P)=>{const A=NET.act;if(A?.k==='inv'&&A.id===m.id&&A.with===P.pid)A.resp={ok:!!m.ok,why:m.why==='busy'?'busy':''}};
 NET.H['inv-x']=(m,P)=>{if(NET.inv?.id===m.id&&NET.inv.from===P.pid){NET.inv=null;if(!NET.act)NET.note(`${P.name} a annulé son invitation.`)}if(NET.act?.id===m.id&&NET.act.with===P.pid)NET.act.x=1};
 async function promptInvite(){const I=NET.inv,P=NET.peers.get(I?.from);if(!I||!P){NET.inv=null;return}
- show(I.t==='bt'?`${P.name} te propose un combat (${ruTxt(I.ru)}). Accepter ?`:`${P.name} te propose un échange de créatures. Accepter ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;
+ show(I.t==='bt'?`${P.name} te propose un combat (${ruTxt(I.ru)}). Accepter ?`:`${P.name} te propose un échange (créatures, objets, argent). Accepter ?`,0);const r=await choose(['OUI','NON'],{w:110});ui.text=null;
  const live=NET.inv===I&&NET.peers.has(P.pid)&&Date.now()-I.t0<45000;NET.inv=null;if(!live)return say('L\'invitation a expiré.');
  if(r!==0){NET.send('invr',{id:I.id,ok:0},P.pid,true);return}
- if(I.t==='tr'&&G.party.length<2){NET.send('invr',{id:I.id,ok:0},P.pid,true);return say('Il te faut au moins deux créatures pour échanger.')}
+ if(I.t==='tr'&&!G.party.length){NET.send('invr',{id:I.id,ok:0},P.pid,true);return say('Il te faut au moins une créature pour échanger.')}
  if(I.t==='bt'&&!G.party.length){NET.send('invr',{id:I.id,ok:0},P.pid,true);return say('Il te faut au moins une créature pour combattre. Va voir le Prof. Saule !')}
  NET.act={k:I.t,id:I.id,with:P.pid,me:1};const ok=await NET.send('invr',{id:I.id,ok:1},P.pid,true);if(!ok){NET.act=null;return say('La connexion avec ton ami s\'est interrompue.')}
  if(I.t==='tr')await tradeFlow(P,I.id,0);else await pvpFlow(P,I.id,I.ru,1)}

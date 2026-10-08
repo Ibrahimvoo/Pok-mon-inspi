@@ -40,6 +40,11 @@ Cinématiques plein écran (décors peints, caméra, particules, effets de lumi�
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
 
+## Version 19.6 : Échanges complets
+
+- **Échanges complets** entre amis : une créature (ou aucune), jusqu'à quatre objets et de l'argent de chaque côté. Chacun voit l'offre de l'autre avant de confirmer ; l'échange n'a lieu que si les deux confirmations se croisent. Il suffit maintenant d'une créature dans son équipe pour échanger, et on garde toujours au moins une créature en forme.
+- **Menu créateur enrichi**, rangé par catégories (équipe et créatures, objets et argent, histoire, monde, pouvoirs) : éditeur complet de créature (niveau exact, capacités, objet tenu, nature, chromatique, évolution, copie), objet précis en quantité, montant d'argent exact, sauter à un chapitre, changer l'heure. Il n'agit que sur sa propre partie.
+
 ## Version 19.5 : Sans musique
 
 - Le jeu n'a plus de musique : ni musique de fond (titre, carte, combats, générique), ni petites mélodies (objets, badges). Seuls les effets sonores restent, réglables dans les options (le réglage MUSIQUE a été retiré).
