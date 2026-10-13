@@ -30,8 +30,8 @@ const CREA_CH=[['ACTE I : CENDREVILLE','ville',{intro:3,intro3:1,rival1:1}],['AC
  ['APRÈS LA FIN','coteaux',{obsScene:1,bar:1,selene2done:1,vex2:1,balance:1}]];
 async function creaChapter(){const i=await choose(CREA_CH.map(c=>c[0]),{x:W-262,y:8,w:254,title:'Sauter à…'});if(i<0)return;
  if(!await ask('Ta partie avancera jusqu\'à ce chapitre (rien n\'est retiré). Pour tester, mieux vaut une sauvegarde à part. Continuer ?'))return;
- const F=f();for(let k=0;k<=i;k++)Object.assign(F,CREA_CH[k][2]);if(!F.starter)F.starter='flamiot';G.keys.dex=1;if(F.badge)G.keys.bracelet=1;
- if(!G.party.length){G.party.push(mon(F.starter,[8,18,26,32,40,55][i]));dex(F.starter,2)}const k=CREA_CH[i][1],s=MAPS[k]&&creaSpot(k);
+ const F=f();for(let k=0;k<=i;k++)Object.assign(F,CREA_CH[k][2]);if(!F.starter)F.starter='flamiot';F.rs??={flamiot:'goutelin',goutelin:'pousseron',pousseron:'flamiot'}[F.starter]||'goutelin';G.keys.dex=1;if(F.badge)G.keys.bracelet=1;
+ if(!G.party.length){G.party.push(mon(F.starter,[8,18,26,32,40,55][i]||58));dex(F.starter,2)}const k=CREA_CH[i][1],s=MAPS[k]&&creaSpot(k);
  if(s){ui.panel=null;sfx('door');await fadeTo(1,220);loadMap(k,s[0],s[1],0);await fadeTo(0,220);if(NET.on)NET.hi(1)}save();return`Te voilà au chapitre : ${CREA_CH[i][0].toLowerCase()}.`}
 async function creaTime(){const i=await choose(PHN.slice(0,4),{x:W-182,y:8,w:174,title:'Heure'});if(i<0)return;for(let d=1;d<=CYC;d++){const t=(G.t|0)+d;if(phaseOf(t)===i){G.t=t;break}}if(G.map)loadMap(G.map,G.x,G.y,G.dir);return`Il fait maintenant : ${PHN[i].toLowerCase()}.`}
 creatorMenu=async function(){let last=0,sub=-1,l2=0;for(;;){
@@ -56,7 +56,7 @@ creatorMenu=async function(){let last=0,sub=-1,l2=0;for(;;){
   ['HISTOIRE…',[
    ['OÙ J\'EN SUIS',()=>`Étape actuelle : ${goal()||'aucune'}`],
    ['SAUTER À UN CHAPITRE',creaChapter],
-   ['TOUS LES BADGES',()=>{for(const k of['badge','badge2','badge3','badge4','badge5'])f()[k]=1;G.keys.bracelet=1;sfx('ok');return'Les cinq badges sont à toi !'}]]],
+   ['TOUS LES BADGES',()=>{for(const k of['badge','badge2','badge3','badge4','badge5','badge6'])f()[k]=1;G.keys.bracelet=1;sfx('ok');return'Tous les badges sont à toi !'}]]],
   ['MONDE…',[
    ['TÉLÉPORTATION',async()=>{const L=Object.keys(MAPS).filter(k=>MAPS[k].name&&!MAPS[k].dream&&k!=='songe'&&k!==G.map).sort((a,b)=>MAPS[a].name.localeCompare(MAPS[b].name,'fr')),i=await choose(L.map(k=>MAPS[k].name),{...creaBox,title:'Aller où ?'});if(i<0)return;
     const s=creaSpot(L[i]);if(!s)return'Impossible d\'aller là.';ui.panel=null;sfx('door');await fadeTo(1,220);loadMap(L[i],s[0],s[1],0);await fadeTo(0,220);if(NET.on)NET.hi(1);return'exit'}],

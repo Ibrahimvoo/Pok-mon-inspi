@@ -10,6 +10,7 @@ Aurélys vit au rythme du Cycle : le jour, Solarion veille ; la nuit, les créat
 
 - **Acte I** : Bourg-Lueur, la Route 1, Cendreville et le Badge Roc de Brasia, qui confie le Bracelet du Cycle. La Team Éclipse pille alors la Mine de Cendreville pour voler des Éclats d'Aube : il faut y sauver Tito, l'apprenti mineur, face au lieutenant Corvin. Puis la Forêt Murmure et le Mont Braise, où Vex, chef de la Team Éclipse, vole le Cœur d'Aube de Solarion et plonge la région dans une éclipse.
 - **Acte II** : la Rive Brumeuse, Port-Miroir et sa championne Maëlle, la Grotte Écho, plongée dans le noir, Volterre, puis le Carnaval des Masques de Carnavelle (la clé du téléphérique volée, Arlequin, Faustine et le Repaire, où l'on entre déguisé), et l'Observatoire. Là, on découvre qui est vraiment Vex, ce que les fondateurs d'Aurélys ont fait à Nocturion, le gardien de la nuit, et pourquoi il faut rétablir l'équilibre plutôt que de vaincre la nuit.
+- **Les Terres de Givre** : après la première aube, il neige sur Lunévie. Le Col du Givre mène à Frimas, à l'Arène Givre de Neva, au Lac Gelé et au Cœur du Glacier, où Boréa veut figer les saisons et où dort Hivernel, le gardien de l'hiver.
 - **Après la fin** : un vrai cycle jour/nuit, Valen et Maëlle réunis sur le ponton, le Tournoi du Cycle de Brasia (quatre combats d'affilée et un Panthéon), des revanches d'arène, les Ruines de l'Aube et leur Sablier du Cycle, les Gardiens du Cycle à gagner (la piste de Solarion, les chaînes de Nocturion), des quêtes écrites et des Défis d'Élite, le journal de Valen, les Éclats d'Aube et le Pixédex à compléter.
 
 ## Ce qui fait le jeu
@@ -25,7 +26,8 @@ Aurélys vit au rythme du Cycle : le jour, Solarion veille ; la nuit, les créat
 | IA des dresseurs | Les dresseurs envoient la créature la mieux placée face à la tienne ; les boss gardent leur atout pour la fin et rappellent une créature en mauvaise posture. |
 | Cycle jour/nuit | Le temps avance à chaque pas. Les créatures, les PNJ, les soins et certains talents changent selon l'heure. Le lit de la maison (puis le Sablier) permet de choisir l'heure. |
 | Événements | Averses (combats sous la pluie, créatures d'eau dans les herbes) et essaim du jour, annoncé dans le journal. |
-| Affinités de terrain | Ronces → une créature PLANTE dans l'équipe ; rocher fissuré → ROCHE ; brasier → EAU. Elles ouvrent des raccourcis et des secrets. |
+| Affinités de terrain | Ronces → une créature PLANTE dans l'équipe ; rocher fissuré → ROCHE ; brasier → EAU ; congère → FEU. Elles ouvrent des raccourcis et des secrets. |
+| Glace | Sur la glace, on glisse tout droit jusqu'au premier obstacle : Col du Givre, Arène Givre, Lac Gelé et Cœur du Glacier. |
 | Énigmes | Arène de Brasia : pousser des rochers dans les failles. Arène de Maëlle : deux vannes inversent la marée. Ruines : un casse-tête de rochers plus corsé. |
 | Ciel de combat | Pluie, Zénith et Éclipse durent 5 tours et modifient les dégâts. Une attaque LUMIÈRE dissipe une éclipse. |
 | Statuts et talents | Brûlure, poison, paralysie, sommeil ; chaque espèce a un talent passif annoncé en combat (Fermeté, Glissade, Sève Vive…). |
@@ -39,6 +41,17 @@ Aurélys vit au rythme du Cycle : le jour, Solarion veille ; la nuit, les créat
 Cinématiques plein écran (décors peints, caméra, particules, effets de lumière) aux grands moments, et scènes en jeu avec bandes noires, caméra et bulles d'émotion ; portraits animés dans les dialogues ; intro illustrée ; écran de badge ; générique de fin. En combat : vol stationnaire des créatures ailées, élan des attaques, effets propres à chaque type et à chaque capacité de soutien, zoom sur les critiques, barre d'EXP animée, transitions selon la situation. Dans le monde : lumières de nuit, brume, nuages, oiseaux, poissons, pluie. Musique chiptune par lieu (villes, routes, forêt, montagne, arènes, éclipse, ruines, combats, finale).
 
 Le menu contient la carte de la région, le journal des quêtes (sur plusieurs pages) et les options (son, compagnon, vitesse du texte, combats rapides). L'écran titre présente les nouveautés de la version 6.0 et les crédits. Les sauvegardes des versions précédentes sont reprises automatiquement : les créatures reçoivent un lien selon leur niveau, et le Bracelet du Cycle est remis si le Badge Roc est déjà obtenu.
+
+## Version 20.0 : Les Terres de Givre
+
+![Aperçu de la version 20.0](apercus/v20-givre.png)
+
+- **Un nouveau chapitre** après la première aube : il neige sur Lunévie pour la première fois depuis trois siècles, et le **Col du Givre** s'ouvre au nord. Au-delà : **Frimas**, le village où l'hiver dormait, le **Lac Gelé** et le **Cœur du Glacier**.
+- **Nouveaux boss** : le Yétimont des cimes, **Neva** et l'**Arène Givre** (6e badge, terrain Givre : GLACE x1,3), le lieutenant **Grésil**, **Boréa** et ses Figés, qui veulent figer les saisons (tes mots comptent pour l'épilogue), et **Hivernel**, le gardien des saisons, à capturer. Revanches quotidiennes contre Neva et Boréa.
+- **Le type GLACE** : neuvième type, fort contre PLANTE et ÉLEC, faible face au FEU et à la ROCHE. **15 nouvelles créatures** (Piaflocon, Yétimont, Cabrigel, Sapigivre, Louvigel, Boréaserp, Stellagel, Hivernel…), 9 capacités GLACE, Givre Capsule, Pierre Givre, Glaçon Éternel, Chocolat Chaud, quatre nouveaux DC. Flocelin, Eskichiot et Givrechien deviennent GLACE.
+- **Glace et congères** : sur la glace, on glisse jusqu'au premier obstacle (trois énigmes, vérifiées par un solveur : toujours solubles, jamais bloquantes) ; une créature FEU fait fondre les congères.
+- **Les saisons** : après le chapitre, un jour sur trois, l'hiver revient sur Lunévie avec ses créatures GLACE. Pêche sous la glace, les moufles de Mamie Flocon, le pêcheur pingouin, la réputation de Frimas, des succès, l'Envol et les Expéditions jusqu'à Frimas.
+- **Corrections** : la faune visible désactivée faisait apparaître en plein jour les créatures d'éclipse et d'étoiles filantes (et sans tenir compte de leur rareté) ; le cadeau de Kael était perdu (erreur) dans les parties lancées par « Sauter à un chapitre » ; sur la carte de dresseur, les Éclats et l'étoile chevauchaient les badges.
 
 ## Version 19.6 : Échanges complets
 

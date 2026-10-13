@@ -163,6 +163,19 @@ dessinée par les contributeurs du projet et publiée sous CC BY-SA 4.0 sauf men
 | Lapisaure | rabbitosaur | Fourmilou | aardorn |
 | Fourmilame | aardart |  |  |
 
+**Version 20.0** (15 créatures, ajoutées par `tools/v20sprites.py`) :
+
+| Pixémon | Sprite Tuxemon | Pixémon | Sprite Tuxemon |
+|---|---|---|---|
+| Piaflocon | tweesher | Hérongel | heronquak |
+| Aiglacier | eaglace | Givrelin | chillimp |
+| Yétimont | snowrilla | Cabrigel | caper |
+| Cornegivre | crankus | Pinouce | conileaf |
+| Sapigivre | conifrost | Louvigel | wolffsky |
+| Vivacier | viviteel | Boréaserp | vivitrans |
+| Stellagel | asudopt | Grelotin | nuenflu |
+| Hivernel | primordia |  |  |
+
 Auteurs connus :
 
 - **Nocturion** — « Drokoro », contributeurs du projet Tuxemon (Sanglorian et al.), CC BY-SA 4.0 / CC BY 3.0.
@@ -200,6 +213,7 @@ sont découpés dans les sprites de combat.
 - ["Overseer"](https://wiki.tuxemon.org/index.php?title=Overseer) (Ambroise) et ["Rogue"](https://wiki.tuxemon.org/index.php?title=Rogue) (Commandant Orso) : contributeurs du projet Tuxemon, d'après les sprites de Catch Challenger, CC BY-SA 4.0.
 - Lou (sprites « catgirl », Pboop / Sanglorian / tamashihoshi) et Elias (sprites « professor », contributeurs Tuxemon).
 - Personnages ajoutés en 18.0 (`tools/v18people.py`) : Arlequin (« magician_fiery »), Faustine (« goth_rose »), Bérénice et Madame Prophétie (« witch »), Mirella (« catgirl_violet » / « fashionista_rose »), Maestro Fabrizio (« magician_grey » / « magician_alt1 »), ninjas (« ninja », « ninja_blue » / « ninja_violet »), chevaliers (« knight »), nomades (« disciple » / « desert_male », « desert_female »), danseuses (« dancer »), pâtissière (« barmaid »), costumes du joueur (« magician_blonde », « woodnymph » / « earthnymph ») : contributeurs du projet Tuxemon, d'après les sprites de Catch Challenger et de Sanglorian, CC BY-SA 4.0.
+- Personnages ajoutés en 20.0 (`tools/v20sprites.py`) : Neva (« christie_lapi » / « heroine_lapi »), Boréa (« scientist_black »), sbires des Figés (« xerogrunt_white » / « xerogrunt »), lieutenant Grésil (« dragonrider_blue »), Monsieur Pingouin (« penguin »), Frère Hivert (« monk_blue » / « monk_lapi ») : contributeurs du projet Tuxemon, CC BY-SA 4.0.
 - Autres personnages (aventurier·e, héroïne, fashionista, infirmière, professeur·e…) : contributeurs du projet
   Tuxemon, d'après les sprites de [Catch Challenger](https://github.com/alphaonex86/CatchChallenger-datapack) (CC BY)
   et de Sanglorian, CC BY-SA 4.0.

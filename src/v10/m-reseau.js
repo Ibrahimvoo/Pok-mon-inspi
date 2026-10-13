@@ -66,7 +66,7 @@ const NET={dbg:[],on:false,code:'',topic:'',pid:'',seq:0,R:[],peers:new Map(),se
   P.t=Date.now();if(m.k!=='p'&&m.k!=='hi')this.trace('<',m.k,m.s,P.name);try{if(Object.prototype.hasOwnProperty.call(this.H,m.k))this.H[m.k](m,P)}catch(e){console.error(e)}},
  trace(...a){this.dbg.push(a.join(' '));if(this.dbg.length>80)this.dbg.shift()},
  hi(force){const t=Date.now();if(!G||!force&&t-this.lhi<5000)return;this.lhi=t;const F=f(),pos={m:G.map,x:G.x,y:G.y,d:G.dir};
-  this.send('hi',{n:NG().n||'Dresseur',lk:NG().lk||'hero',...pos,b:['badge','badge2','badge3','badge4','badge5'].filter(k=>F[k]).length,ld:G.party[0]?.sp||'',dv:NETDV(),bz:this.act||mode==='battle'?1:0})},
+  this.send('hi',{n:NG().n||'Dresseur',lk:NG().lk||'hero',...pos,b:['badge','badge2','badge3','badge4','badge5','badge6'].filter(k=>F[k]).length,ld:G.party[0]?.sp||'',dv:NETDV(),bz:this.act||mode==='battle'?1:0})},
  drop(P,why){this.trace('drop',P.name,why);ghostDel(P);this.peers.delete(P.pid);if(why)this.note(`${P.name} ${why}`);this.H.gone?.(P)},
  note(s,ic){this.toasts.push({s,ic,t0:Date.now()});if(this.toasts.length>4)this.toasts.shift();this.log.push(s);if(this.log.length>30)this.log.shift()},
  tick(){if(!this.on)return;if(!G){this.leave(true);return}const t=Date.now();for(const r of this.R)r.tick(t);
