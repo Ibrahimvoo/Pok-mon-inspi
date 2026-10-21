@@ -1,5 +1,8 @@
-// Control Center (PS button): switcher cards, quick controls, notifications, downloads, friends, power.
-import { byId, FRIENDS } from '../data.js';
+// Control Center (PS button): switcher cards, quick controls, notifications, downloads, Game Base, power.
+import { byId } from '../data.js';
+import { social } from '../social.js';
+import { voice } from '../rtc.js';
+import { presenceText } from './gamebase.js';
 import { state, bus } from '../state.js';
 import { h, icon, art, img, size, ago, avatarImg } from '../ui.js';
 import { closeLayer, renderHints, timeStr, applySettings, go } from '../shell.js';
@@ -44,7 +47,7 @@ export function openControlCenter({ ingame } = {}) {
     ['home', 'Accueil', () => { layer.close(false); if (session.id) suspendToHome(); else { while (nav.layers.length > 1) closeLayer(nav.top, { silent: true }); } audio.play('back'); }],
     ['bell', 'Notifications', () => openPanel('notifications')],
     ['download', 'Téléchargements', () => openPanel('downloads')],
-    ['friends', 'Amis', () => openPanel('friends')],
+    ['friends', 'Base de jeu', () => openPanel('friends')],
     ['music', 'Musique', () => openPanel('music')],
     ['volume', 'Son', () => openPanel('sound')],
     ['access', 'Accessibilité', () => openPanel('access')],
@@ -77,8 +80,26 @@ export function openControlCenter({ ingame } = {}) {
       body = state.downloads.length ? state.downloads.map((d, i) => listItem(img(art.thumb(d.id)), byId[d.id].title, i ? 'En attente' : `${Math.round(d.p * 100)} % · ${size(byId[d.id].size * d.p)} / ${size(byId[d.id].size)}`, () => { cancelDownload(d.id); openPanel(kind); openPanel(kind); }, h('div.progress', h('i', { style: { width: d.p * 100 + '%' } }))))
         : [h('div.empty', 'Aucun téléchargement en cours.')];
     } else if (kind === 'friends') {
-      title = `Amis en ligne (${FRIENDS.filter(f => f.status === 'online').length})`;
-      body = FRIENDS.filter(f => f.status !== 'offline').map(f => listItem(avatarImg(f.avatar, '6.4rem'), f.name, f.game ? `Joue à ${byId[f.game].title}` : 'Occupé', () => { layer.close(false); import('./profile.js').then(m => go(m.profileScreen)); }));
+      const openBase = tab => () => { layer.close(false); import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab })); };
+      title = 'Base de jeu';
+      if (!social.available) body = [h('div.empty', 'Connectez-vous avec un compte en ligne pour retrouver vos amis, les groupes et les appels vocaux.'), listItem(h('span.icw', { html: icon('user') }), 'Ouvrir la Base de jeu', null, openBase('friends'))];
+      else {
+        const p = social.party;
+        const online = social.friends.filter(f => social.presenceOf(f.id).online);
+        body = [
+          ...(p ? [
+            h('div.cc-party', p.members.map(m => h('div.cc-pm', { 'data-uid': m.id === social.me?.id ? 'me' : m.id }, h('div.avatar.speak', img(art.thumb(m.avatar))), h('span', m.psn), m.muted || !m.voice ? h('span.icw.mic-off', { html: icon('micOff') }) : null))),
+            voice.active ? listItem(h('span.icw', { html: icon(voice.muted ? 'micOff' : 'mic') }), voice.muted ? 'Réactiver le micro' : 'Couper le micro', 'Chat vocal du groupe', () => { voice.setMuted(!voice.muted); audio.play('toggle'); openPanel(kind); openPanel(kind); })
+              : listItem(h('span.icw', { html: icon('mic') }), 'Rejoindre le chat vocal', null, () => social.joinVoice().then(() => { openPanel(kind); openPanel(kind); })),
+            listItem(h('span.icw', { html: icon('party') }), 'Ouvrir le groupe', `${p.members.length} membre${p.members.length > 1 ? 's' : ''}`, openBase('party')),
+            listItem(h('span.icw', { html: icon('phoneOff') }), 'Quitter le groupe', null, () => { social.leave(); openPanel(kind); openPanel(kind); }),
+          ] : []),
+          h('div.li-s', { style: { margin: '1.4rem 0 .6rem 1.6rem', fontSize: '1.7rem' } }, `Amis en ligne (${online.length})`),
+          ...(online.length ? online.slice(0, 6).map(f => listItem(avatarImg(f.avatar, '6.4rem'), f.psn, presenceText(social.presenceOf(f.id)), openBase('friends')))
+            : [h('div.empty', 'Aucun ami en ligne pour le moment.')]),
+          listItem(h('span.icw', { html: icon('friends') }), 'Ouvrir la Base de jeu', null, openBase(p ? 'party' : 'friends')),
+        ];
+      }
     } else if (kind === 'music') {
       title = 'Musique';
       body = [h('div.li-s', { style: { margin: '0 0 1.6rem 1.6rem', fontSize: '1.8rem' } }, 'Ambiance générative · s’adapte au jeu sélectionné'), toggle('Musique d’ambiance', null, 'music', applySettings), slider('Volume', null, 'musicVol', applySettings)];
@@ -98,8 +119,8 @@ export function openControlCenter({ ingame } = {}) {
       title = 'Alimentation';
       body = [
         listItem(h('span.icw', { html: icon('moon') }), 'Passer en mode repos', 'Les téléchargements continuent', () => { layer.close(false); go(powerScreen, { mode: 'rest' }, { sound: 'power' }); }),
-        listItem(h('span.icw', { html: icon('power') }), 'Éteindre la console', null, () => { layer.close(false); endSession(); go(powerScreen, { mode: 'off' }, { sound: 'power' }); }),
-        listItem(h('span.icw', { html: icon('refresh') }), 'Redémarrer la console', null, () => { layer.close(false); endSession(); go(powerScreen, { mode: 'restart' }, { sound: 'power' }); }),
+        listItem(h('span.icw', { html: icon('power') }), 'Éteindre la PS5', null, () => { layer.close(false); endSession(); go(powerScreen, { mode: 'off' }, { sound: 'power' }); }),
+        listItem(h('span.icw', { html: icon('refresh') }), 'Redémarrer la PS5', null, () => { layer.close(false); endSession(); go(powerScreen, { mode: 'restart' }, { sound: 'power' }); }),
       ];
     }
     panel = h('div.cc-panel', { 'data-scroll': 'y', 'data-pad': 40 }, h('h3', title), body);

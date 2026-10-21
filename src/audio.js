@@ -84,6 +84,9 @@ const SFX = {
   },
   power: () => { [880, 659, 523, 440].forEach((f, i) => tone({ f, t: i * .12, d: .7, g: .05, send: .5 })); },
   wake: () => { [523, 659, 880, 1046].forEach((f, i) => tone({ f, t: i * .1, d: .7, g: .05, send: .5 })); },
+  ring: () => { [0, .18].forEach(t => { tone({ f: 1318.5, t, d: .16, g: .07, send: .2 }); tone({ f: 1046.5, t: t + .08, d: .2, g: .05, send: .2 }); }); },
+  join: () => { tone({ f: 784, d: .18, g: .06, send: .3 }); tone({ f: 1174.7, t: .09, d: .3, g: .06, send: .4 }); },
+  leave: () => { tone({ f: 1174.7, d: .16, g: .05, send: .3 }); tone({ f: 784, t: .09, d: .28, g: .05, send: .3 }); },
 };
 
 function voice(m, start, len, cut) {
@@ -127,6 +130,7 @@ function applyMusicGain(fade = 1.2) {
 
 export const audio = {
   get ready() { return !!ctx && ctx.state === 'running'; },
+  get ctx() { return ctx; },
   init() {
     if (ctx) { if (ctx.state !== 'running') ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -166,6 +170,12 @@ export const audio = {
   },
   duck(v, fade = 1.2) { duck = v; applyMusicGain(fade); },
   suspend() { ctx?.suspend(); },
-  resume() { ctx?.resume(); },
+  // iOS can leave the context 'interrupted' after a call or an app switch; retry on the next real gesture
+  resume() {
+    if (!ctx) return;
+    const tryIt = () => ctx.resume().catch(() => {});
+    tryIt();
+    if (ctx.state !== 'running') for (const ev of ['pointerdown', 'keydown', 'touchend']) addEventListener(ev, tryIt, { once: true, capture: true });
+  },
   stop() { clearInterval(timer); },
 };

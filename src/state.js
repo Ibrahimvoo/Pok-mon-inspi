@@ -19,9 +19,11 @@ const defaults = () => ({
   downloads: [],
   notifications: [],
   recentSearch: ['valewalker', 'course'],
+  captures: [],
   settings: {
     sfx: true, sfxVol: 0.7, music: true, musicVol: 0.4, quality: 'high', parallax: true, reduceMotion: false,
-    confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false,
+    confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false, noiseSuppression: true,
+    ageLimit: 0, voiceAllowed: true, captureToast: true, cloudSync: true,
   },
 });
 

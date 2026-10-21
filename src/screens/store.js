@@ -22,7 +22,7 @@ export function ptile(g, { onok } = {}) {
 function cartDialog() {
   const items = state.cart.filter(id => !owns(id));
   if (!items.length) {
-    dialog({ title: 'Panier', body: 'Votre panier est vide. Ajoutez des jeux depuis leur fiche dans la boutique.', actions: [{ label: 'Fermer', primary: true, sound: 'back' }] });
+    dialog({ title: 'Panier', body: 'Votre panier est vide. Ajoutez des jeux depuis leur fiche dans le PlayStation Store.', actions: [{ label: 'Fermer', primary: true, sound: 'back' }] });
     return;
   }
   const total = items.reduce((s, id) => s + finalPrice(byId[id]), 0);
@@ -38,18 +38,27 @@ function cartDialog() {
   });
 }
 
-const TABS = [['discover', 'Découvrir'], ['deals', 'Offres'], ['plans', 'Abonnements'], ['browse', 'Parcourir']];
+const TABS = [['discover', 'Dernières nouveautés'], ['collections', 'Collections'], ['deals', 'Offres'], ['plans', 'Abonnements'], ['browse', 'Parcourir']];
+// curated collections, as in the store's Collections tab
+const COLLECTIONS = [
+  { id: 'essentials', title: 'Jeux PS5 incontournables', pick: g => g.rating >= 4.6 },
+  { id: 'multi', title: 'À plusieurs, en ligne', pick: g => /en ligne|local/.test(g.players) },
+  { id: 'open', title: 'Mondes ouverts', pick: g => g.genres.includes('Monde ouvert') || g.genres.includes('RPG') },
+  { id: 'cheap', title: 'Moins de 30 €', pick: g => g.price * (1 - g.discount / 100) < 30 },
+  { id: 'indie', title: 'Aventures indépendantes', pick: g => g.genres.includes('Indé') },
+  { id: 'scifi', title: 'Science-fiction', pick: g => g.genres.includes('Science-fiction') },
+];
 const FEATURED = ['neon-requiem', 'sands-meridian', 'starfall', 'nightline', 'abyssal'];
 const CATS = ['Tous', 'Action', 'Aventure', 'RPG', 'Course', 'Sport', 'Science-fiction', 'Horreur', 'Simulation', 'Indé'];
 
 export function storeScreen({ tab: startTab = 'discover' } = {}) {
-  let tab = startTab, slide = 0, slideT = 0, cat = 'Tous', sort = 'pop';
+  let tab = startTab, slide = 0, slideT = 0, cat = 'Tous', sort = 'pop', collection = null;
   const tabEls = TABS.map(([k, l]) => h('button.tab', { f: true, onok: () => setTab(k) }, l));
   const count = h('span.cart-count');
   const cartBtn = h('button.round', { f: true, style: { position: 'relative' }, title: 'Panier', onok: cartDialog }, h('span.icw', { html: icon('cart') }), count);
   const wallet = h('div.wallet-pill', h('span.icw', { html: icon('wallet') }), h('span'));
   const body = h('div.page', { 'data-scroll': 'y', 'data-pad': 180 });
-  const head = h('div.page-head', h('h1', { style: { display: 'flex', alignItems: 'center', gap: '1.4rem' } }, h('span.icw', { html: icon('bag') }), 'Boutique'),
+  const head = h('div.page-head', h('h1', { style: { display: 'flex', alignItems: 'center', gap: '1.4rem' } }, h('span.icw', { html: icon('bag') }), 'PlayStation Store'),
     h('div.tabs.store-tabs', tabEls), h('div', { style: { marginLeft: 'auto', display: 'flex', alignItems: 'center' } }, wallet, topRight({ cart: cartBtn })));
   const root = h('div.store', head, body);
   const syncHead = () => { const n = state.cart.filter(id => !owns(id)).length; count.textContent = n; count.classList.toggle('hidden', !n); wallet.lastChild.textContent = price(state.wallet); };
@@ -96,6 +105,13 @@ export function storeScreen({ tab: startTab = 'discover' } = {}) {
           shelf('Pépites indépendantes', GAMES.filter(g => g.genres.includes('Indé'))),
           state.wishlist.length ? shelf('Votre liste de souhaits', state.wishlist.map(id => byId[id])) : null].flat().filter(Boolean));
       body.style.paddingTop = '11rem';
+    } else if (tab === 'collections') {
+      body.style.paddingTop = '13rem';
+      if (!collection) body.append(h('div.section-title', { style: { marginTop: 0 } }, 'Collections', h('small', 'Sélections de l’équipe du PlayStation Store')),
+        h('div.coll-grid', COLLECTIONS.map(c => { const gs = GAMES.filter(c.pick); return h('div.coll', { f: true, onok: () => { collection = c.id; audio.play('ok'); render(); nav.focusFirst(layer); } },
+          h('div.coll-art', gs.slice(0, 3).map(g => img(art.thumb(g.id)))), h('div.coll-t', c.title), h('div.coll-s', `${gs.length} jeux`)); })));
+      else { const c = COLLECTIONS.find(x => x.id === collection);
+        body.append(h('div.section-title', { style: { marginTop: 0 } }, c.title, h('small', 'Retour : ○ / Échap')), h('div.grid', GAMES.filter(c.pick).map(g => ptile(g)))); }
     } else if (tab === 'deals') {
       body.style.paddingTop = '13rem';
       body.append(h('div.section-title', { style: { marginTop: 0 } }, 'Offres du moment', h('small', 'Prix barrés valables jusqu’au 4 novembre')),
@@ -127,7 +143,7 @@ export function storeScreen({ tab: startTab = 'discover' } = {}) {
   }
   function setTab(k) {
     if (k === tab) return;
-    tab = k;
+    tab = k; collection = null;
     tabEls.forEach((t, i) => t.classList.toggle('on', TABS[i][0] === k));
     audio.play('tab');
     render();
@@ -144,9 +160,10 @@ export function storeScreen({ tab: startTab = 'discover' } = {}) {
     root, mood: 'home', bg: null, shade: .9,
     hints: () => [['ok', 'Sélectionner'], ['back', 'Retour'], ['l1', 'Onglet préc.'], ['r1', 'Onglet suiv.']],
     onAction(a) {
-      const i = TABS.findIndex(t => t[0] === tab);
-      if (a === 'l1') { setTab(TABS[(i + 3) % 4][0]); return true; }
-      if (a === 'r1') { setTab(TABS[(i + 1) % 4][0]); return true; }
+      const i = TABS.findIndex(t => t[0] === tab), n = TABS.length;
+      if (a === 'l1') { setTab(TABS[(i + n - 1) % n][0]); return true; }
+      if (a === 'r1') { setTab(TABS[(i + 1) % n][0]); return true; }
+      if (a === 'back' && tab === 'collections' && collection) { collection = null; audio.play('back'); render(); nav.focusFirst(layer); return true; }
       if ((a === 'left' || a === 'right') && feat && layer.focused === feat.btn) { feat.step(a === 'right' ? 1 : -1); return true; }
       if (a === 'search' || a === 'triangle') { import('./search.js').then(m => go(m.searchScreen)); return true; }
     },

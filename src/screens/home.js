@@ -1,5 +1,6 @@
 // Home screen: Games / Media tabs, the anchored tile row and the contextual hub underneath.
-import { GAMES, byId, MEDIA, USERS } from '../data.js';
+import { GAMES, byId, MEDIA } from '../data.js';
+import { session } from '../session.js';
 import { state, bus, recentGames, downloading, finalPrice } from '../state.js';
 import { h, icon, art, img, logo, price } from '../ui.js';
 import { go, menu, renderHints, timeStr } from '../shell.js';
@@ -8,7 +9,7 @@ import { audio } from '../audio.js';
 import { bg } from '../bg.js';
 import { renderHub, gameMenu } from './hub.js';
 import { play, openProduct, openHub } from '../actions.js';
-import { session, openMediaApp } from './game.js';
+import { session as game, openMediaApp } from './game.js';
 import { storeScreen } from './store.js';
 import { libraryScreen } from './library.js';
 import { searchScreen } from './search.js';
@@ -19,10 +20,11 @@ import { usersScreen } from './boot.js';
 const STEP = 13.2; // small tile + gap, in rem
 
 export function topRight({ cart = false } = {}) {
-  const user = USERS.find(u => u.id === state.user) || USERS[0];
-  const av = h('div.avatar.tb-avatar', { f: true, onok: e => menu([
+  const user = session.current || { avatar: GAMES[0].id, psn: '' };
+  const av = h(`div.avatar.tb-avatar${user.online ? '' : '.offline'}`, { f: true, title: user.psn, onok: e => menu([
     { label: 'Profil', icon: 'user', onok: () => go(profileScreen) },
-    { label: 'Changer d’utilisateur', icon: 'friends', onok: () => go(usersScreen, { switching: true }) },
+    { label: 'Base de jeu', icon: 'friends', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen)) },
+    { label: 'Changer d’utilisateur', icon: 'refresh', onok: () => go(usersScreen, { switching: true }) },
   ], e.currentTarget) }, img(art.thumb(user.avatar)));
   return h('div.tb-right',
     h('button.round', { f: true, html: icon('search'), title: 'Rechercher', onok: () => go(searchScreen) }),
@@ -62,10 +64,10 @@ export function homeScreen() {
   }, { passive: false });
 
   function buildItems() {
-    if (tab === 'media') return MEDIA.map(m => ({ key: m.id, kind: 'media', m }));
+    if (tab === 'media') return [{ key: 'gallery', kind: 'gallery' }, ...MEDIA.map(m => ({ key: m.id, kind: 'media', m }))];
     const ids = recentGames();
-    if (session.id && !ids.includes(session.id)) ids.unshift(session.id);
-    if (session.id) ids.sort((a, b) => (b === session.id) - (a === session.id));
+    if (game.id && !ids.includes(game.id)) ids.unshift(game.id);
+    if (game.id) ids.sort((a, b) => (b === game.id) - (a === game.id));
     state.downloads.forEach(d => { if (!ids.includes(d.id)) ids.push(d.id); });
     return [{ key: 'store', kind: 'store' }, ...ids.slice(0, 12).map(id => ({ key: id, kind: 'game', g: byId[id] })), { key: 'library', kind: 'library' }];
   }
@@ -74,9 +76,10 @@ export function homeScreen() {
     if (it.kind === 'game') return img(art.thumb(it.g.id));
     if (it.kind === 'store') return h('div.tile-face.store', { html: icon('bag') });
     if (it.kind === 'library') return h('div.tile-face.lib', { html: icon('grid') });
+    if (it.kind === 'gallery') return h('div.tile-face.lib', { html: icon('display') });
     return h('div.tile-face.media', { style: { background: it.m.color } }, it.m.mark);
   }
-  const labelOf = it => it.kind === 'game' ? it.g.title + (session.id === it.g.id ? ' · En cours' : '') : it.kind === 'store' ? 'Boutique' : it.kind === 'library' ? 'Bibliothèque de jeux' : it.m.title;
+  const labelOf = it => it.kind === 'game' ? it.g.title + (game.id === it.g.id ? ' · En cours' : '') : it.kind === 'store' ? 'PlayStation Store' : it.kind === 'library' ? 'Bibliothèque de jeux' : it.kind === 'gallery' ? 'Galerie multimédia' : it.m.title;
 
   function buildRow(keepKey) {
     items = buildItems();
@@ -131,9 +134,9 @@ export function homeScreen() {
     if (it.kind === 'game') { hub = renderHub(it.g.id, { compact: true }); content = hub.el; }
     else if (it.kind === 'store') {
       const deals = GAMES.filter(g => g.discount || g.preorder).slice(0, 5);
-      content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'Boutique'),
+      content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'PlayStation Store'),
         h('div.hub-meta', 'Nouveautés, offres du moment et abonnements'),
-        h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('bag') }), 'Ouvrir la boutique'))),
+        h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('bag') }), 'Ouvrir le PlayStation Store'))),
         h('div.cards-title', 'Offres à ne pas manquer'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, deals.map(cardFor)));
     } else if (it.kind === 'library') {
       const notInst = state.owned.filter(id => !state.installed.includes(id));
@@ -141,6 +144,9 @@ export function homeScreen() {
         h('div.hub-meta', `${state.installed.length} jeux installés`, h('i.sep'), `${state.owned.length} dans votre collection`),
         h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('grid') }), 'Ouvrir la bibliothèque'))),
         notInst.length ? [h('div.cards-title', 'Prêts à être téléchargés'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, notInst.map(id => h('div.card.act', { f: true, onok: () => openHub(id) }, img(art.hero(id), 'cimg'), h('div.cbody', h('div.ctitle', byId[id].title), h('div.csub', 'Dans votre collection')))))] : null);
+    } else if (it.kind === 'gallery') {
+      content = h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'Galerie multimédia'), h('div.hub-meta', `${state.captures.length} capture${state.captures.length > 1 ? 's' : ''} · bouton Créer pour en ajouter`),
+        h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('grid') }), 'Ouvrir')));
     } else {
       content = h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, it.m.title), h('div.hub-meta', it.m.kind),
         h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('play') }), 'Ouvrir')),
@@ -153,6 +159,7 @@ export function homeScreen() {
     if (it.kind === 'game') play(it.g.id);
     else if (it.kind === 'store') go(storeScreen);
     else if (it.kind === 'library') go(libraryScreen);
+    else if (it.kind === 'gallery') import('./create.js').then(m => go(m.galleryScreen));
     else openMediaApp(it.m.id);
   }
 
@@ -187,7 +194,7 @@ export function homeScreen() {
     bg: () => { const it = items[sel]; return it?.kind === 'game' ? { img: art.hero(it.g.id), depth: art.depth(it.g.id) } : null; },
     hints() {
       const it = items[sel], onRow = layer.focused?.classList.contains('tile');
-      const okLabel = onRow ? (it?.kind === 'game' ? (session.id === it.g.id ? 'Reprendre' : 'Jouer') : 'Ouvrir') : 'Sélectionner';
+      const okLabel = onRow ? (it?.kind === 'game' ? (game.id === it.g.id ? 'Reprendre' : 'Jouer') : 'Ouvrir') : 'Sélectionner';
       return [['ok', okLabel], ...(onRow && it?.kind === 'game' ? [['options', 'Options']] : []), ['l1', 'Jeux'], ['r1', 'Multimédia'], ['ps', 'Centre de contrôle']];
     },
     onAction(a) {

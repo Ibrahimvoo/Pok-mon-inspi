@@ -158,27 +158,10 @@ export const MEDIA = [
   { id: 'kidzone', title: 'KidZone', color: '#ffb020', mark: 'K', kind: 'Jeunesse' },
 ];
 
-export const USERS = [
-  { id: 'alex', name: 'Alex', psn: 'AlexNova', avatar: 'valewalker', level: 247, color: '#3d7bff' },
-  { id: 'sami', name: 'Sami', psn: 'Samurai_Sami', avatar: 'neon-requiem', level: 112, color: '#ff3d9a' },
-  { id: 'lea', name: 'Léa', psn: 'Lea-Moonlit', avatar: 'moonlit-bay', level: 58, color: '#ffb38a' },
-];
-
-export const FRIENDS = [
-  { name: 'Kenji_77', avatar: 'ashen-crown', status: 'online', game: 'ashen-crown' },
-  { name: 'MiraVoid', avatar: 'starfall', status: 'online', game: 'starfall' },
-  { name: 'TomRaceR', avatar: 'apex-circuit', status: 'online', game: 'apex-circuit' },
-  { name: 'Nour.exe', avatar: 'whispergrove', status: 'busy' },
-  { name: 'ZackOnFire', avatar: 'titan-protocol', status: 'online', game: 'titan-protocol' },
-  { name: 'Ines_Lune', avatar: 'moonlit-bay', status: 'offline', seen: 'il y a 2 h' },
-  { name: 'Hugo-Fjord', avatar: 'northbound', status: 'offline', seen: 'hier' },
-  { name: 'PixelPaul', avatar: 'lumen', status: 'offline', seen: 'il y a 3 j' },
-];
-
 export const PLANS = [
-  { id: 'essential', name: 'Pass Essentiel', price: 8.99, perks: ['Jeu en ligne', '3 jeux offerts chaque mois', 'Sauvegardes dans le cloud', 'Réductions exclusives'], color: '#c9a64b' },
-  { id: 'extra', name: 'Pass Extra', price: 13.99, perks: ['Tous les avantages Essentiel', 'Catalogue de plus de 400 jeux', 'Ajouts chaque mois'], color: '#b0b8c4' },
-  { id: 'premium', name: 'Pass Premium', price: 16.99, perks: ['Tous les avantages Extra', 'Classiques rétro', 'Essais de jeux', 'Streaming dans le cloud'], color: '#1c1c1e' },
+  { id: 'essential', name: 'PlayStation Plus Essential', price: 8.99, perks: ['Jeu en ligne', '3 jeux offerts chaque mois', 'Sauvegardes dans le cloud', 'Réductions exclusives'], color: '#c9a64b' },
+  { id: 'extra', name: 'PlayStation Plus Extra', price: 13.99, perks: ['Tous les avantages Essentiel', 'Catalogue de plus de 400 jeux', 'Ajouts chaque mois'], color: '#b0b8c4' },
+  { id: 'premium', name: 'PlayStation Plus Premium', price: 16.99, perks: ['Tous les avantages Extra', 'Classiques rétro', 'Essais de jeux', 'Streaming dans le cloud'], color: '#1c1c1e' },
 ];
 
 export const NEWS = {

@@ -3,13 +3,19 @@ import './styles.css';
 
 import { nav } from './nav.js';
 import { bg } from './bg.js';
+import { lifecycle } from './input.js';
+import { session } from './session.js';
+import { openCreateMenu } from './screens/create.js';
 import { audio } from './audio.js';
 import { state } from './state.js';
-import { go, resetTo, toast, applySettings } from './shell.js';
+import { go, resetTo, toast, applySettings, loadNav } from './shell.js';
 import { tickDownloads } from './actions.js';
 import { openControlCenter } from './screens/cc.js';
 import { searchScreen } from './screens/search.js';
-import { bootScreen } from './screens/boot.js';
+import { bootScreen, resumeScreen } from './screens/boot.js';
+import { ROUTES } from './routes.js';
+import './social.js';
+import './partyhud.js';
 
 let started = false;
 
@@ -43,13 +49,16 @@ try {
     const top = nav.top;
     if (a === 'ps') { openControlCenter(); return true; }
     if (a === 'search' && top?.isScreen) { go(searchScreen); return true; }
+    if (a === 'gamebase' && session.current) { if (top?.route?.name !== 'gamebase') go(ROUTES.gamebase, { tab: 'party' }); return true; }
+    if (a === 'create' && session.current) { openCreateMenu(); return true; }
     return false;
   };
   setInterval(() => tickDownloads(.25), 250);
   // unlock Web Audio on the first real gesture (iOS needs touchend/click)
   for (const ev of ['touchend', 'click', 'keydown']) addEventListener(ev, () => audio.init(), { once: true, capture: true });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) audio.suspend(); else if (started) audio.resume(); });
-  resetTo(bootScreen, {});
+  lifecycle.addEventListener('suspend', () => audio.suspend());
+  lifecycle.addEventListener('resume', () => { if (started) audio.resume(); });
+  resetTo(loadNav() ? resumeScreen : bootScreen, {});
   started = true;
 } catch (e) {
   fatal(e);

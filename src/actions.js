@@ -52,6 +52,11 @@ export function uninstall(id) {
 
 export function play(id) {
   const g = byId[id];
+  const limit = state.settings.ageLimit;
+  if (limit && g.pegi > limit) {
+    dialog({ title: 'Contrôle parental', body: `${g.title} (PEGI ${g.pegi}) dépasse la limite d’âge définie (PEGI ${limit}). Modifiez-la dans Paramètres › Famille et contrôle parental.`, actions: [{ label: 'OK', primary: true }] });
+    return;
+  }
   if (installed(id)) return launch(id);
   if (downloading(id)) { toast({ title: 'Téléchargement en cours', sub: `${g.title} · ${Math.round(downloading(id).p * 100)} %`, img: art.thumb(id), sound: 'error', log: false }); return; }
   if (owns(id)) return startDownload(id);

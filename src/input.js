@@ -25,6 +25,7 @@ export const input = {
   get padName() { return padName; },
   onDevice(fn) { listeners.add(fn); return () => listeners.delete(fn); },
   setRaw(fn) { raw = fn; },
+  getRaw() { return raw; },
   pads() { return [...(navigator.getGamepads?.() || [])].filter(Boolean); },
   rumble(strong = .5, weak = .3, ms = 120) {
     const lvl = [0, .4, .75, 1][state.settings.vib ?? 2];
@@ -47,11 +48,14 @@ const KEYMAP = {
   ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
   Enter: 'ok', ' ': 'ok', Escape: 'back', Backspace: 'back',
   q: 'l1', Q: 'l1', e: 'r1', E: 'r1', o: 'options', O: 'options', t: 'triangle', T: 'triangle',
-  p: 'ps', P: 'ps', Home: 'ps', '/': 'search', f: 'fullscreen', F: 'fullscreen', PageUp: 'l2', PageDown: 'r2',
+  p: 'ps', P: 'ps', Home: 'ps', '/': 'search', f: 'fullscreen', F: 'fullscreen', PageUp: 'l2', PageDown: 'r2', c: 'create', C: 'create',
 };
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   setDevice('kb');
+  // real text fields keep their keys (Escape leaves the field)
+  const tag = e.target?.tagName;
+  if ((tag === 'INPUT' || tag === 'TEXTAREA') && !e.target.dataset.passkeys) { if (e.key === 'Escape') { e.target.blur(); e.preventDefault(); } return; }
   const r = raw ? raw(e) : false;
   if (r === true) { e.preventDefault(); return; }
   if (r === 'native') return; // a real text field is handling this key
@@ -101,52 +105,110 @@ addEventListener('click', e => {
 addEventListener('contextmenu', e => { if (!e.target.closest('input')) { e.preventDefault(); fire('back', e); } });
 addEventListener('mouseup', e => { if (e.button === 3) fire('back', e); });
 
+// ---------------------------------------------------------------- platform & lifecycle
+// iPadOS reports itself as a Mac; touch points tell them apart.
+export const IOS = /iP(hone|ad|od)/.test(navigator.platform || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// 'suspend' / 'resume' fire when the page is hidden or shown again (app switch, iOS Games app, lock screen, bfcache).
+export const lifecycle = new EventTarget();
+let hiddenAt = 0;
+function suspend(reason) {
+  if (hiddenAt) return;
+  hiddenAt = Date.now();
+  resetPads();
+  lifecycle.dispatchEvent(new CustomEvent('suspend', { detail: { reason } }));
+}
+function resume(reason) {
+  if (!hiddenAt) return;
+  const away = Date.now() - hiddenAt;
+  hiddenAt = 0;
+  resetPads();
+  lifecycle.dispatchEvent(new CustomEvent('resume', { detail: { reason, away } }));
+}
+// Journal kept in sessionStorage so an interruption can be diagnosed on the device (Settings › System).
+export function lifelog(entry) {
+  try {
+    const list = JSON.parse(sessionStorage.getItem('ps5ux.lifelog') || '[]');
+    list.unshift({ t: Date.now(), ...entry });
+    sessionStorage.setItem('ps5ux.lifelog', JSON.stringify(list.slice(0, 25)));
+  } catch { /* storage unavailable */ }
+}
+export const readLifelog = () => { try { return JSON.parse(sessionStorage.getItem('ps5ux.lifelog') || '[]'); } catch { return []; } };
+lifecycle.addEventListener('suspend', e => lifelog({ type: 'suspend', reason: e.detail.reason }));
+lifecycle.addEventListener('resume', e => lifelog({ type: 'resume', reason: e.detail.reason, away: e.detail.away }));
+addEventListener('freeze', () => lifelog({ type: 'freeze' }));
+lifelog({ type: 'launch', nav: performance.getEntriesByType?.('navigation')[0]?.type || 'navigate', discarded: !!document.wasDiscarded });
+document.addEventListener('visibilitychange', () => (document.hidden ? suspend('hidden') : resume('visible')));
+addEventListener('pagehide', () => suspend('pagehide'));
+addEventListener('pageshow', e => { if (e.persisted) { hiddenAt ||= Date.now(); resume('bfcache'); } });
+
 // ---------------------------------------------------------------- gamepad
-const BTN = { 0: 'ok', 1: 'back', 2: 'square', 3: 'triangle', 4: 'l1', 5: 'r1', 6: 'l2', 7: 'r2', 8: 'create', 9: 'options', 12: 'up', 13: 'down', 14: 'left', 15: 'right', 16: 'ps', 17: 'touchpad' };
+// Standard mapping. On iOS/iPadOS the Home (PS) button is reserved by the system (it opens the Games app),
+// so the touchpad click and a long press on Options also open the Control Center.
+const BTN = { 0: 'ok', 1: 'back', 2: 'square', 3: 'triangle', 4: 'l1', 5: 'r1', 6: 'l2', 7: 'r2', 8: 'create', 9: 'options', 12: 'up', 13: 'down', 14: 'left', 15: 'right', 16: 'ps', 17: 'ps' };
+const DIRS = ['up', 'down', 'left', 'right'];
+const LONG_PRESS = 600;
 const held = {};
+let blocked = false;            // after a resume, ignore buttons until everything has been released
 const REPEAT_DELAY = 360, REPEAT_RATE = 95;
+const seenPads = new Map();     // id → last seen, to avoid repeating "controller connected" after a resume
+function resetPads() { for (const k in held) delete held[k]; blocked = true; stick.x = stick.y = stick.rx = stick.ry = 0; }
+
 addEventListener('gamepadconnected', e => {
   padName = e.gamepad.id;
   setDevice(padKind(e.gamepad.id));
-  listeners.forEach(fn => fn(input.device, { connected: e.gamepad }));
+  const last = seenPads.get(e.gamepad.id);
+  seenPads.set(e.gamepad.id, Date.now());
+  listeners.forEach(fn => fn(input.device, last && Date.now() - last < 10 * 60e3 ? { reconnected: e.gamepad } : { connected: e.gamepad }));
 });
 addEventListener('gamepaddisconnected', e => {
-  listeners.forEach(fn => fn(input.device, { disconnected: e.gamepad }));
+  seenPads.set(e.gamepad.id, Date.now());
+  // iOS drops controllers while the page is in the background: stay quiet about it
+  if (!hiddenAt) listeners.forEach(fn => fn(input.device, { disconnected: e.gamepad }));
   if (!input.pads().length) { padName = ''; setDevice('kb'); }
 });
 
 function poll(t) {
   requestAnimationFrame(poll);
+  if (hiddenAt) return;
   const pads = input.pads();
   if (!pads.length) return;
   let ax = 0, ay = 0, rx = 0, ry = 0;
   const pressed = {};
   for (const p of pads) {
-    if (p.mapping !== 'standard' && p.buttons.length < 12) continue;
+    if (!p.connected || (p.mapping !== 'standard' && p.buttons.length < 12)) continue;
     p.buttons.forEach((b, i) => { if (b.pressed || b.value > .6) pressed[i] = true; });
     ax += p.axes[0] || 0; ay += p.axes[1] || 0; rx += p.axes[2] || 0; ry += p.axes[3] || 0;
   }
+  if (Math.abs(ay) > .55) pressed[ay < 0 ? 'su' : 'sd'] = true;
+  if (Math.abs(ax) > .55) pressed[ax < 0 ? 'sl' : 'sr'] = true;
+  if (blocked) {
+    if (Object.keys(pressed).length) return;
+    blocked = false;
+  }
   const dz = v => Math.abs(v) < .18 ? 0 : v;
   stick.x = dz(ax); stick.y = dz(ay); stick.rx = dz(rx); stick.ry = dz(ry);
-  // left stick → directions
-  if (ay < -.55) pressed.su = true; else if (ay > .55) pressed.sd = true;
-  if (ax < -.55) pressed.sl = true; else if (ax > .55) pressed.sr = true;
   const map = { ...BTN, su: 'up', sd: 'down', sl: 'left', sr: 'right' };
   const swap = state.settings.confirm === 'circle';
   for (const k in map) {
     let a = map[k];
     if (swap && (a === 'ok' || a === 'back')) a = a === 'ok' ? 'back' : 'ok';
+    const h = held[k];
     if (pressed[k]) {
-      if (!held[k]) {
+      if (!h) {
         held[k] = { t, n: 0 };
         setDevice(padKind(padName || pads[0].id));
         if (!padName) padName = pads[0].id;
-        fire(a);
-      } else if (['up', 'down', 'left', 'right'].includes(a)) {
-        const h = held[k], due = h.t + REPEAT_DELAY + h.n * Math.max(55, REPEAT_RATE - h.n * 4);
+        if (a !== 'options') fire(a); // Options waits: short press = Options, long press = Control Center
+      } else if (a === 'options' && !h.long && t - h.t >= LONG_PRESS) {
+        h.long = true; fire('ps');
+      } else if (DIRS.includes(a)) {
+        const due = h.t + REPEAT_DELAY + h.n * Math.max(55, REPEAT_RATE - h.n * 4);
         if (t >= due) { h.n++; fire(a, { repeat: true }); }
       }
-    } else if (held[k]) delete held[k];
+    } else if (h) {
+      delete held[k];
+      if (a === 'options' && !h.long) fire('options');
+    }
   }
   if (Math.abs(stick.ry) > .2) fire('scroll', { dy: stick.ry * 22 });
 }

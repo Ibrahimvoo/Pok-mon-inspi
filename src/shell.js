@@ -1,6 +1,6 @@
 // Screen router, button hints, toasts, dialogs and option menus.
 import { nav } from './nav.js';
-import { input } from './input.js';
+import { input, IOS, lifecycle } from './input.js';
 import { audio } from './audio.js';
 import { bg } from './bg.js';
 import { state, save } from './state.js';
@@ -15,6 +15,7 @@ const shade = document.getElementById('shade');
 export function go(factory, params = {}, { replace = false, sound = 'open' } = {}) {
   const prev = nav.top;
   const scr = factory(params);
+  if (factory.route) scr.route = { name: factory.route, params };
   scr.root.classList.add('screen', 'in');
   scr.root.addEventListener('animationend', e => { if (e.target === scr.root) scr.root.classList.remove('in'); });
   scr.isScreen = true;
@@ -27,6 +28,7 @@ export function go(factory, params = {}, { replace = false, sound = 'open' } = {
   if (under?.isScreen) under.root.classList.add('covered');
   applyLayerLook(scr);
   if (sound) audio.play(sound);
+  saveNav();
   return scr;
 }
 export function back(sound = 'back') {
@@ -46,7 +48,29 @@ export function closeLayer(layer, { silent = false } = {}) {
   setTimeout(() => layer.root.remove(), silent ? 0 : 320);
   const t = nav.top;
   if (t) applyLayerLook(t);
+  if (layer.isScreen) saveNav();
 }
+
+// ---------------------------------------------------------------- navigation snapshot
+// iOS may discard a backgrounded tab (e.g. after the controller's Home button opened the Games app).
+// The open screens are kept in sessionStorage so a reload puts the user back where they were.
+const NAV_KEY = 'ps5ux.nav';
+export const navExtras = {};      // other modules add live state here (running game, party…)
+export function saveNav() {
+  if (!navExtras.user) return; // nothing to restore before someone has signed in (and never overwrite a pending snapshot)
+  try {
+    const routes = nav.layers.filter(l => l.isScreen && l.route).map(l => l.route);
+    sessionStorage.setItem(NAV_KEY, JSON.stringify({ routes, t: Date.now(), ...navExtras }));
+  } catch { /* storage unavailable */ }
+}
+export function loadNav(maxAge = 30 * 60e3) {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(NAV_KEY) || 'null');
+    return s && Date.now() - s.t < maxAge ? s : null;
+  } catch { return null; }
+}
+export function clearNav() { try { sessionStorage.removeItem(NAV_KEY); } catch { /* ignore */ } }
+lifecycle.addEventListener('suspend', saveNav);
 export function resetTo(factory, params) {
   for (const l of [...nav.layers].reverse()) { nav.pop(l); l.root.remove(); }
   return go(factory, params, { sound: null });
@@ -66,7 +90,7 @@ export function refreshLook() { if (nav.top) applyLayerLook(nav.top); }
 
 // ---------------------------------------------------------------- button hints
 const XB = { cross: 'a', circle: 'b', square: 'x', triangle: 'y' };
-const KB = { ok: 'Entrée', back: 'Échap', options: 'O', triangle: 'T', square: 'Y', l1: 'Q', r1: 'E', ps: 'P', search: '/' };
+const KB = { ok: 'Entrée', back: 'Échap', options: 'O', triangle: 'T', square: 'Y', l1: 'Q', r1: 'E', ps: 'P', search: '/', create: 'C' };
 export function glyph(action) {
   const d = input.device;
   const swap = state.settings.confirm === 'circle';
@@ -77,7 +101,9 @@ export function glyph(action) {
     if (d === 'nintendo') return h('span.gl.xb', { b: 'A', a: 'B', y: 'X', x: 'Y' }[XB[shape]] || '');
     return h('span.gl.ps', { html: glyphSvg(shape) });
   }
-  const pill = { options: d === 'ps' ? 'Options' : d === 'nintendo' ? '+' : 'Menu', l1: d === 'ps' ? 'L1' : d === 'nintendo' ? 'L' : 'LB', r1: d === 'ps' ? 'R1' : d === 'nintendo' ? 'R' : 'RB', ps: d === 'ps' ? 'PS' : d === 'nintendo' ? 'Home' : 'Guide', search: '△' }[action];
+  // on iOS the Home/PS button belongs to the system: show the alternatives that reach the app
+  const psLabel = IOS ? (d === 'ps' ? 'Pavé tactile' : 'Maintenir Menu') : d === 'ps' ? 'PS' : d === 'nintendo' ? 'Home' : 'Guide';
+  const pill = { options: d === 'ps' ? 'Options' : d === 'nintendo' ? '+' : 'Menu', l1: d === 'ps' ? 'L1' : d === 'nintendo' ? 'L' : 'LB', r1: d === 'ps' ? 'R1' : d === 'nintendo' ? 'R' : 'RB', ps: psLabel, create: d === 'ps' ? 'Share' : 'Vue', search: '△' }[action];
   return h('span.gl.pill', pill || action);
 }
 export function renderHints() {
@@ -92,7 +118,7 @@ input.onDevice((d, ev) => {
   renderHints();
   if (ev?.connected) {
     const kind = { ps: 'Manette sans fil DualSense', xbox: 'Manette Xbox', nintendo: 'Manette Nintendo' }[d] || 'Manette de jeu';
-    toast({ title: `${kind} connectée`, sub: ev.connected.id.replace(/\s*\(.*\)/, '').slice(0, 48) || 'Prête à jouer', icon: 'gamepad' });
+    toast({ title: `${kind} connectée`, sub: IOS ? 'Sur iOS, le bouton PS ouvre l’app Jeux : utilisez le pavé tactile pour le centre de contrôle' : ev.connected.id.replace(/\s*\(.*\)/, '').slice(0, 48) || 'Prête à jouer', icon: 'gamepad' });
     input.rumble(.6, .4, 180);
   } else if (ev?.disconnected) toast({ title: 'Manette déconnectée', sub: 'Utilisez le clavier ou la souris', icon: 'gamepad', sound: 'error' });
 });

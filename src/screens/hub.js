@@ -1,5 +1,6 @@
 // Game hub: logo, play/download button, activities, trophies and news. Embedded in Home and used standalone.
-import { byId, FRIENDS } from '../data.js';
+import { byId } from '../data.js';
+import { social, joinGame } from '../social.js';
 import { state, bus, owns, installed, downloading, trophyStats } from '../state.js';
 import { h, art, logo, img, icon, size, hours, ago, avatarImg } from '../ui.js';
 import { dialog, menu } from '../shell.js';
@@ -26,7 +27,7 @@ function primaryLabel(id) {
   const d = downloading(id);
   if (d) return ['download', `Téléchargement… ${Math.round(d.p * 100)} %`];
   if (owns(id)) return ['download', 'Télécharger'];
-  return ['bag', 'Voir dans la boutique'];
+  return ['bag', 'Voir dans le PlayStation Store'];
 }
 
 export function gameMenu(id, anchor) {
@@ -65,15 +66,19 @@ export function renderHub(id, { compact = false } = {}) {
   const hero = h('div.hub-hero.swap', logo(g), meta, h('div.actions', playBtn, moreBtn), dlLine);
 
   const shots = [art.shot(id, 1), art.shot(id, 2), art.hero(id)];
-  const friends = FRIENDS.filter(f => f.game === id);
+  const friends = social.friends.filter(f => { const p = social.presenceOf(f.id); return p.online && p.game === id; });
   const cards = h('div.cards', { 'data-scroll': 'x', 'data-row': '', 'data-group': 'cards-' + id },
     g.activities.map((a, i) => h('div.card.act', { f: true, onok: () => play(id) },
       img(shots[i], 'cimg'), h('div.cbody', h('div.kicker', i === 0 && owns(id) ? 'Continuer' : 'Activité'), h('div.ctitle', a), h('div.csub', `Environ ${[15, 30, 45][i]} min · ${['Histoire', 'Exploration', 'Défi'][i]}`)))),
     h('div.card.small', { f: true, onok: () => showTrophies(id) },
       h('div.cbody', h('div.kicker', 'Trophées'), h('div.ctitle', `${st.pct} % terminé`), h('div.progress', { style: { margin: '1.6rem 0 .4rem' } }, h('i', { style: { width: st.pct + '%' } })),
         h('div.trophy-sum', ...['platinum', 'gold', 'silver', 'bronze'].map(k => h('span', h(`span.tro.${k}`), st[k]))))),
-    friends.length ? h('div.card.small', { f: true },
-      h('div.cbody', h('div.kicker', 'Amis qui jouent'), friends.map(f => h('div', { style: { display: 'flex', gap: '1.4rem', alignItems: 'center', marginTop: '1.4rem' } }, avatarImg(f.avatar, '5.4rem'), h('div', h('div.ctitle', { style: { margin: 0 } }, f.name), h('div.csub', 'En ligne')))))) : null,
+    friends.length ? h('div.card.small', { f: true, onok: async () => {
+      const f = friends[0], p = social.presenceOf(f.id);
+      if (p.partyId && p.joinable) { try { await social.join(p.partyId); joinGame(id); } catch (e) { (await import('../shell.js')).toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); } }
+      else import('./gamebase.js').then(m => import('../shell.js').then(s => s.go(m.gamebaseScreen, { tab: 'friends' })));
+    } },
+      h('div.cbody', h('div.kicker', 'Amis qui jouent'), friends.slice(0, 3).map(f => h('div', { style: { display: 'flex', gap: '1.4rem', alignItems: 'center', marginTop: '1.4rem' } }, avatarImg(f.avatar, '5.4rem'), h('div', h('div.ctitle', { style: { margin: 0 } }, f.psn), h('div.csub', social.presenceOf(f.id).joinable ? 'Rejoindre' : 'En jeu')))))) : null,
     h('div.card.wide', { f: true, onok: () => openProduct(id) }, img(art.hero(id), 'cimg'),
       h('div.cbody', h('div.kicker', 'Officiel'), h('div.ctitle', `${g.title} : mise à jour 1.0${(g.title.length % 7) + 2}`), h('div.csub', 'Nouveaux contenus, mode photo amélioré et corrections.'))));
 

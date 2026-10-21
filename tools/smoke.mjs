@@ -13,7 +13,7 @@ const dist = join(dirname(fileURLToPath(import.meta.url)), '..', process.env.DIS
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml' };
 const server = createServer(async (req, res) => {
   const p = decodeURIComponent(req.url.split('?')[0]);
-  try { const f = join(dist, p === '/' ? 'index.html' : p); res.writeHead(200, { 'content-type': types[extname(f)] || 'application/octet-stream' }); res.end(await readFile(f)); }
+  try { const f = join(dist, p === '/' ? 'index.html' : p); const data = await readFile(f); res.writeHead(200, { 'content-type': types[extname(f)] || 'application/octet-stream' }); res.end(data); }
   catch { res.writeHead(404); res.end(); }
 }).listen(0);
 const [out, steps = ''] = process.argv.slice(2);
@@ -40,6 +40,7 @@ for (const s of steps.split(/\s*;\s*/).filter(Boolean)) {
   else if (cmd === 'shot') await page.screenshot({ path: join(out, arg + '.jpg'), quality: 70, type: 'jpeg' });
   else if (cmd === 'click') await page.click(arg);
   else if (cmd === 'tap') await page.tap(arg);
+  else if (cmd === 'fill') { const [sel, val] = arg.split('='); await page.fill(sel, val); }
   else if (cmd === 'pad') for (const b of arg.split(',')) {
     await page.evaluate(i => { window.__pad.buttons[i].pressed = true; window.__pad.buttons[i].value = 1; }, +b); await page.waitForTimeout(150);
     await page.evaluate(i => { window.__pad.buttons[i].pressed = false; window.__pad.buttons[i].value = 0; }, +b); await page.waitForTimeout(160);
