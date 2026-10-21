@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Static, offline-only version (no server): run it manually after enabling
+# Settings → Pages → Source: GitHub Actions. The full online version is deployed with render.yaml.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
