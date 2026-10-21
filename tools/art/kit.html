@@ -1,0 +1,36 @@
+<!doctype html><html><body style="margin:0;background:#000">
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c');
+const gl=c.getContext('webgl2',{preserveDrawingBuffer:true,antialias:false});
+let prog;
+async function init(){
+  const fs=await (await fetch('shader.glsl')).text();
+  const vs=`#version 300 es
+in vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));return sh;};
+  prog=gl.createProgram();gl.attachShader(prog,mk(gl.VERTEX_SHADER,vs));gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const l=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+  return true;
+}
+const D={uSeed:0,uA:[.2,.4,.8],uB:[.8,.7,.6],uC:[1,.8,.6],uD:[.3,.25,.2],uE:[.3,.5,.2],uP:[0,0,0,0],uQ:[0,0,0,0],uCam:[0,0,.3,0],uLook:[0,1.6,0],uSun:[0,.2],uFig:[0,0,0,0],uRock:[0,0,0,0],uGrade:[1,.2,1,.03]};
+window.render=async function(job){
+  const w=job.w,h=job.h; c.width=w;c.height=h;gl.viewport(0,0,w,h);
+  const u=Object.assign({},D,job.u);
+  const set=(n,v)=>{const loc=gl.getUniformLocation(prog,n);if(!loc)return;
+    if(n==='uScene'||n==='uMode')return gl.uniform1i(loc,v);
+    if(typeof v==='number')return gl.uniform1f(loc,v);
+    gl['uniform'+v.length+'fv'](loc,v);};
+  for(const k in u)set(k,u[k]);
+  set('uRes',[w,h]);set('uScene',job.scene);set('uMode',job.mode||0);
+  gl.enable(gl.SCISSOR_TEST);
+  const TH=64;
+  for(let y=0;y<h;y+=TH){gl.scissor(0,y,w,TH);gl.drawArrays(gl.TRIANGLES,0,3);gl.finish();await new Promise(r=>setTimeout(r,0));}
+  gl.disable(gl.SCISSOR_TEST);
+  return c.toDataURL('image/png');
+};
+window.ready=init();
+</script></body></html>
