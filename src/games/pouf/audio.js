@@ -132,6 +132,7 @@ export const sound = {
   // ---- island music: plucked chords, bouncy bass, marimba hook and shaker
   music(on, { fast = false } = {}) {
     if (!init()) return;
+    on = false; // the game plays sound effects only, no music
     musicOn = on; tempo = fast ? 124 : 104;
     applySettings();
     clearInterval(musicTimer);

@@ -21,7 +21,7 @@ await page.waitForSelector('.home .tile'); await page.keyboard.press('ArrowRight
 await page.waitForFunction(() => !!document.querySelector('.pf-title .pf-btn'), null, { timeout: 40000 });
 await page.waitForTimeout(1500);
 const music = await page.evaluate(() => window.__pouf.sound.peak(1500));
-ok('musique du jeu audible', music > .01 && music < .98, music.toFixed(3));
+ok('aucune musique, seulement des bruitages', music < .01, music.toFixed(3));
 await page.evaluate(() => window.__pouf.sound.music(false));
 await page.waitForTimeout(800);
 for (const fx of ['puff', 'bigPuff', 'splash', 'pop', 'hit', 'checkpoint', 'fanfare', 'beep', 'slam', 'emote']) {

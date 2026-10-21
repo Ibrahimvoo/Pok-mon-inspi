@@ -223,6 +223,21 @@ export function createTraps(T, course) {
         head.rotation.y = -o2.a;
         upperG.rotation.x = -(1 - crocBite(h, t)) * .75;
       });
+    } else if (h.type === 'turnstile') {
+      const L = h.len ?? 4;
+      const g = spikedLog(L * 2, .45, 2.4, [[1, 0], [0, 1], [0, -1], [.7, .7], [.7, -.7]]);
+      const m = mesh(g, mat); outline(m, .035);
+      const post = mesh(merge([Cy(.55, .6, 2.4, POLE, [0, .6, 0], 0, 1, 10), Cy(.7, .7, .3, '#f7a43a', [0, 1.9, 0], 0, 1, 10)]), mat); outline(post, .035);
+      T.world(h.s, h.d || 0, o2);
+      const grp = new THREE.Group(); grp.position.set(o2.wx, o2.y + .35, o2.wz); grp.add(m); root.add(grp);
+      post.position.set(o2.wx, o2.y, o2.wz); root.add(post);
+      // the log's axis is (cos a, sin a) in the river frame (along the current, towards the left bank)
+      const fa = o2.a;
+      live.push(t => {
+        const a = (h.phase || 0) * Math.PI * 2 + t * (h.speed ?? 1);
+        const dx = Math.cos(a) * Math.sin(fa) + Math.sin(a) * -Math.cos(fa), dz = Math.cos(a) * -Math.cos(fa) + Math.sin(a) * -Math.sin(fa);
+        grp.rotation.y = Math.atan2(-dz, dx);
+      });
     } else if (h.type === 'log') {
       const len = h.len ?? 4.5, r = h.r ?? .5;
       const g = mesh(merge([Cy(r, r, len, '#8a5a34', [0, 0, 0], [Math.PI / 2, 0, 0], 1, 10), ...[-1, 1].map(z => Cy(r * .82, r * .82, .04, '#d9b07a', [0, 0, z * len / 2], [Math.PI / 2, 0, 0], 1, 10)),

@@ -63,9 +63,13 @@ for (const course of COURSES) {
 
   test(`${course.id}: spikes hurt, three hits burst the raft, respawn at the last checkpoint`, () => {
     const sim = new RaftSim(T, course);
-    const spikes = course.hazards.find(h => h.type === 'spikes');
     const o = {};
-    sim.st.cp = 1;
+    // the longest strip on level water (spikes lining a waterfall are passed too fast to be hit three times)
+    const spikes = course.hazards.filter(h => h.type === 'spikes' && Math.abs(T.at((h.s + h.s1) / 2, o).slope) < .05)
+      .sort((a, b) => (b.s1 - b.s) - (a.s1 - a.s))[0];
+    const cp = course.checkpoints.filter(c => c < spikes.s).length;
+    assert.ok(cp > 0);
+    sim.st.cp = cp;
     T.world((spikes.s + spikes.s1) / 2, spikes.side * (T.at(spikes.s, o).w - RAFT_R), o);
     Object.assign(sim.st, { x: o.wx, z: o.wz, s: (spikes.s + spikes.s1) / 2, inv: 0, vx: 0, vz: 0 });
     const evs = [];
@@ -81,7 +85,7 @@ for (const course of COURSES) {
     assert.ok(evs.some(e => e.k === 'respawn'));
     assert.equal(sim.st.air, MAX_AIR);
     assert.equal(sim.st.deaths, 1);
-    assert.ok(Math.abs(sim.st.s - (course.checkpoints[0] + 3)) < 1.5, `respawned at s=${sim.st.s}`);
+    assert.ok(Math.abs(sim.st.s - (course.checkpoints[cp - 1] + 3)) < 1.5, `respawned at s=${sim.st.s}`);
   });
 
   test(`${course.id}: snapshots round-trip`, () => {

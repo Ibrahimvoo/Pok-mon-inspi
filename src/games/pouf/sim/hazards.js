@@ -76,6 +76,19 @@ export function collide(h, sd, R, t, fr) {
       const hit = h.type === 'mine' || h.type === 'saw' || (h.type === 'croc' && crocBite(h, t) > .6);
       return { n: dist > 1e-4 ? [ds * k, dd * k] : [-1, 0], depth: pen, hit, kick: h.type === 'croc' && hit ? 3 : 0 };
     }
+    case 'turnstile': { // a spiked log turning flat on the water round a post
+      const L = h.len ?? 4, r = h.r ?? .45;
+      if (Math.abs(ds) > L + R + r) return null;
+      const a = (h.phase || 0) * TAU + t * (h.speed ?? 1), c = Math.cos(a), sn = Math.sin(a);
+      const dd = sd.d - (h.d || 0), u = clamp(ds * c + dd * sn, -L, L);
+      const vs = ds - u * c, vd = dd - u * sn, dist = Math.hypot(vs, vd);
+      if (dist >= R + r) {
+        // the central post is solid and bow-shaped, so the current slides a raft past it instead of pinning it
+        const post = Math.hypot(ds, dd), bd = dd + (dd < 0 ? -.8 : .8), bl = Math.hypot(ds, bd);
+        return post < R + .6 ? { n: [ds / bl, bd / bl], depth: R + .6 - post, hit: false } : null;
+      }
+      return { n: dist > 1e-4 ? [vs / dist, vd / dist] : [1, 0], depth: R + r - dist, hit: true, kick: 2 };
+    }
     case 'log': { // a floating trunk along the current, drifting across the river
       const half = (h.len ?? 4.5) / 2, r = h.r ?? .5;
       if (Math.abs(ds) > half + R + r) return null;

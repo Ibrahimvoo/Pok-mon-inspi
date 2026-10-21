@@ -288,7 +288,6 @@ export function optionsMenu(G) {
   const L = layer(G, 'options', h('div.pf-panel.mid.opts', h('h2', 'Options'),
     cyc('Visée', 'Ce que fait le stick pendant la descente', () => s.aim, [['push', 'Pousser la bouée vers le stick'], ['seat', 'Se placer vers le stick']], v => { s.aim = v; }),
     cyc('Sensibilité de la caméra', 'Souris, stick droit et glisser', () => s.camSpeed, [[.5, 'Lente'], [1, 'Normale'], [1.6, 'Rapide']], v => { s.camSpeed = v; }),
-    slider('Musique', 'Volume de la musique du jeu', 'musicVol', () => sound.applySettings()),
     slider('Effets sonores', 'Poufs, plouf et compagnie', 'sfxVol', () => sound.applySettings()),
     btn('Retour', () => G.close(L), { key: 'back' })), {
     hints: [['ok', 'Changer'], ['back', 'Retour']],

@@ -206,7 +206,7 @@ export function treeGeo(theme, v) {
   if (v === 0) { // round puffy tree
     p.push(Cy(.22, .34, 3.2, tr, [0, 1.6, 0], [0, 0, .06], 1, 7));
     [[0, 3.8, 0, 1.6], [1.1, 3.3, .3, 1.15], [-1, 3.4, -.2, 1.2], [.2, 4.6, -.3, 1.15], [-.3, 3.2, 1, 1]].forEach(([x, y, z, r], i) =>
-      p.push(place(paint(new THREE.IcosahedronGeometry(r, 1), L[i % 3]), [x, y, z])));
+      p.push(place(paint(new THREE.IcosahedronGeometry(r, 0), L[i % 3]), [x, y, z], [i, i * 2, 0])));
   } else if (v === 1) { // wide umbrella tree (canopy layers)
     p.push(Cy(.2, .3, 4.2, tr, [0, 2.1, 0], 0, 1, 7));
     p.push(place(paint(new THREE.CylinderGeometry(2.2, 2.6, .9, 9), L[0]), [0, 4.3, 0]), place(paint(new THREE.CylinderGeometry(1.6, 2.1, .8, 9), L[1]), [.2, 5, .1]), place(paint(new THREE.CylinderGeometry(.9, 1.4, .7, 9), L[2]), [-.1, 5.6, 0]));
