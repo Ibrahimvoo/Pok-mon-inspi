@@ -25,7 +25,7 @@ export function presenceText(p, { short = false } = {}) {
 const dotClass = p => (!p?.online ? 'off' : p.activity === 'game' ? 'game' : 'on');
 
 export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
-  let tab = startTab, query = '', results = null, searching = false, draft = '', typing = false;
+  let tab = startTab === 'friends' && social.salon ? 'party' : startTab, query = '', results = null, searching = false, draft = '', typing = false;
   const tabEls = TABS.map(([k, l]) => h('button.tab', { f: true, 'data-key': 'tab-' + k, onok: () => setTab(k) }, h('span', l), h('span.tab-count')));
   const conn = h('div.conn-pill.hidden');
   const body = h('div.page', { 'data-scroll': 'y', 'data-pad': 160 });
@@ -42,6 +42,37 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   }
 
   // ------------------------------------------------------------ views
+  function salonView() {
+    const s = social.salon;
+    if (s) return h('div.gb-empty', h('div.gb-empty-ic', { html: icon('party') }), h('h2', `Salon ${s.code}`),
+      h('p', s.host ? 'Vous êtes l’hôte. Envoyez le lien ou le code à vos amis : ils arrivent directement dans votre groupe vocal.' : 'Vous êtes connecté au salon de votre ami.'),
+      h('div.gb-controls', { 'data-row': '' },
+        h('button.btn.primary', { f: true, 'data-key': 'share', onok: () => social.shareSalon() }, h('span.icw', { html: icon('userPlus') }), 'Partager le lien'),
+        h('button.btn', { f: true, 'data-key': 'open-party', onok: () => setTab('party') }, h('span.icw', { html: icon('party') }), 'Voir le groupe')));
+    const join = async code => {
+      try { await social.joinSalon(code); setTab('party'); }
+      catch (e) { toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); render(); }
+    };
+    const inp = h('input.f-input.salon-code', { type: 'text', maxLength: 6, autocapitalize: 'characters', autocorrect: 'off', spellcheck: false, enterkeyhint: 'go', placeholder: 'EX : K7P2QX', 'aria-label': 'Code du salon' });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); inp.blur(); join(inp.value); } });
+    const codeRow = h('div.f-row', { f: true, 'data-key': 'code', onok: () => {
+      if (PADS.includes(input.device)) openKeyboard({ title: 'Code du salon (6 caractères)', maxLength: 6, onDone: v => join(v) });
+      else inp.focus();
+    } }, h('label.f-label', 'Code du salon de votre ami'), inp);
+    return h('div.salon',
+      h('div.salon-card',
+        h('h2', 'Jouer avec un ami'),
+        h('p', 'Sans compte ni installation : créez un salon, envoyez le lien à votre ami, et vous êtes connectés directement. Chat vocal (micro et haut-parleur du téléphone, sans casque), discussion et parties partagées.'),
+        h('button.btn.primary', { f: true, 'data-key': 'create-salon', onok: async () => {
+          audio.play('ok');
+          try { await social.createSalon(); setTab('party'); social.shareSalon(); }
+          catch (e) { toast({ title: 'Création du salon impossible', sub: e.message, icon: 'party', sound: 'error', log: false }); }
+        } }, h('span.icw', { html: icon('party') }), 'Créer un salon')),
+      h('div.salon-card', h('h2', 'Rejoindre un salon'), h('p', 'Ouvrez le lien reçu, ou saisissez le code à 6 caractères.'), codeRow,
+        h('button.btn', { f: true, 'data-key': 'join-salon', onok: () => join(inp.value) }, 'Rejoindre')),
+      session.current && !session.current.online ? h('p.salon-note', 'Les comptes en ligne, la liste d’amis et les invitations nécessitent le serveur du projet. Les salons fonctionnent partout.') : null);
+  }
+
   function offlineView() {
     const local = session.current && !session.current.online;
     return h('div.gb-empty', h('div.gb-empty-ic', { html: icon('wifi') }),
@@ -85,6 +116,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
 
   function partyView() {
     const p = social.party;
+    if (!p && !session.online) return salonView();
     if (!p) return h('div.gb-empty', h('div.gb-empty-ic', { html: icon('party') }), h('h2', 'Vous n’êtes dans aucun groupe'),
       h('p', 'Créez un groupe vocal puis invitez vos amis. L’appel utilise le micro et le haut-parleur de l’appareil, avec annulation d’écho : pas besoin de casque.'),
       h('button.btn.primary', { f: true, 'data-key': 'create', onok: async () => { audio.play('ok'); try { await social.createParty(); } catch (e) { toast({ title: 'Impossible de créer le groupe', sub: e.message, icon: 'party', sound: 'error', log: false }); } } }, h('span.icw', { html: icon('party') }), 'Créer un groupe vocal'));
@@ -93,9 +125,9 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
       voice.active
         ? h(`button.btn${voice.muted ? '.on' : ''}`, { f: true, 'data-key': 'mute', onok: () => { voice.setMuted(!voice.muted); audio.play('toggle'); render(); } }, h('span.icw', { html: icon(voice.muted ? 'micOff' : 'mic') }), voice.muted ? 'Réactiver le micro' : 'Couper le micro')
         : h('button.btn.primary', { f: true, 'data-key': 'voice', onok: () => social.joinVoice().then(render) }, h('span.icw', { html: icon('mic') }), voice.joining ? 'Connexion…' : 'Rejoindre le chat vocal'),
-      h('button.btn', { f: true, 'data-key': 'invite', onok: e => inviteMenu(e.currentTarget) }, h('span.icw', { html: icon('userPlus') }), 'Inviter'),
+      h('button.btn', { f: true, 'data-key': 'invite', onok: e => (p.salon ? social.shareSalon() : inviteMenu(e.currentTarget)) }, h('span.icw', { html: icon('userPlus') }), p.salon ? `Inviter · ${p.id}` : 'Inviter'),
       h('button.btn', { f: true, 'data-key': 'play', onok: e => playMenu(e.currentTarget) }, h('span.icw', { html: icon('play') }), g ? `Rejoindre ${g.title}` : 'Jouer ensemble'),
-      h('button.btn', { f: true, 'data-key': 'leave', onok: () => confirmDialog('Quitter le groupe ?', 'Le chat vocal sera coupé pour vous.', 'Quitter', () => social.leave(), { danger: true }) }, h('span.icw', { html: icon('phoneOff') }), 'Quitter'));
+      h('button.btn', { f: true, 'data-key': 'leave', onok: () => confirmDialog(p.salon ? 'Quitter le salon ?' : 'Quitter le groupe ?', p.salon && social.salon?.host ? 'Vous êtes l’hôte : le salon sera fermé pour tout le monde.' : 'Le chat vocal sera coupé pour vous.', 'Quitter', () => social.leave(), { danger: true }) }, h('span.icw', { html: icon('phoneOff') }), 'Quitter'));
     const chatList = h('div.chat-list', { 'data-scroll': 'y' }, p.chat.map(m => m.sys ? h('div.chat-sys', m.text) : h(`div.chat-msg${m.from === session.current.id ? '.mine' : ''}`, h('b', m.psn), h('span', m.text))));
     const chatInput = h('input.chat-input', { type: 'text', value: draft, maxLength: 200, placeholder: 'Écrire un message…', enterkeyhint: 'send', 'aria-label': 'Message au groupe' });
     chatInput.addEventListener('input', () => { draft = chatInput.value; });
@@ -110,7 +142,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     } }, chatInput);
     setTimeout(() => { chatList.scrollTop = chatList.scrollHeight; }, 0);
     return h('div.party-view',
-      h('div.party-head', h('h2', g ? `Groupe · ${g.title}` : 'Groupe vocal'), h('span.gb-sub', `${p.members.length} membre${p.members.length > 1 ? 's' : ''} · ${voice.canSetVolume ? 'volume réglable par membre' : 'volume : boutons de l’appareil'}`)),
+      h('div.party-head', h('h2', p.salon ? `Salon ${p.id}${g ? ' · ' + g.title : ''}` : g ? `Groupe · ${g.title}` : 'Groupe vocal'), h('span.gb-sub', `${p.members.length} membre${p.members.length > 1 ? 's' : ''} · ${voice.canSetVolume ? 'volume réglable par membre' : 'volume : boutons de l’appareil'}`)),
       h('div.members', { 'data-row': '' }, p.members.map(memberCard)),
       controls,
       h('div.section-title', 'Discussion'),
@@ -198,7 +230,9 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     const key = layer?.focused?.dataset.key;
     counts();
     root.classList.toggle('party-open', tab === 'party');
-    const view = !social.available ? offlineView() : tab === 'friends' ? friendsView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
+    const view = !social.available ? (session.online ? offlineView() : salonView())
+      : social.salon && tab !== 'party' ? salonView()
+      : tab === 'friends' ? friendsView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
     const st = body.scrollTop;
     body.replaceChildren(view);
     body.scrollTop = st;

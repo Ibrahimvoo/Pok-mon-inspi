@@ -2,6 +2,7 @@
 import { net } from './net.js';
 import { voice, VoiceError } from './rtc.js';
 import { session } from './session.js';
+import { p2p } from './p2p.js';
 import { byId } from './data.js';
 import { owns, installed, state } from './state.js';
 import { audio } from './audio.js';
@@ -16,11 +17,12 @@ export const social = {
   friends: [], incoming: [], outgoing: [], party: null, loaded: false, error: null,
   presence: new Map(),
   on(type, fn) { const h2 = e => fn(e.detail); events.addEventListener(type, h2); return () => events.removeEventListener(type, h2); },
-  get available() { return session.online; },
+  get available() { return session.online || p2p.active; },
+  get salon() { return p2p.active ? p2p : null; },
   get me() { return session.current; },
 
   async refresh() {
-    if (!this.available) return;
+    if (!session.online) { emit('friends', this); return; }
     try {
       const r = await net.api('/api/friends');
       this.friends = r.friends; this.incoming = r.incoming; this.outgoing = r.outgoing;
@@ -39,6 +41,21 @@ export const social = {
   setPresence(activity, game = null) { this._presence = { activity, game }; net.send('presence', this._presence); },
 
   // ------------------------------------------------------------ parties & calls
+  // ------------------------------------------------------------ rooms by code (no server needed)
+  async createSalon(code) { await p2p.create(code); await this.joinVoice(); return p2p.code; },
+  // after iOS reloaded the page: reopen the same room (host) or reconnect to it (guest)
+  async restoreSalon({ code, host }) {
+    try { if (host) await p2p.create(code); else await p2p.join(code); toast({ title: 'Salon rétabli', sub: `Code ${p2p.code}`, icon: 'party', sound: null, log: false }); }
+    catch (e) { toast({ title: 'Salon perdu', sub: e.message, icon: 'party', sound: 'error', log: false }); }
+  },
+  async joinSalon(code) { await p2p.join(code); await this.joinVoice(); },
+  async shareSalon() {
+    if (!p2p.active) return;
+    const text = `Rejoins mon salon sur la console : code ${p2p.code}`;
+    try { if (navigator.share) { await navigator.share({ title: 'Salon PS5', text, url: p2p.link }); return; } } catch (e) { if (e?.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(p2p.link); toast({ title: 'Lien copié', sub: `Envoyez-le à votre ami · code ${p2p.code}`, icon: 'party', log: false }); }
+    catch { dialog({ title: `Code du salon : ${p2p.code}`, body: h('div', 'Envoyez ce lien à votre ami :', h('div.salon-link', p2p.link)), actions: [{ label: 'OK', primary: true }] }); }
+  },
   async invite(friendId, kind = 'party') {
     const r = await net.req('party.invite', { to: friendId, kind });
     if (!voice.active) await this.joinVoice();
@@ -58,7 +75,11 @@ export const social = {
       voice.sync(this.party);
     } catch (e) { voiceError(e); }
   },
-  async leave() { voice.leave(); await net.req('party.leave').catch(() => {}); this.party = null; emit('party', null); },
+  async leave() {
+    voice.leave();
+    if (p2p.active) { p2p.leave(); this.party = null; emit('party', null); return; }
+    await net.req('party.leave').catch(() => {}); this.party = null; emit('party', null);
+  },
   decline(partyId, kind) { net.send('party.decline', { partyId, kind }); },
   chat(text) { net.send('chat', { text }); },
   startGame(game) { if (this.party) net.req('game.start', { game }).catch(() => {}); },
@@ -162,6 +183,17 @@ net.on('game.started', m => {
   ] });
 });
 net.on('g', m => emit('g', m));
+net.on('salon', m => { if (m.error) { voice.leave({ notify: false }); toast({ title: 'Salon', sub: m.error, icon: 'party', sound: 'error' }); } });
+// a shared link (…#salon=CODE) opens the room directly once someone is signed in
+export function checkSalonLink() {
+  const code = (location.hash.match(/salon=([A-Za-z0-9]{6})/) || [])[1];
+  if (!code || !session.current || p2p.code === code.toUpperCase()) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  dialog({ title: `Rejoindre le salon ${code.toUpperCase()} ?`, body: 'Un ami vous invite à jouer et discuter en vocal. Le micro de l’appareil sera utilisé (pas besoin de casque).', actions: [
+    { label: 'Rejoindre', icon: 'party', primary: true, onok: async () => { try { await social.joinSalon(code); toast({ title: 'Salon rejoint', sub: `Code ${code.toUpperCase()}`, icon: 'party', log: false }); } catch (e) { toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); } } },
+    { label: 'Annuler', sound: 'back' }] });
+}
+addEventListener('hashchange', checkSalonLink);
 voice.on('change', d => { navExtras.voice = !!d.joined; saveNav(); });
 net.on('rtc', m => voice.handleSignal(m));
 net.on('status', s => emit('status', s));

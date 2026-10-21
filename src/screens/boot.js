@@ -82,6 +82,7 @@ async function routeAfterBoot(auto) {
 }
 
 export async function enterHome(user, online, { restore = null, quiet = false } = {}) {
+  setTimeout(() => import('../social.js').then(m => m.checkSalonLink()), restore ? 2500 : 1800);
   session.use(user, online);
   navExtras.user = user.id;
   if (online) net.connect(); else net.disconnect();
@@ -106,8 +107,9 @@ export async function enterHome(user, online, { restore = null, quiet = false } 
   }
   toast({ title: 'Session reprise', sub: 'Vous êtes revenu là où vous étiez', icon: 'refresh', sound: null, log: false });
   lifelog({ type: 'restored', screens: (restore.routes || []).length, game: restore.game || null });
+  if (restore.salon) { const { social } = await import('../social.js'); await social.restoreSalon(restore.salon); }
   // the microphone cannot be reopened without a tap on iOS: ask before rejoining the call
-  if (restore.voice && restore.party && online) {
+  if (restore.voice && (restore.party || restore.salon)) {
     const [{ social }, { dialog }] = await Promise.all([import('../social.js'), import('../shell.js')]);
     setTimeout(() => { if (social.party) dialog({ title: 'Revenir dans le chat vocal ?', body: 'L’appel de votre groupe a été interrompu quand l’application est passée en arrière-plan.', actions: [{ label: 'Rejoindre le vocal', icon: 'mic', primary: true, onok: () => social.joinVoice() }, { label: 'Plus tard', sound: 'back' }] }); }, 1200);
   }
