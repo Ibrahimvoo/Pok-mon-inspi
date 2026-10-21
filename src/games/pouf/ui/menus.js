@@ -90,6 +90,7 @@ export function lobbyMenu(G) {
     if (lobby.isHost) { if (G.canStart()) G.startMatch(); else { sound.ui(); G.toast('Tout le monde n’est pas prêt', 'Attendez que vos amis appuient sur « Prêt »', 'error'); } }
     else { const m = lobby.members.find(x => x.id === G.me.id); lobby.setReady(!m?.ready); }
   }, { primary: true, ic: 'play', key: 'start' });
+  startBtn.dataset.autofocus = '';   // ✕ right away starts (host) or toggles ready (guest)
   const changeBtn = btn('Changer d’épreuve', () => coursesMenu(G, { pick: true }), { ic: 'grid', key: 'course' });
   const L = layer(G, 'lobby', [
     h('div.pf-lobby-top', logo(true), h('div.pf-code', h('span', 'CODE'), codeEl), statusEl),
