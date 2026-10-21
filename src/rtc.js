@@ -11,7 +11,12 @@ const emit = (t, d) => events.dispatchEvent(new CustomEvent(t, { detail: d }));
 const peers = new Map();            // userId → peer
 const volumes = new Map();
 let local = null, myId = null, myVs = null, joined = false, muted = false, joining = null;
-let iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
+// Without the project server: public STUN + the free Open Relay TURN (public shared credentials, not a secret)
+export const PUBLIC_ICE = [
+  { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] },
+  { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' },
+];
+let iceServers = PUBLIC_ICE;
 let meterTimer = 0, meters = new Map(), meterCtx = null;
 const holder = document.createElement('div');
 holder.setAttribute('aria-hidden', 'true');

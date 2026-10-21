@@ -5,6 +5,8 @@ import { net } from './net.js';
 import { session } from './session.js';
 import { AVATARS } from './avatars.js';
 import { navExtras, saveNav } from './shell.js';
+import { lifecycle } from './input.js';
+import { PUBLIC_ICE } from './rtc.js';
 
 const PREFIX = 'ps5ux-salon-';
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -14,7 +16,7 @@ const nonce = () => Math.random().toString(16).slice(2, 14);
 // tests can point to a local PeerJS server with ?peerhost=host:port
 const peerOptions = () => {
   const o = new URLSearchParams(location.search).get('peerhost');
-  if (!o) return { debug: 0 };
+  if (!o) return { debug: 0, config: { iceServers: PUBLIC_ICE } };
   const [host, port] = o.split(':');
   return { debug: 0, host, port: +port, path: '/', secure: false };
 };
@@ -153,7 +155,7 @@ function connectToHost(code, first) {
       emit('status', 'reconnecting');
       retryJoin(code, Date.now());
     });
-    setTimeout(() => fail({ type: 'peer-unavailable' }), 12000);
+    setTimeout(() => fail({ type: 'peer-unavailable' }), 20000);
     if (first) conn.on('error', fail);
   });
 }
@@ -168,6 +170,21 @@ function retryJoin(code, since) {
     }
   }, 2500);
 }
+
+// iOS suspends Safari while the link is being shared: reopen the room (host) or reconnect (guest) on return
+async function reopenHost(tries = 0) {
+  if (!p2p.active || !p2p.host) return;
+  if (peer && !peer.destroyed && !peer.disconnected) return;
+  try { peer?.destroy(); } catch { /* ignore */ }
+  try { peer = await openPeer(PREFIX + p2p.code); peer.on('connection', acceptGuest); }
+  catch { if (tries < 8) setTimeout(() => reopenHost(tries + 1), 3000); }
+}
+lifecycle.addEventListener('resume', () => {
+  if (!p2p.active) return;
+  if (p2p.host) reopenHost();
+  else if (!hostConn?.open) { hostConn = null; retryJoin(p2p.code, Date.now()); }
+});
+setInterval(() => { if (p2p.active && p2p.host && !document.hidden) reopenHost(); }, 5000);
 
 const transport = {
   send(t, payload = {}) {
