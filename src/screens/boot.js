@@ -1,7 +1,7 @@
 // Power-on sequence, user selection, rest mode / shutdown / restart.
 import { GAMES, USERS } from '../data.js';
 import { state, save, recentGames } from '../state.js';
-import { h, icon, art, img, glyphSvg, wait } from '../ui.js';
+import { h, icon, art, img, wait } from '../ui.js';
 import { resetTo, closeLayer, toast, renderHints } from '../shell.js';
 import { nav } from '../nav.js';
 import { audio } from '../audio.js';
@@ -9,7 +9,9 @@ import { bg } from '../bg.js';
 import { input } from '../input.js';
 import { homeScreen } from './home.js';
 
-const glyphs = cls => h(`div.glyphs3d.${cls}`, ['triangle', 'circle', 'cross', 'square'].map(s => h('span', { html: glyphSvg(s) })));
+// original emblem: an open orbit with a satellite, drawn as it lights up
+const EMBLEM = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M37.6 12.4A17 17 0 1 0 41 24"/><path d="M31 18.6A9 9 0 1 0 33 24" opacity=".55"/><circle cx="38.2" cy="13" r="2.6" fill="currentColor" stroke="none"/></svg>';
+const glyphs = cls => h(`div.glyphs3d.${cls}`, h('span', { html: EMBLEM }));
 
 // Preload what the first screens need; resolves with progress callbacks.
 function preload(onProgress) {

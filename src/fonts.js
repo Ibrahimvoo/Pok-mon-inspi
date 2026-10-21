@@ -1,0 +1,15 @@
+// Self-hosted display and UI faces (OFL). The artifact build swaps this module for Google Fonts.
+import '@fontsource/source-sans-3/latin-300';
+import '@fontsource/source-sans-3/latin-400';
+import '@fontsource/source-sans-3/latin-600';
+import '@fontsource/cinzel/latin-700';
+import '@fontsource/bebas-neue/latin-400';
+import '@fontsource/syncopate/latin-700';
+import '@fontsource/cormorant-garamond/latin-600';
+import '@fontsource/teko/latin-600';
+import '@fontsource/big-shoulders-display/latin-800';
+import '@fontsource/unbounded/latin-700';
+import '@fontsource/rajdhani/latin-600';
+import '@fontsource/josefin-sans/latin-300';
+import '@fontsource/playfair-display/latin-700-italic';
+import '@fontsource/anton/latin-400';

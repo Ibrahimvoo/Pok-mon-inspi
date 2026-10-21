@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "art": "node tools/render-art.mjs"
+    "art": "node tools/render-art.mjs",
+    "artifact": "node tools/artifact.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.21"

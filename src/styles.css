@@ -16,6 +16,7 @@
   --t: .32s;
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
+  color-scheme: dark;
 }
 html { font-size: max(5px, min(.52083vw, .92593vh)); background: var(--bg); }
 html.big-text { font-size: max(5.6px, min(.5729vw, 1.0185vh)); }
@@ -523,12 +524,14 @@ html[data-device="touch"] #hints { display: none; }
 .press .load i { display: block; height: 100%; background: #fff; transition: width .3s; }
 @keyframes breathe { 50% { opacity: .45; } }
 .glyphs3d { display: flex; gap: 4.4rem; justify-content: center; perspective: 80rem; }
-.glyphs3d span { width: 9rem; height: 9rem; color: #fff; transform-style: preserve-3d; opacity: 0; }
+.glyphs3d span { width: 15rem; height: 15rem; color: #fff; transform-style: preserve-3d; opacity: 0; }
 .glyphs3d span svg { width: 100%; height: 100%; filter: drop-shadow(0 0 1.4rem rgba(120, 170, 255, .65)); }
 .glyphs3d.idle span { opacity: .9; animation: none; }
 .glyphs3d.play span { animation: glyphIn 1.1s var(--ease) both; }
 .glyphs3d.play span:nth-child(2) { animation-delay: .12s; } .glyphs3d.play span:nth-child(3) { animation-delay: .24s; } .glyphs3d.play span:nth-child(4) { animation-delay: .36s; }
 @keyframes glyphIn { from { opacity: 0; transform: rotateY(-100deg) translateZ(-20rem); } to { opacity: 1; transform: none; } }
+.glyphs3d.play span svg path:first-child { stroke-dasharray: 110; animation: draw 1.6s var(--ease) .2s both; }
+@keyframes draw { from { stroke-dashoffset: 110; } }
 .boot-anim { position: absolute; inset: 0; display: grid; place-items: center; }
 .boot-anim .flare { position: absolute; width: 140rem; height: .3rem; background: linear-gradient(90deg, transparent, rgba(140, 190, 255, .9), #fff, rgba(140, 190, 255, .9), transparent); filter: blur(1px); opacity: 0; animation: flare 2.6s var(--ease) .9s both; }
 @keyframes flare { 0% { opacity: 0; transform: scaleX(.1); } 30% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1.4); } }

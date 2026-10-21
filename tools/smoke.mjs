@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 let chromium;
 try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
-const dist = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist');
+const dist = join(dirname(fileURLToPath(import.meta.url)), '..', process.env.DIST || 'dist');
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml' };
 const server = createServer(async (req, res) => {
   const p = decodeURIComponent(req.url.split('?')[0]);
