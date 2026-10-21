@@ -1,0 +1,82 @@
+// Console side of Pouf Party: the full-screen layer that hosts the game, its lazy loading,
+// the Control Center button, and invitation links (…#pouf=CODE).
+import { h } from '../../ui.js';
+import { dialog, toast } from '../../shell.js';
+import { session } from '../../session.js';
+import './console.css';
+
+export const GAME_ID = 'pouf-party';
+let game = null, loading = null, pendingJoin = null;
+const holder = h('div.pf-game');
+
+// Layer factory used by the console when the game is launched or resumed.
+export function screen({ id }) {
+  const root = h('div.pf-root', holder);
+  const layer = {
+    root, opaque: true, shade: 0, noHints: true, bg: null, mood: null,
+    hints: [],
+    onEnter() {
+      document.documentElement.classList.add('pf-playing');
+      if (game) { game.attach(); game.resumed(); }
+      else boot();
+    },
+    onResume() { document.documentElement.classList.add('pf-playing'); game?.attach(); game?.resumed(); },
+    onLeave() { document.documentElement.classList.remove('pf-playing'); game?.detach(); },
+    onAction(a, ev) {
+      if (a === 'ps') { import('../../screens/cc.js').then(m => m.openControlCenter({ ingame: id })); return true; }
+      return game ? game.onAction(a, ev) !== false : true;
+    },
+    back() {},
+  };
+  return layer;
+}
+// While the console tears the layer down (the root is removed later), the game element must survive:
+// it is moved into the next layer's root on resume.
+
+async function boot() {
+  if (loading) return loading;
+  const user = session.current || { id: 'local-guest', psn: 'Joueur', avatar: GAME_ID };
+  loading = (async () => {
+    try {
+      const [{ createGame }, { unlockTrophy }] = await Promise.all([import('./game.js'), import('../../actions.js')]);
+      const join = pendingJoin; pendingJoin = null;
+      game = await createGame({
+        el: holder, user, opts: { join },
+        exit: () => import('../../screens/game.js').then(m => m.endSession()),
+        trophy: i => unlockTrophy(GAME_ID, i),
+      });
+    } catch (e) {
+      console.error(e);
+      holder.replaceChildren(h('div.pf-fail', h('h2', 'Pouf Party n’a pas pu démarrer'), h('p', 'Votre appareil ou votre navigateur ne permet peut-être pas l’affichage 3D (WebGL).'), h('code', String(e?.message || e))));
+      toast({ title: 'Impossible de lancer le jeu', sub: String(e?.message || e).slice(0, 80), icon: 'info', sound: 'error', log: false });
+    } finally { loading = null; }
+  })();
+  return loading;
+}
+
+// Called by the console when the session ends (Close the game, power off…).
+export function end() {
+  game?.destroy(); game = null;
+  holder.replaceChildren();
+  document.documentElement.classList.remove('pf-playing');
+}
+
+// Invitation links: ask, then launch the game straight into the friend's lobby.
+export function checkLink() {
+  const code = (location.hash.match(/pouf=([A-Za-z0-9]{5})/) || [])[1];
+  if (!code || !session.current) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  const c = code.toUpperCase();
+  dialog({ title: `Rejoindre la partie ${c} ?`, body: 'Un ami vous invite à jouer à Pouf Party.', actions: [
+    { label: 'Rejoindre', icon: 'play', primary: true, onok: () => joinFromLink(c) },
+    { label: 'Annuler', sound: 'back' }] });
+}
+async function joinFromLink(code) {
+  if (game) { const { session: s, resume } = await import('../../screens/game.js'); if (s.id === GAME_ID) resume(); game.joinCode(code); return; }
+  pendingJoin = code;
+  const { play } = await import('../../actions.js');
+  play(GAME_ID);
+}
+addEventListener('hashchange', checkLink);
+document.addEventListener('session:change', () => setTimeout(checkLink, 1900));
+export const isRunning = () => !!game;

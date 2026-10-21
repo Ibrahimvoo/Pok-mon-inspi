@@ -136,13 +136,27 @@ export const GAMES = [
     desc: 'Après la fin du monde, une voyageuse traverse un désert crépusculaire pour livrer un dernier message. Une aventure narrative sur la mémoire et les rencontres.',
     features: ['vibration', 'audio3d', 'hdr'], activities: ['La route du sel', 'Le relais', 'Dernier soleil'],
     trophies: baseTrophies('Last Light', 'la route') },
+  { id: 'pouf-party', title: 'Pouf Party', publisher: 'Bulle & Bouée', genre: 'Party game', genres: ['Party', 'Action', 'Indé'],
+    release: '2026-10-21', price: 0, discount: 0, rating: 4.9, votes: 1280, pegi: 3, size: 2.4, players: '1-4 joueurs (en ligne)',
+    font: 'luckiest', mood: 'warm', thumb: .5, accent: '#ffd23f', playable: true,
+    tagline: 'Gonflés à bloc. Ensemble.',
+    desc: 'Montez à quatre sur une bouée et dévalez des rivières pleines de pièges en vous propulsant… à coups de pouf ! Chaque joueur pousse depuis son côté de la bouée : coordonnez-vous pour éviter piques, mâchoires et moulins, validez les checkpoints et franchissez l’arrivée. Jeu en ligne entre amis, personnages à personnaliser, emotes et records.',
+    features: ['vibration', 'audio3d', 'online'], activities: ['La Descente du Lagon Rose', 'Salon entre amis', 'Personnalisation'],
+    trophies: [
+      T('Premier plouf', 'Terminer une descente', 'bronze'),
+      T('Tous à bord', 'Terminer une descente à au moins deux joueurs', 'bronze'),
+      T('Sans une crevaison', 'Terminer une descente sans éclater la bouée', 'silver'),
+      T('Super pouf', 'Utiliser 50 super poufs', 'silver'),
+      T('Pilote de rivière', 'Obtenir trois étoiles sur une épreuve', 'gold'),
+      T('Pouf légendaire', 'Obtenir tous les autres trophées', 'platinum'),
+    ] },
 ];
 export const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 
 export const FONT = {
   cinzel: "'Cinzel', serif", bebas: "'Bebas Neue', sans-serif", syncopate: "'Syncopate', sans-serif", unbounded: "'Unbounded', sans-serif",
   cormorant: "'Cormorant Garamond', serif", teko: "'Teko', sans-serif", josefin: "'Josefin Sans', sans-serif", shoulders: "'Big Shoulders Display', sans-serif",
-  anton: "'Anton', sans-serif", rajdhani: "'Rajdhani', sans-serif", playfair: "'Playfair Display', serif",
+  anton: "'Anton', sans-serif", rajdhani: "'Rajdhani', sans-serif", playfair: "'Playfair Display', serif", luckiest: "'Luckiest Guy', sans-serif",
 };
 
 export const FEATURES = {

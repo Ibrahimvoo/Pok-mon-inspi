@@ -5,11 +5,14 @@ const KEY = 'ps5ux.v1';
 const now = Date.now();
 const H = 3600e3;
 
+// Free games added to every console, including consoles saved before they existed.
+const GIFTS = ['pouf-party'];
 const defaults = () => ({
   user: null,
-  owned: ['ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound', 'moonlit-bay', 'hollow-pines', 'abyssal'],
-  installed: ['ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound'],
-  lastPlayed: { 'ashen-crown': now - 2 * H, 'neon-requiem': now - 26 * H, starfall: now - 50 * H, valewalker: now - 96 * H, lumen: now - 140 * H, tidebreaker: now - 200 * H, northbound: now - 300 * H },
+  gifts: [...GIFTS],
+  owned: ['pouf-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound', 'moonlit-bay', 'hollow-pines', 'abyssal'],
+  installed: ['pouf-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound'],
+  lastPlayed: { 'pouf-party': now - 2 * H - 60e3, 'ashen-crown': now - 2 * H, 'neon-requiem': now - 26 * H, starfall: now - 50 * H, valewalker: now - 96 * H, lumen: now - 140 * H, tidebreaker: now - 200 * H, northbound: now - 300 * H },
   playTime: { 'ashen-crown': 41 * 60, 'neon-requiem': 12 * 60, starfall: 63 * 60, valewalker: 88 * 60, lumen: 7 * 60, tidebreaker: 15 * 60, northbound: 22 * 60 },
   trophies: { 'ashen-crown': [0, 1, 2], 'neon-requiem': [0], starfall: [0, 1, 3, 4], valewalker: [0, 1, 2, 3, 4, 5], lumen: [0, 1], tidebreaker: [0], northbound: [0, 1] },
   wishlist: ['sands-meridian'],
@@ -36,6 +39,15 @@ function load() {
     // drop ids that no longer exist in the catalogue
     for (const k of ['owned', 'installed', 'wishlist', 'cart']) merged[k] = merged[k].filter(id => byId[id]);
     merged.downloads = merged.downloads.filter(x => byId[x.id]);
+    merged.gifts ||= [];
+    for (const id of GIFTS) if (!merged.gifts.includes(id)) {
+      merged.gifts.push(id);
+      if (!merged.owned.includes(id)) merged.owned.push(id);
+      if (!merged.installed.includes(id)) merged.installed.push(id);
+      // right after the most recently played game on the home screen (the default selection stays the same)
+      const times = Object.values(merged.lastPlayed).filter(Number.isFinite);
+      merged.lastPlayed[id] ||= (times.length ? Math.max(...times) : Date.now()) - 60e3;
+    }
     return merged;
   } catch { return d; }
 }

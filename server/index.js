@@ -48,7 +48,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   };
   function csp(req) {
     const host = req.headers.host;
-    return `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self' wss://${host} ws://${host}; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'`;
+    return `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self' wss://${host} ws://${host} https://0.peerjs.com wss://0.peerjs.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'`;
   }
   function json(res, status, body, extra = {}) {
     res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...SEC, ...extra });

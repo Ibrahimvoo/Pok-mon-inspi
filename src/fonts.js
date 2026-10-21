@@ -13,3 +13,4 @@ import '@fontsource/rajdhani/latin-600';
 import '@fontsource/josefin-sans/latin-300';
 import '@fontsource/playfair-display/latin-700-italic';
 import '@fontsource/anton/latin-400';
+import '@fontsource/luckiest-guy/latin-400.css';

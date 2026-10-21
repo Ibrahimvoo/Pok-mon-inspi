@@ -12,6 +12,7 @@ import { voice } from '../rtc.js';
 import { session as account } from '../session.js';
 import { unlockTrophy } from '../actions.js';
 import { openControlCenter } from './cc.js';
+import { playable } from '../games/registry.js';
 
 export const session = { id: null, layer: null, started: 0 };
 
@@ -28,12 +29,13 @@ export function launch(id) {
     if (!nav.layers.includes(splash)) return;
     session.id = id; session.started = Date.now();
     state.lastPlayed[id] = Date.now(); save('played');
-    session.layer = go(ingameScreen, { id }, { replace: true, sound: null });
+    const real = playable(id);
+    session.layer = go(real ? real.screen : ingameScreen, { id }, { replace: true, sound: null });
     social.setPresence('game', id);
     navExtras.game = id; saveNav();
     // playing while in a party opens a shared session: the other members are asked to join
     if (social.party && social.party.game?.id !== id) social.startGame(id);
-    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
+    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : real ? 'Centre de contrôle : bouton PS' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
   }, 3300);
 }
 
@@ -83,7 +85,7 @@ export function resume() {
     for (const l of [...nav.layers].reverse()) { if (l === L) break; closeLayer(l, { silent: true }); }
     return;
   }
-  session.layer = go(ingameScreen, { id: session.id }, { sound: null });
+  session.layer = go(playable(session.id)?.screen || ingameScreen, { id: session.id }, { sound: null });
 }
 
 export function suspendToHome() {
@@ -105,6 +107,7 @@ export function endSession() {
   state.lastPlayed[id] = Date.now();
   save('played');
   if (session.layer && nav.layers.includes(session.layer)) closeLayer(session.layer);
+  playable(id)?.end();
   session.id = null; session.layer = null;
   if (social.party?.game?.id === id && social.party.game.by === account.current?.id) social.stopGame();
   social.setPresence('home');
