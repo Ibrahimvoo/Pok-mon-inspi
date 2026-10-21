@@ -2,11 +2,25 @@
 
 Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, création de compte, choix de l’utilisateur, écran d’accueil, hub de jeu, PlayStation Store, fiches produit, bibliothèque, recherche, profil, Base de jeu (amis, groupes, appels vocaux), centre de contrôle, menu Créer, paramètres. Jouable à la **manette**, au **clavier**, à la **souris** et au **toucher**, dans Safari, Chrome, Firefox ou Edge (ordinateur, iPad, iPhone en paysage).
 
-> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les 18 jeux et leurs visuels sont fictifs ; les achats et les jeux sont simulés. Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
+> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les jeux et leurs visuels sont fictifs ; les achats sont simulés, et les 18 jeux du catalogue d’origine lancent une session simulée — **Pouf Party** est, lui, un vrai jeu jouable (voir plus bas). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
 ## Jouer avec un ami sans rien installer (salons)
 
 Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
+
+## Pouf Party — un vrai jeu multijoueur 3D dans la console
+
+**Pouf Party** est un jeu de party game original, jouable pour de vrai depuis la console : sélectionnez sa jaquette sur l’accueil (ou dans la bibliothèque / le PlayStation Store, où il est gratuit et déjà installé), ouvrez sa fiche puis **Jouer**. Le jeu se lance en plein écran ; le bouton PS (ou P, ou le pavé tactile sur iOS) ouvre le centre de contrôle, et *Quitter le jeu* ramène à l’accueil.
+
+- **Descentes en bouée (coopération)** : jusqu’à 4 critters sur une bouée ; chacun pousse la bouée depuis son côté à coups de « pouf ». Trois rivières : *La Descente du Lagon Rose* (reprise des épreuves de référence : rondins à piques, mâchoires, mines, moulins, barres-marteaux, scies, tourbillon, toboggan), *Les Rapides du Glacier* (icebergs, geysers, troncs à la dérive) et *Le Marais au Crépuscule* (crocodiles, mines toxiques). Trois coups et la bouée éclate : tout le monde repart du dernier checkpoint validé.
+- **Courses à pied** : *Le Parcours Pétillant* (barres tournantes, plateformes mobiles, marteaux, bumpers, disques qui tournent, tremplin) et *La Grande Glissade* (glace glissante, croix tournante, tapis roulant, ascenseurs). Le premier arrivé gagne, classement à l’arrivée.
+- **Survie** : *Le Grand Tourbillon* (les barres accélèrent, le sol s’enfonce) et *La Patinoire Folle* (bumpers qui foncent, coins qui fondent) ; le dernier debout gagne.
+- **Mode tournoi** : l’hôte enchaîne six épreuves ; chacune rapporte des points (rang en course et en survie, étoiles de l’équipe en descente) et le meilleur total gagne.
+- **En ligne entre amis** : *Jouer* crée un salon avec un code à 5 caractères ; les amis choisissent *Rejoindre une partie* ou ouvrent le lien `…#pouf=CODE`. Les membres d’un groupe ou d’un salon de la console arrivent automatiquement dans le même salon, et les amis en ligne peuvent être invités depuis le jeu. Connexion directe WebRTC (mise en relation PeerJS), l’hôte calcule la partie et les autres reçoivent l’état 20 fois par seconde ; si l’hôte part, un autre joueur reprend le salon. Sans connexion, le jeu reste jouable en solo.
+- **Progression** : personnages (6 espèces), couleurs, chapeaux, accessoires, couleur du gaz, emotes, XP, niveaux, pièces pour débloquer, étoiles, records de la console, trophées de la console.
+- **Commandes** : clavier (ZQSD ou WASD, Espace, Maj/E, R, 1-6, Échap), souris (clic pour capturer la caméra), manette (sticks, ✕/R2, □/R1, △, croix directionnelle, Options) et écran tactile (joystick et boutons).
+
+Le jeu est isolé dans `src/games/pouf/` (chargé à la demande : la console ne télécharge three.js qu’au lancement du jeu) ; `src/games/registry.js` déclare les jeux réellement jouables, les autres jeux du catalogue gardent la session simulée. Les visuels de la jaquette sont rendus avec le moteur du jeu (`npm run art:pouf`).
 
 ## Démarrer
 
@@ -71,10 +85,11 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 ## Tests
 
 ```bash
-npm test          # API + WebSocket (SQLite en mémoire)
+npm test          # API + WebSocket (SQLite en mémoire) + physique de Pouf Party (bouée, pièges, checkpoints, course à pied)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
 npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
+npm run e2e:pouf  # Pouf Party : partie en ligne à deux (bouée et course), clavier, manette, tactile, survie, retour à la console
 ```
 
 ## Technique

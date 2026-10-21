@@ -270,3 +270,30 @@ html[data-device="touch"] .pf-keys { display: none; }
   .pf-lobby-b { bottom: 2.4rem; gap: 1.2rem; }
   .pf-panel.mid, .pf-panel.wide, .pf-panel.side { max-height: 96vh; }
 }
+
+/* on-foot épreuves: no raft air, a rank pill instead of the bursts counter */
+.pf-pill.rank { right: 3rem; display: none; }
+.pf-hud.mode-race .pf-pill.rank, .pf-hud.mode-survival .pf-pill.rank { display: flex; }
+.pf-hud.mode-race .pf-air, .pf-hud.mode-survival .pf-air, .pf-hud.mode-race .pf-pill.pops, .pf-hud.mode-survival .pf-pill.pops { display: none; }
+.pf-hud.mode-survival .pf-prog { display: none; }
+.pf-results-crew .rk { font: 400 3.4rem 'Luckiest Guy', sans-serif; color: var(--sun); -webkit-text-stroke: .3rem var(--ink); paint-order: stroke fill; min-width: 5rem; text-align: center; }
+.pf-rrow.first { background: #fff4c7; }
+.pf-ccard .kind { font: 400 1.8rem 'Luckiest Guy', sans-serif; color: #fff; background: var(--sky); -webkit-text-stroke: .15rem var(--ink); paint-order: stroke fill; border: .25rem solid var(--ink); border-radius: 99rem; padding: .2rem 1.2rem; }
+.pf-ccard .kind.race { background: var(--pink); } .pf-ccard .kind.survival { background: #b58cf0; }
+
+/* tournament */
+.pf-lobby-acts { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+.pf-tourlist { margin: .6rem 0 0; padding-left: 3rem; display: grid; gap: .5rem; font-size: 2rem; }
+.pf-tourlist .kind { font: 400 1.5rem 'Luckiest Guy', sans-serif; color: #fff; background: var(--sky); -webkit-text-stroke: .12rem var(--ink); paint-order: stroke fill; border: .2rem solid var(--ink); border-radius: 99rem; padding: .1rem .9rem; }
+.pf-tourlist .kind.race { background: var(--pink); } .pf-tourlist .kind.survival { background: #b58cf0; }
+.pf-tour { margin-top: 1.6rem; }
+.pf-tour h4 { margin: 0 0 1rem; }
+.pf-tour-rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr)); gap: 1rem; }
+.pf-tour-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 1.2rem; align-items: center; background: #fff; border: .35rem solid var(--ink); border-radius: 1.6rem; padding: .6rem 1.4rem; font-size: 2rem; }
+.pf-tour-row b { font: 400 2.6rem 'Luckiest Guy', sans-serif; }
+.pf-tour-row .nm { font: 400 2.2rem 'Luckiest Guy', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-tour-row .plus { color: var(--leaf); font-weight: 700; }
+.pf-tour-row .pts { font: 400 2.4rem 'Luckiest Guy', sans-serif; color: var(--pink); -webkit-text-stroke: .2rem var(--ink); paint-order: stroke fill; }
+.pf-tour-row.lead { background: #fff4c7; }
+.pf-tour-row.me { box-shadow: 0 0 0 .35rem var(--sun); }
+.pf-panel.results { overflow: auto; scrollbar-width: none; }

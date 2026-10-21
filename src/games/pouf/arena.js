@@ -8,6 +8,7 @@ import { createTraps, createRaft } from './view/props.js';
 import { createFx } from './view/fx.js';
 import { createCharacter, gasOf, EMOTES } from './view/characters.js';
 import { h } from '../../ui.js';
+import { state } from '../../state.js';
 
 export const SEAT_R = 1.58, DECK_Y = .3;
 const v3 = new THREE.Vector3(), v4 = new THREE.Vector3();
@@ -166,6 +167,7 @@ export function createArena(stage, overlay) {
         cam.look.lerp(v4.set(rs.x, rs.y + 1, rs.z), Math.min(1, dt * 3));
       }
       C.position.copy(cam.pos);
+      if (state.settings.reduceMotion) cam.shake = 0;   // console accessibility setting
       if (cam.shake > 0) { cam.shake = Math.max(0, cam.shake - dt * 2.5); C.position.x += (Math.random() - .5) * cam.shake * .5; C.position.y += (Math.random() - .5) * cam.shake * .5; }
       C.lookAt(cam.look);
       stage.focus(rs.x, rs.y, rs.z);
@@ -185,6 +187,11 @@ export function createArena(stage, overlay) {
       }
     },
     showTags(v) { tags.classList.toggle('hidden', !v); },
+    // the on-foot épreuves use their own scene: hide the river while they run
+    setVisible(v) {
+      for (const r of [world?.root, traps?.root, raft?.root, fx?.shadow]) if (r) r.visible = v;
+      tags.classList.toggle('hidden', !v);
+    },
     dispose() {
       arena.unload();
       for (const m of crew.values()) m.char.dispose();

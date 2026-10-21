@@ -1,7 +1,12 @@
-// Every playable course, in unlock order. Positions written as [segment, fraction] are resolved to metres.
+// Every playable épreuve: river descents (raft, cooperative), an obstacle race and a survival arena.
+// River positions written as [segment, fraction] are resolved to metres.
 import { LAGON } from './lagon.js';
 import { GLACIER } from './glacier.js';
 import { MARAIS } from './marais.js';
+import { PARCOURS } from './parcours.js';
+import { TOURBILLON } from './tourbillon.js';
+import { GLISSADE } from './glissade.js';
+import { PATINOIRE } from './patinoire.js';
 
 function resolve(def) {
   const starts = [];
@@ -15,5 +20,10 @@ function resolve(def) {
 // par times (3, 2 and 1 stars) scale with the course length when they are not given
 function withPar(c) { if (!c.par) { const k = c.finish / 575; c.par = [150, 210, 300].map(v => Math.round(v * k / 5) * 5); } return c; }
 
-export const COURSES = [LAGON, GLACIER, MARAIS].map(resolve).map(withPar);
+const RIVERS = [LAGON, GLACIER, MARAIS].map(resolve).map(withPar);
+export const COURSES = [RIVERS[0], PARCOURS, RIVERS[1], TOURBILLON, RIVERS[2], GLISSADE, PATINOIRE];
+export const RIVER_COURSES = RIVERS;
 export const courseById = Object.fromEntries(COURSES.map(c => [c.id, c]));
+
+// the tournament plays every épreuve once, alternating teamwork and rivalry
+export const TOUR = ['lagon', 'parcours', 'glacier', 'tourbillon', 'marais', 'glissade'];

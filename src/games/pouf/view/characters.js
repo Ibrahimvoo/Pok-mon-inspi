@@ -250,6 +250,11 @@ export function createCharacter(look) {
           if (emoteId === 'angry') { hrx = .2 * k; sy += Math.sin(t * 40) * .03 * k; aLz = 1.2 * k; aRz = -1.2 * k; aLx = aRx = -.6 * k; headX = .2 * k; }
           if (emoteId === 'love') { aLx = aRx = -1.9 * k; aLz = -.3 * k; aRz = .3 * k; headZ = Math.sin(t * 3) * .2 * k; hry = Math.sin(t * 3) * .2 * k; }
         }
+      } else if (mode === 'air') { // jumping: arms up, knees tucked
+        aLx = -2.5; aRx = -2.5; aLz = .7; aRz = -.7; lL = .9; lR = .5; hrx = -.1; headX = -.15;
+        if (st.big > 0) { sy -= st.big * .25; sx += st.big * .2; }
+      } else if (mode === 'stun') { // knocked: wobbling and dizzy
+        hrz = Math.sin(t * 14) * .35; hrx = .25; headZ = Math.sin(t * 9) * .4; aLx = -1.8; aRx = -.4; aLz = 1.1; aRz = -1.1; lL = Math.sin(t * 16) * .6; lR = -lL;
       } else if (mode === 'fly') {
         aLx = -2.8 + Math.sin(t * 25) * .5; aRx = -2.8 - Math.sin(t * 25) * .5; aLz = 1; aRz = -1; lL = Math.sin(t * 20); lR = -lL; headX = -.3;
       } else if (mode === 'swim') {

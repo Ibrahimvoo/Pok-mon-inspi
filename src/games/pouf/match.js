@@ -209,6 +209,7 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
   }
 
   const api = {
+    kind: 'raft', roster,
     get t() { return t; }, get finished() { return view.finished; }, riders, sim, hud,
     debug: () => ({ buf: buf.length, t, clockSet, snapAge: performance.now() - lastSnapAt, phase, view: { ...view } }),
     onMsg(m) {
@@ -238,7 +239,10 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
     // a player left during the run: their rider jumps off
     removeRider(id) {
       const m = arena.crew.get(id);
-      if (m) { m.char.root.updateMatrixWorld(true); const p = m.char.root.getWorldPosition(new THREE.Vector3()); arena.fx.splash(p.x, arena.rs.y, p.z, 16, .8); }
+      if (m) {
+        m.char.root.updateMatrixWorld(true); const p = m.char.root.getWorldPosition(new THREE.Vector3()); arena.fx.splash(p.x, arena.rs.y, p.z, 16, .8);
+        m.char.dispose(); m.tag.remove(); m.bubble.remove(); arena.crew.delete(id);
+      }
       riders.delete(id);
     },
     update(dt, paused) {
@@ -279,7 +283,7 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
         }
         if (finishedAt >= 0 && t - finishedAt > 4.5 && !ended) {
           ended = true;
-          const summary = api.summary();
+          const summary = g.decorate ? g.decorate(api.summary()) : api.summary();
           lobby.broadcast({ t: 'end', summary });
           g.onEnd(summary);
           return;

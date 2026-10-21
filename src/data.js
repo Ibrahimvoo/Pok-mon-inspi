@@ -140,8 +140,8 @@ export const GAMES = [
     release: '2026-10-21', price: 0, discount: 0, rating: 4.9, votes: 1280, pegi: 3, size: 2.4, players: '1-4 joueurs (en ligne)',
     font: 'luckiest', mood: 'warm', thumb: .5, accent: '#ffd23f', playable: true,
     tagline: 'Gonflés à bloc. Ensemble.',
-    desc: 'Montez à quatre sur une bouée et dévalez des rivières pleines de pièges en vous propulsant… à coups de pouf ! Chaque joueur pousse depuis son côté de la bouée : coordonnez-vous pour éviter piques, mâchoires et moulins, validez les checkpoints et franchissez l’arrivée. Jeu en ligne entre amis, personnages à personnaliser, emotes et records.',
-    features: ['vibration', 'audio3d', 'online'], activities: ['La Descente du Lagon Rose', 'Salon entre amis', 'Personnalisation'],
+    desc: 'Montez à quatre sur une bouée et dévalez des rivières pleines de pièges en vous propulsant… à coups de pouf ! Coordonnez-vous pour éviter piques, mâchoires, moulins et crocodiles, validez les checkpoints et franchissez l’arrivée. Entre deux descentes, affrontez-vous à pied dans une course d’obstacles et dans l’arène du Grand Tourbillon. Jeu en ligne entre amis, personnages à personnaliser, emotes et records.',
+    features: ['vibration', 'audio3d', 'online'], activities: ['La Descente du Lagon Rose', 'Le Parcours Pétillant', 'Le Grand Tourbillon'],
     trophies: [
       T('Premier plouf', 'Terminer une descente', 'bronze'),
       T('Tous à bord', 'Terminer une descente à au moins deux joueurs', 'bronze'),

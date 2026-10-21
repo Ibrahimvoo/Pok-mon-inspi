@@ -9,9 +9,10 @@ import { createStage } from './view/stage.js';
 import { createArena } from './arena.js';
 import { createInput } from './input.js';
 import { createMatch, seatAngle } from './match.js';
+import { createFootMatch } from './footmatch.js';
 import { Lobby, randomCode, codeFrom, cleanCode, MAX_PLAYERS } from './net.js';
-import { loadProfile, reward } from './profile.js';
-import { COURSES, courseById } from './maps/index.js';
+import { loadProfile, reward, roundPoints } from './profile.js';
+import { COURSES, courseById, TOUR } from './maps/index.js';
 import { defaultLook, distinctLooks, SPECIES, EMOTES } from './view/characters.js';
 import { sound } from './audio.js';
 import * as M from './ui/menus.js';
@@ -118,18 +119,36 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
     setCourse(c) {
       G.course = c;
       if (lobby.isHost) lobby.broadcast({ t: 'lobby', course: c.id });
-      if (arena.course?.id !== c.id) { arena.load(c); G.showcase(); }
+      // the lobby shows the river of the chosen descent (the on-foot épreuves keep the current one)
+      if (!c.foot && arena.course?.id !== c.id) { arena.load(c); G.showcase(); }
       M.refresh(G);
     },
     canStart() { return lobby.isHost && lobby.players.filter(m => m.online !== false).every(m => m.host || m.ready); },
 
     // ---------------------------------------------------------------- runs
+    // ---------------------------------------------------------------- tournament: the épreuves in a row, points added up
+    tourMode: false, tour: null,
+    setTourMode(v) { G.tourMode = v; G.tour = null; if (lobby.isHost) lobby.broadcast({ t: 'lobby', course: G.course.id, tour: v }); M.refresh(G); },
+    decorate(summary) {
+      if (!G.tour) return summary;
+      const round = roundPoints(summary);
+      for (const r of summary.riders) { G.tour.pts[r.id] = (G.tour.pts[r.id] || 0) + (round[r.id] || 0); G.tour.names[r.id] = r.name; G.tour.looks[r.id] = r.look; }
+      summary.tour = { i: G.tour.i, n: G.tour.list.length, round, pts: { ...G.tour.pts }, names: { ...G.tour.names }, looks: { ...G.tour.looks } };
+      return summary;
+    },
+    nextRound() {
+      if (!lobby.isHost || !G.tour) return;
+      if (G.tour.i + 1 >= G.tour.list.length) { G.tour = null; G.state = 'lobby'; G.openBase(); return; }
+      G.tour.i++; G.course = courseById[G.tour.list[G.tour.i]];
+      G.startMatch();
+    },
     startMatch() {
       if (!lobby.isHost) return;
+      if (G.tourMode && !G.tour) { G.tour = { list: TOUR.slice(), i: 0, pts: {}, names: {}, looks: {} }; G.course = courseById[G.tour.list[0]]; }
       const roster = distinctLooks(lobby.players.filter(m => m.online !== false).slice(0, MAX_PLAYERS).map((m, i) => ({ id: m.id, name: m.name, look: m.id === me.id ? me.look : m.look, seat: i })));
       lobby.members.forEach(m => { if (!m.host) m.ready = false; });
       lobby.pushState();
-      const msg = { t: 'start', course: G.course.id, roster };
+      const msg = { t: 'start', course: G.course.id, roster, tour: G.tour ? { i: G.tour.i, n: G.tour.list.length } : null };
       lobby.broadcast(msg);
       G.beginMatch(msg, true);
     },
@@ -140,8 +159,10 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       G.closeAll();
       G.state = 'match'; G.paused = false;
       const spectator = !msg.roster.some(r => r.id === me.id);
-      G.match = createMatch(G, { course, roster: msg.roster, host, meId: me.id, spectator });
-      if (!profile.tutorial && !spectator) { profile.tutorial = true; profile.save(); M.helpMenu(G, { first: true }); }
+      G.match = (course.foot ? createFootMatch : createMatch)(G, { course, roster: msg.roster, host, meId: me.id, spectator });
+      // the rules are shown once for the raft and once for the on-foot épreuves
+      const key = course.foot ? 'tutorialFoot' : 'tutorial';
+      if (!profile[key] && !spectator) { profile[key] = true; profile.save(); M.helpMenu(G, { first: true }); }
     },
     endMatch() { if (G.match) { G.match.dispose(); G.match = null; } G.paused = false; },
     onEnd(summary) {
@@ -157,6 +178,7 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
     },
     abortMatch(reason) {
       if (G.state !== 'match' && G.state !== 'results') return;
+      G.tour = null;
       G.endMatch();
       G.state = 'lobby';
       G.closeAll(); G.showcase(); G.openBase();
@@ -170,7 +192,9 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
     },
     resumeRun() { if (G.layers.length) return; G.paused = false; if (G.match && !G.match.finished && G.attached) input.setPlaying(true); },
     checkTrophies(s) {
-      const stats = profile.stats, won = s.finished && s.riders.some(r => r.id === me.id);
+      const stats = profile.stats, mine = s.riders.find(r => r.id === me.id);
+      if (s.kind === 'race' || s.kind === 'survival') { if (mine && mine.rank === 1 && s.riders.length >= 2) trophy?.(1); if (G.rewards?.stars === 3) trophy?.(4); return; }
+      const won = s.finished && !!mine;
       if (won) trophy?.(0);
       if (won && s.riders.length >= 2) trophy?.(1);
       if (won && s.deaths === 0) trophy?.(2);
@@ -209,24 +233,24 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
 
   // ---------------------------------------------------------------- network events
   lobby.on('msg', m => {
-    if (m.t === 'snap' || m.t === 'ev' || m.t === 'inp') { G.match?.onMsg(m); return; }
+    if (['snap', 'ev', 'inp', 'fs', 'fsnap', 'fev', 'ffin', 'fout', 'fem'].includes(m.t)) { G.match?.onMsg(m); return; }
     if (m.t === 'start' && !lobby.isHost) { G.beginMatch(m, false); return; }
     if (m.t === 'end' && !lobby.isHost) { G.onEnd(m.summary); return; }
     if (m.t === 'abort' && !lobby.isHost) { G.abortMatch('L’hôte a mis fin à la partie'); return; }
-    if (m.t === 'lobby' && !lobby.isHost) { const c = courseById[m.course]; if (c) { G.course = c; if (G.state !== 'match') { arena.load(c); G.showcase(); } M.refresh(G); } return; }
+    if (m.t === 'lobby' && !lobby.isHost) { const c = courseById[m.course]; G.tourMode = !!m.tour; if (c) { G.course = c; if (G.state !== 'match' && !c.foot) { arena.load(c); G.showcase(); } } M.refresh(G); return; }
     if (m.t === 'move' && !lobby.isHost) { const code = cleanCode(m.code); setTimeout(() => G.joinCode(code), 900); }
   });
   lobby.on('state', () => {
     if (G.state === 'match' && G.match) {
       const ids = new Set(lobby.members.map(x => x.id));
-      for (const id of [...G.match.riders.keys()]) if (!ids.has(id)) { G.match.removeRider(id); arena.crew.get(id)?.char.dispose(); arena.crew.get(id)?.tag.remove(); arena.crew.delete(id); }
+      for (const id of [...G.match.riders.keys()]) if (!ids.has(id)) G.match.removeRider(id);
     } else if (G.state === 'lobby' || G.state === 'results') G.showcase();
     M.refresh(G);
   });
   lobby.on('joined', mem => {
     if (!lobby.isHost) return;
-    lobby.sendTo(mem.id, { t: 'lobby', course: G.course.id });
-    if (G.state === 'match' && G.match) lobby.sendTo(mem.id, { t: 'start', course: G.course.id, roster: [...G.match.riders.keys()].map((id, i) => { const c = arena.crew.get(id); return { id, name: c?.name, look: c?.look, seat: i }; }) });
+    lobby.sendTo(mem.id, { t: 'lobby', course: G.course.id, tour: G.tourMode });
+    if (G.state === 'match' && G.match) lobby.sendTo(mem.id, { t: 'start', course: G.course.id, roster: G.match.roster.filter(r => G.match.riders.has(r.id)) });
     sound.ui('ok');
     G.toast(`${mem.name} a rejoint la partie`);
   });
@@ -255,16 +279,19 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
     const dt = Math.min(.25, (now - last) / 1000); last = now;
     if (window.__pouf) window.__fps = (window.__fps || 30) * .95 + (1 / Math.max(.001, dt)) * .05;
     if (!G.alive) return;
-    if (G.match) G.match.update(dt, G.paused);
+    const foot = G.match?.kind === 'foot';
+    // a solo run also pauses while the console covers it (Control Center, home screen)
+    if (G.match) G.match.update(dt, G.paused || (G.covered && lobby.members.length <= 1));
     else {
       G.menuT += dt;
       // idle crew: the occasional emote keeps the raft alive
       if (Math.random() < dt * .25 && arena.crew.size) { const ids = [...arena.crew.keys()]; arena.emote(ids[Math.floor(Math.random() * ids.length)], EMOTES[Math.floor(Math.random() * 4)].id); }
     }
-    arena.update(dt, G.match ? G.match.t : G.menuT);
+    if (!foot || !G.match) arena.update(dt, G.match ? G.match.t : G.menuT);
     if (G.attached && el.isConnected) {
       stage.render();
-      arena.updateTags(el.clientWidth, el.clientHeight);
+      if (foot && G.match) G.match.updateTags(el.clientWidth, el.clientHeight);
+      else arena.updateTags(el.clientWidth, el.clientHeight);
     }
   }
 
@@ -276,13 +303,20 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       if (G.match && !G.layers.length) input.setPlaying(true);
       sound.music(true, { fast: !!G.match });
     },
-    detach() { G.attached = false; input.setPlaying(false); G.closeAll(); },
+    detach() {
+      G.attached = false; input.setPlaying(false); G.closeAll();
+      if (G.state === 'match' && lobby.members.length <= 1 && !G.match?.finished) G.paused = true;   // back with the pause menu
+    },
+    // another console layer (Control Center…) is over the game
+    covered(v) { G.covered = v; if (v) input.setPlaying(false); },
     // the game layer is on top again (our menus were closed by the console): reopen the right one
     resumed() {
       // deferred: when this runs inside another menu change, that change has already pushed its own layer
       queueMicrotask(() => {
         if (!G.alive || G.opening || G.layers.length || nav.top?.pf) return;
-        if (G.state !== 'match') G.openBase(); else if (!G.match?.finished && !G.paused) input.setPlaying(true);
+        if (G.state !== 'match') G.openBase();
+        else if (G.paused) { G.paused = false; G.openPause(); }
+        else if (!G.match?.finished) input.setPlaying(true);
       });
     },
     // console actions reaching the game layer itself (during a run)

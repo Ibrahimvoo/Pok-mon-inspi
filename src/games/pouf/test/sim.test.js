@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildTrack } from '../sim/track.js';
 import { RaftSim, RAFT_R, MAX_AIR, unpack } from '../sim/raft.js';
-import { COURSES } from '../maps/index.js';
+import { RIVER_COURSES as COURSES } from '../maps/index.js';
 
 for (const course of COURSES) {
   const T = buildTrack(course);

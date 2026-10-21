@@ -1,6 +1,7 @@
 // Console side of Pouf Party: the full-screen layer that hosts the game, its lazy loading,
 // the Control Center button, and invitation links (…#pouf=CODE).
 import { h } from '../../ui.js';
+import { nav } from '../../nav.js';
 import { dialog, toast } from '../../shell.js';
 import { session } from '../../session.js';
 import './console.css';
@@ -12,16 +13,19 @@ const holder = h('div.pf-game');
 // Layer factory used by the console when the game is launched or resumed.
 export function screen({ id }) {
   const root = h('div.pf-root', holder);
+  let off = null;
   const layer = {
     root, opaque: true, shade: 0, noHints: true, bg: null, mood: null,
     hints: [],
     onEnter() {
       document.documentElement.classList.add('pf-playing');
+      // the game's own menus are layers above this one; anything else (Control Center…) covers the game
+      off = nav.onChange(top => game?.covered(!!top && top !== layer && !top.pf));
       if (game) { game.attach(); game.resumed(); }
       else boot();
     },
     onResume() { document.documentElement.classList.add('pf-playing'); game?.attach(); game?.resumed(); },
-    onLeave() { document.documentElement.classList.remove('pf-playing'); game?.detach(); },
+    onLeave() { off?.(); off = null; document.documentElement.classList.remove('pf-playing'); game?.detach(); },
     onAction(a, ev) {
       if (a === 'ps') { import('../../screens/cc.js').then(m => m.openControlCenter({ ingame: id })); return true; }
       return game ? game.onAction(a, ev) !== false : true;

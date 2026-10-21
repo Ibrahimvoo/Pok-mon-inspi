@@ -13,22 +13,24 @@ const SVG = {
 export const fmtTime = s => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60; return `${String(m).padStart(2, '0')}:${r.toFixed(2).padStart(5, '0')}`; };
 const PADS = ['ps', 'xbox', 'nintendo', 'generic'];
 
-export function createHud(root, course) {
-  const ticks = course.checkpoints.map(s => h('i.tick', { style: { left: (s / course.finish * 100) + '%' } }));
+export function createHud(root, course, { mode = 'raft' } = {}) {
+  const span = mode === 'race' ? course.finishZ : course.finish || 1;
+  const ticks = mode === 'survival' ? [] : course.checkpoints.map(c => h('i.tick', { style: { left: ((typeof c === 'number' ? c : c.p[2]) / span * 100) + '%' } }));
   const marker = h('b.marker'), fill = h('span.fill');
   const prog = h('div.pf-prog', h('div.line', fill, ...ticks, marker), h('span.flag', { html: SVG.flag }));
   const airSegs = [h('i'), h('i'), h('i')];
   const air = h('div.pf-air', h('span.ic', { html: SVG.raft }), h('div.segs', airSegs));
   const timeTx = h('span'), timer = h('div.pf-pill.timer', h('span.ic', { html: SVG.clock }), timeTx);
   const popTx = h('span', '0'), pops = h('div.pf-pill.pops', h('span.ic', { html: SVG.pop }), popTx);
-  const gasFill = h('i'), gas = h('div.pf-gas', h('div.bar', gasFill), h('small', 'GAZ'));
+  const gasFill = h('i'), gas = h('div.pf-gas', h('div.bar', gasFill), h('small', mode === 'raft' ? 'GAZ' : 'POUF'));
   const holdRing = h('i.hold');
   const keyPause = h('div.pf-key'), keyRespawn = h('div.pf-key', holdRing);
   const keys = h('div.pf-keys', keyPause, keyRespawn);
   const banner = h('div.pf-banner'), sub = h('div.pf-sub');
   const toast = h('div.pf-toast');
   const net = h('div.pf-net');
-  const el = h('div.pf-hud.hidden', prog, air, timer, pops, gas, keys, banner, sub, toast, net);
+  const rankTx = h('span'), rank = h('div.pf-pill.rank', rankTx);
+  const el = h(`div.pf-hud.hidden.mode-${mode}`, prog, air, timer, pops, rank, gas, keys, banner, sub, toast, net);
   root.append(el);
   let bannerT = 0, toastT = 0, lastDevice = '';
 
@@ -39,13 +41,15 @@ export function createHud(root, course) {
     const pad = PADS.includes(d);
     keyPause.replaceChildren(pad ? glyph('options') : h('span.gl.key', 'Échap'), h('span', 'PAUSE'));
     keyRespawn.replaceChildren(holdRing, pad ? glyph('triangle') : h('span.gl.key', 'R'), h('span', 'RÉAPPARAÎTRE'));
+    keyRespawn.classList.toggle('hidden', mode === 'survival');
     keys.classList.toggle('hidden', d === 'touch');
   }
   const api = {
     el,
     show(v) { el.classList.toggle('hidden', !v); renderKeys(); },
+    rank(text) { if (rankTx.textContent !== text) { rankTx.textContent = text; rank.classList.remove('bump'); void rank.offsetWidth; rank.classList.add('bump'); } },
     progress(s, cp) {
-      const k = Math.max(0, Math.min(1, s / course.finish));
+      const k = Math.max(0, Math.min(1, s / span));
       marker.style.left = (k * 100) + '%'; fill.style.width = (k * 100) + '%';
       ticks.forEach((t, i) => t.classList.toggle('done', i < cp));
     },

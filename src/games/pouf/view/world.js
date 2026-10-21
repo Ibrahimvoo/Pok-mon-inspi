@@ -201,7 +201,7 @@ function tubeAlong(points, r, color, radial = 10) {
 }
 
 // ---------------------------------------------------------------- vegetation & props (merged, instanced)
-function treeGeo(theme, v) {
+export function treeGeo(theme, v) {
   const L = theme.leaf, tr = theme.trunk, p = [];
   if (v === 0) { // round puffy tree
     p.push(Cy(.22, .34, 3.2, tr, [0, 1.6, 0], [0, 0, .06], 1, 7));

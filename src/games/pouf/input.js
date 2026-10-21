@@ -7,7 +7,7 @@ import { EMOTES } from './view/characters.js';
 const DEAD = .2;
 export function createInput(root, canvas) {
   const keys = new Set();
-  let mouseDX = 0, mouseL = false, mouseR = false, superEdge = 0, emoteEdge = null, pauseEdge = false, locked = false;
+  let mouseDX = 0, mouseL = false, mouseR = false, superEdge = 0, jumpEdge = 0, emoteEdge = null, pauseEdge = false, locked = false;
   let touch = { mx: 0, my: 0, puff: false, look: 0, active: false };
   const padPrev = {};
   let playing = false;
@@ -18,6 +18,7 @@ export function createInput(root, canvas) {
     if (e.type === 'keydown') {
       if (!e.repeat) {
         if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyE') superEdge++;
+        if (e.code === 'Space') jumpEdge++;   // a tap shorter than a frame still counts
         const n = /^Digit([1-6])$/.exec(e.code); if (n) emoteEdge = EMOTES[+n[1] - 1]?.id || null;
       }
       keys.add(e.code);
@@ -27,7 +28,7 @@ export function createInput(root, canvas) {
   const onBlur = () => { keys.clear(); mouseL = mouseR = false; };
   const onMouseDown = e => {
     if (!playing || e.pointerType === 'touch') return;
-    if (e.button === 0) mouseL = true;
+    if (e.button === 0) { mouseL = true; jumpEdge++; }
     if (e.button === 2) { mouseR = true; superEdge++; }
     if (!locked && consoleInput.device === 'mouse' && canvas.requestPointerLock && !IOS) { try { const r = canvas.requestPointerLock(); r?.catch?.(() => {}); } catch { /* not allowed */ } }
   };
@@ -59,7 +60,7 @@ export function createInput(root, canvas) {
   stickEl.addEventListener('pointermove', moveStick);
   const endStick = e => { if (e.pointerId !== stickId) return; stickId = null; touch.mx = touch.my = 0; knob.style.transform = ''; };
   stickEl.addEventListener('pointerup', endStick); stickEl.addEventListener('pointercancel', endStick);
-  puffBtn.addEventListener('pointerdown', e => { touch.puff = true; capture(puffBtn, e.pointerId); e.preventDefault(); });
+  puffBtn.addEventListener('pointerdown', e => { touch.puff = true; jumpEdge++; capture(puffBtn, e.pointerId); e.preventDefault(); });
   for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) puffBtn.addEventListener(ev, () => { touch.puff = false; });
   superBtn.addEventListener('pointerdown', e => { superEdge++; e.preventDefault(); });
   emoteBtn.addEventListener('click', () => emoteRow.classList.toggle('hidden'));
@@ -79,8 +80,8 @@ export function createInput(root, canvas) {
     },
     // returns the controls for this frame (edges are consumed)
     poll(dt) {
-      let mx = 0, my = 0, look = 0, puff = false, respawn = false, sup = superEdge, emote = emoteEdge, pause = pauseEdge;
-      superEdge = 0; emoteEdge = null; pauseEdge = false;
+      let mx = 0, my = 0, look = 0, puff = false, respawn = false, sup = superEdge, jump = jumpEdge, emote = emoteEdge, pause = pauseEdge;
+      superEdge = 0; jumpEdge = 0; emoteEdge = null; pauseEdge = false;
       if (keys.has('KeyA') || keys.has('ArrowLeft')) mx -= 1;
       if (keys.has('KeyD') || keys.has('ArrowRight')) mx += 1;
       if (keys.has('KeyW') || keys.has('ArrowUp')) my -= 1;
@@ -102,13 +103,14 @@ export function createInput(root, canvas) {
         const prev = padPrev[p.index] || {};
         const edge = i => b(i) && !prev[i];
         if (edge(2) || edge(5)) sup++;
+        if (edge(0) || edge(7)) jump++;
         if (b(3)) respawn = true;
         if (edge(12)) emote = 'wave'; if (edge(13)) emote = 'laugh'; if (edge(1)) emote = 'cheer'; if (edge(4)) emote = 'dance';
-        const now = {}; for (const i of [1, 2, 3, 4, 5, 12, 13]) now[i] = b(i);
+        const now = {}; for (const i of [0, 1, 2, 3, 4, 5, 7, 12, 13]) now[i] = b(i);
         padPrev[p.index] = now;
       }
       const l = Math.hypot(mx, my); if (l > 1) { mx /= l; my /= l; }
-      return { mx, my, look, puff, sup, emote, respawn, pause };
+      return { mx, my, look, puff, jump, sup, emote, respawn, pause };
     },
     dispose() {
       removeEventListener('keydown', onKey); removeEventListener('keyup', onKey); removeEventListener('blur', onBlur);

@@ -8,7 +8,7 @@ import { slider, adjustable } from '../../../widgets.js';
 import { state, save } from '../../../state.js';
 import { social } from '../../../social.js';
 import { SPECIES, COLORS, HATS, EXTRAS, GASES, EMOTES, speciesOf } from '../view/characters.js';
-import { COURSES, courseById } from '../maps/index.js';
+import { COURSES, courseById, TOUR } from '../maps/index.js';
 import { levelOf, board, PRICE, CATALOG } from '../profile.js';
 import { fmtTime } from './hud.js';
 import { sound } from '../audio.js';
@@ -92,10 +92,11 @@ export function lobbyMenu(G) {
   }, { primary: true, ic: 'play', key: 'start' });
   startBtn.dataset.autofocus = '';   // ✕ right away starts (host) or toggles ready (guest)
   const changeBtn = btn('Changer d’épreuve', () => coursesMenu(G, { pick: true }), { ic: 'grid', key: 'course' });
+  const modeBtn = btn('', () => G.setTourMode(!G.tourMode), { ic: 'trophy', key: 'mode' });
   const L = layer(G, 'lobby', [
     h('div.pf-lobby-top', logo(true), h('div.pf-code', h('span', 'CODE'), codeEl), statusEl),
     h('div.pf-lobby-l', h('div.pf-panel', h('h3', 'Joueurs'), players, spect)),
-    h('div.pf-lobby-r', h('div.pf-panel', h('h3', 'Épreuve'), courseBox, changeBtn)),
+    h('div.pf-lobby-r', h('div.pf-panel', h('h3', 'Épreuve'), courseBox, h('div.pf-lobby-acts', changeBtn, modeBtn))),
     h('div.pf-lobby-b', startBtn,
       btn('Inviter des amis', () => inviteMenu(G), { ic: 'userPlus', key: 'invite' }),
       btn('Personnaliser', () => customizeMenu(G), { ic: 'sparkle', key: 'custom' }),
@@ -121,10 +122,12 @@ export function lobbyMenu(G) {
     const extra = list.slice(MAX_PLAYERS);
     spect.replaceChildren(...(extra.length ? [h('small', `Spectateurs : ${extra.map(m => m.name).join(', ')}`)] : []));
     const c = G.course, best = G.profile.best[c.id];
-    courseBox.replaceChildren(h('div.cn', c.name), h('p', c.blurb),
-      h('div.meta', h('span', 'Coopération'), h('span', `${c.players} joueurs`), h('span', `${c.checkpoints.length} checkpoints`)),
-      h('div.best', best ? [stars(best.stars), ` Record : ${fmtTime(best.time)}`] : 'Aucun record pour le moment'));
-    changeBtn.classList.toggle('hidden', !lobby.isHost);
+    if (G.tourMode) courseBox.replaceChildren(h('div.cn', 'Tournoi Pouf Party'), h('p', `${TOUR.length} épreuves à la suite : chaque épreuve rapporte des points, le meilleur total gagne.`),
+      h('ol.pf-tourlist', TOUR.map(id => h('li', courseById[id].name, ' ', h(`span.kind.${courseById[id].kind}`, KIND[courseById[id].kind])))));
+    else courseBox.replaceChildren(h('div.cn', c.name), h('p', c.blurb), courseMeta(c), h('div.best', bestLine(c, best)));
+    changeBtn.classList.toggle('hidden', !lobby.isHost || G.tourMode);
+    modeBtn.classList.toggle('hidden', !lobby.isHost);
+    modeBtn.lastChild.textContent = G.tourMode ? 'Épreuve unique' : 'Mode tournoi';
     const mine = lobby.members.find(x => x.id === G.me.id);
     startBtn.lastChild.textContent = lobby.isHost ? (lobby.members.length > 1 ? 'Lancer la partie' : 'Jouer en solo') : mine?.ready ? 'Prêt ! (annuler)' : 'Je suis prêt';
     startBtn.classList.toggle('waiting', lobby.isHost && !G.canStart());
@@ -137,6 +140,16 @@ export function lobbyMenu(G) {
   return L;
 }
 const stars = n => h('span.pf-stars', [1, 2, 3].map(i => h(`i${i <= n ? '.on' : ''}`, '★')));
+const KIND = { coop: 'Coopération', race: 'Course', survival: 'Survie' };
+const ord = n => (n === 1 ? '1er' : `${n}e`);
+function courseMeta(c) {
+  return h('div.meta', h('span', KIND[c.kind]), h('span', `${c.players} joueurs`),
+    c.kind === 'survival' ? h('span', 'Le dernier debout gagne') : h('span', `${c.checkpoints.length} checkpoints`));
+}
+function bestLine(c, best, label = 'Record') {
+  if (!best) return c.kind === 'survival' ? 'Aucun record : tenez le plus longtemps possible' : 'Aucun record pour le moment';
+  return [stars(best.stars), c.kind === 'survival' ? ` ${label} : tenu ${fmtTime(best.time)}` : ` ${label} : ${fmtTime(best.time)}`];
+}
 
 // ---------------------------------------------------------------- invite
 export function inviteMenu(G) {
@@ -248,12 +261,13 @@ export function customizeMenu(G) {
 export function coursesMenu(G, { pick = false } = {}) {
   const cards = COURSES.map(c => {
     const best = G.profile.best[c.id], recs = board(c.id).slice(0, 5);
+    const goal = c.kind === 'survival' ? `Objectif ★★★ : tenir ${fmtTime(c.par[0])}` : `Objectif ★★★ : ${fmtTime(c.par[0])}`;
     return h(`div.pf-ccard${G.course.id === c.id ? '.sel' : ''}`, { f: true, onok: () => { if (pick && G.lobby.isHost) { G.setCourse(c); G.close(L); } } },
-      h('div.cn', c.name), h('p', c.blurb),
-      h('div.meta', h('span', 'Coopération'), h('span', `${c.players} joueurs`), h('span', `Objectif ★★★ : ${fmtTime(c.par[0])}`)),
-      h('div.best', best ? [stars(best.stars), ` Votre record : ${fmtTime(best.time)} · ${best.deaths} éclatement${best.deaths > 1 ? 's' : ''}`] : 'Pas encore terminée'),
+      h('div.cn', c.name, ' ', h(`span.kind.${c.kind}`, KIND[c.kind])), h('p', c.blurb),
+      h('div.meta', h('span', `${c.players} joueurs`), h('span', goal)),
+      h('div.best', bestLine(c, best, 'Votre record')),
       h('h4', 'Records de la console'),
-      recs.length ? h('ol.pf-board', recs.map(r => h('li', h('b', fmtTime(r.time)), stars(r.stars), h('span', r.names.join(', ')), h('small', `${r.deaths} 💥`)))) : h('p.dim', 'Aucun record : soyez les premiers !'));
+      recs.length ? h('ol.pf-board', recs.map(r => h('li', h('b', fmtTime(r.time)), stars(r.stars), h('span', r.names.join(', ')), c.kind === 'coop' ? h('small', `${r.deaths} 💥`) : null))) : h('p.dim', 'Aucun record : soyez les premiers !'));
   });
   const L = layer(G, 'courses', h('div.pf-panel.wide', h('h2', pick ? 'Choisir l’épreuve' : 'Épreuves et records'), h('div.pf-ccards', { 'data-scroll': 'y', 'data-row': '' }, cards),
     btn('Retour', () => G.close(L), { key: 'back' })));
@@ -285,6 +299,7 @@ export function optionsMenu(G) {
 
 // ---------------------------------------------------------------- how to play
 export function helpMenu(G, { first = false } = {}) {
+  if (G.course.foot) return helpFoot(G, first);
   const pad = PADS.includes(consoleInput.device), touch = consoleInput.device === 'touch';
   const rows = touch ? [['Joystick (à gauche)', 'Viser'], ['POUF (maintenir)', 'Pousser la bouée'], ['SUPER', 'Grosse poussée'], ['😀', 'Emotes'], ['Glisser l’écran', 'Tourner la caméra']]
     : pad ? [[glyphTxt('Stick gauche'), 'Viser'], [glyph('ok'), 'Pouf (maintenir) · aussi R2'], [glyph('square'), 'Super pouf · aussi R1'], ['Stick droit', 'Caméra'], ['Croix ↑ ↓, ○, L1', 'Emotes'], [glyph('triangle'), 'Réapparaître (maintenir)'], [glyph('options'), 'Pause']]
@@ -303,6 +318,30 @@ export function helpMenu(G, { first = false } = {}) {
   return L;
 }
 const glyphTxt = t => h('span', t);
+function helpFoot(G, first) {
+  const pad = PADS.includes(consoleInput.device), touch = consoleInput.device === 'touch', race = G.course.kind === 'race';
+  const rows = touch ? [['Joystick (à gauche)', 'Courir'], ['POUF', 'Sauter'], ['SUPER', 'Pouf en l’air (élan)'], ['Glisser l’écran', 'Caméra']]
+    : pad ? [['Stick gauche', 'Courir'], [glyph('ok'), 'Sauter'], [glyph('square'), 'Pouf en l’air (élan)'], ['Stick droit', 'Caméra'], ...(race ? [[glyph('triangle'), 'Revenir au checkpoint (maintenir)']] : []), [glyph('options'), 'Pause']]
+    : [['ZQSD / WASD / flèches', 'Courir'], ['Espace / clic gauche', 'Sauter'], ['Maj / E / clic droit', 'Pouf en l’air (élan)'], ['Souris', 'Caméra'], ...(race ? [['R (maintenir)', 'Revenir au checkpoint']] : []), ['Échap', 'Pause']];
+  const L = layer(G, 'help', h('div.pf-panel.mid', h('h2', first ? 'À vos marques…' : 'Comment jouer'),
+    h('div.pf-rules', race ? [
+      h('div', h('b', '1'), 'Courez jusqu’à l’arrivée : le premier arrivé gagne.'),
+      h('div', h('b', '2'), 'Sautez par-dessus les barres, évitez marteaux et bumpers, attendez les plateformes mobiles.'),
+      h('div', h('b', '3'), 'En l’air, un POUF vous donne un deuxième élan (il consomme la jauge).'),
+      h('div', h('b', '4'), 'Tombé à l’eau ? Vous repartez du dernier checkpoint.'),
+    ] : [
+      h('div', h('b', '1'), 'Restez sur l’arène : tomber à l’eau vous élimine.'),
+      h('div', h('b', '2'), 'Sautez par-dessus la barre qui tourne de plus en plus vite.'),
+      h('div', h('b', '3'), 'Le sol s’enfonce par endroits : il tremble juste avant.'),
+      h('div', h('b', '4'), 'Le dernier debout gagne. En solo, tenez le plus longtemps possible !'),
+    ]),
+    h('div.pf-keys-table', rows.map(([k, d]) => h('div', h('span.k', k), h('span', d)))),
+    btn(first ? 'C’est parti !' : 'Retour', () => G.close(L), { primary: true, key: 'back' })), {
+    onLeave: () => { if (G.state === 'match') G.resumeRun(); },
+  });
+  if (G.state === 'match') G.input.setPlaying(false);
+  return L;
+}
 
 // ---------------------------------------------------------------- pause
 export function pauseMenu(G) {
@@ -326,6 +365,7 @@ export function pauseMenu(G) {
 // ---------------------------------------------------------------- results
 export function resultsMenu(G) {
   const s = G.summary, rw = G.rewards, c = courseById[s.course];
+  if (c.foot) return resultsFoot(G, s, rw, c);
   const st = rw?.stars ?? 0;
   const titles = awardTitles(s);
   const crew = h('div.pf-results-crew', s.riders.map(r => h('div.pf-rrow',
@@ -343,14 +383,55 @@ export function resultsMenu(G) {
   const L = layer(G, 'results', h('div.pf-panel.wide.results',
     h('div.pf-res-head', h('h2', s.finished ? 'ARRIVÉE !' : 'Partie terminée'), stars(st)),
     h('div.pf-res-big', h('div', h('small', 'Temps'), h('b', fmtTime(s.time))), h('div', h('small', 'Éclatements'), h('b', String(s.deaths))), h('div', h('small', 'Checkpoints'), h('b', `${s.cps}/${c.checkpoints.length}`))),
-    crew, rewards,
-    h('div.row', host ? [btn('Rejouer', () => { G.close(L); G.startMatch(); }, { primary: true, ic: 'refresh', key: 'again' }), btn('Retour au salon', () => { G.state = 'lobby'; G.openBase(); }, { key: 'lobby' })]
+    crew, rewards, tourBlock(G, s),
+    h('div.row', s.tour ? tourButtons(G, s) : host ? [btn('Rejouer', () => { G.close(L); G.startMatch(); }, { primary: true, ic: 'refresh', key: 'again' }), btn('Retour au salon', () => { G.state = 'lobby'; G.openBase(); }, { key: 'lobby' })]
       : [btn('Retour au salon', () => { G.state = 'lobby'; G.openBase(); }, { primary: true, key: 'lobby' }), h('span.dim', 'L’hôte choisit la suite…')])), {
     back: () => { G.state = 'lobby'; G.openBase(); },
     hints: [['ok', 'Sélectionner'], ['back', 'Salon']],
   });
   for (let k = 0; k < 2; k++) setTimeout(() => G.arena.fx.confetti(G.arena.rs.x, G.arena.rs.y + 5, G.arena.rs.z, 70, 5), 200 + k * 500);
   return L;
+}
+function resultsFoot(G, s, rw, c) {
+  const survival = c.kind === 'survival', mine = s.riders.find(r => r.id === G.me.id);
+  const head = !mine ? 'Partie terminée' : s.riders.length > 1 ? (mine.rank === 1 ? 'VICTOIRE !' : `${ord(mine.rank)} place`) : survival ? 'Bien tenu !' : mine.time != null ? 'ARRIVÉE !' : 'Partie terminée';
+  const val = r => survival ? `Tenu ${fmtTime(r.out ?? r.time ?? s.time)}` : r.time != null ? fmtTime(r.time) : 'Pas arrivé';
+  const crew = h('div.pf-results-crew', s.riders.map(r => h(`div.pf-rrow${r.rank === 1 ? '.first' : ''}`,
+    h('div.rk', ord(r.rank)), h('div.nm', r.name, r.id === G.me.id ? h('small', ' (vous)') : null), h('div.ttl', r.rank === 1 && s.riders.length > 1 ? (survival ? 'Dernier debout' : 'Champion') : ''), h('div.st', `${val(r)} · ${r.puffs} pouf${r.puffs > 1 ? 's' : ''}`))));
+  const lv = levelOf(G.profile.xp);
+  const rewards = rw ? h('div.pf-rewards',
+    h('div.rw', h('b', `+${rw.xp}`), ' XP'), h('div.rw', h('b', `+${rw.coins}`), ' pièces'),
+    h('div.lvl', `Niveau ${lv.level}`, h('div.xp', h('i', { style: { width: (lv.into / lv.need * 100) + '%' } }))),
+    rw.record ? h('div.rec', 'Nouveau record personnel !') : null, rw.levelUp ? h('div.rec', `Niveau ${rw.levelUp} atteint !`) : null,
+    rw.unlocked.length ? h('div.unl', 'Débloqué : ', rw.unlocked.map(u => u.name || u.id).join(', ')) : null) : h('p.dim', 'Vous regardiez cette épreuve : rejoignez la prochaine !');
+  const host = G.lobby.isHost, toLobby = () => { G.state = 'lobby'; G.openBase(); };
+  const L = layer(G, 'results', h('div.pf-panel.wide.results',
+    h('div.pf-res-head', h('h2', head), stars(rw?.stars ?? 0)),
+    h('div.pf-res-big', h('div', h('small', survival ? 'Votre temps' : 'Votre temps'), h('b', mine ? (survival ? fmtTime(mine.out ?? mine.time ?? s.time) : mine.time != null ? fmtTime(mine.time) : '—') : '—')),
+      h('div', h('small', 'Classement'), h('b', mine ? `${ord(mine.rank)} / ${s.riders.length}` : '—')), h('div', h('small', 'Épreuve'), h('b', c.short))),
+    crew, rewards, tourBlock(G, s),
+    h('div.row', s.tour ? tourButtons(G, s) : host ? [btn('Rejouer', () => { G.close(L); G.startMatch(); }, { primary: true, ic: 'refresh', key: 'again' }), btn('Retour au salon', toLobby, { key: 'lobby' })]
+      : [btn('Retour au salon', toLobby, { primary: true, key: 'lobby' }), h('span.dim', 'L’hôte choisit la suite…')])), {
+    back: toLobby, hints: [['ok', 'Sélectionner'], ['back', 'Salon']],
+  });
+  return L;
+}
+// tournament standings under the results of a round
+function tourBlock(G, s) {
+  const tr = s.tour;
+  if (!tr) return null;
+  const rows = Object.keys(tr.pts).sort((a, b) => tr.pts[b] - tr.pts[a]);
+  const last = tr.i + 1 >= tr.n;
+  return h('div.pf-tour', h('h4', last ? 'Classement final du tournoi' : `Tournoi · épreuve ${tr.i + 1} sur ${tr.n}`),
+    h('div.pf-tour-rows', rows.map((id, k) => h(`div.pf-tour-row${k === 0 ? '.lead' : ''}${id === G.me.id ? '.me' : ''}`,
+      h('b', last && k === 0 ? '🏆' : ord(k + 1)), h('span.nm', tr.names[id] || 'Joueur'), h('span.plus', `+${tr.round[id] || 0}`), h('span.pts', `${tr.pts[id]} pts`)))));
+}
+function tourButtons(G, s) {
+  const tr = s.tour, last = tr.i + 1 >= tr.n;
+  if (!G.lobby.isHost) return [btn('Retour au salon', () => { G.tour = null; G.state = 'lobby'; G.openBase(); }, { key: 'lobby' }), h('span.dim', last ? 'Fin du tournoi !' : 'L’hôte lance l’épreuve suivante…')];
+  // starting the next round closes this screen for everybody
+  return [btn(last ? 'Terminer le tournoi' : 'Épreuve suivante', () => G.nextRound(), { primary: true, ic: last ? 'check' : 'play', key: 'next' }),
+    btn('Abandonner le tournoi', () => { G.tour = null; G.state = 'lobby'; G.openBase(); }, { key: 'lobby' })];
 }
 function awardTitles(s) {
   const t = new Map(), rs = s.riders;
