@@ -4,6 +4,10 @@ Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, créatio
 
 > Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les 18 jeux et leurs visuels sont fictifs ; les achats et les jeux sont simulés. Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
+## Jouer avec un ami sans rien installer (salons)
+
+Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
+
 ## Démarrer
 
 ```bash
@@ -69,6 +73,7 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 ```bash
 npm test          # API + WebSocket (SQLite en mémoire)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
+npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
 ```
 

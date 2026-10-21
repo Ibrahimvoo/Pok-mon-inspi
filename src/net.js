@@ -100,8 +100,12 @@ export const net = {
   },
   connect() { wantSocket = true; retry = 0; openSocket(); },
   disconnect() { wantSocket = false; clearTimeout(retryTimer); if (ws) { const s = ws; ws = null; s.close(); } setStatus('offline'); },
-  send(t, payload = {}) { if (ws?.readyState === 1) { ws.send(JSON.stringify({ t, ...payload })); return true; } return false; },
+  // a peer-to-peer room (no server) can take over the realtime channel
+  transport: null,
+  inject(type, detail) { emit(type, detail); },
+  send(t, payload = {}) { if (this.transport) return this.transport.send(t, payload); if (ws?.readyState === 1) { ws.send(JSON.stringify({ t, ...payload })); return true; } return false; },
   req(t, payload = {}, timeout = 8000) {
+    if (this.transport) return this.transport.req(t, payload, timeout);
     return new Promise((resolve, reject) => {
       if (ws?.readyState !== 1) return reject(new NetError(status === 'reconnecting' ? 'Reconnexion au serveur en cours…' : 'Non connecté au serveur.'));
       const id = ++rid;

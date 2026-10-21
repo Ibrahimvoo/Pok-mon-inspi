@@ -793,3 +793,11 @@ body { background: var(--bg); }
 .coll-art img + img { margin-left: -6rem; }
 .coll-t { font-size: 2.4rem; font-weight: 600; }
 .coll-s { font-size: 1.8rem; color: var(--dim); margin-top: .4rem; }
+.salon { display: grid; grid-template-columns: repeat(2, minmax(0, 60rem)); gap: 3rem; align-items: start; }
+.salon-card { background: var(--card); border-radius: 2.2rem; padding: 4rem; display: grid; gap: 2rem; justify-items: start; }
+.salon-card h2 { margin: 0; font-size: 3.4rem; font-weight: 300; }
+.salon-card p { margin: 0; font-size: 2rem; color: var(--dim); line-height: 1.5; }
+.salon-card .f-row { justify-self: stretch; }
+.salon-code { letter-spacing: .3em; text-transform: uppercase; font-size: max(16px, 3.4rem); }
+.salon-note { grid-column: 1 / -1; font-size: 1.8rem; color: var(--faint); margin: 0; }
+.salon-link { margin-top: 1.4rem; padding: 1.4rem 1.8rem; border-radius: 1rem; background: rgba(255, 255, 255, .08); font-family: ui-monospace, monospace; font-size: 1.8rem; word-break: break-all; user-select: text; -webkit-user-select: text; color: #fff; }

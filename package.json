@@ -13,10 +13,12 @@
     "e2e": "npm run build && node --no-warnings tools/e2e.mjs",
     "preview": "vite preview --host",
     "art": "node tools/render-art.mjs",
-    "artifact": "node tools/artifact.mjs"
+    "artifact": "node tools/artifact.mjs",
+    "e2e:salon": "npm run build && node --no-warnings tools/e2e-salon.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "^17.2.0-beta.15",
+    "peer": "^1.0.2",
     "vite": "^5.4.21"
   },
   "dependencies": {
@@ -32,6 +34,7 @@
     "@fontsource/syncopate": "^5.3.0",
     "@fontsource/teko": "^5.3.0",
     "@fontsource/unbounded": "^5.3.0",
+    "peerjs": "^1.5.5",
     "pg": "^8.13.1",
     "ws": "^8.18.0"
   },

@@ -82,7 +82,7 @@ export function openControlCenter({ ingame } = {}) {
     } else if (kind === 'friends') {
       const openBase = tab => () => { layer.close(false); import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab })); };
       title = 'Base de jeu';
-      if (!social.available) body = [h('div.empty', 'Connectez-vous avec un compte en ligne pour retrouver vos amis, les groupes et les appels vocaux.'), listItem(h('span.icw', { html: icon('user') }), 'Ouvrir la Base de jeu', null, openBase('friends'))];
+      if (!social.available) body = [h('div.empty', 'Jouez et parlez avec un ami grâce à un salon : envoyez-lui simplement le lien.'), listItem(h('span.icw', { html: icon('party') }), 'Créer ou rejoindre un salon', null, openBase('party'))];
       else {
         const p = social.party;
         const online = social.friends.filter(f => social.presenceOf(f.id).online);
