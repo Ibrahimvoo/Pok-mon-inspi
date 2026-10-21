@@ -1,11 +1,11 @@
 // The team raft and the animated traps of the river (their motion comes from sim/hazards.js).
 import * as THREE from 'three';
 import { RAFT_R } from '../sim/raft.js';
-import { jawsClosure, barHeight, millAngle, sway } from '../sim/hazards.js';
+import { jawsClosure, barHeight, millAngle, sway, geyserPower, crocBite } from '../sim/hazards.js';
 import { DS } from '../sim/track.js';
 import { merge, mesh, outline, vtoon, paint, place, S, Cy, Co, Bx, To, shade } from './toon.js';
 
-const PURPLE = '#b24fc8', PURPLE_HI = '#c97be0', SPIKE = '#fbf7f2', STEEL = '#7b8494';
+let PURPLE = '#b24fc8', PURPLE_HI = '#c97be0', SPIKE = '#fbf7f2';
 
 // ---------------------------------------------------------------- raft
 export function createRaft() {
@@ -64,6 +64,10 @@ function spikedLog(len, r = .45, density = 2.6, dirs = [[0, 1], [1, 0], [-1, 0],
 }
 
 export function createTraps(T, course) {
+  const th0 = course.theme;
+  // trap colours follow the course's palette
+  PURPLE = th0.trap || '#b24fc8'; PURPLE_HI = th0.trapHi || '#c97be0'; SPIKE = th0.spike || '#fbf7f2';
+  const MINE = th0.mine || '#d2463c', POLE = th0.rail || '#86c540', POLE_RING = th0.railRing || '#5f9c2a', TOWER = th0.tower || '#f39bb0';
   const root = new THREE.Group(), live = [], o = {}, o2 = {};
   const mat = vtoon();
   const add = (m, ink = .035) => { if (ink) outline(m, ink); root.add(m); return m; };
@@ -85,16 +89,18 @@ export function createTraps(T, course) {
       }
       add(mesh(merge(parts), mat));
     } else if (h.type === 'rock' || h.type === 'post') {
-      const g = h.type === 'post' ? merge([Cy(h.r, h.r * 1.1, 4, '#86c540', [0, 1.5, 0], 0, 1, 10)]) :
-        merge([place(paint(new THREE.DodecahedronGeometry(1, 0), '#8d8f99'), [0, .3, 0], [.4, h.s, .2], [1, 1.3, 1]),
-          place(paint(new THREE.DodecahedronGeometry(.7, 0), '#a2a4ad'), [.5, 1.1, .2], [.1, h.s * 2, .5]),
-          place(paint(new THREE.IcosahedronGeometry(.55, 0), '#7c7e88'), [-.55, .9, -.3], [.6, 0, .3])]);
+      const rk = th0.rock || '#8d8f99';
+      const g = h.type === 'post' ? merge([Cy(h.r, h.r * 1.1, 4, POLE, [0, 1.5, 0], 0, 1, 10)]) :
+        merge([place(paint(new THREE.DodecahedronGeometry(1, 0), rk), [0, .3, 0], [.4, h.s, .2], [1, 1.3, 1]),
+          place(paint(new THREE.DodecahedronGeometry(.7, 0), shade(rk, .1)), [.5, 1.1, .2], [.1, h.s * 2, .5]),
+          place(paint(new THREE.IcosahedronGeometry(.55, 0), shade(rk, -.08)), [-.55, .9, -.3], [.6, 0, .3]),
+          ...(th0.snowRocks ? [place(paint(new THREE.DodecahedronGeometry(.75, 0), '#ffffff'), [0, 1.25, 0], [.4, h.s, .2], [1, .45, 1.05])] : [])]);
       const m = mesh(g, h.type === 'post' ? mat : new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
       T.world(h.s, h.d, o2);
       m.position.set(o2.wx, o2.y, o2.wz); m.scale.setScalar(h.r * (h.type === 'rock' ? 1.15 : 1));
       add(m, h.type === 'post' ? .03 : 0);
     } else if (h.type === 'mine') {
-      const g = merge([S(1, '#d2463c', [0, 0, 0], 0, [1, .78, 1], 18), Cy(1.02, 1.02, .22, '#fbf7f2', [0, -.02, 0], 0, 1, 18),
+      const g = merge([S(1, MINE, [0, 0, 0], 0, [1, .78, 1], 18), Cy(1.02, 1.02, .22, '#fbf7f2', [0, -.02, 0], 0, 1, 18),
         ...Array.from({ length: 10 }, (_, i) => { const a = i / 10 * Math.PI * 2, el = i % 2 ? .25 : .9; const g2 = paint(new THREE.ConeGeometry(.2, .55, 8), SPIKE); g2.translate(0, 1.05, 0); g2.rotateZ(-el); g2.rotateY(a); return g2; }),
         Co(.22, .6, SPIKE, [0, 1.05, 0], 0, 1, 8)]);
       const m = add(mesh(g, mat));
@@ -143,14 +149,14 @@ export function createTraps(T, course) {
       outline(log, .035); g.add(log);
       root.add(g);
       for (const side of [1, -1]) {
-        const p = add(mesh(merge([Cy(.35, .45, 6.4, '#86c540', [0, 3.2, 0], 0, 1, 8), Cy(.5, .5, .4, '#f7a43a', [0, 6.4, 0], 0, 1, 8), ...[1.4, 2.8, 4.2].map(y => Cy(.42, .42, .1, '#5f9c2a', [0, y, 0], 0, 1, 8))]), mat));
+        const p = add(mesh(merge([Cy(.35, .45, 6.4, POLE, [0, 3.2, 0], 0, 1, 8), Cy(.5, .5, .4, '#f7a43a', [0, 6.4, 0], 0, 1, 8), ...[1.4, 2.8, 4.2].map(y => Cy(.42, .42, .1, POLE_RING, [0, y, 0], 0, 1, 8))]), mat));
         T.world(h.s, side * (w + 1.1), o2); p.position.set(o2.wx, o2.y, o2.wz);
       }
       g.rotation.y = Math.PI - o.a; // the log spans the river
       live.push(t => { g.position.set(o.x, o.y + barHeight(h, t) + .2, o.z); });
     } else if (h.type === 'mill') {
       const w = o.w, L = h.len ?? 7.2, H = h.hub ?? 3.4, n = h.arms ?? 4;
-      const tower = add(mesh(merge([Cy(.7, 1, H + 1.2, '#f39bb0', [0, (H - 1.2) / 2, 0], 0, 1, 10), Cy(.9, .9, .4, '#f7a43a', [0, -1, 0], 0, 1, 10), Co(1, 1.4, '#e8605a', [0, H + .3, 0], 0, 1, 10)]), mat));
+      const tower = add(mesh(merge([Cy(.7, 1, H + 1.2, TOWER, [0, (H - 1.2) / 2, 0], 0, 1, 10), Cy(.9, .9, .4, '#f7a43a', [0, -1, 0], 0, 1, 10), Co(1, 1.4, '#e8605a', [0, H + .3, 0], 0, 1, 10)]), mat));
       T.world(h.s, h.side * (w + 1.3), o2);
       tower.position.set(o2.wx - o2.tx * 1.2, o2.y, o2.wz - o2.tz * 1.2);
       const wheel = new THREE.Group();
@@ -178,6 +184,51 @@ export function createTraps(T, course) {
       T.world(h.s, h.d, o2); g.position.set(o2.wx, o2.y, o2.wz);
       root.add(g);
       live.push(t => g.children.forEach(r => { r.rotation.z = t * (2.4 - r.userData.k * .5) * h.dir; }));
+    } else if (h.type === 'geyser') {
+      // a foam disc that bubbles before the eruption, then a column of water
+      const r = h.r ?? 1.8;
+      const foamM = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .4, depthWrite: false });
+      const foam = new THREE.Mesh(new THREE.CircleGeometry(r, 28).rotateX(-Math.PI / 2), foamM);
+      const colM = new THREE.MeshLambertMaterial({ color: th0.foam || '#ffffff', emissive: '#bfefff', emissiveIntensity: .35, transparent: true, opacity: .85 });
+      const col = new THREE.Mesh(merge([Cy(r * .55, r * .8, 1, '#ffffff', [0, .5, 0], 0, 1, 14), ...[0, 1, 2, 3, 4].map(k => S(r * .42, '#ffffff', [Math.cos(k * 1.3) * r * .35, 1.02, Math.sin(k * 1.3) * r * .35], 0, 1, 8))]), colM);
+      T.world(h.s, h.d, o2);
+      const g = new THREE.Group(); g.position.set(o2.wx, o2.y + .05, o2.wz); g.add(foam, col); root.add(g);
+      live.push(t => {
+        const p = geyserPower(h, t), u = ((t / h.period + (h.phase || 0)) % 1 + 1) % 1;
+        const warn = u > .45 && u < .62 ? .5 + .5 * Math.sin(t * 30) : 0;
+        foamM.opacity = .25 + warn * .35 + p * .4;
+        foam.scale.setScalar(1 + warn * .08 + p * .25);
+        col.visible = p > .01; col.scale.set(1 + Math.sin(t * 20) * .04, Math.max(.01, p * 7.5), 1 + Math.cos(t * 23) * .04);
+      });
+    } else if (h.type === 'croc') {
+      // a crocodile head sticking out of the water; the upper jaw snaps shut
+      const green = th0.croc || '#5e9e3e', belly = '#e7e29a';
+      const head = new THREE.Group();
+      const lower = mesh(merge([Bx(1.1, .32, 2.2, green, [0, -.05, .9]), Bx(.9, .1, 1.9, belly, [0, .12, .9]),
+        ...[-1, 1].flatMap(sx => [0, 1, 2, 3].map(k => Co(.07, .22, '#ffffff', [sx * .42, .25, .3 + k * .45], 0, 1, 6)))]), mat);
+      const upperG = new THREE.Group(); upperG.position.set(0, .12, -.1);
+      const upper = mesh(merge([Bx(1.15, .4, 2.3, green, [0, .2, 1]), ...[-1, 1].map(sx => S(.22, green, [sx * .32, .5, .05], 0, 1, 10)),
+        ...[-1, 1].map(sx => S(.13, '#fff7c2', [sx * .32, .62, .1], 0, 1, 8)), ...[-1, 1].map(sx => Bx(.04, .16, .05, '#1d1d26', [sx * .32, .64, .2])),
+        ...[-1, 1].map(sx => S(.05, '#2a3b20', [sx * .2, .42, 2.1], 0, 1, 6)), ...[-1, 1].flatMap(sx => [0, 1, 2, 3].map(k => Co(.07, .22, '#ffffff', [sx * .44, -.02, .4 + k * .45], [Math.PI, 0, 0], 1, 6)))]), mat);
+      outline(lower, .03); outline(upper, .03);
+      upperG.add(upper); head.add(lower, upperG);
+      const bumps = mesh(merge([0, 1, 2].map(k => S(.4, green, [0, -.15, -1 - k * .9], 0, [1.2, .5, 1], 8))), mat);
+      head.add(bumps);
+      head.scale.setScalar(h.r / 1.1);
+      root.add(head);
+      live.push(t => {
+        T.world(h.s, sway(h, t), o2);
+        head.position.set(o2.wx, o2.y + .1 + Math.sin(t * 1.7 + h.s) * .05, o2.wz);
+        // snout pointing upstream, at the incoming rafts
+        head.rotation.y = -o2.a;
+        upperG.rotation.x = -(1 - crocBite(h, t)) * .75;
+      });
+    } else if (h.type === 'log') {
+      const len = h.len ?? 4.5, r = h.r ?? .5;
+      const g = mesh(merge([Cy(r, r, len, '#8a5a34', [0, 0, 0], [Math.PI / 2, 0, 0], 1, 10), ...[-1, 1].map(z => Cy(r * .82, r * .82, .04, '#d9b07a', [0, 0, z * len / 2], [Math.PI / 2, 0, 0], 1, 10)),
+        ...[-.25, .15].map(z => Cy(r + .03, r + .03, .12, '#6e4527', [0, 0, z * len], [Math.PI / 2, 0, 0], 1, 10)), S(.22, '#6fb84a', [.1, r, .6], 0, [1.3, .5, 1], 6)]), mat);
+      outline(g, .03); root.add(g);
+      live.push(t => { T.world(h.s, sway(h, t), o2); g.position.set(o2.wx, o2.y + .12, o2.wz); g.rotation.set(Math.sin(t * 1.3 + h.s) * .05, -o2.a, Math.sin(t * 2.1) * .2); });
     } else if (h.type === 'boost') {
       const g = new THREE.Group(), cm = new THREE.MeshBasicMaterial({ color: '#ffd23f' });
       const chev = new THREE.Shape(); chev.moveTo(-1, 0); chev.lineTo(0, .9); chev.lineTo(1, 0); chev.lineTo(.6, 0); chev.lineTo(0, .55); chev.lineTo(-.6, 0);

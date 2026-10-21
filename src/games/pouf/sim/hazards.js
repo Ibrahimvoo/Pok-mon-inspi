@@ -23,6 +23,22 @@ export function barHeight(h, t) {
   return down + (up - down) * ease((u - .74) / .26);
 }
 export const millAngle = (h, t) => (h.phase || 0) * TAU + t * h.speed;
+// Geyser: 0 (calm) … 1 (full eruption)
+export function geyserPower(h, t) {
+  const u = phase(h, t);
+  if (u < .62) return 0;
+  if (u < .7) return ease((u - .62) / .08);
+  if (u < .86) return 1;
+  return 1 - ease((u - .86) / .14);
+}
+// Crocodile jaws: 0 open … 1 snapped shut
+export function crocBite(h, t) {
+  const u = phase(h, t);
+  if (u < .7) return 0;
+  if (u < .76) return ease((u - .7) / .06);
+  if (u < .84) return 1;
+  return 1 - ease((u - .84) / .16);
+}
 export const sway = (h, t) => (h.d || 0) + (h.amp || 0) * Math.sin(TAU * t / (h.period || 4) + (h.phase || 0) * TAU);
 
 // Mill arms (vertical rotation across the channel) that dip below the riders: lateral spans touching the raft.
@@ -51,13 +67,21 @@ export function collide(h, sd, R, t, fr) {
       const lim = fr.w - (h.inset ?? .7), pen = h.side * sd.d + R - lim;
       return pen > 0 ? { n: [0, -h.side], depth: pen, hit: true } : null;
     }
-    case 'rock': case 'post': case 'mine': case 'saw': {
+    case 'rock': case 'post': case 'mine': case 'saw': case 'croc': {
       if (Math.abs(ds) > R + h.r + 1) return null;
       const cd = h.type === 'rock' || h.type === 'post' ? h.d : sway(h, t);
       const dd = sd.d - cd, dist = Math.hypot(ds, dd), pen = R + h.r - dist;
       if (pen <= 0) return null;
       const k = dist > 1e-4 ? 1 / dist : 0;
-      return { n: dist > 1e-4 ? [ds * k, dd * k] : [-1, 0], depth: pen, hit: h.type === 'mine' || h.type === 'saw' };
+      const hit = h.type === 'mine' || h.type === 'saw' || (h.type === 'croc' && crocBite(h, t) > .6);
+      return { n: dist > 1e-4 ? [ds * k, dd * k] : [-1, 0], depth: pen, hit, kick: h.type === 'croc' && hit ? 3 : 0 };
+    }
+    case 'log': { // a floating trunk along the current, drifting across the river
+      const half = (h.len ?? 4.5) / 2, r = h.r ?? .5;
+      if (Math.abs(ds) > half + R + r) return null;
+      const cd = sway(h, t), qs = clamp(ds, -half, half), vs = ds - qs, vd = sd.d - cd, dist = Math.hypot(vs, vd);
+      if (dist >= R + r) return null;
+      return { n: dist > 1e-4 ? [vs / dist, vd / dist] : [0, 1], depth: R + r - dist, hit: false };
     }
     case 'jaws': {
       const th = (h.thick ?? 1.3) / 2;
@@ -99,7 +123,7 @@ export function collide(h, sd, R, t, fr) {
 }
 
 // Zones that change the water without hurting: whirlpools spin the raft, boost lanes speed it up.
-export function zoneEffect(h, sd, R, out) {
+export function zoneEffect(h, sd, R, out, t) {
   const ds = sd.s - h.s;
   if (h.type === 'whirl') {
     const dd = sd.d - h.d, dist = Math.hypot(ds, dd);
@@ -109,6 +133,16 @@ export function zoneEffect(h, sd, R, out) {
     out.s += (-dd / (dist || 1)) * k * h.dir - ds / (dist || 1) * k * .25;
     out.d += (ds / (dist || 1)) * k * h.dir - dd / (dist || 1) * k * .25;
     out.spin += k * .45 * h.dir;
+    return true;
+  }
+  if (h.type === 'geyser') {
+    const p = geyserPower(h, t);
+    const dd = sd.d - h.d, dist = Math.hypot(ds, dd), r = (h.r ?? 1.8) + R;
+    if (p <= 0 || dist > r) return false;
+    // the eruption shoves the raft away from its centre and spins it
+    const k = p * (1 - dist / r) * (h.power ?? 14);
+    out.s += (dist > .01 ? ds / dist : 1) * k; out.d += (dist > .01 ? dd / dist : 0) * k;
+    out.spin += p * 2.5 * (dd >= 0 ? 1 : -1);
     return true;
   }
   if (h.type === 'boost') {

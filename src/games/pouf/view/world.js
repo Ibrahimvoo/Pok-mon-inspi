@@ -234,6 +234,27 @@ function treeGeo(theme, v) {
   } else if (v === 6) { // pink flower bush
     p.push(place(paint(new THREE.IcosahedronGeometry(.6, 0), L[0]), [0, .4, 0], 0, [1, .7, 1]));
     for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; p.push(S(.14, k % 2 ? '#ff7fb6' : '#ffb3d4', [Math.cos(a) * .45, .62, Math.sin(a) * .45], 0, 1, 6)); }
+  } else if (v === 7) { // snowy pine
+    p.push(Cy(.18, .26, 1.6, tr, [0, .8, 0], 0, 1, 6));
+    [[2.2, 2.6, 1.9], [1.75, 2.2, 3.1], [1.25, 1.9, 4.2], [.75, 1.5, 5.2]].forEach(([r, h, y], i) => {
+      p.push(place(paint(new THREE.ConeGeometry(r, h, 7), L[i % 3]), [0, y, 0], [0, i * .4, 0]));
+      p.push(place(paint(new THREE.ConeGeometry(r * .82, h * .4, 7), '#ffffff'), [0, y + h * .34, 0], [0, i * .4, 0]));
+    });
+  } else if (v === 8) { // gnarled swamp tree with hanging moss
+    p.push(place(paint(new THREE.CylinderGeometry(.28, .5, 3.4, 7), tr), [0, 1.6, 0], [.12, 0, .1]));
+    p.push(place(paint(new THREE.CylinderGeometry(.14, .22, 2.2, 6), tr), [.7, 3.4, 0], [0, 0, -.8]), place(paint(new THREE.CylinderGeometry(.12, .2, 2, 6), tr), [-.6, 3.5, .3], [.3, 0, .9]));
+    [[0, 4.3, 0, 1.5], [1.4, 4, .2, 1.1], [-1.3, 4.1, .3, 1.1]].forEach(([x, y, z, r], i) => p.push(place(paint(new THREE.IcosahedronGeometry(r, 0), L[i % 3]), [x, y, z], 0, [1, .6, 1])));
+    for (let k = 0; k < 5; k++) p.push(place(paint(new THREE.ConeGeometry(.16, 1.4, 4), shade(L[1], .15)), [(hash(k) - .5) * 2.6, 3.2, (hash(k * 3) - .5) * 1.6], [Math.PI, 0, 0]));
+  } else if (v === 9) { // giant mushroom
+    const cap = theme.mush || '#c0479a';
+    p.push(Cy(.28, .4, 2.2, '#f3e6d2', [0, 1.1, 0], 0, 1, 8));
+    p.push(place(paint(new THREE.SphereGeometry(1.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), cap), [0, 2.1, 0], 0, [1, .7, 1]));
+    for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; p.push(S(.2, '#fff3e0', [Math.cos(a) * .9, 2.75, Math.sin(a) * .9], 0, [1, .4, 1], 6)); }
+  } else if (v === 10) { // ice crystals
+    for (let k = 0; k < 5; k++) {
+      const x = (hash(k * 2.3) - .5) * 1.6, z = (hash(k * 5.9) - .5) * 1.6, hh = 1 + hash(k) * 2.2;
+      p.push(place(paint(new THREE.OctahedronGeometry(.45, 0), k % 2 ? '#bdeeff' : '#e6f9ff'), [x, hh * .6, z], [(hash(k) - .5) * .5, k, (hash(k * 7) - .5) * .5], [.7, hh, .7]));
+    }
   }
   return merge(p);
 }
@@ -258,11 +279,11 @@ function instanced(geo, mat, list, { cast = true } = {}) {
 }
 
 // ---------------------------------------------------------------- signs
-export function archSign(text, width, { color = '#2f8fd8' } = {}) {
+export function archSign(text, width, { color = '#2f8fd8', pole: pc = '#86c540', ring = '#5f9c2a' } = {}) {
   const g = new THREE.Group();
-  const pole = merge([Cy(.26, .3, 6.6, '#86c540', [0, 3.3, 0], 0, 1, 8), ...[1, 2.2, 3.4, 4.6, 5.8].map(y => Cy(.32, .32, .12, '#5f9c2a', [0, y, 0], 0, 1, 8)), Cy(.36, .36, .3, '#f7a43a', [0, 6.6, 0], 0, 1, 8)]);
+  const pole = merge([Cy(.26, .3, 6.6, pc, [0, 3.3, 0], 0, 1, 8), ...[1, 2.2, 3.4, 4.6, 5.8].map(y => Cy(.32, .32, .12, ring, [0, y, 0], 0, 1, 8)), Cy(.36, .36, .3, '#f7a43a', [0, 6.6, 0], 0, 1, 8)]);
   for (const sx of [-1, 1]) { const p = mesh(pole, vtoon()); p.position.x = sx * width / 2; outline(p, .04); g.add(p); }
-  const beam = mesh(merge([Cy(.24, .24, width + .6, '#86c540', [0, 0, 0], [0, 0, Math.PI / 2], 1, 8), ...[-.3, 0, .3].map(x => Cy(.29, .29, .1, '#5f9c2a', [x * width, 0, 0], [0, 0, Math.PI / 2], 1, 8))]), vtoon());
+  const beam = mesh(merge([Cy(.24, .24, width + .6, pc, [0, 0, 0], [0, 0, Math.PI / 2], 1, 8), ...[-.3, 0, .3].map(x => Cy(.29, .29, .1, ring, [x * width, 0, 0], [0, 0, Math.PI / 2], 1, 8))]), vtoon());
   beam.position.y = 6.1; outline(beam, .04); g.add(beam);
   const bw = Math.min(width * .78, text.length * .62 + 1.6);
   const board = mesh(merge([Bx(bw + .4, 1.9, .26, '#b5703a', [0, 0, 0]), Bx(bw, 1.5, .3, color, [0, 0, 0])]), vtoon());
@@ -357,12 +378,15 @@ export function buildWorld(T, course) {
       }
     }
   }
-  // flowers at the foot of the arches, rocks of the hazards
+  // vegetation of this course's climate (null removes a kind)
+  const flora = { tree0: 0, tree1: 1, palm: 2, bamboo: 3, reeds: 4, grass: 5, bush: 6, ...theme.flora };
+  const bushTheme = { ...theme, leaf: Array(3).fill(theme.bush || '#6fb84a') };
   const leafMat = vflat();
   const add = (geo, list, cast = true) => { if (list.length) root.add(instanced(geo, leafMat, list, { cast })); };
-  add(treeGeo(theme, 0), lists.tree0); add(treeGeo(theme, 1), lists.tree1); add(treeGeo(theme, 2), lists.palm);
-  add(treeGeo(theme, 3), lists.bamboo); add(treeGeo(theme, 4), lists.reeds, false); add(treeGeo(theme, 5), lists.grass, false);
-  add(treeGeo({ ...theme, leaf: ['#6fb84a', '#6fb84a', '#6fb84a'] }, 6), lists.bush, false);
+  for (const [k, cast] of [['tree0', true], ['tree1', true], ['palm', true], ['bamboo', true], ['reeds', false], ['grass', false], ['bush', false]]) {
+    if (flora[k] == null || !lists[k].length) continue;
+    add(treeGeo(flora[k] === 6 ? bushTheme : theme, flora[k]), lists[k], cast);
+  }
   add(rockGeo(theme, 2), lists.rock2);
   add(rockGeo(theme, 1), lists.rock1);
 
@@ -370,12 +394,12 @@ export function buildWorld(T, course) {
   const signs = [];
   const sign = (s, text, kind) => {
     T.at(s, o);
-    const g = archSign(text, o.w * 2 + 2.2);
+    const g = archSign(text, o.w * 2 + 2.2, { pole: theme.rail, ring: theme.railRing });
     g.position.set(o.x, o.y, o.z);
     g.rotation.y = -o.a + Math.PI;   // the board faces the riders coming downstream
     g.userData = { s, kind };
     root.add(g); signs.push(g);
-    const fl = instanced(treeGeo({ ...theme, leaf: ['#6fb84a', '#6fb84a', '#6fb84a'] }, 6), leafMat,
+    const fl = instanced(treeGeo(flora.bush === 6 ? bushTheme : theme, flora.bush ?? 6), leafMat,
       [-1, 1].map(sd => [o.x + o.nx * sd * (o.w + 1.4), o.y + .86, o.z + o.nz * sd * (o.w + 1.4), 0, 1.1]), { cast: false });
     root.add(fl);
     return g;
@@ -391,7 +415,7 @@ export function buildWorld(T, course) {
     const a = rnd() * Math.PI * 2, d = 230 + rnd() * 260;
     far.push([cx + Math.cos(a) * d, -40 + rnd() * 50, cz + Math.sin(a) * d, rnd() * 6, 14 + rnd() * 24]);
   }
-  const mesaGeo = merge([place(paint(new THREE.CylinderGeometry(1, .8, 3, 9), theme.far), [0, 0, 0]), place(paint(new THREE.CylinderGeometry(1.02, 1.02, .25, 9), theme.grass), [0, 1.55, 0]),
+  const mesaGeo = merge([place(paint(new THREE.CylinderGeometry(1, .8, 3, 9), theme.far), [0, 0, 0]), place(paint(new THREE.CylinderGeometry(1.02, 1.02, .25, 9), theme.farTop || theme.grass), [0, 1.55, 0]),
     place(paint(new THREE.ConeGeometry(.8, 1.6, 9), shade(theme.far, -.12)), [0, -2.3, 0], [Math.PI, 0, 0])]);
   root.add(instanced(mesaGeo, vflat(), far, { cast: false }));
   for (let k = 0; k < 40; k++) {
@@ -399,7 +423,7 @@ export function buildWorld(T, course) {
     clouds.push([cx + Math.cos(a) * d, 35 + rnd() * 70, cz + Math.sin(a) * d, rnd() * 6, 6 + rnd() * 10]);
   }
   const cloudGeo = merge([[0, 0, 0, 1], [1.1, -.2, .2, .75], [-1.1, -.25, -.1, .7], [.4, .35, -.3, .7], [-.5, .1, .5, .6]].map(([x, y, z, r]) => place(paint(new THREE.IcosahedronGeometry(r, 1), '#ffffff'), [x, y, z], 0, [1, .7, 1])));
-  root.add(instanced(cloudGeo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, emissive: '#e8f4ff', emissiveIntensity: .55 }), clouds, { cast: false }));
+  root.add(instanced(cloudGeo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, emissive: theme.cloud || '#e8f4ff', emissiveIntensity: .55 }), clouds, { cast: false }));
 
   return { root, water, signs, theme, update(t) { water.material.uniforms.uTime.value = t; } };
 }

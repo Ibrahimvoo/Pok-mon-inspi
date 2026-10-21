@@ -31,6 +31,9 @@ export function createStage(canvas, { quality = 'high' } = {}) {
       sky = skyDome(theme); scene.add(sky);
       scene.fog = new THREE.Fog(theme.fog, theme.fogNear, theme.fogFar);
       scene.background = new THREE.Color(theme.sky[1]);
+      const L = { sky: '#e6f6ff', ground: '#f2c3a0', sun: '#fff4e2', hemiI: 1.55, sunI: 1.75, ...theme.light };
+      hemi.color.set(L.sky); hemi.groundColor.set(L.ground); hemi.intensity = L.hemiI;
+      sun.color.set(L.sun); sun.intensity = L.sunI;
     },
     // keep the sun's shadow box centred on what the camera looks at
     focus(x, y, z) {

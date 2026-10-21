@@ -59,7 +59,7 @@ export class RaftSim {
     for (const h of this.hz) {
       if (h.s - p.s > 14) break;
       if (p.s - h.s > 30) continue;
-      zoneEffect(h, p, RAFT_R, zone);
+      zoneEffect(h, p, RAFT_R, zone, t);
     }
     const flow = fr.flow + zone.s;
     const tx = fr.tx * flow + fr.nx * zone.d, tz = fr.tz * flow + fr.nz * zone.d;

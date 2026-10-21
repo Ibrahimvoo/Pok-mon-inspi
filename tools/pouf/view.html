@@ -15,7 +15,7 @@ import { createCharacter, defaultLook, SPECIES } from '/src/games/pouf/view/char
 import { createFx } from '/src/games/pouf/view/fx.js';
 const q = new URLSearchParams(location.search);
 await document.fonts.load('80px "Luckiest Guy"');
-const course = COURSES[0], T = buildTrack(course);
+const course = COURSES.find(c => c.id === q.get('course')) || COURSES[0], T = buildTrack(course);
 const stage = createStage(document.getElementById('c'));
 stage.setTheme(course.theme);
 const world = buildWorld(T, course); stage.scene.add(world.root);
