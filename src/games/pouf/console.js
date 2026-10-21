@@ -4,6 +4,7 @@ import { h } from '../../ui.js';
 import { nav } from '../../nav.js';
 import { dialog, toast } from '../../shell.js';
 import { session } from '../../session.js';
+import { state } from '../../state.js';
 import './console.css';
 
 export const GAME_ID = 'pouf-party';
@@ -47,7 +48,12 @@ async function boot() {
       game = await createGame({
         el: holder, user, opts: { join },
         exit: () => import('../../screens/game.js').then(m => m.endSession()),
-        trophy: i => unlockTrophy(GAME_ID, i),
+        trophy: i => {
+          unlockTrophy(GAME_ID, i);
+          // the platinum comes with every other trophy
+          const got = state.trophies[GAME_ID] || [];
+          if ([0, 1, 2, 3, 4].every(k => got.includes(k))) unlockTrophy(GAME_ID, 5);
+        },
       });
     } catch (e) {
       console.error(e);

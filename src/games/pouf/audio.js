@@ -27,7 +27,7 @@ function applySettings() {
   if (!ctx) return;
   const s = state.settings;
   sfx.gain.setTargetAtTime(s.sfx ? s.sfxVol * 1.1 : 0, ctx.currentTime, .05);
-  music.gain.setTargetAtTime(musicOn && s.music ? s.musicVol * .55 : 0, ctx.currentTime, .3);
+  music.gain.setTargetAtTime(musicOn && s.music ? s.musicVol * .75 : 0, ctx.currentTime, .3);
 }
 const ok = () => init() && ctx.state === 'running';
 const now = () => ctx.currentTime;
@@ -140,6 +140,16 @@ export const sound = {
     musicTimer = setInterval(schedule, 60);
   },
   stop() { clearInterval(musicTimer); musicOn = false; if (ctx) music.gain.setTargetAtTime(0, ctx.currentTime, .2); },
+  // automated tests: peak level of the game's output over the next ms milliseconds (0…1)
+  async peak(ms = 400) {
+    if (!init()) return 0;
+    const an = ctx.createAnalyser(); an.fftSize = 2048; out.connect(an);
+    const buf = new Float32Array(an.fftSize); let peak = 0;
+    const end = performance.now() + ms;
+    while (performance.now() < end) { an.getFloatTimeDomainData(buf); for (const v of buf) peak = Math.max(peak, Math.abs(v)); await new Promise(r => setTimeout(r, 20)); }
+    out.disconnect(an);
+    return peak;
+  },
 };
 
 const CHORDS = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]]; // C G Am F

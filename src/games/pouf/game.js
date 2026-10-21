@@ -229,7 +229,7 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
     },
   };
 
-  if (/[?&]pfdebug/.test(location.search)) window.__pouf = G;   // automated tests inspect the game state
+  if (/[?&]pfdebug/.test(location.search)) { window.__pouf = G; G.sound = sound; }   // automated tests inspect the game state
 
   // ---------------------------------------------------------------- network events
   lobby.on('msg', m => {
