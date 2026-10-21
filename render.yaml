@@ -1,0 +1,22 @@
+# One-click deployment on Render (render.com → New → Blueprint → this repository).
+# The web service serves the client, the API and the WebSocket; accounts live in the free PostgreSQL database.
+services:
+  - type: web
+    name: ps5-ui
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: node --no-warnings server/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.1
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ps5-ui-db
+          property: connectionString
+databases:
+  - name: ps5-ui-db
+    plan: free
