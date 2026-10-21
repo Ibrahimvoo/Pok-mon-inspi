@@ -19,6 +19,18 @@ import './partyhud.js';
 
 let started = false;
 
+// Static hosts (GitHub Pages) may serve a cached copy: reload once when a newer build has been published.
+async function checkVersion() {
+  const mine = document.querySelector('script[type="module"][src]')?.getAttribute('src');
+  if (!mine || location.protocol === 'file:') return;
+  try {
+    const html = await (await fetch(location.pathname, { cache: 'no-store' })).text();
+    const latest = html.match(/<script[^>]+type="module"[^>]+src="([^"]+)"/)?.[1];
+    const key = 'ps5ux.reloadedFor';
+    if (latest && latest !== mine && sessionStorage.getItem(key) !== latest) { sessionStorage.setItem(key, latest); location.reload(); }
+  } catch { /* offline: keep the current version */ }
+}
+
 function fatal(err) {
   const msg = String(err?.message || err || 'Erreur inconnue');
   const el = document.createElement('div');
@@ -59,6 +71,7 @@ try {
   lifecycle.addEventListener('suspend', () => audio.suspend());
   lifecycle.addEventListener('resume', () => { if (started) audio.resume(); });
   resetTo(loadNav() ? resumeScreen : bootScreen, {});
+  checkVersion();
   started = true;
 } catch (e) {
   fatal(e);

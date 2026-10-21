@@ -20,7 +20,7 @@ export function profileScreen() {
   function renderFriends() {
     if (!social.available) {
       friendsTitle.replaceChildren('Amis');
-      friendsShelf.replaceChildren(h('div.friend', { f: true, onok: () => openBase('friends') }, h('div.avatar.add', { html: icon('user') }), h('div.fn', 'Profil hors ligne'), h('div.fs', 'Connectez-vous pour vos amis')));
+      friendsShelf.replaceChildren(h('div.friend', { f: true, onok: () => openBase('party') }, h('div.avatar.add', { html: icon('party') }), h('div.fn', 'Jouer avec un ami'), h('div.fs', 'Créer un salon')));
       return;
     }
     const list = [...social.friends].sort((a, b) => social.presenceOf(b.id).online - social.presenceOf(a.id).online);

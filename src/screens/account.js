@@ -70,15 +70,15 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
     })) : null;
     const preview = h('div.avatar.acc-preview', img(art.thumb(signup ? avatar : (session.known().find(k => k.psn.toLowerCase() === (psn || '').toLowerCase())?.avatar || avatar))));
     const banner = h('div.acc-banner.hidden');
-    const submitBtn = h('button.btn.primary.acc-submit', { f: true, onok: submit }, off ? 'Créer un profil hors ligne' : signup ? 'Créer mon compte' : 'Se connecter');
+    const submitBtn = h('button.btn.primary.acc-submit', { f: true, onok: submit }, off ? 'Créer mon profil' : signup ? 'Créer mon compte' : 'Se connecter');
     root.replaceChildren(
       h('div.acc-wrap',
         h('div.acc-side', preview,
           h('h1', signup ? (first ? 'Bienvenue' : 'Créer un compte') : 'Se connecter'),
-          h('p', signup ? (off ? 'Créez un profil local pour utiliser la console sur cet appareil.' : 'Créez votre compte pour retrouver vos amis, rejoindre leurs groupes et discuter en vocal.') : 'Connectez-vous avec votre identifiant en ligne et votre mot de passe.'),
-          h('div.acc-privacy', h('span.icw', { html: icon('lock') }), off ? 'Profil enregistré uniquement sur cet appareil.' : 'Votre mot de passe est chiffré sur le serveur (scrypt) et jamais stocké sur l’appareil. Session protégée par un cookie sécurisé.')),
+          h('p', signup ? (off ? 'Choisissez votre pseudo et votre avatar. Vous pourrez ensuite inviter un ami dans un salon pour jouer et parler ensemble.' : 'Créez votre compte pour retrouver vos amis, rejoindre leurs groupes et discuter en vocal.') : 'Connectez-vous avec votre identifiant en ligne et votre mot de passe.'),
+          h('div.acc-privacy', h('span.icw', { html: icon('lock') }), off ? 'Profil enregistré uniquement sur cet appareil, sans mot de passe.' : 'Votre mot de passe est chiffré sur le serveur (scrypt) et jamais stocké sur l’appareil. Session protégée par un cookie sécurisé.')),
         h('div.acc-form',
-          off ? h('div.acc-banner', h('span.icw', { html: icon('wifi') }), h('div', h('b', 'Serveur en ligne injoignable'), h('div', 'Le multijoueur et les appels vocaux sont désactivés tant que la console est hors ligne.')),
+          off ? h('div.acc-banner', h('span.icw', { html: icon('wifi') }), h('div', h('b', 'Pas besoin de compte en ligne'), h('div', 'Choisissez un pseudo : votre profil reste sur cet appareil. Pour jouer et parler avec un ami : Base de jeu → Créer un salon.')),
             h('button.btn.small', { f: true, onok: retry }, 'Réessayer')) : null,
           banner,
           f.psn.row, f.password?.row, f.confirm?.row,
