@@ -1,4 +1,4 @@
-// Art direction for every game: scene type + palette + camera. Colours are linear, pre-tonemap.
+// Art direction of the profile portraits (the former catalogue's covers): scene type + palette + camera. Colours are linear, pre-tonemap.
 // Scenes: 0 terrain, 1 ocean, 2 space, 3 city, 4 forest, 5 road, 6 abstract, 7 underwater, 8 ruins, 9 stadium
 export const ART = [
   { id: 'ashen-crown', scene: 0, u: { uSeed: 3.1, uA: [.03,.02,.025], uB: [.26,.09,.05], uC: [1,.45,.2], uD: [.15,.12,.11], uE: [.3,.25,.2],

@@ -1,11 +1,12 @@
 // Settings: two-pane layout; every option is functional and persisted.
-import { byId, PLANS, GAMES } from '../data.js';
+import { byId, PLANS } from '../data.js';
+import { AVATAR_LIST, AVATARS } from '../avatars.js';
 import { session } from '../session.js';
 import { net } from '../net.js';
 import { IOS, readLifelog } from '../input.js';
-import { state, save, bus, resetAll, usedStorage, STORAGE_USABLE, STORAGE_TOTAL } from '../state.js';
+import { state, save, bus, resetAll, usedStorage, builtIn, STORAGE_USABLE, STORAGE_TOTAL } from '../state.js';
 import { h, icon, size, price, art, img, wait } from '../ui.js';
-import { go, toast, confirmDialog, applySettings, renderHints, resetTo, menu } from '../shell.js';
+import { go, toast, dialog, confirmDialog, applySettings, renderHints, resetTo, menu } from '../shell.js';
 import { nav } from '../nav.js';
 import { audio } from '../audio.js';
 import { bg } from '../bg.js';
@@ -39,6 +40,7 @@ function panelFor(cat, layer) {
       slider('Volume de la musique', null, 'musicVol', A),
       toggle('Réduction du bruit (appels)', 'Filtre les bruits de fond du micro. L’annulation d’écho reste toujours active pour parler sans casque.', 'noiseSuppression', A),
       info('Pendant un appel', 'La musique se coupe pour éviter l’écho dans le haut-parleur'),
+      action('Diagnostic audio', 'Haut-parleur, écouteurs, AirPods et micro : tester le son et le micro séparément', () => { audio.play('ok'); soundCheck(); }),
     ];
     case 'display': return [
       cycle('Qualité graphique', 'Résolution de rendu et particules de l’arrière-plan', 'quality', [['high', 'Élevée'], ['balanced', 'Équilibrée'], ['eco', 'Économie d’énergie']], A),
@@ -88,7 +90,7 @@ function panelFor(cat, layer) {
         h('div', { style: { fontSize: '2.2rem' } }, `${size(STORAGE_USABLE - used)} libres sur ${size(STORAGE_USABLE)}`),
         h('div.storage-bar', games.map((id, i) => h('i', { style: { width: byId[id].size / STORAGE_TOTAL * 100 + '%', background: COLORS[i % COLORS.length] } })), h('i', { style: { width: sys / STORAGE_TOTAL * 100 + '%', background: 'rgba(255,255,255,.35)' } })),
         h('div.storage-legend', h('span', h('i', { style: { background: COLORS[0] } }), `Jeux et applications · ${size(used)}`), h('span', h('i', { style: { background: 'rgba(255,255,255,.35)' } }), `Système · ${size(sys)}`)),
-        ...games.map(id => action(byId[id].title, `${size(byId[id].size)} · sélectionnez pour supprimer`, () => { audio.play('ok'); uninstall(id); }, h('span.icw', { html: icon('trash') }))),
+        ...games.map(id => builtIn(id) ? info(byId[id].title, `${size(byId[id].size)} · intégré à la console`) : action(byId[id].title, `${size(byId[id].size)} · sélectionnez pour supprimer`, () => { audio.play('ok'); uninstall(id); }, h('span.icw', { html: icon('trash') }))),
       ];
     }
     case 'network': {
@@ -108,9 +110,9 @@ function panelFor(cat, layer) {
       ];
     }
     case 'users': {
-      const u = session.current || { psn: '—', avatar: GAMES[0].id };
+      const u = session.current || { psn: '—', avatar: AVATARS[0] };
       const plan = PLANS.find(p => p.id === state.plan);
-      const changeAvatar = el => menu(GAMES.slice(0, 12).map(g => ({ label: g.title + (g.id === u.avatar ? '  ✓' : ''), icon: 'user', onok: async () => {
+      const changeAvatar = el => menu(AVATAR_LIST.map(g => ({ label: g.name + (g.id === u.avatar ? '  ✓' : ''), icon: 'user', onok: async () => {
         try {
           if (session.online) await net.api('/api/me', { method: 'PATCH', body: { avatar: g.id } });
           session.use({ ...u, avatar: g.id }, !!u.online);
@@ -141,8 +143,10 @@ function panelFor(cat, layer) {
       info('Version', 'Console UI Concept 2.0'),
       action('Journal des interruptions', 'Ce que le système a fait de l’application (arrière-plan, rechargement, reprise)', () => {
         audio.play('ok');
-        const label = { launch: 'Démarrage', suspend: 'Mise en arrière-plan', resume: 'Retour au premier plan', freeze: 'Gel par le système', restored: 'Session restaurée' };
-        const why = e => e.type === 'launch' ? (e.discarded ? 'page rechargée après suppression par le système' : e.nav === 'reload' ? 'page rechargée' : 'ouverture') : e.type === 'resume' ? `absent ${Math.round((e.away || 0) / 1000)} s${e.reason === 'bfcache' ? ' · restauration du cache' : ''}` : e.type === 'restored' ? `${e.screens} écran(s)${e.game ? ' · jeu ' + (byId[e.game]?.title || '') : ''}` : e.reason || '';
+        const label = { launch: 'Démarrage', suspend: 'Mise en arrière-plan', resume: 'Retour au premier plan', freeze: 'Gel par le système', restored: 'Session restaurée', audio: 'Audio', 'start-error': 'Erreur au démarrage' };
+        const AUDIO = { state: 'état du son', resumed: 'son relancé', route: 'changement de sortie (écouteurs, AirPods…)', session: 'session audio', mic: 'micro rouvert' };
+        const why = e => e.type === 'launch' ? (e.discarded ? 'page rechargée après suppression par le système' : e.nav === 'reload' ? 'page rechargée' : 'ouverture') : e.type === 'resume' ? `absent ${Math.round((e.away || 0) / 1000)} s${e.reason === 'bfcache' ? ' · restauration du cache' : ''}` : e.type === 'restored' ? `${e.screens} écran(s)${e.game ? ' · jeu ' + (byId[e.game]?.title || '') : ''}`
+          : e.type === 'audio' ? [AUDIO[e.kind] || e.kind, e.why, e.label, e.session, e.state].filter(Boolean).join(' · ') : e.type === 'start-error' ? e.message : e.reason || '';
         const list = readLifelog();
         import('../shell.js').then(s => s.dialog({ title: 'Journal des interruptions', wide: true, body: h('div.trophy-list', list.length ? list.map(e => h('div.trophy-item', h('div', h('div.tn', label[e.type] || e.type), h('div.td', why(e))), h('div.tr', new Date(e.t).toLocaleTimeString('fr-FR')))) : h('div', 'Aucun évènement.')), actions: [{ label: 'Fermer', primary: true, sound: 'back' }] }));
       }),
@@ -157,6 +161,72 @@ function panelFor(cat, layer) {
     ];
   }
   return [];
+}
+
+// Sound check: tells a playback problem (audio context, iOS audio session, output) from a microphone problem.
+async function soundCheck() {
+  const { voice } = await import('../rtc.js');
+  const rows = h('div.trophy-list');
+  const row = (k, v) => h('div.trophy-item', h('div', h('div.tn', k), h('div.td', v)));
+  const STATE = { running: 'Active', suspended: 'En pause · touchez l’écran pour la relancer', interrupted: 'Interrompue par le système · touchez l’écran pour la relancer', closed: 'Fermée' };
+  const SESSION = { playback: 'Lecture (le son joue même en mode silencieux)', 'play-and-record': 'Appel (micro et son)', auto: 'Automatique', ambient: 'Ambiant (coupé par le mode silencieux)', transient: 'Ponctuelle', 'transient-solo': 'Ponctuelle exclusive' };
+  let result = null;
+  function paint() {
+    const d = audio.diagnostics(), mic = voice.micInfo();
+    rows.replaceChildren(
+      row('Lecture du son', STATE[d.state] || d.state),
+      row('Sortie audio', d.rate ? `${(d.rate / 1000).toFixed(1)} kHz${d.latency ? ` · latence ${Math.round(d.latency * 1000)} ms` : ''} · ${d.sfx ? `effets ${Math.round(d.sfx * 100)} %` : 'effets coupés'}` : '—'),
+      row('Session audio (iOS)', d.session ? SESSION[d.session] || d.session : 'Non gérée par ce navigateur'),
+      row('Micro de l’appel', mic ? `${mic.label} · ${mic.state !== 'live' ? 'arrêté' : mic.muted ? 'coupé par le système' : mic.enabled ? 'actif' : 'muet'}` : 'Aucun appel en cours'),
+      result);
+  }
+  const show = (k, v) => { result = row(k, v); paint(); };
+  async function testSound() {
+    audio.init(); audio.resume();
+    await wait(150);
+    audio.play('notify');
+    show('Test du son', audio.ready ? 'Trois notes viennent d’être jouées. Rien entendu ? Montez le volume avec les boutons de l’appareil et vérifiez que le son des effets est activé.' : 'Le son est bloqué par le système : touchez l’écran puis réessayez.');
+  }
+  let testing = false;
+  async function testMic() {
+    if (testing) return;
+    testing = true;
+    show('Test du micro', 'Parlez pendant 4 secondes…');
+    let peak = 0, label = '';
+    try {
+      if (voice.active) {
+        label = voice.micInfo()?.label || '';
+        const off = voice.on('levels', l => { peak = Math.max(peak, l.me || 0); });
+        await wait(4000); off();
+      } else {
+        audio.init();
+        audio.setCallMode(true);
+        let stream;
+        try {
+          stream = await voice.testMic();
+          label = stream.getAudioTracks()[0]?.label || '';
+          const an = audio.ctx.createAnalyser(); an.fftSize = 1024;
+          const src = audio.ctx.createMediaStreamSource(stream); src.connect(an);
+          const buf = new Float32Array(an.fftSize), end = Date.now() + 4000;
+          while (Date.now() < end) {
+            an.getFloatTimeDomainData(buf);
+            let s = 0; for (const v of buf) s += v * v;
+            peak = Math.max(peak, Math.min(1, Math.sqrt(s / buf.length) * 8));
+            await wait(80);
+          }
+          src.disconnect();
+        } finally { stream?.getTracks().forEach(t => t.stop()); audio.setCallMode(false); }
+      }
+      show('Test du micro', `${label || 'Micro'} · niveau maximal ${Math.round(peak * 100)} %${peak < .05 ? ' · aucun son capté : vérifiez le micro (ou les AirPods) et l’autorisation du site' : ' · le micro fonctionne'}`);
+    } catch (e) { show('Test du micro', e.message || 'Impossible d’accéder au micro.'); }
+    finally { testing = false; }
+  }
+  paint();
+  const timer = setInterval(paint, 1000);
+  dialog({ title: 'Diagnostic audio', wide: true, body: rows, onClose: () => clearInterval(timer), actions: [
+    { label: 'Tester le son', icon: 'volume', primary: true, close: false, onok: testSound },
+    { label: 'Tester le micro', icon: 'mic', close: false, onok: testMic },
+    { label: 'Fermer', sound: 'back' }] });
 }
 
 export function settingsScreen({ cat: start = 'sound' } = {}) {

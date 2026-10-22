@@ -2,7 +2,7 @@
 import { GAMES } from '../data.js';
 import { recentGames, installed } from '../state.js';
 import { h, icon, art, img, wait } from '../ui.js';
-import { resetTo, closeLayer, toast, go, menu, loadNav, navExtras } from '../shell.js';
+import { resetTo, closeLayer, toast, go, menu, loadNav, clearNav, navExtras } from '../shell.js';
 import { nav } from '../nav.js';
 import { audio } from '../audio.js';
 import { input, IOS, lifelog } from '../input.js';
@@ -17,7 +17,8 @@ const glyphs = cls => h(`div.glyphs3d.${cls}`, h('span', { html: EMBLEM }));
 
 // Preload what the first screens need; resolves with progress callbacks.
 function preload(onProgress) {
-  const urls = [...GAMES.map(g => art.thumb(g.id)), ...recentGames().slice(0, 3).flatMap(id => [art.hero(id), art.depth(id)])];
+  const pics = new Set([...GAMES.map(g => g.id), ...session.known().map(u => u.avatar).filter(Boolean)]);
+  const urls = [...[...pics].map(id => art.thumb(id)), ...recentGames().slice(0, 3).flatMap(id => [art.hero(id), art.depth(id)])];
   let done = 0;
   const tick = () => onProgress(++done / (urls.length + 1));
   const imgs = urls.map(u => new Promise(res => { const i = new Image(); i.onload = i.onerror = () => { tick(); res(); }; i.src = u; }));
@@ -66,11 +67,27 @@ export function resumeScreen() {
   const account = net.probe().then(m => (m === 'online' ? net.me().catch(() => null) : null));
   const root = h('div.boot', h('div.press', glyphs('idle'), h('p', 'Reprise de votre session…')));
   account.then(() => routeAfterBoot(true));
-  return { root, bg: null, noHints: true, shade: 0, opaque: true, onAction: () => true, back() {} };
+  // never leave the player on this screen: after a few seconds a tap starts afresh
+  const since = Date.now();
+  const retry = () => { if (Date.now() - since > 6000 && nav.top?.root === root) { clearNav(); routeAfterBoot(false); } return true; };
+  root.addEventListener('pointerdown', retry);
+  return { root, bg: null, noHints: true, shade: 0, opaque: true, onAction: retry, back() {} };
 }
 
 // Where to go once the console has started: resume an interrupted session, pick a user, or create the first account.
 async function routeAfterBoot(auto) {
+  try { await chooseRoute(auto); }
+  catch (e) {
+    // a broken snapshot (screen or game that no longer exists…) must not block the start: forget it and pick a user
+    console.error('start failed', e);
+    lifelog({ type: 'start-error', message: String(e?.message || e).slice(0, 120) });
+    clearNav();
+    if (nav.layers.some(l => l.root.classList.contains('home'))) return;   // the home screen is up: keep it
+    try { resetTo(session.known().length || net.user ? usersScreen : accountScreen, session.known().length || net.user ? {} : { mode: 'signup', first: true }); }
+    catch (e2) { console.error(e2); }
+  }
+}
+async function chooseRoute(auto) {
   const snap = loadNav();
   const known = session.known();
   const me = net.user;

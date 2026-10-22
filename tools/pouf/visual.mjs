@@ -30,7 +30,7 @@ await page.waitForSelector('.account .acc-form', { timeout: 20000 });
 await page.fill('.f-input >> nth=0', 'Testeur');
 await page.click('.acc-submit');
 await page.waitForSelector('.home .tile', { timeout: 20000 });
-await page.keyboard.press('ArrowRight'); await page.waitForTimeout(1500); await shot('0-home');
+await page.waitForTimeout(1500); await shot('0-home');   // Pouf Party is selected on arrival
 await page.click('.home .tile.sel');
 await until(() => !!document.querySelector('.pf-title .pf-btn'), 40000);
 await page.waitForTimeout(2500); await shot('1-title');

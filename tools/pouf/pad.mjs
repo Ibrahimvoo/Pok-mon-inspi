@@ -39,7 +39,7 @@ try {
   await page.click('.acc-submit');
   await page.waitForSelector('.home .tile', { timeout: 20000 });
   await page.waitForTimeout(800);
-  await press(15);                                          // → onto Pouf Party
+  // Pouf Party, the only game, is already selected when the home screen opens
   ok('jaquette sélectionnée à la manette', await until(() => /Pouf Party/.test(document.querySelector('.home .tile.sel .tile-label')?.textContent || ''), 5000));
   await press(0);                                           // ✕ launches
   ok('jeu lancé à la manette', await until(() => !!document.querySelector('.pf-title .pf-btn.focused'), 40000),

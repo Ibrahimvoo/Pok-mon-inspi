@@ -90,9 +90,9 @@ export function stepPlayer(level, pl, inp, t, dt, others = [], ev = []) {
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
     if (part.type === 'box' || part.type === 'disc') collideSolid(part, i, pl, t, P, ev);
-    else if (part.type === 'sweeper') collideSweeper(part, pl, t, ev, level);
-    else if (part.type === 'hammer') collideHammer(part, pl, t, ev);
-    else if (part.type === 'bumper') collideBumper(part, pl, t, P, ev);
+    else if (part.type === 'sweeper') collideSweeper(part, pl, t, ev, level, i);
+    else if (part.type === 'hammer') collideHammer(part, pl, t, ev, i);
+    else if (part.type === 'bumper') collideBumper(part, pl, t, P, ev, i);
   }
   if (pl.ground >= 0) { pl.coyote = .12; if (wasGround < 0 && pl.vy <= 0) ev.push({ k: 'land' }); }
   else if (wasGround >= 0) pl.coyote = .12;
@@ -159,14 +159,15 @@ function collideSolid(part, i, pl, t, P, ev) {
   if (part.move) { pl.vx += Math.max(0, P.vx * wx + P.vz * wz) * wx; pl.vz += Math.max(0, P.vx * wx + P.vz * wz) * wz; }
 }
 
-function knock(pl, nx, nz, power, up, ev, kind) {
+// diagnostics: `i` is the obstacle's index in the level, `t` the obstacles' time, x/y/z where the critter was hit
+function knock(pl, nx, nz, power, up, ev, kind, i = -1, t = 0) {
   if (pl.stun > .25) return;
-  const l = Math.hypot(nx, nz) || 1;
+  const l = Math.hypot(nx, nz) || 1, r2 = v => Math.round(v * 100) / 100;
   pl.vx = nx / l * power; pl.vz = nz / l * power; pl.vy = Math.max(pl.vy, up);
   pl.ground = -1; pl.stun = .7;
-  ev.push({ k: 'knock', kind });
+  ev.push({ k: 'knock', kind, i, t: r2(t), x: r2(pl.x), y: r2(pl.y), z: r2(pl.z) });
 }
-function collideSweeper(sw, pl, t, ev, level) {
+function collideSweeper(sw, pl, t, ev, level, i) {
   const [cx, cy, cz] = sw.p, a0 = sweeperAngle(sw, t, level), r = sw.r ?? .4, arms = sw.arms ?? 1;
   if (pl.y > cy + r || pl.y + PH < cy - r) return;
   if (sw.start != null && t < sw.start) return;
@@ -183,12 +184,12 @@ function collideSweeper(sw, pl, t, ev, level) {
       // pushed along the bar's motion (perpendicular to it), faster at the tip
       const dir = Math.sign(sw.speed) || 1, tx = -dz * dir * Math.sign(u || 1), tz = dx * dir * Math.sign(u || 1);
       const sp = Math.max(7, Math.abs(sw.speed * u) * 1.4);
-      knock(pl, tx * .8 + ex * .2, tz * .8 + ez * .2, sp, 6.5, ev, 'sweeper');
+      knock(pl, tx * .8 + ex * .2, tz * .8 + ez * .2, sp, 6.5, ev, 'sweeper', i, t);
       return;
     }
   }
 }
-function collideHammer(hm, pl, t, ev) {
+function collideHammer(hm, pl, t, ev, i) {
   const [px, py, pz] = hm.p, a = hammerAngle(hm, t), L = hm.len ?? 4, r = hm.r ?? .9;
   // swing plane: across the path (axis 'z' swings along x)
   const along = hm.axis === 'x';
@@ -197,16 +198,16 @@ function collideHammer(hm, pl, t, ev) {
   const ex = pl.x - hx, ey = cy - hy, ez = pl.z - hz, d = Math.hypot(ex, ey, ez);
   if (d < PR + r) {
     const sv = Math.cos(a) * Math.sign(hammerAngle(hm, t + .02) - a || 1);
-    knock(pl, along ? ex * .3 : sv * 3 + ex * .3, along ? sv * 3 + ez * .3 : ez * .3, 13, 7, ev, 'hammer');
+    knock(pl, along ? ex * .3 : sv * 3 + ex * .3, along ? sv * 3 + ez * .3 : ez * .3, 13, 7, ev, 'hammer', i, t);
   }
 }
-function collideBumper(b, pl, t, P, ev) {
+function collideBumper(b, pl, t, P, ev, i) {
   partPose(b, t, P);
   const x = P.x, y = P.y, z = P.z, dx = pl.x - x, dz = pl.z - z, d = Math.hypot(dx, dz);
   if (pl.y > y + b.h || pl.y + PH < y) return;
   if (d < b.r + PR && d > 0) {
     pl.x = x + dx / d * (b.r + PR); pl.z = z + dz / d * (b.r + PR);
-    knock(pl, dx, dz, 13, 5, ev, 'bumper');
+    knock(pl, dx, dz, 13, 5, ev, 'bumper', i, t);
   }
 }
 

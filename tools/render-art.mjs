@@ -1,4 +1,5 @@
-// Renders every game visual (hero, depth map, screenshots) from tools/art/shader.glsl.
+// Renders the profile portraits (banner + thumbnail) from tools/art/shader.glsl. These scenes were the covers of the
+// former catalogue; they are now only avatars, so no depth map or screenshot is produced (Pouf Party: npm run art:pouf).
 // Usage: node tools/render-art.mjs [gameId ...] [--preview]
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -16,7 +17,6 @@ const root = dirname(fileURLToPath(import.meta.url));
 const out = join(root, '..', 'public', 'art');
 const args = process.argv.slice(2);
 const preview = args.includes('--preview');
-const shotsOnly = args.includes('--shots');
 const only = args.filter(a => !a.startsWith('--'));
 
 const server = createServer(async (req, res) => {
@@ -58,11 +58,8 @@ for (const a of ART) {
   if (only.length && !only.includes(a.id)) continue;
   const W = preview ? 640 : 1920, H = preview ? 360 : 1080;
   const bloom = a.bloom ?? 0.7;
-  if (!shotsOnly) await save(`${a.id}.webp`, { scene: a.scene, w: W, h: H, u: a.u }, { bloom });
+  await save(`${a.id}.webp`, { scene: a.scene, w: W, h: H, u: a.u }, { bloom });
   if (preview) continue;
-  if (!shotsOnly) await save(`${a.id}-d.webp`, { scene: a.scene, w: 480, h: 270, u: a.u, mode: 1 }, { depth: true });
-  for (const [i, s] of (a.shots || []).entries())
-    await save(`${a.id}-s${i + 1}.webp`, { scene: a.scene, w: 1280, h: 720, u: { ...a.u, ...s } }, { bloom, q: 80 });
 }
 const py = spawnSync('python3', [join(root, 'post.py')], { input: JSON.stringify(post), stdio: ['pipe', 'inherit', 'inherit'] });
 if (py.status) process.exit(py.status);

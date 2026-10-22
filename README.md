@@ -2,11 +2,11 @@
 
 Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, création de compte, choix de l’utilisateur, écran d’accueil, hub de jeu, PlayStation Store, fiches produit, bibliothèque, recherche, profil, Base de jeu (amis, groupes, appels vocaux), centre de contrôle, menu Créer, paramètres. Jouable à la **manette**, au **clavier**, à la **souris** et au **toucher**, dans Safari, Chrome, Firefox ou Edge (ordinateur, iPad, iPhone en paysage).
 
-> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les jeux et leurs visuels sont fictifs ; les achats sont simulés, et les 18 jeux du catalogue d’origine lancent une session simulée — **Pouf Party** est, lui, un vrai jeu jouable (voir plus bas). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
+> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Le jeu et ses visuels sont originaux ; les achats sont simulés. La console ne contient plus qu’un seul jeu, **Pouf Party**, un vrai jeu jouable (voir plus bas) : les 18 jeux fictifs du catalogue d’origine ont été retirés (leurs illustrations restent disponibles comme photos de profil). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
 ## Jouer avec un ami sans rien installer (salons)
 
-Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
+Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Safari et l’app ajoutée à l’écran d’accueil jouent ensemble (sur iPhone, un lien s’ouvre toujours dans Safari : depuis l’app, saisissez le code). Si l’hôte est parti envoyer le lien depuis une autre app, son ami patiente jusqu’à 40 s au lieu d’échouer ; dans Pouf Party, si un invité a repris la partie pendant l’absence de l’hôte, celui-ci la rejoint à son retour au lieu de rester seul dans un second salon. Les codes à 5 caractères (partie Pouf Party) et à 6 caractères (salon) sont acceptés aux deux endroits. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
 
 ## Pouf Party — un vrai jeu multijoueur 3D dans la console
 
@@ -20,7 +20,16 @@ Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/),
 - **Progression** : personnages (6 espèces), couleurs, chapeaux, accessoires, couleur du gaz, emotes, XP, niveaux, pièces pour débloquer, étoiles, records de la console, trophées de la console.
 - **Commandes** : clavier (ZQSD ou WASD, Espace, Maj/E, R, 1-6, Échap), souris (clic pour capturer la caméra), manette (sticks, ✕/R2, □/R1, △, croix directionnelle, Options) et écran tactile (joystick et boutons).
 
-Le jeu est isolé dans `src/games/pouf/` (chargé à la demande : la console ne télécharge three.js qu’au lancement du jeu) ; `src/games/registry.js` déclare les jeux réellement jouables, les autres jeux du catalogue gardent la session simulée. Les visuels de la jaquette sont rendus avec le moteur du jeu (`npm run art:pouf`).
+Le jeu est isolé dans `src/games/pouf/` (chargé à la demande : la console ne télécharge three.js qu’au lancement du jeu) ; `src/games/registry.js` déclare les jeux réellement jouables. Pouf Party est intégré à la console : il est toujours installé et ne peut pas être supprimé. Les visuels de la jaquette sont rendus avec le moteur du jeu (`npm run art:pouf`).
+
+## Caméra et partage de la partie
+
+Pendant un appel vocal de groupe ou de salon, un panneau vidéo apparaît à droite de l’écran (aussi au-dessus du jeu) ; les mêmes commandes sont dans la *Base de jeu → Groupe* et dans le *centre de contrôle*.
+
+- **Caméra** : activée uniquement après un toucher (le navigateur demande l’autorisation), indicateur rouge tant qu’elle filme, bouton *caméra avant / arrière* quand l’appareil en a deux, indépendante du micro (couper l’un ne coupe pas l’autre). Les caméras des amis s’affichent quand ils l’activent ; toucher une vignette l’agrandit.
+- **Partager la partie** : vos amis voient votre partie de Pouf Party en direct, avec le son du jeu. Seule l’image du jeu est transmise (copie réduite du rendu 3D) : cela fonctionne aussi sur iPhone et iPad, où Safari et les apps de l’écran d’accueil ne permettent pas de partager l’écran.
+- **Partager l’écran** (ordinateur : Chrome, Edge, Firefox, Safari macOS) : fenêtre, onglet ou écran entier ; le bouton « Arrêter le partage » du navigateur est pris en compte. Le bouton n’est pas proposé là où la fonction n’existe pas.
+- **Sécurité** : la vidéo passe par les mêmes connexions WebRTC chiffrées que la voix, uniquement entre les membres du vocal d’un même groupe ou salon (le serveur et l’hôte du salon refusent tout autre relais). Raccrocher coupe la caméra et le partage ; rien ne continue de filmer en arrière-plan.
 
 ## Démarrer
 
@@ -88,9 +97,18 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 npm test          # API + WebSocket (SQLite en mémoire) + physique de Pouf Party (bouée, pièges, checkpoints, course à pied)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
 npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
+npm run e2e:resume # hôte mis en arrière-plan (page gelée) : l’ami patiente puis rejoint, reprise de la partie sans salon en double
+npm run e2e:video  # caméra dans les deux sens, partage de la partie et de l’écran, arrêt, refus d’autorisation, raccrocher
+npm run e2e:touch # écran tactile de téléphone : carte utilisateur, photo de profil, profil, amis, menus, ancienne sauvegarde Safari, lancement du jeu
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
 npm run e2e:pouf  # Pouf Party : partie en ligne à deux (bouée et course), clavier, manette, tactile, survie, retour à la console
 ```
+
+## Diagnostic sur l’appareil
+
+- *Paramètres → Son → Diagnostic audio* : état de la lecture, session audio iOS, micro de l’appel, boutons **Tester le son** et **Tester le micro** (pour distinguer un problème de lecture d’un problème de micro, avec le haut-parleur, des écouteurs ou des AirPods).
+- *Paramètres → Système → Journal des interruptions* : arrière-plan, rechargements, restaurations, et désormais les changements de sortie audio (écouteurs branchés ou retirés), les relances du son et du micro.
+- *Pouf Party → Options → Journal des dégâts* : chaque coup, éclatement ou renversement avec le piège responsable (type et numéro), la cause, la position (sur la rivière ou dans le niveau), le temps de la partie, l’heure et la source (simulation de l’hôte ou reçu de l’hôte). Avec `?pfdebug` dans l’adresse, ces entrées sont aussi écrites dans la console.
 
 ## Technique
 

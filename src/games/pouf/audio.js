@@ -3,7 +3,7 @@
 import { audio as consoleAudio } from '../../audio.js';
 import { state } from '../../state.js';
 
-let ctx = null, out, sfx, music, noiseBuf, musicTimer = 0, nextNote = 0, step = 0, tempo = 112, musicOn = false;
+let ctx = null, out, sfx, music, noiseBuf, shareDest = null, musicTimer = 0, nextNote = 0, step = 0, tempo = 112, musicOn = false;
 const R = Math.random;
 
 function init() {
@@ -141,6 +141,14 @@ export const sound = {
     musicTimer = setInterval(schedule, 60);
   },
   stop() { clearInterval(musicTimer); musicOn = false; if (ctx) music.gain.setTargetAtTime(0, ctx.currentTime, .2); },
+  // the game's sound as a stream, for the shared gameplay (null where Web Audio cannot make one)
+  shareTrack() {
+    if (!init() || !ctx.createMediaStreamDestination) return null;
+    shareDest ||= ctx.createMediaStreamDestination();
+    try { out.connect(shareDest); } catch { return null; }
+    return shareDest.stream.getAudioTracks()[0] || null;
+  },
+  unshare() { if (shareDest) { try { out.disconnect(shareDest); } catch { /* not connected */ } } },
   // automated tests: peak level of the game's output over the next ms milliseconds (0…1)
   async peak(ms = 400) {
     if (!init()) return 0;

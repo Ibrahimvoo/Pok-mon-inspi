@@ -93,14 +93,15 @@ export class RaftSim {
       const c = collide(h, q, RAFT_R, t, fr2);
       if (!c) continue;
       const nx = fr2.tx * c.n[0] + fr2.nx * c.n[1], nz = fr2.tz * c.n[0] + fr2.nz * c.n[1];
-      if (c.crush) { this.burst(events, 'crush', h); return events; }
+      if (c.crush) { this.burst(events, 'crush', h, q, t); return events; }
       this.contact(-nx, -nz, c.depth, events, c.kick);
       if (c.hit && st.inv <= 0) {
         st.air--; st.inv = INVUL; st.lastHit = h.type;
         st.w += (Math.random() < .5 ? -1 : 1) * (2 + Math.random() * 2);
         st.vx += nx * 4.5; st.vz += nz * 4.5;
-        events.push({ k: 'hit', air: st.air, x: st.x - nx * RAFT_R, z: st.z - nz * RAFT_R, cause: h.type });
-        if (st.air <= 0) { this.burst(events, h.type, h); return events; }
+        // diagnostics: the trap (index in the course), where the raft was on the river and when
+        events.push({ k: 'hit', air: st.air, x: st.x - nx * RAFT_R, z: st.z - nz * RAFT_R, cause: h.type, ...this.origin(h, q, t), depth: r2(c.depth) });
+        if (st.air <= 0) { this.burst(events, h.type, h, q, t); return events; }
       }
     }
 
@@ -131,11 +132,12 @@ export class RaftSim {
     st.w += (rz * tx - rx * tz) * j * 2 / 4.84;
   }
 
-  burst(events, cause) {
+  burst(events, cause, h = null, q = null, t = null) {
     const st = this.st;
     st.pop = 0; st.air = 0; st.deaths++; st.vx = st.vz = 0; st.w = 0;
-    events.push({ k: 'pop', x: st.x, z: st.z, cause, deaths: st.deaths });
+    events.push({ k: 'pop', x: st.x, z: st.z, cause, deaths: st.deaths, ...(h ? this.origin(h, q, t) : {}) });
   }
+  origin(h, q, t) { return { id: this.course.hazards.indexOf(h), s: r2(q.s), d: r2(q.d), t: r2(t) }; }
   // the riders asked to start again from the last checkpoint
   giveUp(events = []) { if (this.st.pop < 0 && !this.st.finished) this.burst(events, 'reset'); return events; }
 
@@ -151,3 +153,4 @@ export function unpack(a, o = {}) {
   return o;
 }
 const clampS = (s, h) => Math.max(h.s, Math.min(h.s1, s));
+const r2 = v => Math.round(v * 100) / 100;

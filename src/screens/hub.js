@@ -1,7 +1,7 @@
 // Game hub: logo, play/download button, activities, trophies and news. Embedded in Home and used standalone.
 import { byId } from '../data.js';
 import { social, joinGame } from '../social.js';
-import { state, bus, owns, installed, downloading, trophyStats } from '../state.js';
+import { state, bus, owns, installed, downloading, trophyStats, builtIn } from '../state.js';
 import { h, art, logo, img, icon, size, hours, ago, avatarImg } from '../ui.js';
 import { dialog, menu } from '../shell.js';
 import { play, openProduct, uninstall, cancelDownload } from '../actions.js';
@@ -37,7 +37,7 @@ export function gameMenu(id, anchor) {
     { label: 'Trophées', icon: 'trophy', onok: () => showTrophies(id) },
   ];
   if (downloading(id)) items.push({ label: 'Annuler le téléchargement', icon: 'close', onok: () => cancelDownload(id) });
-  if (installed(id) && session.id !== id) items.push({ label: `Supprimer (${size(g.size)})`, icon: 'trash', onok: () => uninstall(id) });
+  if (installed(id) && !builtIn(id) && session.id !== id) items.push({ label: `Supprimer (${size(g.size)})`, icon: 'trash', onok: () => uninstall(id) });
   return menu(items, anchor);
 }
 

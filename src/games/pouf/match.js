@@ -7,6 +7,7 @@ import { sound } from './audio.js';
 import { createHud } from './ui/hud.js';
 import { gasOf, EMOTES } from './view/characters.js';
 import { input as consoleInput } from '../../input.js';
+import { logDamage } from './damagelog.js';
 
 export const GO = 3;                    // seconds of countdown before the current carries the raft
 const STEP = 1 / 60, SNAP_EVERY = 1 / 20, INPUT_EVERY = 1 / 20, INTERP = .12;
@@ -56,6 +57,9 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
   // ------------------------------------------------------------ events (same effects on every screen)
   function applyEvent(e) {
     const rs = arena.rs;
+    // every damage is traceable: trap, cause, raft position on the river, simulation time, event
+    if (e.k === 'hit' || e.k === 'pop') logDamage({ event: e.k, cause: e.cause, id: e.id ?? -1, course: course.id, t: e.t ?? null,
+      pos: { s: e.s ?? null, d: e.d ?? null, x: Math.round(e.x * 100) / 100, z: Math.round(e.z * 100) / 100 }, air: e.k === 'hit' ? e.air : 0, from: host ? 'simulation (hôte)' : 'reçu de l’hôte' });
     if (e.k === 'hit') {
       sound.hit(); arena.fx.stars(e.x, rs.y + 1, e.z, 10);
       hud.air(e.air, true); hud.toast(['Aïe !', 'Ouille !', 'Ça pique !'][Math.floor(Math.random() * 3)], 1200);
@@ -90,11 +94,11 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
     }
   }
   const fmt = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, '0')}`;
-  function hostEvents(evs) {
+  function hostEvents(evs, at = t) {
     if (!evs.length) return;
     evs.forEach(applyEvent);
-    lobby.broadcast({ t: 'ev', at: t, e: evs });
-    if (evs.some(e => e.k === 'finish')) finishedAt = t;
+    lobby.broadcast({ t: 'ev', at: r3(at), e: evs });
+    if (evs.some(e => e.k === 'finish')) finishedAt = at;
   }
 
   // ------------------------------------------------------------ the local rider
@@ -179,7 +183,7 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
     for (const h of course.hazards) {
       if (h.type !== 'jaws' && h.type !== 'bar') continue;
       const ds = Math.abs(h.s - rs.s); if (ds > 45) continue;
-      const v = h.type === 'jaws' ? jawsClosure(h, t) >= 1 : barHeight(h, t) < .6;
+      const v = h.type === 'jaws' ? jawsClosure(h, api.viewT) >= 1 : barHeight(h, api.viewT) < .6;
       if (v && !hzState.get(h)) sound.slam(Math.max(0, 1 - ds / 45));
       hzState.set(h, v);
     }
@@ -211,6 +215,10 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
   const api = {
     kind: 'raft', roster,
     get t() { return t; }, get finished() { return view.finished; }, riders, sim, hud,
+    // the moment the raft on screen comes from: the host shows its simulation, guests a snapshot INTERP seconds old.
+    // Traps are drawn at this same moment, otherwise a guest saw them up to ~0.2 s ahead of the raft (hits looked
+    // like they came from nowhere, near misses looked like hits).
+    get viewT() { return host ? Math.max(0, t - acc) : Math.max(0, t - INTERP); },
     debug: () => ({ buf: buf.length, t, clockSet, snapAge: performance.now() - lastSnapAt, phase, view: { ...view } }),
     onMsg(m) {
       if (host) {
@@ -264,6 +272,9 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
           acc = Math.min(acc + dt, .25);
           while (acc >= STEP) {
             acc -= STEP;
+            // each sub-step sees the traps where they are at its own time: after a long frame (iOS hiccup) all the
+            // sub-steps used to test the raft's past positions against the traps' final pose, hence hits from nothing
+            const ts = t - acc;
             const inputs = [], evs = [];
             for (const r of riders.values()) {
               if (!arena.crew.has(r.id)) continue;
@@ -271,8 +282,8 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
               inputs.push({ a: r.a, f: r.puff, sp });
               if (r.gu > r.guSeen) { r.guSeen = r.gu; sim.giveUp(evs); }
             }
-            sim.step(STEP, t, inputs, evs);
-            hostEvents(evs);
+            sim.step(STEP, ts, inputs, evs);
+            hostEvents(evs, ts);
           }
         }
         Object.assign(view, sim.st);

@@ -1,7 +1,7 @@
 // Realtime hub over WebSocket: presence, parties (groups), invitations, game sessions,
 // WebRTC signalling relay and in-game input sync. Live state is in memory; accounts/friends are in the DB.
 import { randomUUID, randomBytes } from 'node:crypto';
-import { AVATARS } from './accounts.js';
+import { GAME_IDS } from './accounts.js';
 
 const GRACE_MS = 15000;          // keep a player "online" (and in their party) this long after a dropped socket
 const INVITE_TTL = 2 * 60e3;
@@ -77,7 +77,7 @@ export function createHub({ acc, log = () => {} }) {
     ping() { return { ok: true }; },
     presence(u, m) {
       const activity = ACTIVITIES.includes(m.activity) ? m.activity : 'home';
-      const game = activity === 'game' && AVATARS.includes(m.game) ? m.game : null;
+      const game = activity === 'game' && GAME_IDS.includes(m.game) ? m.game : null;
       presence.set(u.id, { activity, game });
       broadcastPresence(u.id);
     },
@@ -140,11 +140,11 @@ export function createHub({ acc, log = () => {} }) {
       const me = p?.members.get(u.id), peer = p?.members.get(String(m.to || ''));
       if (!me?.voice || !peer?.voice) return;
       const data = m.data;
-      if (!data || typeof data !== 'object' || JSON.stringify(data).length > 12000) return;
+      if (!data || typeof data !== 'object' || JSON.stringify(data).length > 48000) return;
       toUser(peer.id, { t: 'rtc', from: u.id, fromVs: me.vs, toVs: m.toVs, data });
     },
     'game.start'(u, m) {
-      const game = AVATARS.includes(m.game) ? m.game : null;
+      const game = GAME_IDS.includes(m.game) ? m.game : null;
       let p = parties.get(userParty.get(u.id));
       if (!game) return { error: 'invalid', message: 'Jeu inconnu.' };
       if (!p) p = createParty(u.id);

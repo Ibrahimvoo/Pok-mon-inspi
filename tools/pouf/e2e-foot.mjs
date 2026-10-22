@@ -29,7 +29,7 @@ async function player(name, psn) {
 const other = (page) => page.evaluate(() => { const m = window.__pouf.match; const p = [...m.riders.values()].find(r => r.id !== window.__pouf.me.id); return { x: p.x, z: p.z, fin: p.fin, rank: p.rank }; });
 try {
   const A = await player('A', 'Lievre'), B = await player('B', 'Tortue');
-  await A.keyboard.press('ArrowRight'); await A.waitForTimeout(400); await A.click('.home .tile.sel');
+  await A.waitForTimeout(400); await A.click('.home .tile.sel');   // Pouf Party is selected on arrival
   await until(A, () => !!document.querySelector('.pf-title .pf-btn'), 40000);
   await A.click('.pf-btn[data-key="play"]');
   await until(A, () => window.__pouf?.lobby.online && /[A-Z0-9]{5}/.test(document.querySelector('.pf-code b')?.textContent || ''), 20000);

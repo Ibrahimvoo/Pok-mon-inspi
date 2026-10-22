@@ -43,7 +43,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
 
   const SEC = {
     'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY',
-    'Permissions-Policy': 'microphone=(self), camera=(), geolocation=(), gamepad=(self)',
+    'Permissions-Policy': 'microphone=(self), camera=(self), display-capture=(self), geolocation=(), gamepad=(self)',
     'Cross-Origin-Opener-Policy': 'same-origin',
   };
   function csp(req) {
@@ -192,7 +192,8 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   });
 
   // ------------------------------------------------------------ websocket
-  const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
+  // an offer with the camera and share slots (four media sections) is larger than a voice-only one
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 });
   server.on('upgrade', async (req, socket, head) => {
     const deny = (code, text) => { socket.write(`HTTP/1.1 ${code} ${text}\r\nConnection: close\r\n\r\n`); socket.destroy(); };
     try {

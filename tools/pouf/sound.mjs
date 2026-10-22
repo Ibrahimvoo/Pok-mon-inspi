@@ -17,7 +17,7 @@ const results = [];
 const ok = (n, c, x = '') => { results.push(!!c); console.log(c ? '✓' : '✗', n, x); };
 await page.goto(`http://localhost:${web.address().port}/?pfdebug&pflow&peerhost=127.0.0.1:9`);
 await page.keyboard.press('Enter'); await page.waitForSelector('.account .acc-form'); await page.fill('.f-input >> nth=0', 'Oreille'); await page.click('.acc-submit');
-await page.waitForSelector('.home .tile'); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(300); await page.click('.home .tile.sel');
+await page.waitForSelector('.home .tile'); await page.waitForTimeout(300); await page.click('.home .tile.sel');   // Pouf Party is selected on arrival
 await page.waitForFunction(() => !!document.querySelector('.pf-title .pf-btn'), null, { timeout: 40000 });
 await page.waitForTimeout(1500);
 const music = await page.evaluate(() => window.__pouf.sound.peak(1500));

@@ -7,6 +7,7 @@ import { createCharacter, gasOf, EMOTES } from './view/characters.js';
 import { createHud } from './ui/hud.js';
 import { sound } from './audio.js';
 import { input as consoleInput } from '../../input.js';
+import { logDamage } from './damagelog.js';
 import { h } from '../../ui.js';
 import { state } from '../../state.js';
 
@@ -108,7 +109,8 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
     let first = true;
     while (acc >= STEP) {
       acc -= STEP;
-      stepPlayer(course, pl, frozen ? { mx: 0, mz: 0, jump: false, puff: false } : { mx, mz, jump: jump && first, puff: inp.sup > 0 && first }, Math.max(0, t - GO), STEP, others, evs);
+      // the obstacles' time at the end of this sub-step (not the frame's: see the raft match)
+      stepPlayer(course, pl, frozen ? { mx: 0, mz: 0, jump: false, puff: false } : { mx, mz, jump: jump && first, puff: inp.sup > 0 && first }, Math.max(0, t - acc - GO), STEP, others, evs);
       first = false;
     }
     if (inp.sup > 0 && !evs.some(e => e.k === 'puff') && !frozen) sound.sputter();
@@ -139,7 +141,7 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
       else if (e.k === 'land') fx.ring(pl.x, pl.y + .05, pl.z, 1.2, .5, .5);
       else if (e.k === 'boing') { sound.emote('cheer'); fx.stars(pl.x, pl.y + .3, pl.z, 6); }
       else if (e.k === 'puff') { me.big = 1; me.puffs++; puffCloud(me, 1.6); sound.bigPuff(); consoleInput.rumble(.6, .4, 160); }
-      else if (e.k === 'knock') { sound.hit(); fx.stars(pl.x, pl.y + 1.6, pl.z, 8); cam.shake = .6; consoleInput.rumble(.8, .6, 220); }
+      else if (e.k === 'knock') { logDamage({ event: 'knock', cause: e.kind, id: e.i ?? -1, course: course.id, t: e.t, pos: { x: e.x, y: e.y, z: e.z }, from: 'cet appareil' }); sound.hit(); fx.stars(pl.x, pl.y + 1.6, pl.z, 8); cam.shake = .6; consoleInput.rumble(.8, .6, 220); }
     }
   }
   function puffCloud(p, power) {
@@ -270,7 +272,7 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
       if (cam.shake > 0) { cam.shake = Math.max(0, cam.shake - dt * 2.5); C.position.x += (Math.random() - .5) * cam.shake * .4; C.position.y += (Math.random() - .5) * cam.shake * .4; }
       C.lookAt(cam.look);
       if (tgt) stage.focus(tgt.x, Math.max(0, tgt.y), tgt.z);
-      level.update(Math.max(0, t - GO));   // obstacles start moving with the race
+      level.update(Math.max(0, t - acc - GO));   // obstacles start moving with the race (same moment as the critter)
       fx.update(dt);
       // HUD
       const runT = Math.max(0, t - GO);

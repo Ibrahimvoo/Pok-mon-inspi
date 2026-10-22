@@ -21,7 +21,7 @@ try {
   await page.goto(`http://localhost:${web.address().port}/?pfdebug&pflow&peerhost=127.0.0.1:9`);
   await page.keyboard.press('Enter');
   await page.waitForSelector('.account .acc-form'); await page.fill('.f-input >> nth=0', 'Champion'); await page.click('.acc-submit');
-  await page.waitForSelector('.home .tile'); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(400);
+  await page.waitForSelector('.home .tile'); await page.waitForTimeout(400);   // Pouf Party is selected on arrival
   await page.click('.home .tile.sel');
   await until(() => !!document.querySelector('.pf-title .pf-btn'), 40000);
   await page.click('.pf-btn[data-key="play"]');

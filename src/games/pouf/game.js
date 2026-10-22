@@ -101,6 +101,7 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
         else if (party) await lobby.claim(party);
         else await lobby.host(randomCode());
       } catch (e) {
+        if (lobby.closed || !G.alive) return;   // cancelled by the player while connecting
         G.state = 'title';
         G.openBase();
         M.alert(G, 'Impossible de rejoindre', e.message || 'La connexion a échoué.');
@@ -210,8 +211,19 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       G.showcase(); M.refresh(G);
     },
     shareLink() { return `${location.origin}${location.pathname}#pouf=${lobby.code}`; },
-    async joinCode(code) {
-      code = cleanCode(code);
+    async joinCode(input) {
+      const raw = String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      // a 6 character code is a console room (salon): join it, then its members' shared lobby
+      if (raw.length === 6) {
+        M.connecting(G, `Connexion au salon ${raw}…`);
+        try { await social.joinSalon(raw); }
+        catch (e) { G.state = 'title'; G.openBase(); M.alert(G, 'Impossible de rejoindre', e.message || 'La connexion a échoué.'); return; }
+        if (G.state === 'match') G.endMatch();
+        if (lobby.role !== 'none') lobby.leave();
+        await G.enterLobby({ party: codeFrom('pouf:' + raw) });
+        return;
+      }
+      const code = cleanCode(raw);
       if (G.state === 'match') G.endMatch();
       if (lobby.role !== 'none') lobby.leave();
       await G.enterLobby({ join: code });
@@ -256,9 +268,11 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
   });
   lobby.on('left', mem => G.toast(`${mem.name} a quitté la partie`, '', null));
   lobby.on('status', s => {
+    if (s.waiting) G.toast('En attente de l’hôte…', 'Son application est peut-être en arrière-plan : nouvelle tentative pendant 40 s');
+    else if (s.hostLost && s.takenOver) G.toast('Retour dans la partie', 'Un autre joueur a repris le salon pendant votre absence : vous le rejoignez');
     if (s.hostLost) {
       if (G.state === 'match' || G.state === 'results') G.abortMatch();
-      G.toast(s.closing ? 'L’hôte a fermé la partie' : 'L’hôte a quitté la partie', 'Recherche d’un nouvel hôte…', 'error');
+      if (!s.takenOver) G.toast(s.closing ? 'L’hôte a fermé la partie' : 'L’hôte a quitté la partie', 'Recherche d’un nouvel hôte…', 'error');
     } else if (s.reelected) { G.toast(lobby.isHost ? 'Vous êtes le nouvel hôte' : 'Nouvel hôte trouvé', `Code ${lobby.code}`); G.showcase(); }
     else if (s.lost) { G.toast('Partie perdue', s.error, 'error'); if (G.state !== 'title') { G.endMatch(); G.state = 'title'; G.openBase(); G.showcase(); } }
     M.refresh(G);
@@ -287,7 +301,7 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       // idle crew: the occasional emote keeps the raft alive
       if (Math.random() < dt * .25 && arena.crew.size) { const ids = [...arena.crew.keys()]; arena.emote(ids[Math.floor(Math.random() * ids.length)], EMOTES[Math.floor(Math.random() * 4)].id); }
     }
-    if (!foot || !G.match) arena.update(dt, G.match ? G.match.t : G.menuT);
+    if (!foot || !G.match) arena.update(dt, G.match ? G.match.viewT ?? G.match.t : G.menuT);
     if (G.attached && el.isConnected) {
       stage.render();
       if (foot && G.match) G.match.updateTags(el.clientWidth, el.clientHeight);
@@ -330,6 +344,21 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       return true;
     },
     joinCode: code => G.joinCode(code),
+    // the shared gameplay: a reduced copy of each rendered frame plus the game's sound. Works where the screen itself
+    // cannot be captured (iPhone, iPad), since only the game's own canvas is read.
+    shareSource() {
+      const c = document.createElement('canvas'), g2 = c.getContext('2d');
+      if (!c.captureStream || !g2) throw new Error('Ce navigateur ne permet pas de partager la partie.');
+      const tap = gl => {
+        const w = Math.max(2, Math.min(960, gl.width)), h = Math.max(2, Math.round(w * gl.height / Math.max(1, gl.width)));
+        if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+        g2.drawImage(gl, 0, 0, w, h);
+      };
+      stage.taps.add(tap);
+      const stream = c.captureStream(24);
+      const audio = sound.shareTrack();
+      return { video: stream.getVideoTracks()[0], audio, stop() { stage.taps.delete(tap); stream.getTracks().forEach(t => t.stop()); sound.unshare(); } };
+    },
     destroy() { offParty(); G.destroy(); },
     G,
   };

@@ -45,10 +45,10 @@ export const social = {
   async createSalon(code) { await p2p.create(code); await this.joinVoice(); return p2p.code; },
   // after iOS reloaded the page: reopen the same room (host) or reconnect to it (guest)
   async restoreSalon({ code, host }) {
-    try { if (host) await p2p.create(code); else await p2p.join(code); toast({ title: 'Salon rétabli', sub: `Code ${p2p.code}`, icon: 'party', sound: null, log: false }); }
+    try { if (host) await p2p.create(code); else await p2p.join(code, { onWait: waitingForHost }); toast({ title: 'Salon rétabli', sub: `Code ${p2p.code}`, icon: 'party', sound: null, log: false }); }
     catch (e) { toast({ title: 'Salon perdu', sub: e.message, icon: 'party', sound: 'error', log: false }); }
   },
-  async joinSalon(code) { await p2p.join(code); await this.joinVoice(); },
+  async joinSalon(code) { await p2p.join(code, { onWait: waitingForHost }); await this.joinVoice(); },
   async shareSalon() {
     if (!p2p.active) return;
     const text = `Rejoins mon salon sur la console : code ${p2p.code}`;
@@ -92,6 +92,8 @@ function voiceError(e) {
   dialog({ title: 'Micro indisponible', body: h('div', msg, h('div.sim-note', h('span.icw', { html: icon('info') }), 'Vous restez dans le groupe et pouvez discuter par écrit.')), actions: [{ label: 'OK', primary: true }] });
 }
 
+const waitingForHost = () => toast({ title: 'En attente de l’hôte…', sub: 'Son application est peut-être en arrière-plan : nouvelle tentative pendant 40 s', icon: 'party', sound: null, log: false });
+
 // ---------------------------------------------------------------- incoming invitations / calls
 let ringing = null;
 function incoming({ kind, from, party }) {
@@ -104,7 +106,7 @@ function incoming({ kind, from, party }) {
   const d = dialog({
     title,
     body: h('div.call-card', h('div.avatar.call-av', img(art.thumb(from.avatar))), h('div', h('div.call-name', from.psn),
-      h('div.call-sub', isCall ? 'Appel vocal · le micro et le haut-parleur de l’appareil seront utilisés' : `Groupe de ${party.size} joueur${party.size > 1 ? 's' : ''}${game ? ' · session de jeu' : ''}`))),
+      h('div.call-sub', isCall ? 'Appel vocal · micro et son de l’appareil (haut-parleur, écouteurs ou AirPods)' : `Groupe de ${party.size} joueur${party.size > 1 ? 's' : ''}${game ? ' · session de jeu' : ''}`))),
     actions: [
       { label: isCall ? 'Répondre' : 'Rejoindre', icon: isCall ? 'phone' : 'party', primary: true, onok: async () => {
         stop();
@@ -118,6 +120,7 @@ function incoming({ kind, from, party }) {
     onClose: stop,
   });
   d.root.classList.add('incoming');
+  d.noTapClose = true;   // a stray tap next to the card must not hang up on a ringing call
   ringing = d;
   audio.play('ring'); input.rumble(.6, .6, 300);
   ringTimer = setInterval(() => { audio.play('ring'); input.rumble(.4, .4, 200); }, 2600);
@@ -127,6 +130,8 @@ function incoming({ kind, from, party }) {
 // opening a game launched by someone else in the party
 export async function joinGame(gameId) {
   const g = byId[gameId];
+  // a friend on an older version of the console may share a game that is no longer in the catalogue
+  if (!g) { toast({ title: 'Jeu indisponible', sub: 'Ce jeu n’existe plus sur la console', icon: 'info', sound: 'error', log: false }); return; }
   const { launch } = await import('./screens/game.js');
   const { openProduct, startDownload } = await import('./actions.js');
   if (!owns(gameId)) {
@@ -177,6 +182,7 @@ net.on('chat', m => {
 });
 net.on('game.started', m => {
   const g = byId[m.game];
+  if (!g) return;
   dialog({ title: `${m.by.psn} a lancé ${g.title}`, body: 'Rejoignez la session de jeu de votre groupe.', actions: [
     { label: 'Rejoindre la partie', icon: 'play', primary: true, onok: () => joinGame(m.game) },
     { label: 'Plus tard', sound: 'back' },

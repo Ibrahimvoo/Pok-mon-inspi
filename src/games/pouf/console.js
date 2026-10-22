@@ -5,6 +5,7 @@ import { nav } from '../../nav.js';
 import { dialog, toast } from '../../shell.js';
 import { session } from '../../session.js';
 import { state } from '../../state.js';
+import { voice } from '../../rtc.js';
 import './console.css';
 
 export const GAME_ID = 'pouf-party';
@@ -55,6 +56,8 @@ async function boot() {
           if ([0, 1, 2, 3, 4].every(k => got.includes(k))) unlockTrophy(GAME_ID, 5);
         },
       });
+      voice.gameSource = () => game.shareSource();   // « Partager la partie » in the call controls
+      document.dispatchEvent(new Event('pf:share'));
     } catch (e) {
       console.error(e);
       holder.replaceChildren(h('div.pf-fail', h('h2', 'Pouf Party n’a pas pu démarrer'), h('p', 'Votre appareil ou votre navigateur ne permet peut-être pas l’affichage 3D (WebGL).'), h('code', String(e?.message || e))));
@@ -66,6 +69,9 @@ async function boot() {
 
 // Called by the console when the session ends (Close the game, power off…).
 export function end() {
+  if (voice.sharing === 'game') voice.stopShare();
+  voice.gameSource = null;
+  document.dispatchEvent(new Event('pf:share'));
   game?.destroy(); game = null;
   holder.replaceChildren();
   document.documentElement.classList.remove('pf-playing');
@@ -81,6 +87,7 @@ export function checkLink() {
     { label: 'Rejoindre', icon: 'play', primary: true, onok: () => joinFromLink(c) },
     { label: 'Annuler', sound: 'back' }] });
 }
+export const joinGameCode = code => joinFromLink(code);
 async function joinFromLink(code) {
   if (game) { const { session: s, resume } = await import('../../screens/game.js'); if (s.id === GAME_ID) resume(); game.joinCode(code); return; }
   pendingJoin = code;

@@ -64,7 +64,8 @@ html.pf-playing #touchbar { display: none !important; }
 .pf-tag-line { font: 400 2.4rem 'Luckiest Guy', sans-serif; color: #fff; -webkit-text-stroke: .35rem var(--ink); paint-order: stroke fill; transform: rotate(-2deg); margin: -1.4rem 0 1rem 2rem; }
 .pf-title .pf-list { width: 100%; }
 .pf-title .pf-btn { justify-content: flex-start; }
-.pf-me-slot { position: absolute; right: 5rem; top: 4rem; }
+.pf-me-slot { position: absolute; right: 5rem; top: 4rem; border-radius: 2.6rem; cursor: pointer; transition: scale .15s; }
+.pf-me-slot:active { scale: .97; }
 .pf-card.me { display: flex; align-items: center; gap: 1.8rem; background: var(--cream); border: .45rem solid var(--ink); border-radius: 2.4rem; padding: 1.2rem 2.4rem 1.2rem 1.2rem; box-shadow: 0 .7rem 0 var(--ink); }
 .pf-card .nm { font: 400 2.6rem 'Luckiest Guy', sans-serif; }
 .pf-card .lv { font-size: 1.8rem; color: #51627a; }

@@ -43,8 +43,7 @@ const hold = async (page, key, ms) => { await page.keyboard.down(key); await pag
 
 try {
   const A = await player('A', 'Hote_A');
-  // the game sits right after the last played one: move the selection onto it
-  await A.page.keyboard.press('ArrowRight'); await A.page.waitForTimeout(400);
+  await A.page.waitForTimeout(400);   // Pouf Party, the only game, is selected when the home screen opens
   ok('jaquette Pouf Party sur l’accueil', await until(A.page, () => /Pouf Party/.test(document.querySelector('.home .tile.sel .tile-label')?.textContent || '')));
   await A.page.click('.home .tile.sel');
   ok('écran de lancement de la console', await until(A.page, () => !!document.querySelector('.launch'), null, 5000));

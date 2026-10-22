@@ -42,16 +42,21 @@ export function crocBite(h, t) {
 export const sway = (h, t) => (h.d || 0) + (h.amp || 0) * Math.sin(TAU * t / (h.period || 4) + (h.phase || 0) * TAU);
 
 // Mill arms (vertical rotation across the channel) that dip below the riders: lateral spans touching the raft.
+// Only the part of an arm between the riders' heads (MILL_TOP) and just under the surface (MILL_FLOOR, the depth of
+// the raft) can touch it. The part plunged deeper is hidden by the water: it used to count too, so a raft floating
+// above a submerged arm lost air with nothing visible touching it.
+export const MILL_TOP = 1.7, MILL_FLOOR = -.3;
 export function millSpans(h, w, t, out = []) {
   out.length = 0;
-  const dh = h.side * (w + 1.3), L = h.len ?? 7.2, H = h.hub ?? 3.4, n = h.arms ?? 4, top = 1.7;
+  const dh = h.side * (w + 1.3), L = h.len ?? 7.2, H = h.hub ?? 3.4, n = h.arms ?? 4;
   const a0 = millAngle(h, t);
   for (let i = 0; i < n; i++) {
     const a = a0 + i * TAU / n, c = Math.cos(a), sn = Math.sin(a);
-    const endY = H + L * sn;
-    if (endY > top) continue;
-    const u0 = sn < 0 ? clamp((top - H) / (L * sn), 0, 1) : 0;
-    out.push([dh + u0 * L * c, dh + L * c]);
+    if (sn >= 0 || H + L * sn > MILL_TOP) continue;            // arm entirely above the riders
+    // height along the arm: y(u) = H + L·u·sn for u ∈ [0, 1] (hub → tip), decreasing since sn < 0
+    const u0 = clamp((MILL_TOP - H) / (L * sn), 0, 1), u1 = clamp((MILL_FLOOR - H) / (L * sn), 0, 1);
+    if (u1 <= u0) continue;
+    out.push([dh + u0 * L * c, dh + u1 * L * c]);
   }
   return out;
 }

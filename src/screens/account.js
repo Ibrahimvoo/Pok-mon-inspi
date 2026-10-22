@@ -1,5 +1,5 @@
 // Account creation and sign-in. Online accounts are validated by the server; without a server, a local profile is offered.
-import { GAMES, byId } from '../data.js';
+import { AVATAR_LIST, AVATARS } from '../avatars.js';
 import { h, icon, art, img } from '../ui.js';
 import { nav } from '../nav.js';
 import { input } from '../input.js';
@@ -53,7 +53,7 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
   let busy = false;
   const offline = () => net.mode !== 'online';
   const root = h('div.account');
-  let avatar = GAMES[(Math.random() * GAMES.length) | 0].id;
+  let avatar = AVATARS[(Math.random() * AVATARS.length) | 0];
   let f = {};
 
   function render() {
@@ -64,8 +64,8 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
       password: off ? null : field({ label: 'Mot de passe', type: 'password', value: '', hint: signup ? 'Au moins 8 caractères, dont une lettre et un chiffre.' : null, autocomplete: signup ? 'new-password' : 'current-password', maxLength: 128, onEnter: signup ? null : submit }),
       confirm: off || !signup ? null : field({ label: 'Confirmer le mot de passe', type: 'password', autocomplete: 'new-password', maxLength: 128, onEnter: submit }),
     };
-    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, GAMES.map(g => {
-      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.title, onok: () => { avatar = g.id; root.querySelectorAll('.av-opt').forEach(x => x.classList.toggle('on', x === el)); preview.replaceChildren(img(art.thumb(avatar))); audio.play('toggle'); } }, img(art.thumb(g.id)));
+    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, AVATAR_LIST.map(g => {
+      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.name, onok: () => { avatar = g.id; root.querySelectorAll('.av-opt').forEach(x => x.classList.toggle('on', x === el)); preview.replaceChildren(img(art.thumb(avatar))); audio.play('toggle'); } }, img(art.thumb(g.id)));
       return el;
     })) : null;
     const preview = h('div.avatar.acc-preview', img(art.thumb(signup ? avatar : (session.known().find(k => k.psn.toLowerCase() === (psn || '').toLowerCase())?.avatar || avatar))));

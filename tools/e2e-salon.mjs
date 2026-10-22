@@ -67,15 +67,14 @@ try {
   await A.page.click('.home .tile.sel'); // launches the selected game
   ok('B invité à la partie', await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 12000));
   await B.page.click('.dialog button:has-text("Rejoindre la partie")');
-  ok('partie partagée active', await until(B.page, () => !document.querySelector('.mp')?.classList.contains('hidden') && !!document.querySelector('.mp-cur:not(.mine)'), null, 15000));
-  const before = await B.page.evaluate(() => document.querySelector('.mp-cur:not(.mine)')?.style.left);
-  await A.page.mouse.move(100, 100); await A.page.mouse.move(800, 400, { steps: 8 });
-  ok('mouvement synchronisé', await until(B.page, b => document.querySelector('.mp-cur:not(.mine)')?.style.left !== b, before, 6000));
+  // Pouf Party, the console's only game, runs on both devices (software WebGL here: ~20 s to start)
+  const inGame = () => document.documentElement.classList.contains('pf-playing') && !!document.querySelector('.pf-root .pf-game canvas');
+  ok('partie partagée active', await until(A.page, inGame, null, 45000) && await until(B.page, inGame, null, 45000));
   await B.shot('3-ingame');
   // guest reload (iOS discarding the tab): comes back into the same room
   await B.page.reload();
-  ok('invité reconnecté au salon après rechargement', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 25000));
-  ok('hôte voit toujours 2 joueurs', await until(A.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 10000));
+  ok('invité reconnecté au salon après rechargement', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 45000));
+  ok('hôte voit toujours 2 joueurs', await until(A.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 20000));
 } catch (e) { ok('scénario', false, e.message.split('\n')[0]); }
 ok('aucune erreur JavaScript', !errors.length, errors.slice(0, 4).join(' | '));
 await browser.close(); web.close(); broker.close?.();

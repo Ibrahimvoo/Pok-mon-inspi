@@ -47,9 +47,9 @@ const COLLECTIONS = [
   { id: 'cheap', title: 'Moins de 30 €', pick: g => g.price * (1 - g.discount / 100) < 30 },
   { id: 'indie', title: 'Aventures indépendantes', pick: g => g.genres.includes('Indé') },
   { id: 'scifi', title: 'Science-fiction', pick: g => g.genres.includes('Science-fiction') },
-];
-const FEATURED = ['neon-requiem', 'sands-meridian', 'starfall', 'nightline', 'abyssal'];
-const CATS = ['Tous', 'Action', 'Aventure', 'RPG', 'Course', 'Sport', 'Science-fiction', 'Horreur', 'Simulation', 'Indé'];
+].filter(c => GAMES.some(c.pick));   // only the collections that contain at least one game
+const FEATURED = GAMES.slice(0, 5).map(g => g.id);
+const CATS = ['Tous', ...new Set(GAMES.flatMap(g => g.genres))];
 
 export function storeScreen({ tab: startTab = 'discover' } = {}) {
   let tab = startTab, slide = 0, slideT = 0, cat = 'Tous', sort = 'pop', collection = null;
@@ -109,13 +109,14 @@ export function storeScreen({ tab: startTab = 'discover' } = {}) {
       body.style.paddingTop = '13rem';
       if (!collection) body.append(h('div.section-title', { style: { marginTop: 0 } }, 'Collections', h('small', 'Sélections de l’équipe du PlayStation Store')),
         h('div.coll-grid', COLLECTIONS.map(c => { const gs = GAMES.filter(c.pick); return h('div.coll', { f: true, onok: () => { collection = c.id; audio.play('ok'); render(); nav.focusFirst(layer); } },
-          h('div.coll-art', gs.slice(0, 3).map(g => img(art.thumb(g.id)))), h('div.coll-t', c.title), h('div.coll-s', `${gs.length} jeux`)); })));
+          h('div.coll-art', gs.slice(0, 3).map(g => img(art.thumb(g.id)))), h('div.coll-t', c.title), h('div.coll-s', `${gs.length} jeu${gs.length > 1 ? 'x' : ''}`)); })));
       else { const c = COLLECTIONS.find(x => x.id === collection);
         body.append(h('div.section-title', { style: { marginTop: 0 } }, c.title, h('small', 'Retour : ○ / Échap')), h('div.grid', GAMES.filter(c.pick).map(g => ptile(g)))); }
     } else if (tab === 'deals') {
       body.style.paddingTop = '13rem';
       body.append(h('div.section-title', { style: { marginTop: 0 } }, 'Offres du moment', h('small', 'Prix barrés valables jusqu’au 4 novembre')),
-        h('div.grid', GAMES.filter(g => g.discount).sort((a, b) => b.discount - a.discount).map(g => ptile(g))));
+        GAMES.some(g => g.discount) ? h('div.grid', GAMES.filter(g => g.discount).sort((a, b) => b.discount - a.discount).map(g => ptile(g)))
+          : h('p.store-empty', 'Aucune offre en ce moment. Pouf Party est gratuit !'));
     } else if (tab === 'plans') {
       body.style.paddingTop = '13rem';
       body.append(h('div.section-title', { style: { marginTop: 0 } }, 'Abonnements', h('small', 'Jeu en ligne, catalogue et avantages — souscription simulée')),

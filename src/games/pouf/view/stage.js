@@ -25,6 +25,7 @@ export function createStage(canvas, { quality = 'high' } = {}) {
 
   const stage = {
     renderer, scene, camera, sun, hemi,
+    taps: new Set(),   // called with the canvas right after each frame (copy for the shared gameplay)
     pixelRatio: testLow ? .3 : Math.min(devicePixelRatio || 1, lowEnd ? 1.5 : 2),
     setTheme(theme) {
       if (sky) scene.remove(sky);
@@ -48,7 +49,7 @@ export function createStage(canvas, { quality = 'high' } = {}) {
       camera.fov = camera.aspect < 1.2 ? 68 : 55;
       camera.updateProjectionMatrix();
     },
-    render() { renderer.render(scene, camera); },
+    render() { renderer.render(scene, camera); for (const f of stage.taps) f(renderer.domElement); },
     dispose() {
       scene.traverse(o => { if (o.geometry) o.geometry.dispose(); const m = o.material; if (m) (Array.isArray(m) ? m : [m]).forEach(x => { x.map?.dispose(); x.dispose(); }); });
       renderer.dispose();

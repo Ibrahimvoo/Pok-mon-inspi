@@ -133,11 +133,11 @@ export function homeScreen() {
     let content;
     if (it.kind === 'game') { hub = renderHub(it.g.id, { compact: true }); content = hub.el; }
     else if (it.kind === 'store') {
-      const deals = GAMES.filter(g => g.discount || g.preorder).slice(0, 5);
+      const deals = GAMES.filter(g => g.discount || g.preorder).slice(0, 5), picks = deals.length ? deals : GAMES.slice(0, 5);
       content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'PlayStation Store'),
         h('div.hub-meta', 'Nouveautés, offres du moment et abonnements'),
         h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('bag') }), 'Ouvrir le PlayStation Store'))),
-        h('div.cards-title', 'Offres à ne pas manquer'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, deals.map(cardFor)));
+        h('div.cards-title', deals.length ? 'Offres à ne pas manquer' : 'À la une'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, picks.map(cardFor)));
     } else if (it.kind === 'library') {
       const notInst = state.owned.filter(id => !state.installed.includes(id));
       content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'Bibliothèque'),

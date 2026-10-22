@@ -24,6 +24,11 @@ export function presenceText(p, { short = false } = {}) {
 }
 const dotClass = p => (!p?.online ? 'off' : p.activity === 'game' ? 'game' : 'on');
 
+async function mediaAction(fn) {
+  audio.play('ok');
+  try { await fn(); } catch (e) { toast({ title: 'Vidéo', sub: e?.message || 'Action impossible.', icon: 'info', sound: 'error', log: false }); }
+}
+
 export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   let tab = startTab === 'friends' && social.salon ? 'party' : startTab, query = '', results = null, searching = false, draft = '', typing = false;
   const tabEls = TABS.map(([k, l]) => h('button.tab', { f: true, 'data-key': 'tab-' + k, onok: () => setTab(k) }, h('span', l), h('span.tab-count')));
@@ -37,7 +42,8 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     tabEls[1].lastChild.textContent = social.party ? social.party.members.length : '';
     tabEls[2].lastChild.textContent = social.incoming.length || '';
     const s = net.status;
-    conn.classList.toggle('hidden', !social.available || s === 'online');
+    // a room by code does not use the server: its connection is the friends themselves, never « Hors ligne »
+    conn.classList.toggle('hidden', !social.available || s === 'online' || !!social.salon);
     conn.textContent = s === 'reconnecting' || s === 'connecting' ? 'Reconnexion au serveur…' : 'Hors ligne';
   }
 
@@ -49,7 +55,10 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
       h('div.gb-controls', { 'data-row': '' },
         h('button.btn.primary', { f: true, 'data-key': 'share', onok: () => social.shareSalon() }, h('span.icw', { html: icon('userPlus') }), 'Partager le lien'),
         h('button.btn', { f: true, 'data-key': 'open-party', onok: () => setTab('party') }, h('span.icw', { html: icon('party') }), 'Voir le groupe')));
-    const join = async code => {
+    const join = async input => {
+      const code = String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      // a 5 character code is a Pouf Party lobby: open the game straight into it
+      if (code.length === 5) { const { joinGameCode } = await import('../games/pouf/console.js'); joinGameCode(code); return; }
       try { await social.joinSalon(code); setTab('party'); }
       catch (e) { toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); render(); }
     };
@@ -68,7 +77,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
           try { await social.createSalon(); setTab('party'); social.shareSalon(); }
           catch (e) { toast({ title: 'Création du salon impossible', sub: e.message, icon: 'party', sound: 'error', log: false }); }
         } }, h('span.icw', { html: icon('party') }), 'Créer un salon')),
-      h('div.salon-card', h('h2', 'Rejoindre un salon'), h('p', 'Ouvrez le lien reçu, ou saisissez le code à 6 caractères.'), codeRow,
+      h('div.salon-card', h('h2', 'Rejoindre un salon'), h('p', 'Ouvrez le lien reçu, ou saisissez le code du salon (6 caractères) ou d’une partie de Pouf Party (5 caractères). Safari et l’app de l’écran d’accueil peuvent jouer ensemble.'), codeRow,
         h('button.btn', { f: true, 'data-key': 'join-salon', onok: () => join(inp.value) }, 'Rejoindre')),
       session.current && !session.current.online ? h('p.salon-note', 'Les comptes en ligne, la liste d’amis et les invitations nécessitent le serveur du projet. Les salons fonctionnent partout.') : null);
   }
@@ -125,6 +134,10 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
       voice.active
         ? h(`button.btn${voice.muted ? '.on' : ''}`, { f: true, 'data-key': 'mute', onok: () => { voice.setMuted(!voice.muted); audio.play('toggle'); render(); } }, h('span.icw', { html: icon(voice.muted ? 'micOff' : 'mic') }), voice.muted ? 'Réactiver le micro' : 'Couper le micro')
         : h('button.btn.primary', { f: true, 'data-key': 'voice', onok: () => social.joinVoice().then(render) }, h('span.icw', { html: icon('mic') }), voice.joining ? 'Connexion…' : 'Rejoindre le chat vocal'),
+      // camera and share: only inside the call, and only after a tap (the browser then asks for permission)
+      voice.active ? h(`button.btn${voice.camera ? '.on' : ''}`, { f: true, 'data-key': 'camera', onok: () => mediaAction(() => voice.setCamera(!voice.camera)) }, h('span.icw', { html: icon('display') }), voice.camera ? 'Couper la caméra' : 'Caméra') : null,
+      voice.active && (voice.sharing || voice.canShareGame || voice.canShareScreen) ? h(`button.btn${voice.sharing ? '.on' : ''}`, { f: true, 'data-key': 'share', onok: () => mediaAction(() => voice.sharing ? voice.stopShare() : voice.startShare(voice.canShareGame ? 'game' : 'screen')) },
+        h('span.icw', { html: icon('switcher') }), voice.sharing ? 'Arrêter le partage' : voice.canShareGame ? 'Partager la partie' : 'Partager l’écran') : null,
       h('button.btn', { f: true, 'data-key': 'invite', onok: e => (p.salon ? social.shareSalon() : inviteMenu(e.currentTarget)) }, h('span.icw', { html: icon('userPlus') }), p.salon ? `Inviter · ${p.id}` : 'Inviter'),
       h('button.btn', { f: true, 'data-key': 'play', onok: e => playMenu(e.currentTarget) }, h('span.icw', { html: icon('play') }), g ? `Rejoindre ${g.title}` : 'Jouer ensemble'),
       h('button.btn', { f: true, 'data-key': 'leave', onok: () => confirmDialog(p.salon ? 'Quitter le salon ?' : 'Quitter le groupe ?', p.salon && social.salon?.host ? 'Vous êtes l’hôte : le salon sera fermé pour tout le monde.' : 'Le chat vocal sera coupé pour vous.', 'Quitter', () => social.leave(), { danger: true }) }, h('span.icw', { html: icon('phoneOff') }), 'Quitter'));
@@ -263,7 +276,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     onEnter() {
       offs.push(social.on('friends', render), social.on('presence', () => { if (tab === 'friends') render(); else counts(); }),
         social.on('party', render), social.on('chat', () => { if (tab === 'party') render(); }), social.on('status', counts),
-        voice.on('change', () => { if (tab === 'party') render(); }), voice.on('peers', () => { if (tab === 'party') render(); }),
+        voice.on('change', () => { if (tab === 'party') render(); }), voice.on('peers', () => { if (tab === 'party') render(); }), voice.on('media', () => { if (tab === 'party' && !typing) render(); }),
         voice.on('levels', lv => { root.querySelectorAll('[data-uid]').forEach(el => { el.style.setProperty('--lv', Math.min(1, (lv[el.dataset.uid] || 0) * 1.6).toFixed(2)); el.classList.toggle('talking', (lv[el.dataset.uid] || 0) > .12); }); }));
       social.refresh();
     },

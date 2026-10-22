@@ -82,11 +82,11 @@ test('friends, presence, party invite, signalling and in-game sync', async () =>
   const helloA = await sa.next(m => m.t === 'hello');
   assert.equal(helloA.me.psn, 'Alpha');
   // Bravo goes in-game: Alpha (friend) sees it, Charlie (not a friend) does not
-  sb.send('presence', { activity: 'game', game: 'starfall' });
-  const pr = await sa.next(m => m.t === 'presence' && m.game === 'starfall');
+  sb.send('presence', { activity: 'game', game: 'pouf-party' });
+  const pr = await sa.next(m => m.t === 'presence' && m.game === 'pouf-party');
   assert.equal(pr.online, true);
   await new Promise(r => setTimeout(r, 150));
-  assert.ok(!sc.inbox.some(m => m.t === 'presence' && m.game === 'starfall'));
+  assert.ok(!sc.inbox.some(m => m.t === 'presence' && m.game === 'pouf-party'));
 
   // only friends can be invited
   const notFriend = await sa.req('party.invite', { to: (await call('/api/me', { cookie: c.cookie })).data.user.id });
@@ -116,9 +116,9 @@ test('friends, presence, party invite, signalling and in-game sync', async () =>
   assert.ok(!sb.inbox.some(m => m.t === 'rtc'));
 
   // game session: start, input relay, chat
-  assert.equal((await sa.req('game.start', { game: 'starfall' })).ok, true);
+  assert.equal((await sa.req('game.start', { game: 'pouf-party' })).ok, true);
   const started = await sb.next(m => m.t === 'game.started');
-  assert.equal(started.game, 'starfall');
+  assert.equal(started.game, 'pouf-party');
   sa.send('g', { x: .25, y: 2, p: 1 });
   const g = await sb.next(m => m.t === 'g');
   assert.deepEqual([g.x, g.y, g.p], [.25, 1, 1]);

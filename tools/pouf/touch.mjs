@@ -18,8 +18,9 @@ const errs = []; page.on('pageerror', e => errs.push(e.message));
 await page.goto(`http://localhost:${web.address().port}/?pfdebug&pflow&peerhost=127.0.0.1:9`);
 await page.waitForTimeout(800); await page.touchscreen.tap(420, 200);
 await page.waitForSelector('.account .acc-form'); await page.fill('.f-input >> nth=0', 'Tactile'); await page.tap('.acc-submit');
-await page.waitForSelector('.home .tile'); await page.waitForTimeout(800); await page.tap('.home .tile:nth-child(3)'); await page.waitForTimeout(300);
-await page.tap('.home .tile.sel'); await page.waitForTimeout(300); if (!(await page.$('.launch'))) await page.tap('.home .tile.sel');
+// Pouf Party is the selected tile on arrival: one tap launches it (a second one only if the first just selected it)
+await page.waitForSelector('.home .tile'); await page.waitForTimeout(800); await page.tap('.home .tile:has-text("Pouf Party")'); await page.waitForTimeout(400);
+if (!(await page.$('.launch'))) await page.tap('.home .tile.sel');
 await page.waitForFunction(() => !!document.querySelector('.pf-title .pf-btn'), null, { timeout: 40000 });
 await page.waitForTimeout(1500); if (out) await page.screenshot({ path: join(out, 't-title.jpg'), quality: 75, type: 'jpeg' });
 await page.tap('.pf-btn[data-key="play"]'); await page.waitForTimeout(200); if (!(await page.$('.pf-connect, .pf-lobby'))) await page.tap('.pf-btn[data-key="play"]');

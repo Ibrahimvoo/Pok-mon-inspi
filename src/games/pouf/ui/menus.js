@@ -13,6 +13,7 @@ import { levelOf, board, PRICE, CATALOG } from '../profile.js';
 import { fmtTime } from './hud.js';
 import { sound } from '../audio.js';
 import { MAX_PLAYERS } from '../net.js';
+import { damageLog } from '../damagelog.js';
 
 const PADS = ['ps', 'xbox', 'nintendo', 'generic'];
 const TIPS = [
@@ -57,7 +58,8 @@ export function titleMenu(G) {
     btn('Options', () => optionsMenu(G), { ic: 'settings', key: 'options' }),
     btn('Comment jouer', () => helpMenu(G), { ic: 'info', key: 'help' }),
     btn('Quitter le jeu', () => quitConfirm(G), { ic: 'power', key: 'quit' }));
-  const card = h('div.pf-me-slot', playerCard(G));
+  // touching one's own card opens the character (touch and mouse only: the pad keeps « Personnaliser » in the list)
+  const card = h('div.pf-me-slot', { title: 'Personnaliser mon personnage', onclick: () => { if (nav.top !== L) return; sound.ui('ok'); customizeMenu(G); } }, playerCard(G));
   const L = layer(G, 'title', [h('div.pf-title-l', logo(), h('div.pf-tag-line', 'La descente de rivière la plus gonflée du lagon !'), list), card], {
     back: () => quitConfirm(G),
     hints: [['ok', 'Sélectionner'], ['back', 'Quitter']],
@@ -192,14 +194,14 @@ export function inviteMenu(G) {
 
 // ---------------------------------------------------------------- join with a code
 export function joinMenu(G) {
-  const inp = h('input.f-input.pf-codein', { type: 'text', maxLength: 5, autocapitalize: 'characters', autocorrect: 'off', spellcheck: false, enterkeyhint: 'go', placeholder: 'EX : K7P2Q', 'aria-label': 'Code de la partie' });
+  const inp = h('input.f-input.pf-codein', { type: 'text', maxLength: 6, autocapitalize: 'characters', autocorrect: 'off', spellcheck: false, enterkeyhint: 'go', placeholder: 'EX : K7P2Q', 'aria-label': 'Code de la partie' });
   const go = v => { G.close(L); G.joinCode(v); };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); inp.blur(); go(inp.value); } });
   const row = h('div.f-row', { f: true, 'data-autofocus': '', onok: () => {
-    if (PADS.includes(consoleInput.device)) openKeyboard({ title: 'Code de la partie (5 caractères)', maxLength: 5, onDone: v => go(v) });
+    if (PADS.includes(consoleInput.device)) openKeyboard({ title: 'Code de la partie (5) ou du salon (6)', maxLength: 6, onDone: v => go(v) });
     else inp.focus();
   } }, h('label.f-label', 'Code de la partie de votre ami'), inp);
-  const L = layer(G, 'join', h('div.pf-panel.mid', h('h2', 'Rejoindre une partie'), h('p.dim', 'Demandez le code à 5 caractères affiché dans le salon de votre ami.'), row,
+  const L = layer(G, 'join', h('div.pf-panel.mid', h('h2', 'Rejoindre une partie'), h('p.dim', 'Le code à 5 caractères affiché dans la partie de votre ami, ou le code à 6 caractères de son salon. Fonctionne entre Safari et l’app de l’écran d’accueil.'), row,
     h('div.row', btn('Rejoindre', () => go(inp.value), { primary: true, ic: 'play', key: 'go' }), btn('Annuler', () => G.close(L), { key: 'cancel' }))));
   return L;
 }
@@ -289,11 +291,24 @@ export function optionsMenu(G) {
     cyc('Visée', 'Ce que fait le stick pendant la descente', () => s.aim, [['push', 'Pousser la bouée vers le stick'], ['seat', 'Se placer vers le stick']], v => { s.aim = v; }),
     cyc('Sensibilité de la caméra', 'Souris, stick droit et glisser', () => s.camSpeed, [[.5, 'Lente'], [1, 'Normale'], [1.6, 'Rapide']], v => { s.camSpeed = v; }),
     slider('Effets sonores', 'Poufs, plouf et compagnie', 'sfxVol', () => sound.applySettings()),
+    btn('Journal des dégâts', () => damageDialog(), { ic: 'info', key: 'damage' }),
     btn('Retour', () => G.close(L), { key: 'back' })), {
     hints: [['ok', 'Changer'], ['back', 'Retour']],
     onAction: a => adjustable(L, a),
   });
   return L;
+}
+
+// Diagnostics: every hit, burst and knock of this session with the trap responsible, its cause, where and when.
+const EVENT = { hit: 'Coup sur la bouée', pop: 'Bouée éclatée', knock: 'Renversé' };
+function damageDialog() {
+  const time = ts => new Date(ts).toLocaleTimeString('fr-FR');
+  const where = p => !p ? '' : p.s != null ? `rivière ${p.s.toFixed(1)} m, écart ${p.d.toFixed(1)} m` : `x ${p.x} · y ${p.y} · z ${p.z}`;
+  const rows = damageLog.map(e => h('div.trophy-item', h('div',
+    h('div.tn', `${EVENT[e.event] || e.event} · ${e.entity}`),
+    h('div.td', [e.course, where(e.pos), e.t != null ? `t = ${e.t.toFixed(2)} s` : '', e.event === 'hit' ? `air restant ${e.air}` : '', e.from].filter(Boolean).join(' · '))),
+    h('div.tr', time(e.wall))));
+  dialog({ title: 'Journal des dégâts', wide: true, body: h('div.trophy-list', rows.length ? rows : h('div', 'Aucun dégât depuis le lancement du jeu.')), actions: [{ label: 'Fermer', primary: true, sound: 'back' }] });
 }
 
 // ---------------------------------------------------------------- how to play

@@ -8,7 +8,11 @@ export { randomCode, codeFrom, cleanCode, sanitizeLook };
 
 const PREFIX = 'poufparty-v1-';
 export const MAX_PLAYERS = 4, MAX_MEMBERS = 8;
-const HEARTBEAT = 1000, HOST_TIMEOUT = 7000, GUEST_TIMEOUT = 9000, GRACE = 12000;
+// HOST_TIMEOUT leaves an iPhone host the time to share the code from another app before a new host is elected
+const HEARTBEAT = 1000, HOST_TIMEOUT = 12000, GUEST_TIMEOUT = 12000, GRACE = 15000;
+// a host that has just put the app in the background (to send the link) is not registered for a few seconds:
+// a friend opening the link meanwhile keeps trying instead of failing on « Aucune partie ouverte »
+export const JOIN_WAIT = 40000;
 
 // tests can point to a local broker with ?peerhost=host:port (same switch as the console's rooms)
 function peerOptions() {
@@ -68,7 +72,12 @@ export class Lobby extends EventTarget {
       this.role = 'host'; this.online = true;
       this.peer.on('connection', c => this.accept(c));
       this.peer.on('disconnected', () => { if (!this.closed && this.peer && !this.peer.destroyed) setTimeout(() => { try { this.peer.reconnect(); } catch { /* destroyed */ } }, 1500); });
-      this.peer.on('error', e => { if (e?.type === 'network' || e?.type === 'server-error') this.emit('status', { online: false, role: this.role, error: netError(e) }); });
+      this.peer.on('error', e => {
+        // back from the background, the code is held by the player elected while we were away: join their lobby
+        // (before, the error was ignored and the two phones stayed in two separate lobbies with the same code)
+        if (e?.type === 'unavailable-id' && this.role === 'host' && !this.closed) { this.rejoin(); return; }
+        if (e?.type === 'network' || e?.type === 'server-error') this.emit('status', { online: false, role: this.role, error: netError(e) });
+      });
     } catch (e) {
       if (e?.type === 'unavailable-id') throw e;
       // no broker (offline, blocked network): the lobby still works for a solo run
@@ -78,24 +87,46 @@ export class Lobby extends EventTarget {
     this.pushState();
     this.emit('status', { online: this.online, role: this.role });
   }
-  async join(code) {
+  async join(code, { wait = JOIN_WAIT } = {}) {
     code = cleanCode(code);
     if (code.length !== 5) throw new Error('Le code de partie contient 5 caractères.');
     this.reset();
     this.code = code;
+    const until = Date.now() + wait;
     try {
       this.peer = await openPeer();
-      await this.connect(code);
-    } catch (e) { this.reset(); throw new Error(netError(e)); }
+      for (let tries = 0; ; tries++) {
+        try { await this.connect(code); break; }
+        catch (e) {
+          if (e?.type !== 'peer-unavailable' || Date.now() > until || this.closed || this.code !== code) throw e;
+          if (!tries) this.emit('status', { online: false, role: 'none', waiting: true });
+          await new Promise(r => setTimeout(r, 2500));
+          if (this.closed || this.code !== code) throw e;
+          if (this.peer?.disconnected) this.peer.reconnect();
+        }
+      }
+    } catch (e) { if (this.code === code && !this.closed) this.reset(); throw new Error(netError(e)); }
+  }
+  // our code was taken over: join whoever holds it now (or host it again if it was freed)
+  async rejoin() {
+    if (this.rejoining) return;
+    this.rejoining = true;
+    const code = this.code;
+    this.emit('status', { online: false, role: 'none', hostLost: true, takenOver: true });
+    try { await this.claim(code, { wait: 75000 }); this.emit('status', { online: this.online, role: this.role, reelected: true }); }
+    catch (e) { this.emit('status', { online: false, role: 'none', error: e.message || netError(e), lost: true }); }
+    finally { this.rejoining = false; }
   }
   // Host the lobby if nobody has it yet, otherwise join it (party lobbies and host re-election).
-  async claim(code, tries = 6) {
-    for (let i = 0; ; i++) {
+  // `wait`: how long to keep trying while the code is held by a host that does not answer (an app frozen in the
+  // background keeps its code on the broker for up to a minute before it is released).
+  async claim(code, { wait = 60000 } = {}) {
+    const until = Date.now() + wait;
+    for (;;) {
       try { await this.host(code); return; }
       catch (e) { if (e?.type !== 'unavailable-id') throw e; }
-      try { await this.join(code); return; }
-      // the code is still registered by a host that just left: wait for the broker to release it
-      catch (e) { if (i >= tries || this.closed) throw e; await new Promise(r => setTimeout(r, 1200 + Math.random() * 800)); }
+      try { await this.join(code, { wait: 0 }); return; }
+      catch (e) { if (Date.now() > until || this.closed) throw e; await new Promise(r => setTimeout(r, 1200 + Math.random() * 800)); }
     }
   }
   connect(code) {
@@ -229,7 +260,7 @@ export class Lobby extends EventTarget {
     const rank = Math.max(0, others.findIndex(x => x.id === this.me.id));
     setTimeout(async () => {
       if (this.closed) return;
-      try { try { this.peer?.destroy(); } catch { /* ignore */ } this.peer = null; await this.claim(code); this.emit('status', { online: this.online, role: this.role, reelected: true }); }
+      try { try { this.peer?.destroy(); } catch { /* ignore */ } this.peer = null; await this.claim(code, { wait: 75000 }); this.emit('status', { online: this.online, role: this.role, reelected: true }); }
       catch (e) { this.emit('status', { online: false, role: 'none', error: e.message || netError(e), lost: true }); }
     }, 400 + rank * 1600);
   }

@@ -2,11 +2,13 @@
 import { scrypt as scryptCb, randomBytes, timingSafeEqual, createHash, randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 import { GAMES } from '../src/data.js';
+import { AVATARS } from '../src/avatars.js';
 
 const scrypt = promisify(scryptCb);
 const SCRYPT = { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
 export const SESSION_TTL = 30 * 24 * 3600e3;
-export const AVATARS = GAMES.map(g => g.id);
+export { AVATARS };
+export const GAME_IDS = GAMES.map(g => g.id);
 const PSN_RE = /^[A-Za-z][A-Za-z0-9_-]{2,15}$/;
 
 export class AppError extends Error {
