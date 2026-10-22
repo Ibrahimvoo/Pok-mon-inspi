@@ -161,7 +161,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   }
 
   // ------------------------------------------------------------ static client
-  const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon' };
+  const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
   const gzCache = new Map();
   async function serveStatic(req, res, url) {
     let p = decodeURIComponent(url.pathname);
@@ -175,7 +175,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
       'Cache-Control': p.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : p.startsWith('/art/') ? 'public, max-age=604800' : 'no-cache' };
     if (ext === '.html') headers['Content-Security-Policy'] = csp(req);
     let data = await readFile(file);
-    if (/\.(html|js|css|svg|json)$/.test(ext) && /gzip/.test(req.headers['accept-encoding'] || '')) {
+    if (/\.(html|js|css|svg|json|webmanifest)$/.test(ext) && /gzip/.test(req.headers['accept-encoding'] || '')) {
       const key = file + st.mtimeMs;
       if (!gzCache.has(key)) gzCache.set(key, gzipSync(data));
       data = gzCache.get(key); headers['Content-Encoding'] = 'gzip'; headers.Vary = 'Accept-Encoding';

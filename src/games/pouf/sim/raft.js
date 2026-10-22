@@ -1,6 +1,6 @@
 // Authoritative simulation of the team raft (run by the host): current, gas thrust, bank and trap collisions,
 // air (raft health), bursting, checkpoints, respawn and finish. Deterministic given the inputs.
-import { collide, zoneEffect } from './hazards.js';
+import { collide, zoneEffect, SEAT_R } from './hazards.js';
 
 export const RAFT_R = 2.2;
 export const MAX_AIR = 3;
@@ -84,12 +84,14 @@ export class RaftSim {
       if (pen > 0) { const sg = Math.sign(q.d) || 1; this.contact(fr.nx * sg, fr.nz * sg, pen, events); }
     }
 
-    // --- traps
+    // --- traps (riders' seats in the river frame: arms and bars above the tube only touch them)
     q.s = Math.max(q.s, -50);
+    const seatsW = riders.map(r => { const th = st.yaw + r.a; return [Math.cos(th) * SEAT_R, Math.sin(th) * SEAT_R]; });
     for (const h of this.hz) {
       if (h.s - q.s > 12) break;
       if (q.s - (h.s1 ?? h.s) > 12) continue;
       T.at(h.type === 'spikes' ? clampS(q.s, h) : h.s, fr2);
+      q.seats = seatsW.map(([ox, oz]) => [ox * fr2.tx + oz * fr2.tz, ox * fr2.nx + oz * fr2.nz]);
       const c = collide(h, q, RAFT_R, t, fr2);
       if (!c) continue;
       const nx = fr2.tx * c.n[0] + fr2.nx * c.n[1], nz = fr2.tz * c.n[0] + fr2.nz * c.n[1];

@@ -1,7 +1,7 @@
 // On-foot physics: landing, jumping, moving and spinning platforms, sweepers, bumpers, springs and sinking floors.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { stepPlayer, newPlayer, inZone, sinkDepth, JUMP, GRAVITY } from '../sim/foot.js';
+import { stepPlayer, newPlayer, inZone, sinkDepth, sinkWarning, partPose, JUMP, GRAVITY } from '../sim/foot.js';
 import { PARCOURS } from '../maps/parcours.js';
 import { TOURBILLON } from '../maps/tourbillon.js';
 import { COURSES } from '../maps/index.js';
@@ -137,4 +137,45 @@ test('ice is slippery: a critter keeps sliding after letting go of the stick', (
   const z0 = pl.z;
   run(ice, pl, still, 1.5, .5);
   assert.ok(pl.z - z0 > 1.2, `slid ${(pl.z - z0).toFixed(2)} m`);
+});
+
+test('survival arena: walking from the central disc onto the ring of tiles never drops into the seam between them', () => {
+  // the disc (r 7.4) and the tiles (from 7.8) look joined: their rims touch on screen
+  const arena = { ...TOURBILLON, parts: TOURBILLON.parts.filter(p => p.type !== 'sweeper') };
+  for (const sp of [1, .3, .1]) for (let a = 0; a < Math.PI * 2; a += Math.PI / 60) {
+    const pl = newPlayer([Math.cos(a) * 5, 2, Math.sin(a) * 5, 0]);
+    for (let k = 0; k < 60 * 12 && Math.hypot(pl.x, pl.z) < 9; k++) stepPlayer(arena, pl, { ...still, mx: Math.cos(a) * sp, mz: Math.sin(a) * sp }, 5 + k / 60, 1 / 60, [], []);
+    assert.ok(pl.y > 1.9, `fell at angle ${(a * 180 / Math.PI).toFixed(0)}° (stick ${sp}): y=${pl.y.toFixed(2)}`);
+  }
+});
+
+test('every sinking floor tile shakes for its whole warning before going down (none vanishes when the cycles start)', () => {
+  for (const level of COURSES.filter(c => c.foot)) for (const [i, p] of level.parts.entries()) {
+    if (!p.sink) continue;
+    const warnFor = (p.sink.on ?? .5) >= .12 ? .12 * p.sink.period : (p.sink.on ?? .5) * p.sink.period;
+    let prev = 0, downs = 0;
+    for (let t = 0; t < 160; t += 1 / 60) {
+      const d = sinkDepth(p, t);
+      if (prev === 0 && d > 0) {
+        downs++;
+        for (let k = 1 / 60; k < warnFor - .05; k += 1 / 60) assert.equal(sinkWarning(p, t - k), 1, `${level.id} part ${i}: going down at ${t.toFixed(2)} s without shaking ${k.toFixed(2)} s before`);
+      }
+      prev = d;
+    }
+    assert.ok(downs > 0, `${level.id} part ${i} never sinks`);
+  }
+});
+
+test('a player riding a moving platform stays on it when the obstacles’ clock jumps (long frame, clock correction)', () => {
+  const i = PARCOURS.parts.findIndex(p => p.type === 'box' && p.move && p.move[0]), part = PARCOURS.parts[i], P = {};
+  partPose(part, 1, P);
+  const pl = newPlayer([P.x, P.y + 1, P.z]);
+  run({ parts: [part] }, pl, still, 1, .5);
+  assert.equal(pl.ground, 0);
+  partPose(part, pl.t, P);
+  const ox = pl.x - P.x, oz = pl.z - P.z;
+  // the next step comes .6 s later in the obstacles' time (the platform moves about 4 m meanwhile)
+  stepPlayer({ parts: [part] }, pl, still, pl.t + .6, 1 / 60, [], []);
+  partPose(part, pl.t, P);
+  assert.ok(pl.ground === 0 && Math.hypot(pl.x - P.x - ox, pl.z - P.z - oz) < .05, `left behind: ${(pl.x - P.x - ox).toFixed(2)} m`);
 });

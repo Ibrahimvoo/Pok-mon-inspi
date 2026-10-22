@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { buildTrack } from './sim/track.js';
 import { RAFT_R } from './sim/raft.js';
+import { SEAT_R } from './sim/hazards.js';
 import { buildWorld } from './view/world.js';
 import { createTraps, createRaft } from './view/props.js';
 import { createFx } from './view/fx.js';
@@ -10,7 +11,8 @@ import { createCharacter, gasOf, EMOTES } from './view/characters.js';
 import { h } from '../../ui.js';
 import { state } from '../../state.js';
 
-export const SEAT_R = 1.58, DECK_Y = .3;
+export const DECK_Y = .3;
+export { SEAT_R };
 const v3 = new THREE.Vector3(), v4 = new THREE.Vector3();
 const lerpAngle = (a, b, k) => a + (Math.atan2(Math.sin(b - a), Math.cos(b - a))) * k;
 

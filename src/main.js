@@ -14,6 +14,7 @@ import { openControlCenter } from './screens/cc.js';
 import { searchScreen } from './screens/search.js';
 import { bootScreen, resumeScreen } from './screens/boot.js';
 import { ROUTES } from './routes.js';
+import { registerInstall } from './install.js';
 import './social.js';
 import './partyhud.js';
 import './videodock.js';
@@ -95,6 +96,7 @@ try {
   lifecycle.addEventListener('resume', () => { if (started) audio.resume(); });
   resetTo(loadNav() ? resumeScreen : bootScreen, {});
   checkVersion();
+  registerInstall();
   started = true;
 } catch (e) {
   fatal(e);

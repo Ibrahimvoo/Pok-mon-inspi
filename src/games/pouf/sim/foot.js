@@ -5,6 +5,9 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const wave = (p, t) => { const u = (((t / (p.period || 4)) + (p.phase || 0)) % 1 + 1) % 1; return .5 - .5 * Math.cos(u * TAU); };
 
 export const PR = .45, PH = 1.5;                 // player capsule radius and height
+// the feet keep standing on a top while the centre is up to FOOT outside it (about the rounded rim drawn round every
+// platform): without it a player crossing the thin seam between two platforms that look joined fell into the water
+export const FOOT = .25;
 export const RUN = 7.2, ACCEL = 42, AIR_ACCEL = 16, GRAVITY = 30, JUMP = 11.2, PUFF_JUMP = 10, PUFF_PUSH = 7;
 
 // ---------------------------------------------------------------- level parts at time t
@@ -21,45 +24,55 @@ export function partPose(part, t, o = {}) {
   return o;
 }
 // a sinking floor tile: gone (deep) during part of its cycle; warns by shaking just before
+const WARN = .12;                                // fraction of the cycle spent shaking before going down
+// position in the tile's cycle, or -1 while it simply stays up. A tile whose phase puts it under water (or past the
+// start of its warning) when the cycles start stays up until its next warning: such tiles used to vanish instantly,
+// with no shaking, under the players standing on them.
+function sinkU(part, t) {
+  const k = part.sink, start = k.start || 0;
+  if (t < start) return -1;
+  const on = k.on ?? .5, w0 = Math.max(0, on - WARN), u0 = ((k.phase || 0) % 1 + 1) % 1, e = (t - start) / k.period;
+  if (u0 > w0 && u0 + e < 1 + w0) return -1;
+  return ((u0 + e) % 1 + 1) % 1;
+}
 export function sinkDepth(part, t) {
   if (!part.sink) return 0;
-  const u = (((t - (part.sink.start || 0)) / part.sink.period + (part.sink.phase || 0)) % 1 + 1) % 1;
-  if (t < (part.sink.start || 0)) return 0;
-  const on = part.sink.on ?? .5;               // fraction of the cycle spent above water
+  const u = sinkU(part, t), on = part.sink.on ?? .5;   // on: fraction of the cycle spent above water
   if (u < on) return 0;
   if (u < on + .08) return ((u - on) / .08) * 6;
   if (u < .92) return 6;
   return (1 - (u - .92) / .08) * 6;
 }
 export function sinkWarning(part, t) {
-  if (!part.sink || t < (part.sink.start || 0)) return 0;
-  const u = (((t - (part.sink.start || 0)) / part.sink.period + (part.sink.phase || 0)) % 1 + 1) % 1, on = part.sink.on ?? .5;
-  return u > on - .12 && u < on ? 1 : 0;
+  if (!part.sink) return 0;
+  const u = sinkU(part, t), on = part.sink.on ?? .5;
+  return u >= 0 && u > on - WARN && u < on ? 1 : 0;
 }
 export const hammerAngle = (h, t) => (h.amp ?? 1.1) * Math.sin(TAU * t / (h.period || 3) + (h.phase || 0) * TAU);
 export const sweeperAngle = (s, t, level) => (s.phase || 0) * TAU + t * s.speed * (1 + (level?.accel || 0) * t);
 
 // ---------------------------------------------------------------- player step
-// pl: { x,y,z, vx,vy,vz, yaw, ground (part index or -1), coyote, stun, jumpLock, puffs, gas }
+// pl: { x,y,z, vx,vy,vz, yaw, ground (part index or -1), coyote, stun, jumpLock, puffs, gas, t (time of the last step) }
 // inp: { mx, mz (world direction wanted, length ≤ 1), jump (edge), puff (edge) }
 // others: [{x,y,z}] other players (to shove them)
+const P0 = {};
 export function stepPlayer(level, pl, inp, t, dt, others = [], ev = []) {
   const parts = level.parts, P = {};
   pl.stun = Math.max(0, pl.stun - dt);
   pl.coyote = Math.max(0, pl.coyote - dt);
   pl.jumpLock = Math.max(0, pl.jumpLock - dt);
   pl.gas = Math.min(1, pl.gas + dt * .35);
-  // ride the platform we stand on
+  // ride the platform we stand on: follow its exact motion since the previous step (after a long frame or a clock
+  // correction the obstacles' time jumps further than dt, and velocity × dt used to leave the player behind)
+  const t0 = pl.t ?? t - dt;
+  pl.t = t;
   if (pl.ground >= 0) {
     const part = parts[pl.ground];
-    partPose(part, t, P);
-    if (part.type === 'disc' || (part.type === 'box' && part.spin)) {
-      // rotate round the platform's centre
-      const a = P.w * dt, dx = pl.x - P.x, dz = pl.z - P.z, c = Math.cos(a), s = Math.sin(a);
-      pl.x = P.x + dx * c + dz * s; pl.z = P.z - dx * s + dz * c; pl.yaw += a;
-    }
-    pl.x += P.vx * dt; pl.z += P.vz * dt;
-    if (P.vy) pl.y += P.vy * dt;
+    partPose(part, t0, P0); partPose(part, t, P);
+    // rotate round the platform's centre, then move with it
+    const a = P.yaw - P0.yaw, dx = pl.x - P0.x, dz = pl.z - P0.z, c = Math.cos(a), s = Math.sin(a);
+    pl.x = P.x + dx * c + dz * s; pl.z = P.z - dx * s + dz * c; pl.yaw += a;
+    pl.y += P.y - P0.y;
     if (part.conveyor) { pl.x += part.conveyor[0] * dt; pl.z += part.conveyor[1] * dt; }
   }
   // steering
@@ -120,7 +133,7 @@ function collideSolid(part, i, pl, t, P, ev) {
     const top = P.y + part.h / 2 - sink, bot = P.y - part.h / 2 - sink;
     const dx = pl.x - P.x, dz = pl.z - P.z, d = Math.hypot(dx, dz);
     if (pl.y > top + .05 || pl.y + PH < bot) return;
-    if (d < part.r && pl.y > top - .6 && pl.vy <= .5) { landOn(pl, i, top); return; }
+    if (d < part.r + FOOT && pl.y > top - .6 && pl.vy <= .5) { landOn(pl, i, top); return; }
     if (d < part.r + PR && d > 0) {
       if (pl.y + PH > bot + .05 && pl.y < top - .05) { const push = part.r + PR - d; pl.x += dx / d * push; pl.z += dz / d * push; }
     }
@@ -134,8 +147,8 @@ function collideSolid(part, i, pl, t, P, ev) {
   const rx = pl.x - P.x, rz = pl.z - P.z;
   const lx = rx * c - rz * s, lz = rx * s + rz * c;
   const inside = Math.abs(lx) <= hw && Math.abs(lz) <= hd;
-  // landing on top
-  if (inside && pl.y > top - .6 && pl.vy <= .5) {
+  // landing on top (the feet reach FOOT beyond the centre)
+  if (Math.hypot(lx - clamp(lx, -hw, hw), lz - clamp(lz, -hd, hd)) < FOOT && pl.y > top - .6 && pl.vy <= .5) {
     landOn(pl, i, top);
     if (part.bounce) { pl.vy = part.bounce; pl.ground = -1; ev.push({ k: 'boing' }); }
     return;
@@ -216,5 +229,5 @@ export function inZone(z, pl) {
   return Math.abs(pl.x - z.p[0]) <= z.s[0] / 2 && Math.abs(pl.z - z.p[2]) <= z.s[2] / 2 && pl.y >= z.p[1] - 1 && pl.y <= z.p[1] + z.s[1];
 }
 export function newPlayer(spawn) {
-  return { x: spawn[0], y: spawn[1], z: spawn[2], vx: 0, vy: 0, vz: 0, yaw: spawn[3] || 0, ground: -1, coyote: 0, stun: 0, jumpLock: 0, puffs: 0, gas: 1 };
+  return { x: spawn[0], y: spawn[1], z: spawn[2], vx: 0, vy: 0, vz: 0, yaw: spawn[3] || 0, ground: -1, coyote: 0, stun: 0, jumpLock: 0, puffs: 0, gas: 1, t: null };
 }

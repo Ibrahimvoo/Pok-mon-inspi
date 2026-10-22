@@ -208,7 +208,8 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
       cam.user = wrap(cam.user + inp.look * (g.settings.camSpeed || 1));
       if (inp.pause) g.openPause();
       if (me && me.out == null) {
-        localFx(physics(dt, inp));
+        // paused: the obstacles' clock stops, so does the critter (it used to keep riding a frozen platform off its edge)
+        localFx(physics(paused ? 0 : dt, inp));
         me.x = pl.x; me.y = pl.y; me.z = pl.z; me.yaw = pl.yaw;
         me.flags = (pl.ground >= 0 ? FLAG.ground : 0) | (pl.stun > 0 ? FLAG.stun : 0) | (deadT > 0 ? FLAG.swim : 0) | (me.fin != null ? FLAG.done : 0);
         hud.gas(pl.gas, gasOf(me.look.gas).c[0], pl.gas < .5);

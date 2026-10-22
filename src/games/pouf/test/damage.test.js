@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildTrack } from '../sim/track.js';
 import { RaftSim, RAFT_R } from '../sim/raft.js';
-import { collide, millAngle, millSpans, MILL_TOP, MILL_FLOOR } from '../sim/hazards.js';
+import { collide, millAngle, millSpans, barHeight, crocBite, MILL_TOP, MILL_FLOOR, TUBE_TOP, SEAT_R } from '../sim/hazards.js';
 import { stepPlayer, newPlayer } from '../sim/foot.js';
 import { RIVER_COURSES } from '../maps/index.js';
 import { PARCOURS } from '../maps/parcours.js';
@@ -96,4 +96,68 @@ test('the damage journal keeps the latest entries with a readable entity', () =>
   assert.equal(damageLog[0].t, 69);
   assert.equal(damageLog[0].entity, 'Mine n°5');
   assert.equal(hazardName('crush'), 'Mâchoires (écrasement)');
+});
+
+test('each hammer bar is drawn where it hits (it used to be drawn at the last trap of the course)', async () => {
+  const THREE = await import('three');
+  const { createTraps } = await import('../view/props.js');
+  const v = new THREE.Vector3();
+  for (const course of RIVER_COURSES) {
+    const T = buildTrack(course), traps = createTraps(T, course), fr = {};
+    const bars = course.hazards.filter(h => h.type === 'bar');
+    for (const h of bars) {
+      // when the bar is down, some trap geometry lies on the river line of the bar, low over the water, across the river
+      const t = [...Array(400).keys()].map(k => k * h.period / 400).find(x => barHeight(h, x) < .6);
+      traps.update(t); traps.root.updateMatrixWorld(true); T.at(h.s, fr);
+      let near = 0;
+      traps.root.traverse(m => {
+        if (!m.isMesh) return;
+        const p = m.geometry.attributes.position;
+        for (let i = 0; i < p.count; i += 7) {
+          v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld);
+          const ds = (v.x - fr.x) * fr.tx + (v.z - fr.z) * fr.tz, dd = (v.x - fr.x) * fr.nx + (v.z - fr.z) * fr.nz;
+          if (Math.abs(ds) < 1.2 && Math.abs(dd) < fr.w - 1 && v.y - fr.y < 1.8 && v.y - fr.y > -.5) near++;
+        }
+      });
+      assert.ok(near > 50, `${course.id} bar at s=${h.s}: nothing drawn there while it is down`);
+    }
+  }
+});
+
+test('arms and bars above the tube only hurt a rider sitting under them, never an empty part of the rim', () => {
+  const fr = { w: 7 }, R = RAFT_R;
+  // bar half way up (riders' height): no rider under it → nothing; a rider under it → hit
+  const bar = { type: 'bar', s: 0, period: 4 };
+  const tHigh = [...Array(800).keys()].map(k => k * 4 / 800).find(x => barHeight(bar, x) > 1.4 && barHeight(bar, x) < 1.9);
+  assert.equal(collide(bar, { s: -2.4, d: 0, seats: [[-SEAT_R, 0]] }, R, tHigh, fr), null);
+  assert.ok(collide(bar, { s: -2.4, d: 0, seats: [[SEAT_R, 0]] }, R, tHigh, fr)?.hit);
+  // bar down on the water: the whole raft
+  const tLow = [...Array(800).keys()].map(k => k * 4 / 800).find(x => barHeight(bar, x) < .6);
+  assert.ok(collide(bar, { s: -2.4, d: 0, seats: [] }, R, tLow, fr)?.hit);
+  // a mill arm passing just over the tube (between the tube and the riders' heads), above an empty part of the rim
+  const mill = { type: 'mill', s: 0, side: 1, speed: 0, phase: 0 };
+  const a = Math.asin((1.2 - 3.4) / 7.2);   // the tip at 1.2 m above the water
+  mill.phase = (Math.PI + a + Math.PI) / TAU % 1;
+  const [span] = millSpans(mill, fr.w, 0, [], MILL_TOP, TUBE_TOP);
+  assert.ok(span, 'arm in the riders band');
+  const tipD = Math.min(...span), raftD = tipD - R + .3;
+  assert.equal(collide(mill, { s: 0, d: raftD, seats: [[0, -SEAT_R]] }, R, 0, fr), null);
+  assert.ok(collide(mill, { s: 0, d: raftD, seats: [[0, SEAT_R]] }, R, 0, fr)?.hit);
+});
+
+test('spike rows, crocodiles and turnstiles hurt only where they are drawn', () => {
+  const fr = { w: 6 }, R = RAFT_R;
+  // 1 m past the end of a spike row, against the bank: the row is drawn up to .15 m past its end
+  const sp = { type: 'spikes', s: 10, s1: 20, side: 1 };
+  assert.ok(collide(sp, { s: 15, d: fr.w - .7 - R + .2 }, R, 0, fr)?.hit);
+  assert.equal(collide(sp, { s: 21.3, d: fr.w - .7 - R + .2 }, R, 0, fr), null);
+  // a crocodile is long and narrow: a raft beside its head (no part of the model within reach) is not bitten
+  const croc = { type: 'croc', s: 0, d: 0, period: 4, r: 1.1 };
+  const bite = [...Array(400).keys()].map(k => k * 4 / 400).find(x => crocBite(croc, x) > .9);
+  assert.equal(collide(croc, { s: 0, d: R + .9 }, R, bite, fr), null);
+  assert.ok(collide(croc, { s: -2 - R + .2, d: 0 }, R, bite, fr)?.hit, 'snout');
+  // the turnstile log has flat ends: a raft facing its tip a little past the end is untouched
+  const ts = { type: 'turnstile', s: 0, d: 0, len: 2.8, speed: 0, phase: 0 };
+  assert.equal(collide(ts, { s: 2.8 + R + .2, d: .44 }, R, 0, fr), null);
+  assert.ok(collide(ts, { s: 2.8 + R - .2, d: 0 }, R, 0, fr)?.hit);
 });

@@ -153,7 +153,10 @@ export function createTraps(T, course) {
         T.world(h.s, side * (w + 1.1), o2); p.position.set(o2.wx, o2.y, o2.wz);
       }
       g.rotation.y = Math.PI - o.a; // the log spans the river
-      live.push(t => { g.position.set(o.x, o.y + barHeight(h, t) + .2, o.z); });
+      // its own copy of the frame: `o` is reused by the next traps, so the bar used to be drawn at the last trap of the
+      // course while it still hit at its real place, where nothing could be seen
+      const at = { x: o.x, y: o.y, z: o.z };
+      live.push(t => { g.position.set(at.x, at.y + barHeight(h, t) + .2, at.z); });
     } else if (h.type === 'mill') {
       const w = o.w, L = h.len ?? 7.2, H = h.hub ?? 3.4, n = h.arms ?? 4;
       const tower = add(mesh(merge([Cy(.7, 1, H + 1.2, TOWER, [0, (H - 1.2) / 2, 0], 0, 1, 10), Cy(.9, .9, .4, '#f7a43a', [0, -1, 0], 0, 1, 10), Co(1, 1.4, '#e8605a', [0, H + .3, 0], 0, 1, 10)]), mat));

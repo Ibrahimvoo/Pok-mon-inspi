@@ -13,6 +13,7 @@ import { bg } from '../bg.js';
 import { input, padKind, toggleFullscreen } from '../input.js';
 import { toggle, slider, cycle, action, info, adjustable } from '../widgets.js';
 import { uninstall } from '../actions.js';
+import { installGuide, installed, canPrompt } from '../install.js';
 
 export const CATEGORIES = [
   { id: 'sound', label: 'Son', icon: 'volume', keywords: 'audio volume musique effets sonores' },
@@ -25,7 +26,7 @@ export const CATEGORIES = [
   { id: 'storage', label: 'Stockage', icon: 'storage', keywords: 'espace ssd supprimer jeux' },
   { id: 'network', label: 'Réseau', icon: 'wifi', keywords: 'internet connexion wi-fi test' },
   { id: 'users', label: 'Utilisateurs et comptes', icon: 'user', keywords: 'profil porte-monnaie fonds compte abonnement' },
-  { id: 'system', label: 'Système', icon: 'settings', keywords: 'heure horloge réinitialiser version à propos' },
+  { id: 'system', label: 'Système', icon: 'settings', keywords: 'heure horloge réinitialiser version à propos installer application écran d’accueil android samsung iphone' },
 ];
 const COLORS = ['#2f8cff', '#ff7a3d', '#5dffb0', '#ff3d9a', '#ffc27a', '#a78bfa', '#59d6ff', '#f87171', '#facc15', '#34d399'];
 
@@ -141,6 +142,7 @@ function panelFor(cat, layer) {
     case 'system': return [
       toggle('Format 24 heures', 'Affichage de l’horloge', 'clock24', A),
       info('Version', 'Console UI Concept 2.0'),
+      action('Installer sur l’écran d’accueil', installed() ? 'Déjà installée sur cet appareil' : canPrompt() ? 'Installation directe disponible dans ce navigateur' : 'iPhone, iPad, Android (Chrome, Samsung Internet, Firefox…) et ordinateur', () => { audio.play('ok'); installGuide(); }),
       action('Journal des interruptions', 'Ce que le système a fait de l’application (arrière-plan, rechargement, reprise)', () => {
         audio.play('ok');
         const label = { launch: 'Démarrage', suspend: 'Mise en arrière-plan', resume: 'Retour au premier plan', freeze: 'Gel par le système', restored: 'Session restaurée', audio: 'Audio', 'start-error': 'Erreur au démarrage' };

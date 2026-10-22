@@ -468,6 +468,10 @@ html.contrast #shade { background: rgba(0, 0, 0, .7); }
 @keyframes dlgOut { to { transform: scale(.97); opacity: 0; } }
 .dialog h2 { margin: 0 0 2rem; font-size: 3.4rem; font-weight: 400; }
 .dialog .dbody { font-size: 2.1rem; color: rgba(255, 255, 255, .8); line-height: 1.5; }
+.install-steps { margin: 1rem 0 2rem; padding-left: 3rem; display: grid; gap: 1rem; }
+.install-steps b { color: #fff; font-weight: 600; }
+.install-note { display: flex; gap: 1.2rem; align-items: flex-start; font-size: 1.8rem; color: var(--dim); }
+.install-note .icw { flex: none; width: 2.4rem; height: 2.4rem; }
 .dialog .dactions { display: flex; gap: 1.8rem; margin-top: 4rem; flex-wrap: wrap; }
 .dialog .dactions .btn { flex: 1; min-width: 20rem; }
 .dialog.wide { width: 110rem; }
