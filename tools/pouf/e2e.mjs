@@ -83,7 +83,7 @@ try {
   await Promise.all([A.page.keyboard.up('Space'), B.page.keyboard.up('Space'), A.page.keyboard.up('KeyW'), B.page.keyboard.up('KeyW')]);
   await A.page.waitForTimeout(1200);
   const s1 = await G(A.page, () => window.__pouf.match.sim.st.s);
-  ok('les poufs font avancer la bouée', s1 - s0 > 5, `${s0.toFixed(1)} → ${s1.toFixed(1)} m`);
+  ok('les poufs font avancer la bouée', s1 - s0 > 5, `${s0.toFixed(1)} → ${s1.toFixed(1)} m ` + JSON.stringify(await G(A.page, () => ({ fps: Math.round(window.__fps), t: window.__pouf.match.t, phase: window.__pouf.match.debug().phase, me: window.__pouf.match.riders.get(window.__pouf.me.id)?.puffTime, layers: window.__pouf.layers.map(l => l.cls), covered: window.__pouf.covered, top: document.querySelector('#app > :last-child')?.className, focus: document.activeElement?.tagName }))));
   const puffB = await G(A.page, () => [...window.__pouf.match.riders.values()].find(r => r.id !== window.__pouf.me.id)?.puffTime || 0);
   ok('l’hôte reçoit les commandes de B', puffB > 1, `${puffB.toFixed(1)} s de pouf`);
   const dB = await G(B.page, () => window.__pouf.arena.rs.s), dA = await G(A.page, () => window.__pouf.arena.rs.s);
@@ -94,7 +94,8 @@ try {
   ok('éclatement synchronisé', await until(B.page, () => window.__pouf.arena.rs.pop >= 0 || document.querySelector('.pf-pill.pops span:last-child')?.textContent === '1', null, 5000),
     JSON.stringify(await G(A.page, () => ({ deaths: window.__pouf.match.sim.st.deaths, pop: window.__pouf.match.sim.st.pop, gu: window.__pouf.match.riders.get(window.__pouf.me.id)?.gu, playing: !!document.querySelector('.pf-touch.on'), layers: window.__pouf.layers.length }))));
   ok('compteur d’éclatements', await until(B.page, () => document.querySelector('.pf-pill.pops span:last-child')?.textContent === '1', null, 6000));
-  ok('réapparition', await until(A.page, () => window.__pouf.match.sim.st.pop < 0 && window.__pouf.match.sim.st.air === 3, null, 6000));
+  ok('réapparition', await until(A.page, () => window.__pouf.match.sim.st.pop < 0 && window.__pouf.match.sim.st.air === 3, null, 6000),
+    JSON.stringify(await G(A.page, () => { const st = window.__pouf.match.sim.st; return { pop: st.pop, air: st.air, deaths: st.deaths, s: Math.round(st.s), cp: st.cp, fps: Math.round(window.__fps), dmg: (window.__poufDamage || []).slice(0, 3).map(e => `${e.event}:${e.entity}@${e.pos?.s}`) }; })));
   // pause menu then quit the game: back to the console
   await A.page.keyboard.press('Escape');
   ok('menu pause', await until(A.page, () => !!document.querySelector('.pf-pause'), null, 4000));
