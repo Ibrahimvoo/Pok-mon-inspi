@@ -160,6 +160,7 @@ function applyMusicGain(fade = 1.2) {
 }
 
 let callMode = false;
+const capturing = new Set();   // who uses the microphone right now (voice call, Mimic Party, the mic test)
 export const audio = {
   events, ios: IOS_DEVICE,
   get ready() { return !!ctx && ctx.state === 'running'; },
@@ -214,12 +215,17 @@ export const audio = {
     if (!ctx) return;
     ctx.resume().catch(() => {});
   },
-  // voice calls: the microphone needs the 'play-and-record' session, plain playback comes back after the call
-  setCallMode(on) {
-    callMode = !!on;
-    sessionType(on ? 'play-and-record' : 'playback');
-    if (!on) setTimeout(() => reroute('call-ended'), 250);
+  // the microphone needs the 'play-and-record' session (iOS refuses or silences capture in a 'playback' one); plain
+  // playback comes back only when nobody captures any more: a call ending must not cut Mimic Party's microphone
+  capture(owner, on) {
+    if (on) capturing.add(owner); else capturing.delete(owner);
+    const want = capturing.size > 0;
+    if (want === callMode) return;
+    callMode = want;
+    sessionType(want ? 'play-and-record' : 'playback');
+    if (!want) setTimeout(() => reroute('call-ended'), 250);
   },
+  setCallMode(on) { this.capture('call', on); },
   reroute,
   // what Settings › Sound shows to tell a playback problem from a microphone problem
   diagnostics() {

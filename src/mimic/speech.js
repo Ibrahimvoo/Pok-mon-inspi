@@ -2,6 +2,7 @@
 // Runs next to the recording when the browser allows it; any failure simply leaves the acoustic score on its own.
 const Rec = typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null;
 const KEY = 'mimic.speech';
+const IOS = typeof navigator !== 'undefined' && (/iP(hone|ad|od)/.test(navigator.platform || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
 let blocked = false;   // denied, offline or fighting with the recorder on this device: stop trying this session
 const remembered = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
@@ -12,7 +13,8 @@ export const speech = {
   usable(mode = 'auto') {
     if (!Rec || blocked || mode === 'off') return false;
     if (mode === 'on') return true;
-    return !remembered().conflict;
+    // iOS gives the microphone to dictation: the recording (and the voice chat) would go silent. Acoustic score only.
+    return !IOS && !remembered().conflict;
   },
   // the recorder got silence while recognition was running (seen on some iOS versions): stop running both together
   markConflict() { blocked = true; try { localStorage.setItem(KEY, JSON.stringify({ conflict: true })); } catch { /* private mode */ } },

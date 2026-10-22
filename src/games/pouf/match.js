@@ -52,7 +52,6 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
   if (sim) Object.assign(view, sim.st);
   hud.progress(view.s, 0); hud.pops(0); hud.air(MAX_AIR);
   if (spectator) hud.banner('Vous regardez la partie', { subText: 'Vous rejoindrez la prochaine épreuve', ms: 4000 });
-  sound.music(true, { fast: true });
 
   // ------------------------------------------------------------ events (same effects on every screen)
   function applyEvent(e) {
@@ -335,7 +334,6 @@ export function createMatch(g, { course, roster, host, meId, spectator = false }
       dispose() {
       hud.dispose(); arrow.removeFromParent(); arrowGeo.dispose(); arrow.material.dispose();
       g.input.setPlaying(false);
-      sound.music(true);
     },
   };
   return api;

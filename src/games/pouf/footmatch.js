@@ -50,7 +50,6 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
   const sp0 = course.spawn[0];
   cam.pos.set(sp0[0], sp0[1] + 14, sp0[2] - 16); cam.look.set(sp0[0], sp0[1], sp0[2] + 6);
   const v3 = new THREE.Vector3(), v4 = new THREE.Vector3();
-  sound.music(true, { fast: true });
   if (spectator) hud.banner('Vous regardez la partie', { subText: 'Vous rejoindrez la prochaine épreuve', ms: 4000 });
 
   const respawnPoint = () => {
@@ -317,7 +316,6 @@ export function createFootMatch(g, { course, roster, host, meId, spectator = fal
       arena.setVisible(true);
       stage.setTheme(arena.course.theme);
       g.input.setPlaying(false);
-      sound.music(true);
     },
   };
   return api;

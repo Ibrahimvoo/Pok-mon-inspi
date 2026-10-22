@@ -34,7 +34,8 @@ try {
   await openBase(A, 'Ajouter un ami');
   await A.fill('.gamebase .f-input', 'moussaillon'); await A.press('.gamebase .f-input', 'Enter');
   await until(A, () => /Moussaillon_B/.test(document.querySelector('.gamebase .gb-list')?.innerText || ''));
-  await A.click('.gamebase .gb-row:has-text("Moussaillon_B")');
+  await A.click('.gamebase .gb-row[data-key^="r-"]:has-text("Moussaillon_B")');
+  await A.click('.menu .list-item:has-text("Envoyer une demande d’ami")');
   await until(B, () => /Nouvelle demande d’ami/.test(document.getElementById('toasts').innerText));
   await openBase(B, 'Demandes'); await B.click('.gamebase button:has-text("Accepter")');
   ok('amis sur le serveur', await until(A, () => /Moussaillon_B/.test(document.querySelector('.gamebase')?.innerText || ''), 8000));

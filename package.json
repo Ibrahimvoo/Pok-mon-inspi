@@ -15,6 +15,7 @@
     "art": "node tools/render-art.mjs",
     "artifact": "node tools/artifact.mjs",
     "e2e:salon": "npm run build && node --no-warnings tools/e2e-salon.mjs",
+    "e2e:friends": "npm run build && node --no-warnings tools/e2e-friends.mjs",
     "e2e:pouf": "npm run build && node --no-warnings tools/pouf/e2e.mjs && node --no-warnings tools/pouf/e2e-foot.mjs && node --no-warnings tools/pouf/e2e-invite.mjs && node --no-warnings tools/pouf/foot.mjs && node --no-warnings tools/pouf/tour.mjs && node --no-warnings tools/pouf/pad.mjs && node --no-warnings tools/pouf/touch.mjs && node --no-warnings tools/pouf/sound.mjs",
     "art:pouf": "node tools/pouf/render-art.mjs",
     "e2e:touch": "npm run build && node --no-warnings tools/e2e-touch.mjs",

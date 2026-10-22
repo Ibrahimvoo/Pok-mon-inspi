@@ -236,7 +236,7 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       cancelAnimationFrame(raf);
       G.endMatch(); G.closeAll();
       lobby.destroy(); input.dispose(); arena.dispose(); stage.dispose();
-      sound.stop(); ro.disconnect();
+      ro.disconnect();
       el.replaceChildren();
     },
   };
@@ -315,7 +315,6 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
       G.attached = true;
       const r = el.getBoundingClientRect(); if (r.width) stage.resize(r.width, r.height);
       if (G.match && !G.layers.length) input.setPlaying(true);
-      sound.music(true, { fast: !!G.match });
     },
     detach() {
       G.attached = false; input.setPlaying(false); G.closeAll();
@@ -371,7 +370,6 @@ export async function createGame({ el, user, opts = {}, exit, trophy }) {
   raf = requestAnimationFrame(frame);
   loading.classList.add('out');
   setTimeout(() => loading.remove(), 600);
-  sound.music(true);
   api.attach();
   const party = G.partyCode();
   if (opts.join) G.enterLobby({ join: cleanCode(opts.join) });

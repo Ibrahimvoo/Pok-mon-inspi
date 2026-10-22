@@ -81,12 +81,24 @@ export function createHub({ acc, log = () => {} }) {
       presence.set(u.id, { activity, game });
       broadcastPresence(u.id);
     },
+    // players online right now (friends or not), to invite them straight into a game
+    players(u) {
+      const list = [];
+      for (const id of conns.keys()) {
+        if (id === u.id || !users.has(id)) continue;
+        const { activity, game } = presenceOf(id);
+        list.push({ ...users.get(id), online: true, activity, game, friend: !!isFriend(u.id, id) });
+        if (list.length >= 50) break;
+      }
+      return { ok: true, players: list.sort((a, b) => b.friend - a.friend || a.psn.localeCompare(b.psn)) };
+    },
     'party.create'(u) { const p = createParty(u.id); return { ok: true, partyId: p.id }; },
     'party.invite'(u, m) {
       let p = parties.get(userParty.get(u.id));
       if (!p) p = createParty(u.id);
       const to = String(m.to || '');
-      if (!isFriend(u.id, to)) return { error: 'not_friend', message: 'Vous ne pouvez inviter que vos amis.' };
+      // any player online can be invited (friends or not); the invitation is what lets them in
+      if (to === u.id || !users.has(to)) return { error: 'not_found', message: 'Joueur introuvable.' };
       if (p.members.has(to)) return { error: 'already', message: 'Ce joueur est déjà dans le groupe.' };
       if (p.members.size >= MAX_PARTY) return { error: 'full', message: 'Le groupe est complet.' };
       if (!online(to)) return { error: 'offline', message: 'Ce joueur est hors ligne.' };

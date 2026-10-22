@@ -47,7 +47,7 @@ try {
   }, [OLD, USER]);
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`); });
+  page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|peerjs/.test(m.text())) errors.push(`console: ${m.text()}`); });
   const shot = async n => shots && page.screenshot({ path: join(shots, `touch-${n}.jpg`), type: 'jpeg', quality: 70 });
   await page.goto(url);
 

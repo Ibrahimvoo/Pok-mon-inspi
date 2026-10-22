@@ -88,9 +88,11 @@ test('friends, presence, party invite, signalling and in-game sync', async () =>
   await new Promise(r => setTimeout(r, 150));
   assert.ok(!sc.inbox.some(m => m.t === 'presence' && m.game === 'pouf-party'));
 
-  // only friends can be invited
-  const notFriend = await sa.req('party.invite', { to: (await call('/api/me', { cookie: c.cookie })).data.user.id });
-  assert.equal(notFriend.error, 'not_friend');
+  // the players online are listed for everyone (friends first), an unknown player cannot be invited
+  const cId = (await call('/api/me', { cookie: c.cookie })).data.user.id;
+  const online = await sa.req('players');
+  assert.deepEqual(online.players.map(p => [p.psn, p.friend]), [['Bravo', true], ['Charlie', false]]);
+  assert.equal((await sa.req('party.invite', { to: 'nobody' })).error, 'not_found');
   const bId = (await call('/api/me', { cookie: b.cookie })).data.user.id;
   const inv = await sa.req('party.invite', { to: bId, kind: 'call' });
   assert.equal(inv.ok, true);
@@ -129,6 +131,12 @@ test('friends, presence, party invite, signalling and in-game sync', async () =>
   sa.send('party.leave');
   const after = await sb.next(m => m.t === 'party' && m.party?.members.length === 1);
   assert.equal(after.party.host, bId);
+  // a player online who is not a friend can be invited straight into the group, and join it
+  assert.equal((await sb.req('party.invite', { to: cId })).ok, true);
+  const gotC = await sc.next(m => m.t === 'invite');
+  assert.equal(gotC.from.psn, 'Bravo');
+  assert.equal((await sc.req('party.join', { partyId: gotC.party.id })).ok, true);
+  await sb.next(m => m.t === 'party' && m.party?.members.length === 2);
   sa.close(); sb.close(); sc.close();
 });
 

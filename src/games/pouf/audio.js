@@ -1,9 +1,9 @@
-// Synthesised sound for Pouf Party (Web Audio, no samples): comic puffs, splashes, bursts, jingles and a
-// cheerful island tune. Shares the console's audio context and follows its sound settings.
+// Synthesised sound for Pouf Party (Web Audio, no samples): comic puffs, splashes, bursts and jingles.
+// Sound effects only, no music. Shares the console's audio context and follows its sound settings.
 import { audio as consoleAudio } from '../../audio.js';
 import { state } from '../../state.js';
 
-let ctx = null, out, sfx, music, noiseBuf, shareDest = null, musicTimer = 0, nextNote = 0, step = 0, tempo = 112, musicOn = false;
+let ctx = null, out, sfx, noiseBuf, shareDest = null;
 const R = Math.random;
 
 function init() {
@@ -15,7 +15,6 @@ function init() {
   const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 4;
   out.connect(comp); comp.connect(ctx.destination);
   sfx = ctx.createGain(); sfx.connect(out);
-  music = ctx.createGain(); music.gain.value = 0; music.connect(out);
   const len = ctx.sampleRate * 2;
   noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
   const d = noiseBuf.getChannelData(0);
@@ -27,7 +26,6 @@ function applySettings() {
   if (!ctx) return;
   const s = state.settings;
   sfx.gain.setTargetAtTime(s.sfx ? s.sfxVol * 1.1 : 0, ctx.currentTime, .05);
-  music.gain.setTargetAtTime(musicOn && s.music ? s.musicVol * .75 : 0, ctx.currentTime, .3);
 }
 const ok = () => init() && ctx.state === 'running';
 const now = () => ctx.currentTime;
@@ -129,18 +127,6 @@ export const sound = {
   },
   ui(kind = 'move') { if (!ok()) return; const t = now(); if (kind === 'ok') { osc('triangle', 880, t, .12, .1); osc('triangle', 1320, t + .05, .15, .08); } else osc('triangle', 1200, t, .05, .05); },
 
-  // ---- island music: plucked chords, bouncy bass, marimba hook and shaker
-  music(on, { fast = false } = {}) {
-    if (!init()) return;
-    on = false; // the game plays sound effects only, no music
-    musicOn = on; tempo = fast ? 124 : 104;
-    applySettings();
-    clearInterval(musicTimer);
-    if (!on) return;
-    nextNote = Math.max(nextNote, ctx.currentTime + .1);
-    musicTimer = setInterval(schedule, 60);
-  },
-  stop() { clearInterval(musicTimer); musicOn = false; if (ctx) music.gain.setTargetAtTime(0, ctx.currentTime, .2); },
   // the game's sound as a stream, for the shared gameplay (null where Web Audio cannot make one)
   shareTrack() {
     if (!init() || !ctx.createMediaStreamDestination) return null;
@@ -161,25 +147,3 @@ export const sound = {
   },
 };
 
-const CHORDS = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]]; // C G Am F
-const BASS = [48, 43, 45, 41];
-const HOOK = [76, null, 79, 76, 74, null, 72, null, 74, 76, null, 72, 69, null, 67, null];
-function schedule() {
-  if (!ctx || ctx.state !== 'running') return;
-  const spb = 60 / tempo / 2; // eighth notes
-  while (nextNote < ctx.currentTime + .25) {
-    const bar = Math.floor(step / 8) % 4, beat = step % 8, t = nextNote;
-    const hz = m => 440 * 2 ** ((m - 69) / 12);
-    // ukulele-ish strum on the off beats
-    if (beat % 2 === 1 || beat === 0) CHORDS[bar].forEach((m, i) => pluck(hz(m + 12), t + i * .012, .22, beat === 0 ? .05 : .035));
-    if (beat === 0 || beat === 3 || beat === 4 || beat === 6) bass(hz(BASS[bar] + (beat === 6 ? 7 : 0)), t, spb * 1.6);
-    const hk = HOOK[(step + (Math.floor(step / 32) % 2) * 8) % 16];
-    if (hk && Math.floor(step / 32) % 4 !== 3) marimba(hz(hk), t);
-    shaker(t, beat % 2 ? .02 : .035);
-    nextNote += spb; step++;
-  }
-}
-function pluck(f, t, d, v) { const o = ctx.createOscillator(), g = ctx.createGain(), fl = ctx.createBiquadFilter(); o.type = 'triangle'; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.setValueAtTime(3000, t); fl.frequency.exponentialRampToValueAtTime(600, t + d); env(g, t, .003, d, v); o.connect(fl); fl.connect(g); g.connect(music); o.start(t); o.stop(t + d + .05); }
-function bass(f, t, d) { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = f; env(g, t, .01, d, .16); o.connect(g); g.connect(music); o.start(t); o.stop(t + d + .05); }
-function marimba(f, t) { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o2.type = 'sine'; o.frequency.value = f; o2.frequency.value = f * 4; env(g, t, .002, .35, .07); const g2 = ctx.createGain(); g2.gain.value = .25; o.connect(g); o2.connect(g2); g2.connect(g); g.connect(music); o.start(t); o2.start(t); o.stop(t + .4); o2.stop(t + .4); }
-function shaker(t, v) { const s = ctx.createBufferSource(); s.buffer = noiseBuf; const fl = ctx.createBiquadFilter(); fl.type = 'highpass'; fl.frequency.value = 7000; const g = ctx.createGain(); env(g, t, .004, .05, v); s.connect(fl); fl.connect(g); g.connect(music); s.start(t, R()); s.stop(t + .08); }

@@ -64,6 +64,8 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 
 - **Comptes** : au premier lancement, création du compte (identifiant en ligne unique, mot de passe, avatar) avec validation côté client et côté serveur ; connexion, déconnexion, changement d’avatar, plusieurs comptes sur la même console (« Qui utilise cette manette ? »).
 - **Amis** : recherche par identifiant, demandes envoyées / reçues en temps réel, acceptation, suppression, statut en direct (en ligne, joue à…, dans un groupe, vu il y a…).
+- **Joueurs en ligne** : *Base de jeu → Ajouter un ami* liste les joueurs connectés ; on peut en inviter un directement dans sa partie, **sans être amis**.
+- **Sans serveur (GitHub Pages, app de l’écran d’accueil)** : les amis fonctionnent aussi. Les consoles en ligne se retrouvent dans un annuaire de joueurs partagé (tenu par l’une d’elles via PeerJS, repris automatiquement si elle s’en va) ; demandes d’ami, invitations et code du groupe passent directement d’une console à l’autre ; la liste d’amis est gardée sur l’appareil, par profil. Le code d’un groupe n’est jamais publié : seuls les amis peuvent le demander, une invitation le contient.
 - **Groupes et sessions** : invitations, rejoindre le groupe ouvert d’un ami, discussion écrite, lancement d’un jeu partagé (les membres sont invités à rejoindre la partie), viseurs et signaux synchronisés en temps réel pendant la session.
 - **Appels vocaux** : WebRTC entre les membres du groupe, avec annulation d’écho, réduction du bruit et gain automatique pour parler **sans casque** (micro et haut-parleur de l’appareil). Muet, volume par membre (sauf iOS), indicateur de parole, reprise du micro et renégociation après une interruption, la musique de la console se coupe pendant l’appel.
 - **Robustesse** : reconnexion automatique avec délai croissant, détection des connexions mortes (ping), délai de grâce de 15 s côté serveur pour ne pas sortir un joueur de son groupe lors d’un rechargement ou d’un changement d’app, gestion des erreurs réseau et des refus de micro avec des messages clairs.
@@ -72,8 +74,8 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 
 Recréation **non officielle** du jeu d’imitation Mimic Party, jouable depuis l’écran d’accueil : salon 3D (personnages, marche, animations, auras), menu, parties disponibles, choix du mode (Classic / Versus), lobby (packs de sons, règles, joueurs), puis les manches **ANNOUNCE → REVEAL → RECORDING → PLAYBACK → WHEEL** et les résultats.
 
-- **Sons** : 42 extraits tirés des vidéos de l’utilisateur (doublons écartés), en 5 packs.
-- **Micro et notation** : une seule prise par manche ; la voix est comparée au son (timbre MFCC + DTW, rythme, mélodie) et, quand le navigateur le permet, les paroles reconnues (Web Speech API) entrent dans la note sur 100.
+- **Sons** : 43 extraits tirés des vidéos de l’utilisateur, découpés aux vraies coupures des vidéos (le « boum » des transitions n’est jamais gardé) puis vérifiés un par un par transcription (`tools/mimic/refs-src.json`, `tools/mimic/cut-refs.py`). Aucune musique de fond dans le jeu : seulement des bruitages.
+- **Micro et notation** : une seule prise par manche ; la voix est comparée au son (timbre MFCC + DTW, rythme, mélodie) et, quand le navigateur le permet, les paroles reconnues (Web Speech API) entrent dans la note sur 100 (pas sur iPhone/iPad en mode automatique : la dictée d’iOS couperait le micro de la prise et du chat vocal).
 - **Chat vocal** : pendant la prise, le micro du chat vocal est coupé et le son des amis mis en pause, puis tout revient pour écouter les imitations ensemble.
 - **Multijoueur** : plusieurs joueurs sur la même console (chacun son tour) ou en ligne avec le groupe / salon (tout le monde imite en même temps, les enregistrements sont envoyés au groupe, l’hôte orchestre les manches et la roue).
 - Progression (XP, niveaux, animations et auras à débloquer), statistiques, objectifs reliés aux trophées de la console.
@@ -109,6 +111,7 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 npm test          # API + WebSocket (SQLite en mémoire) + physique de Pouf Party (bouée, pièges, checkpoints, course à pied)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
 npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
+npm run e2e:friends # amis sans serveur : annuaire, demande, invitation d’un joueur non ami, rejoindre un ami, reprise de l’annuaire
 npm run e2e:resume # hôte mis en arrière-plan (page gelée) : l’ami patiente puis rejoint, reprise de la partie sans salon en double
 npm run e2e:video  # caméra dans les deux sens, partage de la partie et de l’écran, arrêt, refus d’autorisation, raccrocher
 npm run e2e:touch # écran tactile de téléphone : carte utilisateur, photo de profil, profil, amis, menus, ancienne sauvegarde Safari, lancement du jeu

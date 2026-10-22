@@ -30,7 +30,7 @@ async function player(name, psn) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`${name}: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error' && !/404|Failed to load resource|WebGL|GPU stall/.test(m.text())) errors.push(`${name}: ${m.text()}`); });
+  page.on('console', m => { if (m.type() === 'error' && !/404|Failed to load resource|WebGL|GPU stall|peerjs/.test(m.text())) errors.push(`${name}: ${m.text()}`); });
   await page.goto(url);
   await page.keyboard.press('Enter');
   await page.waitForSelector('.account .acc-form', { timeout: 20000 });

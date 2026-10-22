@@ -202,7 +202,7 @@ async function soundCheck() {
         await wait(4000); off();
       } else {
         audio.init();
-        audio.setCallMode(true);
+        audio.capture('test', true);
         let stream;
         try {
           stream = await voice.testMic();
@@ -217,7 +217,7 @@ async function soundCheck() {
             await wait(80);
           }
           src.disconnect();
-        } finally { stream?.getTracks().forEach(t => t.stop()); audio.setCallMode(false); }
+        } finally { stream?.getTracks().forEach(t => t.stop()); audio.capture('test', false); }
       }
       show('Test du micro', `${label || 'Micro'} · niveau maximal ${Math.round(peak * 100)} %${peak < .05 ? ' · aucun son capté : vérifiez le micro (ou les AirPods) et l’autorisation du site' : ' · le micro fonctionne'}`);
     } catch (e) { show('Test du micro', e.message || 'Impossible d’accéder au micro.'); }

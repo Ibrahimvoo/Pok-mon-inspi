@@ -25,18 +25,23 @@ document.body.append(holder);
 
 const constraints = () => ({ audio: { echoCancellation: true, noiseSuppression: state.settings.noiseSuppression !== false, autoGainControl: true }, video: false });
 
+// Safari and the app added to the home screen keep separate permissions: each one gets its own instructions
+const homeScreenApp = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+export function micErrorText(e) {
+  if (e?.name === 'NotAllowedError' || e?.name === 'SecurityError') {
+    if (IOS && homeScreenApp()) return 'Accès au micro refusé pour l’app. Réglages iOS → Safari → Micro → « Demander » (ou « Autoriser »), puis fermez l’app (balayez-la vers le haut) et rouvrez-la depuis l’écran d’accueil.';
+    if (IOS) return 'Accès au micro refusé. Dans Safari : touchez « aA » puis « Réglages du site web » → Micro → Autoriser, ou Réglages iOS → Safari → Micro.';
+    return 'Accès au micro refusé. Autorisez le micro dans les réglages du site (icône à gauche de l’adresse), puis réessayez.';
+  }
+  if (e?.name === 'NotFoundError' || e?.name === 'OverconstrainedError') return 'Aucun micro n’a été détecté sur cet appareil.';
+  if (e?.name === 'NotReadableError' || e?.name === 'AbortError') return 'Le micro est déjà utilisé par une autre application (appel, dictée, autre onglet). Fermez-la puis réessayez.';
+  return 'Impossible d’accéder au micro.';
+}
 async function getMic() {
   if (!navigator.mediaDevices?.getUserMedia) throw new VoiceError(location.protocol !== 'https:' && location.hostname !== 'localhost'
     ? 'Les appels vocaux exigent une connexion sécurisée (HTTPS).' : 'Ce navigateur ne permet pas les appels vocaux.');
   try { return await navigator.mediaDevices.getUserMedia(constraints()); }
-  catch (e) {
-    if (e.name === 'NotAllowedError' || e.name === 'SecurityError') throw new VoiceError(IOS
-      ? 'Accès au micro refusé. Dans Safari : touchez « aA » puis « Réglages du site web » → Micro → Autoriser, ou Réglages iOS → Safari → Micro.'
-      : 'Accès au micro refusé. Autorisez le micro dans les réglages du site (icône à gauche de l’adresse), puis réessayez.');
-    if (e.name === 'NotFoundError' || e.name === 'OverconstrainedError') throw new VoiceError('Aucun micro n’a été détecté sur cet appareil.');
-    if (e.name === 'NotReadableError' || e.name === 'AbortError') throw new VoiceError('Le micro est déjà utilisé par une autre application.');
-    throw new VoiceError('Impossible d’accéder au micro.');
-  }
+  catch (e) { throw new VoiceError(micErrorText(e)); }
 }
 
 // ---------------------------------------------------------------- level meters (speaking indicators)
@@ -309,16 +314,17 @@ export const voice = {
     if (joined) return;
     if (joining) return joining;
     joining = (async () => {
-      audio.setCallMode(true);   // before the microphone opens (iOS refuses capture in a playback-only session)
-      try { local = await getMic(); } catch (e) { audio.setCallMode(false); throw e; }
+      audio.capture('voice', true);   // before the microphone opens (iOS refuses capture in a playback-only session)
+      try { local = await getMic(); } catch (e) { audio.capture('voice', false); throw e; }
       watchMic(local);
       myId = userId;
-      try { iceServers = (await net.api('/api/ice')).iceServers; } catch { /* keep public STUN */ }
+      // the project server gives TURN credentials; without it (static site) the public servers are used
+      if (net.mode === 'online') { try { iceServers = (await net.api('/api/ice', { timeout: 4000 })).iceServers; } catch { /* keep public STUN */ } }
       local.getAudioTracks().forEach(t => { t.enabled = !muted && !held; });
       try {
         const r = await net.req('voice', { on: true, muted: muted || held });
         myVs = r.vs;
-      } catch (e) { local.getTracks().forEach(t => t.stop()); local = null; audio.setCallMode(false); throw e; }
+      } catch (e) { local.getTracks().forEach(t => t.stop()); local = null; audio.capture('voice', false); throw e; }
       joined = true;
       meter('me', local);
       // the speaker must not feed the menu music back into the microphone
@@ -339,7 +345,7 @@ export const voice = {
     unmeter('me');
     local = null; joined = false; myVs = null; held = false;
     clearInterval(meterTimer); meterTimer = 0;
-    audio.setCallMode(false);   // back to full-quality playback (AirPods leave the hands-free profile)
+    audio.capture('voice', false);   // back to full-quality playback (AirPods leave the hands-free profile)
     audio.duck(1, 1.2);
     audio.play('leave');
     emit('change', { joined: false });
@@ -361,6 +367,13 @@ export const voice = {
     peers.forEach(p => { if (p.el) p.el.muted = held; });
     if (joined) net.send('voice', { on: true, muted: muted || held });
     emit('change', { joined, muted, held });
+    // the system may have silenced the microphone during the take (dictation, another capture): bring it back now
+    if (!held && joined && !document.hidden && micSilenced()) recoverMic('muted');
+  },
+  // the call microphone, alive (reopened if the system ended or silenced it): Mimic Party records from a copy of it
+  async ensureLive() {
+    if (!joined) return;
+    if (micSilenced()) await recoverMic('capture');
   },
   // an independent copy of the call microphone (still live while the call is held or muted)
   captureStream() {
@@ -422,11 +435,19 @@ export const voice = {
 
 // The microphone track ends when iOS gives the microphone to another app, or when the audio route changes
 // (AirPods or headphones plugged in or removed): a new one is opened and swapped into every connection.
-let recovering = null;
+let recovering = null, muteTimer = 0;
+const micSilenced = () => { const t = local?.getAudioTracks()[0]; return !t || t.readyState === 'ended' || t.muted; };
 function watchMic(stream) {
   const t = stream.getAudioTracks()[0];
   if (!t) return;
   t.addEventListener('ended', () => { if (joined && local === stream && !document.hidden) recoverMic('ended'); });
+  // iOS silences ("mutes") the microphone when another capture starts (dictation, Siri, another page) and does not
+  // always give it back: the friends then stopped hearing this player. A silence that lasts is repaired.
+  t.addEventListener('mute', () => {
+    clearTimeout(muteTimer);
+    muteTimer = setTimeout(() => { if (joined && local === stream && t.muted && !held && !document.hidden) recoverMic('muted'); }, 2500);
+  });
+  t.addEventListener('unmute', () => clearTimeout(muteTimer));
 }
 function recoverMic(why) {
   if (recovering || !joined) return recovering;
@@ -437,8 +458,9 @@ function recoverMic(why) {
       const t = fresh.getAudioTracks()[0];
       t.enabled = !muted && !held;
       for (const p of peers.values()) {
-        const sender = p.pc.getSenders().find(s => !s.track || s.track.kind === 'audio');
-        await sender?.replaceTrack(t);
+        // the microphone is always the first transceiver (camera and share slots come after it)
+        const sender = p.pc.getTransceivers()[0]?.sender || p.pc.getSenders().find(s => s.track?.kind === 'audio');
+        await sender?.replaceTrack(t).catch(() => {});
       }
       local?.getTracks().forEach(x => x.stop());
       local = fresh;
@@ -461,8 +483,7 @@ function replayVoices() {
 // iOS suspends the microphone and media elements in the background: recover them when the app comes back
 lifecycle.addEventListener('resume', async () => {
   if (!joined) return;
-  const track = local?.getAudioTracks()[0];
-  if (!track || track.readyState === 'ended') await recoverMic('resume');
+  if (micSilenced()) await recoverMic('resume');
   replayVoices();
   // iOS stops the camera in the background: open it again (permission already given) or report it is off
   if (camLostInBackground || media.cam?.readyState === 'ended') {

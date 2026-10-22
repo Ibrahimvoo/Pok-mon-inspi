@@ -20,7 +20,7 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const page = await browser.newPage({ viewport: { width: w, height: h }, hasTouch: !!process.env.TOUCH, isMobile: !!process.env.TOUCH });
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
-page.on('console', m => { if (m.type() === 'error' && !/404|Failed to load|GPU stall/.test(m.text())) errors.push(m.text()); });
+page.on('console', m => { if (m.type() === 'error' && !/404|Failed to load|GPU stall|peerjs/.test(m.text())) errors.push(m.text()); });
 const shot = n => page.screenshot({ path: join(out, `v-${n}.jpg`), type: 'jpeg', quality: 75 });
 const until = async (fn, ms = 20000) => { try { await page.waitForFunction(fn, null, { timeout: ms, polling: 100 }); return true; } catch { return false; } };
 // offline: no broker reachable, the lobby falls back to a solo game

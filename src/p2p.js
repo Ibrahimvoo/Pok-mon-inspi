@@ -15,7 +15,7 @@ const GRACE = 15000;
 const emit = (t, d) => net.inject(t, d);
 const nonce = () => Math.random().toString(16).slice(2, 14);
 // tests can point to a local PeerJS server with ?peerhost=host:port
-const peerOptions = () => {
+export const peerOptions = () => {
   const o = new URLSearchParams(location.search).get('peerhost');
   if (!o) return { debug: 0, config: { iceServers: PUBLIC_ICE } };
   const [host, port] = o.split(':');

@@ -22,7 +22,6 @@ await page.waitForFunction(() => !!document.querySelector('.pf-title .pf-btn'), 
 await page.waitForTimeout(1500);
 const music = await page.evaluate(() => window.__pouf.sound.peak(1500));
 ok('aucune musique, seulement des bruitages', music < .01, music.toFixed(3));
-await page.evaluate(() => window.__pouf.sound.music(false));
 await page.waitForTimeout(800);
 for (const fx of ['puff', 'bigPuff', 'splash', 'pop', 'hit', 'checkpoint', 'fanfare', 'beep', 'slam', 'emote']) {
   const p = await page.evaluate(async fx => { const s = window.__pouf.sound; const m = s.peak(700); s[fx](fx === 'emote' ? 'laugh' : undefined); return m; }, fx);

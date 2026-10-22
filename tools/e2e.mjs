@@ -22,7 +22,7 @@ async function player(name) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, permissions: ['microphone', 'camera'] });
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`${name} pageerror: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error') errors.push(`${name} console: ${m.text()}`); });
+  page.on('console', m => { if (m.type() === 'error' && !/peerjs/.test(m.text())) errors.push(`${name} console: ${m.text()}`); });
   await page.goto(base);
   return { ctx, page, name, shot: async n => shots && page.screenshot({ path: join(shots, `e2e-${n}.jpg`), type: 'jpeg', quality: 70 }) };
 }
@@ -75,7 +75,8 @@ try {
   await A.page.fill('.gamebase .f-input', 'orion');
   await A.page.press('.gamebase .f-input', 'Enter');
   ok('recherche de joueur', await until(A.page, () => /Orion_B/.test(document.querySelector('.gamebase .gb-list')?.innerText || '')));
-  await A.page.click('.gamebase .gb-row:has-text("Orion_B")');
+  await A.page.click('.gamebase .gb-row[data-key^="r-"]:has-text("Orion_B")');
+  await A.page.click('.menu .list-item:has-text("Envoyer une demande d’ami")');
   ok('demande d’ami reçue en temps réel', await until(B.page, () => /Nouvelle demande d’ami/.test(document.getElementById('toasts').innerText)));
   await openBase(B, 'Demandes');
   await B.page.click('.gamebase button:has-text("Accepter")');
