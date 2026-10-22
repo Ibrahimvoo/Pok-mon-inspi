@@ -9,7 +9,7 @@ const out = join(root, 'dist-artifact');
 execSync('npx vite build --mode artifact', { cwd: root, stdio: 'inherit' });
 let html = readFileSync(join(out, 'index.html'), 'utf8');
 const asset = f => readFileSync(join(out, f.replace(/^\.\//, '')), 'utf8');
-const fonts = 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&family=Cinzel:wght@700&family=Bebas+Neue&family=Syncopate:wght@700&family=Cormorant+Garamond:wght@600&family=Teko:wght@600&family=Big+Shoulders+Display:wght@800&family=Unbounded:wght@700&family=Rajdhani:wght@600&family=Josefin+Sans:wght@300&family=Playfair+Display:ital,wght@1,700&family=Anton&display=swap';
+const fonts = 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&family=Cinzel:wght@700&family=Bebas+Neue&family=Syncopate:wght@700&family=Cormorant+Garamond:wght@600&family=Teko:wght@600&family=Big+Shoulders+Display:wght@800&family=Unbounded:wght@700&family=Rajdhani:wght@600&family=Josefin+Sans:wght@300&family=Playfair+Display:ital,wght@1,700&family=Anton&family=Lilita+One&family=Sniglet:wght@800&family=Montserrat:wght@500;600;700;800&display=swap';
 html = html
   .replace(/<link rel="stylesheet"[^>]*href="([^"]+)"[^>]*>/, (_, f) => `<link rel="stylesheet" href="${fonts}">\n<style>${asset(f)}</style>`)
   .replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/, (_, f) => `<script type="module">${asset(f).replace(/<\/script/g, '<\\/script')}</script>`)
@@ -18,5 +18,6 @@ html = html
   .replace('<title>Console UI — Concept PS5</title>', '<title>Console UI Concept</title>');
 writeFileSync(join(out, 'page.html'), html.trim() + '\n');
 const art = readdirSync(join(out, 'art'));
-writeFileSync(join(out, 'files.json'), JSON.stringify(Object.fromEntries(art.map(f => [`art/${f}`, `dist-artifact/art/${f}`])), null, 0));
+const refs = readdirSync(join(out, 'mimic', 'refs'));
+writeFileSync(join(out, 'files.json'), JSON.stringify(Object.fromEntries([...art.map(f => [`art/${f}`, `dist-artifact/art/${f}`]), ...refs.map(f => [`mimic/refs/${f}`, `dist-artifact/mimic/refs/${f}`])]), null, 0));
 console.log(`page.html ${(html.length / 1024).toFixed(0)} KB · ${art.length} art files`);

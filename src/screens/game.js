@@ -12,8 +12,11 @@ import { voice } from '../rtc.js';
 import { session as account } from '../session.js';
 import { unlockTrophy } from '../actions.js';
 import { openControlCenter } from './cc.js';
+import { mimicScreen, closeMimic, MIMIC_ID } from '../mimic/index.js';
 
 export const session = { id: null, layer: null, started: 0 };
+// Mimic Party is a real, playable game; the other titles show the simulated in-game view
+const screenFor = id => (id === MIMIC_ID ? mimicScreen : ingameScreen);
 
 export function launch(id) {
   const g = byId[id];
@@ -28,12 +31,12 @@ export function launch(id) {
     if (!nav.layers.includes(splash)) return;
     session.id = id; session.started = Date.now();
     state.lastPlayed[id] = Date.now(); save('played');
-    session.layer = go(ingameScreen, { id }, { replace: true, sound: null });
+    session.layer = go(screenFor(id), { id }, { replace: true, sound: null });
     social.setPresence('game', id);
     navExtras.game = id; saveNav();
     // playing while in a party opens a shared session: the other members are asked to join
     if (social.party && social.party.game?.id !== id) social.startGame(id);
-    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
+    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : id === MIMIC_ID ? 'Centre de contrôle : bouton PS · pause : Options' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
   }, 3300);
 }
 
@@ -83,7 +86,7 @@ export function resume() {
     for (const l of [...nav.layers].reverse()) { if (l === L) break; closeLayer(l, { silent: true }); }
     return;
   }
-  session.layer = go(ingameScreen, { id: session.id }, { sound: null });
+  session.layer = go(screenFor(session.id), { id: session.id }, { sound: null });
 }
 
 export function suspendToHome() {
@@ -105,6 +108,7 @@ export function endSession() {
   state.lastPlayed[id] = Date.now();
   save('played');
   if (session.layer && nav.layers.includes(session.layer)) closeLayer(session.layer);
+  if (id === MIMIC_ID) closeMimic();
   session.id = null; session.layer = null;
   if (social.party?.game?.id === id && social.party.game.by === account.current?.id) social.stopGame();
   social.setPresence('home');
