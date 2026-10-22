@@ -7,9 +7,9 @@ const H = 3600e3;
 
 const defaults = () => ({
   user: null,
-  owned: ['ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound', 'moonlit-bay', 'hollow-pines', 'abyssal'],
-  installed: ['ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound'],
-  lastPlayed: { 'ashen-crown': now - 2 * H, 'neon-requiem': now - 26 * H, starfall: now - 50 * H, valewalker: now - 96 * H, lumen: now - 140 * H, tidebreaker: now - 200 * H, northbound: now - 300 * H },
+  owned: ['mimic-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound', 'moonlit-bay', 'hollow-pines', 'abyssal'],
+  installed: ['mimic-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound'],
+  lastPlayed: { 'mimic-party': now - 60e3, 'ashen-crown': now - 2 * H, 'neon-requiem': now - 26 * H, starfall: now - 50 * H, valewalker: now - 96 * H, lumen: now - 140 * H, tidebreaker: now - 200 * H, northbound: now - 300 * H },
   playTime: { 'ashen-crown': 41 * 60, 'neon-requiem': 12 * 60, starfall: 63 * 60, valewalker: 88 * 60, lumen: 7 * 60, tidebreaker: 15 * 60, northbound: 22 * 60 },
   trophies: { 'ashen-crown': [0, 1, 2], 'neon-requiem': [0], starfall: [0, 1, 3, 4], valewalker: [0, 1, 2, 3, 4, 5], lumen: [0, 1], tidebreaker: [0], northbound: [0, 1] },
   wishlist: ['sands-meridian'],
@@ -20,6 +20,7 @@ const defaults = () => ({
   notifications: [],
   recentSearch: ['valewalker', 'course'],
   captures: [],
+  gifts: ['mimic-party'],
   settings: {
     sfx: true, sfxVol: 0.7, music: true, musicVol: 0.4, quality: 'high', parallax: true, reduceMotion: false,
     confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false, noiseSuppression: true,
@@ -36,6 +37,15 @@ function load() {
     // drop ids that no longer exist in the catalogue
     for (const k of ['owned', 'installed', 'wishlist', 'cart']) merged[k] = merged[k].filter(id => byId[id]);
     merged.downloads = merged.downloads.filter(x => byId[x.id]);
+    // consoles saved before a game was added receive it once, installed and on the home screen
+    merged.gifts = Array.isArray(s.gifts) ? s.gifts : [];
+    for (const id of ['mimic-party']) {
+      if (merged.gifts.includes(id)) continue;
+      merged.gifts.push(id);
+      if (!merged.owned.includes(id)) merged.owned.unshift(id);
+      if (!merged.installed.includes(id)) merged.installed.unshift(id);
+      merged.lastPlayed[id] = Date.now();
+    }
     return merged;
   } catch { return d; }
 }

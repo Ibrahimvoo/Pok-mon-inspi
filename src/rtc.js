@@ -10,7 +10,7 @@ const events = new EventTarget();
 const emit = (t, d) => events.dispatchEvent(new CustomEvent(t, { detail: d }));
 const peers = new Map();            // userId → peer
 const volumes = new Map();
-let local = null, myId = null, myVs = null, joined = false, muted = false, joining = null;
+let local = null, myId = null, myVs = null, joined = false, muted = false, joining = null, held = false;
 // Without the project server: public STUN + the free Open Relay TURN (public shared credentials, not a secret)
 export const PUBLIC_ICE = [
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] },
@@ -54,7 +54,7 @@ function meter(id, stream) {
       m.an.getFloatTimeDomainData(m.buf);
       let s = 0; for (const v of m.buf) s += v * v;
       m.level = m.level * .6 + Math.min(1, Math.sqrt(s / m.buf.length) * 8) * .4;
-      levels[k] = k === 'me' && muted ? 0 : m.level;
+      levels[k] = k === 'me' && (muted || held) ? 0 : m.level;
     });
     emit('levels', levels);
   }, 110);
@@ -112,6 +112,7 @@ function attachRemote(p, stream) {
     holder.append(p.el);
   }
   p.el.srcObject = stream;
+  p.el.muted = held;
   if (volumes.has(p.id)) p.el.volume = volumes.get(p.id);
   p.el.play().catch(() => emit('blocked', true));
   unmeter(p.id); meter(p.id, stream);
@@ -135,9 +136,9 @@ export const voice = {
       local = await getMic();
       myId = userId;
       try { iceServers = (await net.api('/api/ice')).iceServers; } catch { /* keep public STUN */ }
-      local.getAudioTracks().forEach(t => { t.enabled = !muted; });
+      local.getAudioTracks().forEach(t => { t.enabled = !muted && !held; });
       try {
-        const r = await net.req('voice', { on: true, muted });
+        const r = await net.req('voice', { on: true, muted: muted || held });
         myVs = r.vs;
       } catch (e) { local.getTracks().forEach(t => t.stop()); local = null; throw e; }
       joined = true;
@@ -156,7 +157,7 @@ export const voice = {
     peers.forEach(closePeer);
     local?.getTracks().forEach(t => t.stop());
     unmeter('me');
-    local = null; joined = false; myVs = null;
+    local = null; joined = false; myVs = null; held = false;
     clearInterval(meterTimer); meterTimer = 0;
     audio.duck(1, 1.2);
     audio.play('leave');
@@ -165,9 +166,27 @@ export const voice = {
 
   setMuted(v) {
     muted = !!v;
-    local?.getAudioTracks().forEach(t => { t.enabled = !muted; });
-    if (joined) net.send('voice', { on: true, muted });
+    local?.getAudioTracks().forEach(t => { t.enabled = !muted && !held; });
+    if (joined) net.send('voice', { on: true, muted: muted || held });
     emit('change', { joined, muted });
+  },
+  // A game that listens to the microphone (Mimic Party) holds the call: the others stop hearing you live and your
+  // speaker stays silent so it does not leak into the recording. Releasing it restores exactly the previous state.
+  get held() { return held; },
+  hold(on) {
+    if (held === !!on) return;
+    held = !!on;
+    local?.getAudioTracks().forEach(t => { t.enabled = !muted && !held; });
+    peers.forEach(p => { if (p.el) p.el.muted = held; });
+    if (joined) net.send('voice', { on: true, muted: muted || held });
+    emit('change', { joined, muted, held });
+  },
+  // an independent copy of the call microphone (still live while the call is held or muted)
+  captureStream() {
+    const t = local?.getAudioTracks()[0];
+    if (!t || t.readyState === 'ended') return null;
+    const c = t.clone(); c.enabled = true;
+    return new MediaStream([c]);
   },
   setVolume(id, v) { volumes.set(id, v); const p = peers.get(id); if (p?.el) p.el.volume = v; },
   volume(id) { return volumes.get(id) ?? 1; },
@@ -224,7 +243,7 @@ lifecycle.addEventListener('resume', async () => {
     try {
       const fresh = await getMic();
       const t = fresh.getAudioTracks()[0];
-      t.enabled = !muted;
+      t.enabled = !muted && !held;
       for (const p of peers.values()) {
         const sender = p.pc.getSenders().find(s => !s.track || s.track.kind === 'audio');
         await sender?.replaceTrack(t);

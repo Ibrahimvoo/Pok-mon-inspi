@@ -12,7 +12,7 @@ const MOODS = {
   warm: { chords: [[48, 55, 60, 64, 67], [45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [43, 50, 55, 59, 62]], cut: 900, bell: [72, 74, 76, 79, 81, 84], rate: 2.8 },
 };
 const MOOD_OF = { dark: 'dark', horror: 'dark', storm: 'dark', alien: 'dark', space: 'space', deep: 'space', cold: 'space', mystic: 'space',
-  synth: 'bright', drive: 'bright', stadium: 'bright', calm: 'warm', warm: 'warm', epic: 'warm', desert: 'warm', dusk: 'warm' };
+  synth: 'bright', drive: 'bright', stadium: 'bright', party: 'bright', calm: 'warm', warm: 'warm', epic: 'warm', desert: 'warm', dusk: 'warm' };
 const hz = m => 440 * Math.pow(2, (m - 69) / 12);
 
 function impulse(sec = 2.6) {
