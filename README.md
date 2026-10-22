@@ -2,7 +2,7 @@
 
 Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, création de compte, choix de l’utilisateur, écran d’accueil, hub de jeu, PlayStation Store, fiches produit, bibliothèque, recherche, profil, Base de jeu (amis, groupes, appels vocaux), centre de contrôle, menu Créer, paramètres. Jouable à la **manette**, au **clavier**, à la **souris** et au **toucher**, dans Safari, Chrome, Firefox ou Edge (ordinateur, iPad, iPhone en paysage).
 
-> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Le jeu et ses visuels sont originaux ; les achats sont simulés. La console ne contient plus qu’un seul jeu, **Pouf Party**, un vrai jeu jouable (voir plus bas) : les 18 jeux fictifs du catalogue d’origine ont été retirés (leurs illustrations restent disponibles comme photos de profil). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
+> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Le jeu et ses visuels sont originaux ; les achats sont simulés. La console contient deux vrais jeux jouables, **Pouf Party** et **Mimic Party** (voir plus bas) : les 18 jeux fictifs du catalogue d’origine ont été retirés (leurs illustrations restent disponibles comme photos de profil). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
 ## Jouer avec un ami sans rien installer (salons)
 
@@ -68,6 +68,16 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 - **Appels vocaux** : WebRTC entre les membres du groupe, avec annulation d’écho, réduction du bruit et gain automatique pour parler **sans casque** (micro et haut-parleur de l’appareil). Muet, volume par membre (sauf iOS), indicateur de parole, reprise du micro et renégociation après une interruption, la musique de la console se coupe pendant l’appel.
 - **Robustesse** : reconnexion automatique avec délai croissant, détection des connexions mortes (ping), délai de grâce de 15 s côté serveur pour ne pas sortir un joueur de son groupe lors d’un rechargement ou d’un changement d’app, gestion des erreurs réseau et des refus de micro avec des messages clairs.
 
+## Mimic Party (jeu jouable)
+
+Recréation **non officielle** du jeu d’imitation Mimic Party, jouable depuis l’écran d’accueil : salon 3D (personnages, marche, animations, auras), menu, parties disponibles, choix du mode (Classic / Versus), lobby (packs de sons, règles, joueurs), puis les manches **ANNOUNCE → REVEAL → RECORDING → PLAYBACK → WHEEL** et les résultats.
+
+- **Sons** : 42 extraits tirés des vidéos de l’utilisateur (doublons écartés), en 5 packs.
+- **Micro et notation** : une seule prise par manche ; la voix est comparée au son (timbre MFCC + DTW, rythme, mélodie) et, quand le navigateur le permet, les paroles reconnues (Web Speech API) entrent dans la note sur 100.
+- **Chat vocal** : pendant la prise, le micro du chat vocal est coupé et le son des amis mis en pause, puis tout revient pour écouter les imitations ensemble.
+- **Multijoueur** : plusieurs joueurs sur la même console (chacun son tour) ou en ligne avec le groupe / salon (tout le monde imite en même temps, les enregistrements sont envoyés au groupe, l’hôte orchestre les manches et la roue).
+- Progression (XP, niveaux, animations et auras à débloquer), statistiques, objectifs reliés aux trophées de la console.
+
 ## Bouton PS de la manette sur iPhone / iPad
 
 Sur iOS, **le bouton Home (PS) est réservé au système** : un appui ouvre l’app Jeux d’Apple et met Safari en arrière-plan. Une page web ne peut pas l’empêcher (seule une app native peut désactiver ce geste via `GCController…preferredSystemGestureState`), et l’API Gamepad de Safari ne transmet pas ce bouton. Ce que fait l’application :
@@ -104,6 +114,8 @@ npm run e2e:video  # caméra dans les deux sens, partage de la partie et de l’
 npm run e2e:touch # écran tactile de téléphone : carte utilisateur, photo de profil, profil, amis, menus, ancienne sauvegarde Safari, lancement du jeu
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
 npm run e2e:pouf  # Pouf Party : partie en ligne à deux (bouée et course), clavier, manette, tactile, survie, retour à la console
+npm run e2e:mimic        # Mimic Party sur une console : menus, lobby, 2 joueurs, manches, notation (micro simulé), résultats
+npm run e2e:mimic-online # Mimic Party en ligne : deux navigateurs, invitation, lobby commun, partie complète, chat vocal en pause pendant les prises
 ```
 
 ## Diagnostic sur l’appareil

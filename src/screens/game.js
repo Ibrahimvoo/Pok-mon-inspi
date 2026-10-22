@@ -35,7 +35,7 @@ export function launch(id) {
     navExtras.game = id; saveNav();
     // playing while in a party opens a shared session: the other members are asked to join
     if (social.party && social.party.game?.id !== id) social.startGame(id);
-    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : real ? 'Centre de contrôle : bouton PS' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
+    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : real ? `Centre de contrôle : bouton PS${id === 'mimic-party' ? ' · pause : Options' : ''}` : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
   }, 3300);
 }
 

@@ -6,14 +6,14 @@ const now = Date.now();
 const H = 3600e3;
 
 // Free games every console owns and keeps installed, including consoles saved before they existed
-// (Pouf Party is the console's game: it must always be on the home screen).
-const GIFTS = ['pouf-party'];
+// (Pouf Party and Mimic Party are the console's games: they must always be on the home screen).
+const GIFTS = ['pouf-party', 'mimic-party'];
 const defaults = () => ({
   user: null,
   gifts: [...GIFTS],
   owned: [...GIFTS],
   installed: [...GIFTS],
-  lastPlayed: { 'pouf-party': now - 2 * H },
+  lastPlayed: { 'mimic-party': now - 60e3, 'pouf-party': now - 2 * H },
   playTime: {},
   trophies: {},
   wishlist: [],
@@ -24,6 +24,7 @@ const defaults = () => ({
   notifications: [],
   recentSearch: ['pouf', 'course'],
   captures: [],
+  gifts: ['mimic-party'],
   settings: {
     sfx: true, sfxVol: 0.7, music: true, musicVol: 0.4, quality: 'high', parallax: true, reduceMotion: false,
     confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false, noiseSuppression: true,

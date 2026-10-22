@@ -89,6 +89,13 @@ function hostHandle(fromId, m) {
       broadcast(msg, fromId);
       return;
     }
+    case 'gm': {
+      if (!room.game || !m.d || typeof m.d !== 'object') return;
+      const msg = { t: 'gm', from: fromId, d: m.d };
+      if (m.to != null) { const to = String(m.to); if (to !== fromId && room.members.has(to)) sendTo(to, msg); return; }
+      broadcast(msg, fromId);
+      return;
+    }
     case 'party.leave': removeMember(fromId); return { ok: true };
   }
 }

@@ -159,6 +159,13 @@ export function createHub({ acc, log = () => {} }) {
       p.game = null;
       pushParty(p);
     },
+    gm(u, m) { // game messages (Mimic Party rounds, scores, recordings), relayed inside the party while a game runs
+      const p = parties.get(userParty.get(u.id));
+      if (!p?.game || !m.d || typeof m.d !== 'object' || Array.isArray(m.d)) return;
+      const msg = { t: 'gm', from: u.id, d: m.d };
+      if (m.to != null) { const to = String(m.to); if (to !== u.id && p.members.has(to)) toUser(to, msg); return; }
+      p.members.forEach((_, id) => { if (id !== u.id) toUser(id, msg); });
+    },
     g(u, m) { // in-game cursor / ping, relayed to the party
       const p = parties.get(userParty.get(u.id));
       if (!p?.game) return;

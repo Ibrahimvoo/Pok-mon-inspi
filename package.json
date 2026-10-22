@@ -19,7 +19,9 @@
     "art:pouf": "node tools/pouf/render-art.mjs",
     "e2e:touch": "npm run build && node --no-warnings tools/e2e-touch.mjs",
     "e2e:resume": "npm run build && node --no-warnings tools/e2e-resume.mjs",
-    "e2e:video": "npm run build && node --no-warnings tools/e2e-video.mjs"
+    "e2e:video": "npm run build && node --no-warnings tools/e2e-video.mjs",
+    "e2e:mimic": "npm run build && node --no-warnings tools/e2e-mimic.mjs",
+    "e2e:mimic-online": "npm run build && node --no-warnings tools/e2e-mimic-online.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "^17.2.0-beta.15",
@@ -34,15 +36,18 @@
     "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/josefin-sans": "^5.3.0",
     "@fontsource/luckiest-guy": "^5.3.0",
+    "@fontsource/lilita-one": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
     "@fontsource/playfair-display": "^5.3.0",
     "@fontsource/rajdhani": "^5.3.0",
+    "@fontsource/sniglet": "^5.3.0",
     "@fontsource/source-sans-3": "^5.3.1",
     "@fontsource/syncopate": "^5.3.0",
     "@fontsource/teko": "^5.3.0",
     "@fontsource/unbounded": "^5.3.0",
     "peerjs": "^1.5.5",
     "pg": "^8.13.1",
-    "three": "^0.169.0",
+    "three": "^0.170.0",
     "ws": "^8.18.0"
   },
   "engines": {

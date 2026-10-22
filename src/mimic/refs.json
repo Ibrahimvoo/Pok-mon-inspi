@@ -1,0 +1,402 @@
+[
+ {
+  "id": "tu-m-sors-ton-pepper-spray",
+  "title": "Tu m'sors ton pepper spray",
+  "dur": 5.08,
+  "say": [
+   "tu me sors ton pepper spray",
+   "pepper spray"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "ohh-mange-bien",
+  "title": "Ohh mange bien",
+  "dur": 5.86,
+  "say": [
+   "oh mange bien",
+   "mange bien"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "des-chevals-qui-appellent-des-chevals",
+  "title": "Des chevals qui appellent des chevals",
+  "dur": 5.99,
+  "say": [
+   "des chevals qui appellent des chevals",
+   "des chevaux qui appellent des chevaux"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "je-change-de-vie",
+  "title": "Je change de vie",
+  "dur": 6.81,
+  "say": [
+   "je change de vie"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "allons-allons-allons",
+  "title": "Allons allons allons",
+  "dur": 4.39,
+  "say": [
+   "allons allons allons"
+  ],
+  "tags": [
+   "start"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "guettez-le-gateau",
+  "title": "Guettez le gâteau",
+  "dur": 5.12,
+  "say": [
+   "guettez le gâteau",
+   "regardez le gâteau"
+  ],
+  "pack": "snap"
+ },
+ {
+  "id": "ref-mystere-le-velo",
+  "title": "Réf mystère : le vélo",
+  "dur": 6.89,
+  "mystery": true,
+  "pack": "snap"
+ },
+ {
+  "id": "ref-mystere-l-interview",
+  "title": "Réf mystère : l'interview",
+  "dur": 4.29,
+  "mystery": true,
+  "pack": "snap"
+ },
+ {
+  "id": "ref-mystere-le-selfie-de-nuit",
+  "title": "Réf mystère : le selfie de nuit",
+  "dur": 2.89,
+  "mystery": true,
+  "pack": "snap"
+ },
+ {
+  "id": "ca-va-mieux",
+  "title": "Ça va mieux",
+  "dur": 5.89,
+  "say": [
+   "ça va mieux"
+  ],
+  "tags": [
+   "win"
+  ],
+  "pack": "tiktok"
+ },
+ {
+  "id": "sakura-sasuke-remix",
+  "title": "Sakura – Sasuke (remix)",
+  "dur": 4.79,
+  "say": [
+   "sakura sasuke"
+  ],
+  "pack": "tiktok"
+ },
+ {
+  "id": "dehors",
+  "title": "Dehors !",
+  "dur": 2.29,
+  "say": [
+   "dehors"
+  ],
+  "tags": [
+   "out"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "descends",
+  "title": "Descends !",
+  "dur": 7.59,
+  "say": [
+   "descends"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "je-roucoule",
+  "title": "Je roucoule",
+  "dur": 5.18,
+  "say": [
+   "je roucoule"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "ton-gros-front-la",
+  "title": "Ton gros front là !",
+  "dur": 5.48,
+  "say": [
+   "ton gros front là",
+   "gros front"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "version-neymar",
+  "title": "Version Neymar",
+  "dur": 5.79,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "ref-mystere-le-maillot-blanc",
+  "title": "Réf mystère : le maillot blanc",
+  "dur": 5.09,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "y-que-fue",
+  "title": "Y que fue",
+  "dur": 6.09,
+  "say": [
+   "y que fue",
+   "i que fue"
+  ],
+  "pack": "tiktok"
+ },
+ {
+  "id": "ref-mystere-le-stream",
+  "title": "Réf mystère : le stream",
+  "dur": 3.39,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "dedicace-a-mon-coach-brrr-on-est-la",
+  "title": "Dédicace à mon coach, brrr on est là",
+  "dur": 3.79,
+  "say": [
+   "dédicace à mon coach",
+   "on est là"
+  ],
+  "pack": "tiktok"
+ },
+ {
+  "id": "ref-mystere-le-doigt-sur-le-front",
+  "title": "Réf mystère : le doigt sur le front",
+  "dur": 5.66,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "ref-mystere-la-canette",
+  "title": "Réf mystère : la canette",
+  "dur": 6.7,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "sondouiche-pouli",
+  "title": "Sondouiche pouli",
+  "dur": 6.79,
+  "say": [
+   "sandwich poulet",
+   "sondouiche pouli"
+  ],
+  "pack": "tiktok"
+ },
+ {
+  "id": "c-est-moi-wesh",
+  "title": "C'est moi wesh",
+  "dur": 5.09,
+  "say": [
+   "c'est moi wesh"
+  ],
+  "pack": "petits"
+ },
+ {
+  "id": "arrete-d-mentir",
+  "title": "Arrête d'mentir",
+  "dur": 4.79,
+  "say": [
+   "arrête de mentir"
+  ],
+  "tags": [
+   "bad"
+  ],
+  "pack": "petits"
+ },
+ {
+  "id": "c-est-a-moi-qu-tu-parles",
+  "title": "C'est à moi qu'tu parles ?",
+  "dur": 4.39,
+  "say": [
+   "c'est à moi que tu parles"
+  ],
+  "pack": "petits"
+ },
+ {
+  "id": "gros-bebe-cadum",
+  "title": "Gros bébé Cadum",
+  "dur": 6.22,
+  "say": [
+   "gros bébé cadum"
+  ],
+  "pack": "petits"
+ },
+ {
+  "id": "l-alarme",
+  "title": "L'alarme ?",
+  "dur": 4.99,
+  "say": [
+   "l'alarme"
+  ],
+  "tags": [
+   "time"
+  ],
+  "pack": "petits"
+ },
+ {
+  "id": "ref-mystere-la-tele",
+  "title": "Réf mystère : la télé",
+  "dur": 2.39,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "ref-mystere-le-paquet-de-chips",
+  "title": "Réf mystère : le paquet de chips",
+  "dur": 6.09,
+  "mystery": true,
+  "pack": "tiktok"
+ },
+ {
+  "id": "on-ne-pleure-pas",
+  "title": "On ne pleure pas",
+  "dur": 5.48,
+  "say": [
+   "on ne pleure pas"
+  ],
+  "tags": [
+   "last"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "quelle-humiliation",
+  "title": "Quelle humiliation",
+  "dur": 6.1,
+  "say": [
+   "quelle humiliation"
+  ],
+  "tags": [
+   "bad"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "echouwey",
+  "title": "Echouwey",
+  "dur": 6.84,
+  "say": [
+   "echouwey",
+   "échouer"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "moi-je-mange-pas-le-nem",
+  "title": "Moi je mange pas le nem",
+  "dur": 4.7,
+  "say": [
+   "moi je mange pas le nem",
+   "je mange pas le nem"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "un-proverbe-chinois",
+  "title": "Un proverbe chinois",
+  "dur": 5.6,
+  "say": [
+   "un proverbe chinois"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "un-entonnoir-un-entonnoir",
+  "title": "Un entonnoir, un entonnoir !",
+  "dur": 6.99,
+  "say": [
+   "un entonnoir un entonnoir",
+   "entonnoir"
+  ],
+  "pack": "oubliees"
+ },
+ {
+  "id": "un-p-tit-wrap",
+  "title": "Un p'tit wrap",
+  "dur": 7.19,
+  "say": [
+   "un petit wrap",
+   "un p'tit wrap"
+  ],
+  "pack": "oubliees"
+ },
+ {
+  "id": "je-broie-la-langue-de-moliere",
+  "title": "Je broie la langue de Molière",
+  "dur": 3.31,
+  "say": [
+   "je broie la langue de molière"
+  ],
+  "pack": "oubliees"
+ },
+ {
+  "id": "ca-m-emeut",
+  "title": "Ça m'émeut",
+  "dur": 2.16,
+  "say": [
+   "ça m'émeut"
+  ],
+  "tags": [
+   "win"
+  ],
+  "pack": "oubliees"
+ },
+ {
+  "id": "chante-skype",
+  "title": "Chante Skype",
+  "dur": 7.49,
+  "say": [
+   "chante skype"
+  ],
+  "pack": "oubliees"
+ },
+ {
+  "id": "tu-touches-a-ma-sensibilite",
+  "title": "Tu touches à ma sensibilité",
+  "dur": 5.66,
+  "say": [
+   "tu touches à ma sensibilité",
+   "oui je l'ai"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "ca-va-peter",
+  "title": "Ça va péter",
+  "dur": 6.3,
+  "say": [
+   "ça va péter",
+   "nous y est",
+   "allons allons allons"
+  ],
+  "tags": [
+   "win"
+  ],
+  "pack": "africa"
+ }
+]

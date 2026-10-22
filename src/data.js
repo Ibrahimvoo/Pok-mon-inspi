@@ -1,4 +1,4 @@
-// Catalogue of the console: Pouf Party, the one real, playable game. Every title, studio and visual is original.
+// Catalogue of the console: Pouf Party and Mimic Party, the two real, playable games.
 const T = (n, d, t) => ({ n, d, t });
 export const GAMES = [
   { id: 'pouf-party', title: 'Pouf Party', publisher: 'Bulle & Bouée', genre: 'Party game', genres: ['Party', 'Action', 'Indé'],
@@ -16,6 +16,21 @@ export const GAMES = [
       T('Pouf légendaire', 'Obtenir tous les autres trophées', 'platinum'),
     ] },
 ];
+// Mimic Party (src/mimic): unofficial fan recreation, sounds from the owner's videos.
+GAMES.unshift({ id: 'mimic-party', title: 'Mimic Party', publisher: 'Recréation non officielle', genre: 'Party game', genres: ['Party', 'Musique'],
+  release: '2026-10-22', price: 14.99, discount: 0, rating: 4.9, votes: 3120, pegi: 12, size: 1.2, players: '1-8 joueurs (local et en ligne)',
+  font: 'unbounded', mood: 'party', thumb: .5, accent: '#ff4fb0', playable: true, real: true,
+  tagline: 'Imite les réfs. Fais rire tes potes.',
+  desc: 'Le party game des imitations : écoute une réf culte, imite-la au micro et laisse le jury noter les paroles, la mélodie, le rythme et la ressemblance. Blind test, concours de cris, notes à tenir et rythmes à reproduire, jusqu’à 8 joueurs sur la même console ou en ligne avec ton groupe : le chat vocal se met en pause pendant que tu imites, puis tout le monde réécoute ton imitation.',
+  features: ['voice', 'vibration', 'online'], activities: ['Partie rapide', 'Blind test des réfs', 'En ligne avec le groupe'],
+  trophies: [
+    T('Première imitation', 'Terminer une imitation', 'bronze'),
+    T('Copie conforme', 'Obtenir 90 ou plus à une imitation', 'silver'),
+    T('Chouchou du public', 'Remporter le choix du public', 'bronze'),
+    T('Soirée réussie', 'Terminer une partie à 3 joueurs ou plus', 'bronze'),
+    T('Champion de la soirée', 'Gagner une partie à plusieurs', 'gold'),
+    T('Perfectionniste', 'Obtenir tous les autres trophées', 'platinum'),
+  ] });
 export const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 
 export const FONT = {
@@ -25,7 +40,7 @@ export const FONT = {
 };
 
 export const FEATURES = {
-  vibration: 'Retour haptique', triggers: 'Gâchettes adaptatives', audio3d: 'Audio 3D', hdr: 'HDR', online: 'Jeu en ligne',
+  vibration: 'Retour haptique', triggers: 'Gâchettes adaptatives', audio3d: 'Audio 3D', hdr: 'HDR', online: 'Jeu en ligne', voice: 'Micro et reconnaissance vocale',
 };
 
 export const MEDIA = [
