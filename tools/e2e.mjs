@@ -84,6 +84,14 @@ try {
   await A.page.click('.gamebase .tab:has-text("Amis")');
   await A.shot('05-friends');
 
+  // ---------------------------------------------------------------- friend profile
+  await A.page.click('.gamebase .gb-row:has-text("Orion_B")');
+  await A.page.click('.menu .list-item:has-text("Voir le profil")');
+  ok('profil de l’ami ouvert (pseudo, statut, actions)', await until(A.page, () => { const t = [...document.querySelectorAll('.profile')].pop()?.innerText || ''; return /Orion_B/.test(t) && /En ligne/.test(t) && /Démarrer un appel vocal/.test(t) && /Amis depuis/.test(t); }));
+  await A.shot('05b-friend-profile');
+  await A.page.keyboard.press('Escape');
+  ok('retour à la base de jeu', await until(A.page, () => !document.querySelector('.profile') || !!document.querySelector('.gamebase:not(.under)')));
+
   // ---------------------------------------------------------------- voice call
   await A.page.click('.gamebase .gb-row:has-text("Orion_B")');
   await A.page.click('.menu .list-item:has-text("Démarrer un appel vocal")');

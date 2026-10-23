@@ -10,14 +10,14 @@ import { h, icon, size, price, art, img, wait } from '../ui.js';
 import { go, toast, confirmDialog, applySettings, renderHints, resetTo, menu } from '../shell.js';
 import { nav } from '../nav.js';
 import { audio } from '../audio.js';
-import { bg } from '../bg.js';
+import { bg, THEMES } from '../bg.js';
 import { input, padKind, toggleFullscreen } from '../input.js';
 import { toggle, slider, cycle, action, info, adjustable } from '../widgets.js';
 import { uninstall } from '../actions.js';
 
 export const CATEGORIES = [
   { id: 'sound', label: 'Son', icon: 'volume', keywords: 'audio volume musique effets sonores' },
-  { id: 'display', label: 'Écran et vidéo', icon: 'display', keywords: 'graphismes qualité parallaxe 3d plein écran' },
+  { id: 'display', label: 'Écran et vidéo', icon: 'display', keywords: 'graphismes qualité parallaxe 3d plein écran thème couleur fond d’écran personnalisation' },
   { id: 'access', label: 'Accessibilité', icon: 'access', keywords: 'animations contraste taille du texte' },
   { id: 'pads', label: 'Accessoires', icon: 'gamepad', keywords: 'manette dualsense vibrations boutons clavier' },
   { id: 'family', label: 'Famille et contrôle parental', icon: 'lock', keywords: 'enfant âge pegi restriction vocal' },
@@ -43,6 +43,8 @@ function panelFor(cat, layer) {
       info('Pendant un appel', 'La musique se coupe pour éviter l’écho dans le haut-parleur'),
     ];
     case 'display': return [
+      cycle('Couleur du thème', 'Couleur de l’arrière-plan animé et des éléments sélectionnés', 'theme', Object.entries(THEMES).map(([k, t]) => [k, t.label]), A),
+      cycle('Fond d’écran', 'Illustration du jeu sélectionné, ou thème animé en permanence', 'wallpaper', [['game', 'Selon le jeu'], ['theme', 'Thème animé']], A),
       cycle('Qualité graphique', 'Résolution de rendu et particules de l’arrière-plan', 'quality', [['high', 'Élevée'], ['balanced', 'Équilibrée'], ['eco', 'Économie d’énergie']], A),
       toggle('Effet de profondeur 3D', 'Parallaxe des arrière-plans selon la souris, le stick droit ou l’inclinaison', 'parallax', A),
       action('Plein écran', 'Touche F au clavier', () => { audio.play('ok'); toggleFullscreen(); }),
