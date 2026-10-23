@@ -57,7 +57,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   async function body(req) {
     if (!/application\/json/.test(req.headers['content-type'] || '')) throw new AppError(415, 'json', 'Format attendu : JSON.');
     let size = 0; const chunks = [];
-    for await (const c of req) { size += c.length; if (size > 10240) throw new AppError(413, 'too_large', 'Requête trop volumineuse.'); chunks.push(c); }
+    for await (const c of req) { size += c.length; if (size > 32768) throw new AppError(413, 'too_large', 'Requête trop volumineuse.'); chunks.push(c); }
     try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { throw new AppError(400, 'json', 'JSON invalide.'); }
   }
   const sessionCookie = (req, token, maxAge) => `sid=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${isHttps(req) ? '; Secure' : ''}`;

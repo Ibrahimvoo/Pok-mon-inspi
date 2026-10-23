@@ -13,10 +13,11 @@ import { session as account } from '../session.js';
 import { unlockTrophy } from '../actions.js';
 import { openControlCenter } from './cc.js';
 import { mimicScreen, closeMimic, MIMIC_ID } from '../mimic/index.js';
+import { unoScreen, closeUno, UNO_ID } from '../uno/index.js';
 
 export const session = { id: null, layer: null, started: 0 };
-// Mimic Party is a real, playable game; the other titles show the simulated in-game view
-const screenFor = id => (id === MIMIC_ID ? mimicScreen : ingameScreen);
+// Mimic Party and UNO are real, playable games; the other titles show the simulated in-game view
+const screenFor = id => (id === MIMIC_ID ? mimicScreen : id === UNO_ID ? unoScreen : ingameScreen);
 
 export function launch(id) {
   const g = byId[id];
@@ -36,7 +37,7 @@ export function launch(id) {
     navExtras.game = id; saveNav();
     // playing while in a party opens a shared session: the other members are asked to join
     if (social.party && social.party.game?.id !== id) social.startGame(id);
-    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : id === MIMIC_ID ? 'Centre de contrôle : bouton PS · pause : Options' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
+    toast({ title: `Bon jeu sur ${g.title}`, sub: social.party ? 'Session multijoueur ouverte à votre groupe' : id === MIMIC_ID || id === UNO_ID ? 'Centre de contrôle : bouton PS · pause : Options' : 'Session simulée · centre de contrôle : bouton PS', img: art.thumb(id), log: false });
   }, 3300);
 }
 
@@ -109,6 +110,7 @@ export function endSession() {
   save('played');
   if (session.layer && nav.layers.includes(session.layer)) closeLayer(session.layer);
   if (id === MIMIC_ID) closeMimic();
+  if (id === UNO_ID) closeUno();
   session.id = null; session.layer = null;
   if (social.party?.game?.id === id && social.party.game.by === account.current?.id) social.stopGame();
   social.setPresence('home');

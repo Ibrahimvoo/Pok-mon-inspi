@@ -1,5 +1,7 @@
 // Account creation and sign-in. Online accounts are validated by the server; without a server, a local profile is offered.
 import { GAMES, byId } from '../data.js';
+import { isPhoto } from '../avatars.js';
+import { pickPhoto } from '../photo.js';
 import { h, icon, art, img } from '../ui.js';
 import { nav } from '../nav.js';
 import { input } from '../input.js';
@@ -64,8 +66,18 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
       password: off ? null : field({ label: 'Mot de passe', type: 'password', value: '', hint: signup ? 'Au moins 8 caractères, dont une lettre et un chiffre.' : null, autocomplete: signup ? 'new-password' : 'current-password', maxLength: 128, onEnter: signup ? null : submit }),
       confirm: off || !signup ? null : field({ label: 'Confirmer le mot de passe', type: 'password', autocomplete: 'new-password', maxLength: 128, onEnter: submit }),
     };
-    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, GAMES.map(g => {
-      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.title, onok: () => { avatar = g.id; root.querySelectorAll('.av-opt').forEach(x => x.classList.toggle('on', x === el)); preview.replaceChildren(img(art.thumb(avatar))); audio.play('toggle'); } }, img(art.thumb(g.id)));
+    const pick = (el, a) => { avatar = a; root.querySelectorAll('.av-opt').forEach(x => x.classList.toggle('on', x === el)); preview.replaceChildren(img(art.thumb(avatar))); audio.play('toggle'); };
+    // first option: a photo from the gallery (or the camera)
+    const photoOpt = signup ? h(`div.av-opt.av-photo${isPhoto(avatar) ? '.on' : ''}`, { f: true, title: 'Choisir une photo', onok: async () => {
+      try {
+        const url = await pickPhoto();
+        if (!url) return;
+        photoOpt.replaceChildren(img(url));
+        pick(photoOpt, url);
+      } catch (e) { audio.play('error'); layer.showError(e.message); }
+    } }, isPhoto(avatar) ? img(avatar) : [h('span.icw', { html: icon('plus') }), h('small', 'Ma photo')]) : null;
+    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, photoOpt, GAMES.map(g => {
+      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.title, onok: () => pick(el, g.id) }, img(art.thumb(g.id)));
       return el;
     })) : null;
     const preview = h('div.avatar.acc-preview', img(art.thumb(signup ? avatar : (session.known().find(k => k.psn.toLowerCase() === (psn || '').toLowerCase())?.avatar || avatar))));

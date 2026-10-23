@@ -152,12 +152,27 @@ GAMES.unshift({ id: 'mimic-party', title: 'Mimic Party', publisher: 'Recréation
     T('Champion de la soirée', 'Gagner une partie à plusieurs', 'gold'),
     T('Perfectionniste', 'Obtenir tous les autres trophées', 'platinum'),
   ] });
+GAMES.unshift({ id: 'uno', title: 'UNO', publisher: 'Recréation non officielle', genre: 'Jeu de cartes', genres: ['Party', 'Cartes'],
+  release: '2026-10-23', price: 9.99, discount: 0, rating: 4.8, votes: 5480, pegi: 3, size: .4, players: '1-4 joueurs (ordinateur et en ligne)',
+  font: 'lilita', mood: 'party', thumb: .5, accent: '#e3262b', real: true,
+  tagline: 'Le jeu de cartes culte, entre amis.',
+  desc: 'Le jeu de cartes UNO avec les règles officielles : cartes Passe ton tour, Inversion, +2, Joker et Joker +4 (avec contestation du bluff), annonce « UNO ! » obligatoire sous peine de deux cartes, et points jusqu’à 500. Joue contre l’ordinateur ou crée un salon avec code pour jouer en ligne avec jusqu’à 3 amis, et active les règles maison : Accumulation, 7-0, À la volée, Forcer le jeu, Pas de bluff et Pioche jouable.',
+  features: ['vibration', 'online'], activities: ['Partie rapide', 'Salon entre amis', 'Règles maison'],
+  trophies: [
+    T('Première manche', 'Remporter une manche', 'bronze'),
+    T('UNO !', 'Annoncer UNO avant de poser son avant-dernière carte', 'bronze'),
+    T('Pris la main dans le sac', 'Faire piocher un joueur qui a oublié d’annoncer UNO', 'bronze'),
+    T('Bluff démasqué', 'Contester un Joker +4 posé en bluff', 'silver'),
+    T('Entre amis', 'Terminer une partie en ligne avec un ami', 'silver'),
+    T('Champion', 'Remporter une partie', 'gold'),
+    T('Perfectionniste', 'Obtenir tous les autres trophées', 'platinum'),
+  ] });
 export const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 
 export const FONT = {
   cinzel: "'Cinzel', serif", bebas: "'Bebas Neue', sans-serif", syncopate: "'Syncopate', sans-serif", unbounded: "'Unbounded', sans-serif",
   cormorant: "'Cormorant Garamond', serif", teko: "'Teko', sans-serif", josefin: "'Josefin Sans', sans-serif", shoulders: "'Big Shoulders Display', sans-serif",
-  anton: "'Anton', sans-serif", rajdhani: "'Rajdhani', sans-serif", playfair: "'Playfair Display', serif",
+  anton: "'Anton', sans-serif", rajdhani: "'Rajdhani', sans-serif", playfair: "'Playfair Display', serif", lilita: "'Lilita One', sans-serif",
 };
 
 export const FEATURES = {

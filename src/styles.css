@@ -664,6 +664,9 @@ body { background: var(--bg); }
 .av-opt img { width: 100%; height: 100%; object-fit: cover; }
 .av-opt.on { opacity: 1; box-shadow: 0 0 0 .4rem var(--blue-hi); }
 .av-opt.focused { opacity: 1; transform: scale(1.08); box-shadow: var(--ring); }
+.av-photo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; background: rgba(255, 255, 255, .14); cursor: pointer; }
+.av-photo .icw svg { width: 3.4rem; height: 3.4rem; }
+.av-photo small { font-size: 1.3rem; font-weight: 600; }
 .btn-spin { width: 2.2rem; height: 2.2rem; border-radius: 50%; border: .3rem solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; display: inline-block; flex: none; }
 .welcome-av { width: 18rem; height: 18rem; margin: 0 auto 4rem; animation: pop .6s var(--ease) both; }
 .users .welcome { text-align: center; }

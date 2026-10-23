@@ -96,9 +96,10 @@ export function glyphSvg(shape) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${G[shape]}</svg>`;
 }
 
+const photo = id => typeof id === 'string' && id.startsWith('data:image/');
 export const art = {
-  hero: id => `art/${id}.webp`,
-  thumb: id => `art/${id}-t.webp`,
+  hero: id => (photo(id) ? id : `art/${id}.webp`),
+  thumb: id => (photo(id) ? id : `art/${id}-t.webp`),
   depth: id => `art/${id}-d.webp`,
   shot: (id, i) => `art/${id}-s${i}.webp`,
 };

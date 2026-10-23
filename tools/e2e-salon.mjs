@@ -64,7 +64,9 @@ try {
   // shared game
   await A.page.keyboard.press('Escape'); await A.page.waitForTimeout(300); // leaves the text field
   await A.page.keyboard.press('Escape'); await A.page.waitForTimeout(600); // leaves Game Base
-  await A.page.click('.home .tile.sel'); // launches the selected game
+  // launches a simulated game (the shared cursors layer), not one of the real games listed first
+  const idx = await A.page.evaluate(() => [...document.querySelectorAll('.home .tile')].findIndex(e => e.querySelector('.tile-label')?.textContent.trim() === 'Ashen Crown'));
+  await A.page.click(`.home .tile >> nth=${idx}`);
   ok('B invité à la partie', await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 12000));
   await B.page.click('.dialog button:has-text("Rejoindre la partie")');
   ok('partie partagée active', await until(B.page, () => !document.querySelector('.mp')?.classList.contains('hidden') && !!document.querySelector('.mp-cur:not(.mine)'), null, 15000));
