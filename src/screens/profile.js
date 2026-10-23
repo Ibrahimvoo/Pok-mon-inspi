@@ -4,9 +4,10 @@ import { state, allTrophies, trophyStats } from '../state.js';
 import { h, icon, art, img, hours, avatarImg } from '../ui.js';
 import { go, toast } from '../shell.js';
 import { session } from '../session.js';
+import { nav } from '../nav.js';
 import { social } from '../social.js';
 import { showTrophies } from './hub.js';
-import { presenceText } from './gamebase.js';
+import { presenceText, friendActions } from './gamebase.js';
 
 export function profileScreen() {
   const u = session.current;
@@ -26,7 +27,7 @@ export function profileScreen() {
     const list = [...social.friends].sort((a, b) => social.presenceOf(b.id).online - social.presenceOf(a.id).online);
     friendsTitle.replaceChildren('Amis', h('small', `${list.filter(f => social.presenceOf(f.id).online).length} en ligne`));
     friendsShelf.replaceChildren(
-      ...list.map(f => { const p = social.presenceOf(f.id); return h('div.friend', { f: true, onok: () => openBase('friends') }, avatarImg(f.avatar, '11rem'), h('div.fn', f.psn), h('div.fs', h(`i.${p.online ? 'online' : 'off'}`), presenceText({ ...p, lastSeen: f.lastSeen }, { short: true }))); }),
+      ...list.map(f => { const p = social.presenceOf(f.id); return h('div.friend', { f: true, onok: () => go(friendProfileScreen, { id: f.id }) }, avatarImg(f.avatar, '11rem'), h('div.fn', f.psn), h('div.fs', h(`i.${p.online ? 'online' : 'off'}`), presenceText({ ...p, lastSeen: f.lastSeen }, { short: true }))); }),
       h('div.friend', { f: true, onok: () => openBase(list.length ? 'friends' : 'add') }, h('div.avatar.add', { html: icon('userPlus') }), h('div.fn', 'Ajouter un ami'), h('div.fs', 'Par identifiant en ligne')));
   }
   renderFriends();
@@ -56,4 +57,54 @@ export function profileScreen() {
     onEnter() { offs.push(social.on('friends', renderFriends), social.on('presence', renderFriends)); social.refresh(); },
     onLeave() { offs.forEach(f => f()); },
   };
+  render();
+  return layer;
+}
+
+// A friend's profile: live status, current game, friendship date and the call / invite / join actions.
+export function friendProfileScreen({ id }) {
+  const page = h('div.page', { 'data-scroll': 'y', 'data-pad': 160 });
+  const root = h('div.profile', page);
+  let layer = null;
+  const run = async (fn, okMsg) => {
+    try { await fn(); if (okMsg) toast({ title: okMsg, icon: 'party', sound: null, log: false }); }
+    catch (e) { toast({ title: 'Action impossible', sub: e.message, icon: 'info', sound: 'error', log: false }); }
+    render();
+  };
+  function render() {
+    const f = social.friends.find(x => x.id === id);
+    if (!f) { page.replaceChildren(h('div.gb-empty', h('h2', 'Profil indisponible'), h('p', 'Ce joueur ne fait plus partie de vos amis.'))); return; }
+    const p = social.presenceOf(f.id);
+    const g = p.online && p.game && byId[p.game];
+    const acts = friendActions(f, run);
+    const key = layer?.focused?.dataset.key;
+    page.replaceChildren(
+      h('div.prof-banner', img(art.hero(g ? g.id : f.avatar))),
+      h('div.prof-head', h('div.avatar', img(art.thumb(f.avatar))),
+        h('div', h('div.prof-name', f.psn), h('div.prof-id', h(`span.online-dot${p.online ? '' : '.off'}`), presenceText({ ...p, lastSeen: f.lastSeen })))),
+      h('div.prof-actions', acts.length
+        ? acts.map((a, i) => h(`button.btn${i ? '' : '.primary'}`, { f: true, 'data-key': a.icon, ...(i ? {} : { 'data-autofocus': '' }), onok: a.onok }, h('span.icw', { html: icon(a.icon) }), a.label))
+        : h('button.btn', { f: true, 'data-key': 'base', 'data-autofocus': '', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab: 'friends' })) }, h('span.icw', { html: icon('friends') }), 'Base de jeu')),
+      g ? [h('div.section-title', 'En train de jouer'),
+        h('div.shelf', { 'data-scroll': 'x', 'data-row': '' }, h('div.game-prog', { f: true, 'data-key': 'game', onok: () => import('../actions.js').then(m => m.openProduct(g.id)) }, img(art.hero(g.id)),
+          h('div.gp', h('div.gpt', g.title), h('div.gpm', h('span', p.partyId ? `Groupe de ${p.partySize || 1}` : 'En solo')))))] : null,
+      h('div.section-title', 'À propos'),
+      h('div.stat-cards',
+        h('div.stat', h('span.icw', { html: icon('friends') }), h('div', h('b', new Date(f.since).toLocaleDateString('fr-FR')), h('span', 'Amis depuis'))),
+        h('div.stat', h('span.icw', { html: icon(p.online ? 'wifi' : 'user') }), h('div', h('b', p.online ? 'En ligne' : 'Hors ligne'), h('span', p.online ? (p.partyId ? 'Dans un groupe' : 'Disponible') : 'Dernière activité')))),
+      h('div', { style: { height: '4rem' } }));
+    if (layer && nav.top === layer) {
+      const el = key && page.querySelector(`[data-key="${CSS.escape(key)}"]`);
+      if (el) nav.focus(el, { silent: true, instant: true });
+      else nav.focusFirst(layer);
+    }
+  }
+  const offs = [];
+  layer = {
+    root, bg: null, mood: 'home', shade: 1, dim: .7, hints: [['ok', 'Sélectionner'], ['back', 'Retour']],
+    onEnter() { offs.push(social.on('friends', render), social.on('presence', render)); social.refresh(); },
+    onLeave() { offs.forEach(f => f()); },
+  };
+  render();
+  return layer;
 }
