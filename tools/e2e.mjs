@@ -116,9 +116,9 @@ try {
   // ---------------------------------------------------------------- shared game session
   await A.page.keyboard.press('Escape'); await sleep(400);
   await A.page.keyboard.press('Escape'); await sleep(400);
-  // A launches a simulated game of its home row (the first tile, Mimic Party, has its own test: e2e-mimic-online)
+  // A launches Pouf Party from its home row (UNO and Mimic Party have their own tests)
   await A.page.waitForSelector('.home .tile.sel', { timeout: 5000 });
-  await A.page.keyboard.press('ArrowRight'); await sleep(400);
+  for (let i = 0; i < 6 && !/Pouf Party/.test(await A.page.evaluate(() => document.querySelector('.home .tile.sel .tile-label')?.textContent || '')); i++) { await A.page.keyboard.press('ArrowRight'); await sleep(300); }
   const gameTitle = (await text(A.page, '.home .tile.sel .tile-label')).replace(' · En cours', '');
   await A.page.keyboard.press('Enter');
   ok('B est invité à rejoindre la partie', await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 10000), gameTitle);

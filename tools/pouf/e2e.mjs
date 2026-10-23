@@ -43,7 +43,9 @@ const hold = async (page, key, ms) => { await page.keyboard.down(key); await pag
 
 try {
   const A = await player('A', 'Hote_A');
-  await A.page.waitForTimeout(400);   // Pouf Party, the only game, is selected when the home screen opens
+  await A.page.waitForTimeout(400);
+  // the home row starts with UNO and Mimic Party: move the selection to Pouf Party
+  for (let i = 0; i < 6 && !/Pouf Party/.test(await A.page.evaluate(() => document.querySelector('.home .tile.sel .tile-label')?.textContent || '')); i++) { await A.page.keyboard.press('ArrowRight'); await A.page.waitForTimeout(300); }
   ok('jaquette Pouf Party sur l’accueil', await until(A.page, () => /Pouf Party/.test(document.querySelector('.home .tile.sel .tile-label')?.textContent || '')));
   await A.page.click('.home .tile.sel');
   ok('écran de lancement de la console', await until(A.page, () => !!document.querySelector('.launch'), null, 5000));
