@@ -2,7 +2,7 @@
 import { byId, GAMES } from '../data.js';
 import { state, installed } from '../state.js';
 import { h, icon, art, img, ago } from '../ui.js';
-import { go, menu, dialog, toast, confirmDialog, renderHints } from '../shell.js';
+import { go, menu, toast, confirmDialog, renderHints } from '../shell.js';
 import { nav } from '../nav.js';
 import { input } from '../input.js';
 import { audio } from '../audio.js';
@@ -22,6 +22,17 @@ export function presenceText(p, { short = false } = {}) {
   if (p.activity === 'game' && p.game) return `Joue à ${byId[p.game]?.title || 'un jeu'}`;
   if (p.partyId) return short ? 'Dans un groupe' : `Dans un groupe (${p.partySize})`;
   return 'En ligne';
+}
+// call / invite / join actions for a friend, shared by the Game Base menu and the friend's profile
+export function friendActions(f, run) {
+  const p = social.presenceOf(f.id);
+  const mine = social.party;
+  const inMine = mine?.members.some(m => m.id === f.id);
+  const items = [];
+  if (p.online && !inMine) items.push({ label: 'Démarrer un appel vocal', icon: 'phone', onok: () => run(() => social.call(f.id), `Appel de ${f.psn}…`) });
+  if (p.online && !inMine) items.push({ label: mine ? 'Inviter dans mon groupe' : 'Inviter à jouer', icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) });
+  if (p.online && p.partyId && !inMine) items.push({ label: p.game ? `Rejoindre sa partie de ${byId[p.game]?.title}` : 'Rejoindre son groupe', icon: 'party', onok: () => run(async () => { await social.join(p.partyId); if (p.game) joinGame(p.game); }) });
+  return items;
 }
 const dotClass = p => (!p?.online ? 'off' : p.activity === 'game' ? 'game' : 'on');
 
@@ -273,14 +284,8 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
 
   // ------------------------------------------------------------ menus
   function friendMenu(f, anchor) {
-    const p = social.presenceOf(f.id);
-    const mine = social.party;
-    const inMine = mine?.members.some(m => m.id === f.id);
-    const items = [];
-    if (p.online && !inMine) items.push({ label: 'Démarrer un appel vocal', icon: 'phone', onok: () => run(() => social.call(f.id), `Appel de ${f.psn}…`) });
-    if (p.online && !inMine) items.push({ label: mine ? 'Inviter dans mon groupe' : 'Inviter à jouer', icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) });
-    if (p.online && p.partyId && !inMine) items.push({ label: p.game ? `Rejoindre sa partie de ${byId[p.game]?.title}` : 'Rejoindre son groupe', icon: 'party', onok: () => run(async () => { await social.join(p.partyId); if (p.game) joinGame(p.game); }) });
-    items.push({ label: 'Voir le profil', icon: 'user', onok: () => dialog({ title: f.psn, body: h('div.call-card', h('div.avatar.call-av', img(art.thumb(f.avatar))), h('div', h('div.call-name', f.psn), h('div.call-sub', presenceText({ ...p, lastSeen: f.lastSeen })), h('div.call-sub', `Amis depuis le ${new Date(f.since).toLocaleDateString('fr-FR')}`))), actions: [{ label: 'Fermer', primary: true, sound: 'back' }] }) });
+    const items = friendActions(f, run);
+    items.push({ label: 'Voir le profil', icon: 'user', onok: () => import('./profile.js').then(m => go(m.friendProfileScreen, { id: f.id })) });
     items.push({ label: 'Retirer de mes amis', icon: 'trash', onok: () => confirmDialog(`Retirer ${f.psn} ?`, 'Vous ne verrez plus son statut et ne pourrez plus l’inviter.', 'Retirer', () => run(() => social.remove(f.id)), { danger: true }) });
     menu(items, anchor);
   }
