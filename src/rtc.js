@@ -11,9 +11,12 @@ const emit = (t, d) => events.dispatchEvent(new CustomEvent(t, { detail: d }));
 const peers = new Map();            // userId → peer
 const volumes = new Map();
 let local = null, myId = null, myVs = null, joined = false, muted = false, joining = null, held = false;
-// Without the project server: public STUN + the free Open Relay TURN (public shared credentials, not a secret)
+// Without the project server: public STUN + free public TURN relays (shared credentials, not a secret). A relay is
+// needed between different networks, and often on the same Wi-Fi too (many routers do not loop traffic back to their
+// own public address). PeerJS's own relay comes first; Open Relay is kept as a fallback.
 export const PUBLIC_ICE = [
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] },
+  { urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username: 'peerjs', credential: 'peerjsp' },
   { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' },
 ];
 let iceServers = PUBLIC_ICE;

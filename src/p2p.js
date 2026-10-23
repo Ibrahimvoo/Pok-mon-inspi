@@ -27,6 +27,8 @@ const errText = e => ({
   network: 'Connexion au service de mise en relation impossible. Vérifiez votre connexion Internet.',
   'server-error': 'Le service de mise en relation ne répond pas. Réessayez dans un instant.',
   'browser-incompatible': 'Ce navigateur ne permet pas le jeu en ligne direct.',
+  // the room exists, but no direct or relayed path between the two devices was found in time
+  timeout: 'Le salon de votre ami est bien ouvert, mais vos deux appareils n’arrivent pas à se connecter. Vérifiez que votre ami garde la console ouverte au premier plan, puis réessayez.',
 }[e?.type] || 'La connexion au salon a échoué.');
 
 let peer = null, hostConn = null, rid = 0, retryTimer = 0;
@@ -163,7 +165,7 @@ function connectToHost(code, first) {
       emit('status', 'reconnecting');
       retryJoin(code, Date.now());
     });
-    setTimeout(() => fail({ type: 'peer-unavailable' }), 20000);
+    setTimeout(() => { if (!opened) { try { conn.close(); } catch { /* ignore */ } fail({ type: 'timeout' }); } }, 20000);
     if (first) conn.on('error', fail);
   });
 }
@@ -261,7 +263,7 @@ export const p2p = {
       for (let tries = 0; ; tries++) {
         try { await connectToHost(code, true); break; }
         catch (e) {
-          if (e?.type !== 'peer-unavailable' || Date.now() > until || !this.active || this.code !== code) throw e;
+          if ((e?.type !== 'peer-unavailable' && e?.type !== 'timeout') || Date.now() > until || !this.active || this.code !== code) throw e;
           if (!tries) onWait?.();
           await new Promise(r => setTimeout(r, 2500));
           if (!this.active || this.code !== code) throw e;
