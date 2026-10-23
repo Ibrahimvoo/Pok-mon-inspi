@@ -58,7 +58,8 @@ try {
   await A.page.click('.menu .list-item:has-text("Envoyer une demande d’ami")');
   ok('demande envoyée', await until(A.page, () => /Demande d’ami envoyée/.test(document.body.innerText)));
   // the search finds online players too
-  await A.page.fill('.gamebase .f-input', 'chl'); await A.page.press('.gamebase .f-input', 'Enter');
+  const search = '.gamebase .f-input[aria-label="Rechercher un joueur"]';
+  await A.page.fill(search, 'chl'); await A.page.press(search, 'Enter');
   ok('la recherche trouve Chloe', await until(A.page, () => [...document.querySelectorAll('.gb-row')].some(r => /Chloe/.test(r.innerText) && r.dataset.key?.startsWith('r-'))));
 
   // B accepts in Requests
@@ -92,12 +93,39 @@ try {
 
   // reload: the friends are kept on the device
   await B.page.reload();
-  await B.page.waitForSelector('.home .tile, .users, .account', { timeout: 20000 });
+  await B.page.waitForSelector('.home .tile, .users, .account', { timeout: 20000, state: 'attached' });
   ok('amis conservés après rechargement', await until(B.page, () => window.__friends?.pfriends.friends.some(f => f.psn === 'Alice'), null, 20000));
+
+  // friend code: D is called « Alice » too (pseudos are not unique); C, offline, is added by code and gets the request on return
+  const D = await player('D', 'Alice');
+  ok('D rejoint l’annuaire', await inDir(D.page, 2));
+  const codeC = await C.page.evaluate(() => window.__friends.pfriends.code);
+  ok('code ami affiché (format ABCD-1234)', /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(codeC), codeC);
+  const codeD = await D.page.evaluate(() => window.__friends.pfriends.code);
+  const codeA = await A.page.evaluate(() => window.__friends.pfriends.code);
+  ok('deux « Alice » ont des codes différents', codeD !== codeA);
+  await C.page.close();
+  ok('C est hors ligne', await until(D.page, id => !window.__friends.pfriends.online(id), 'local-' + codeC.replace('-', '').toLowerCase(), 30000));
+  await base(D.page, 'Ajouter un ami');
+  ok('D voit son propre code', (await text(D.page)).includes(codeD));
+  const codeInput = '.gamebase .f-input[aria-label="Code ami de votre ami"]';
+  await D.page.fill(codeInput, codeC.toLowerCase().replace('-', ' ')); await D.page.press(codeInput, 'Enter');
+  ok('demande par code acceptée hors ligne', await until(D.page, () => /Elle partira dès que ce joueur sera en ligne/.test(document.body.innerText)));
+  await D.page.fill(codeInput, codeD); await D.page.press(codeInput, 'Enter');
+  ok('son propre code est refusé', await until(D.page, () => /votre propre code ami/.test(document.body.innerText)));
+  C.page = await C.ctx.newPage();
+  C.page.on('pageerror', e => errors.push(`C: ${e.message}`));
+  await C.page.goto(url);
+  await C.page.keyboard.press('Enter');
+  await C.page.waitForTimeout(1500);
+  if (!await C.page.$('.home .tile')) await C.page.click('text=Chloe');
+  ok('C reçoit la demande de D à son retour', await until(C.page, d => window.__friends?.pfriends.incoming.some(f => f.psn === 'Alice' && f.id === d), 'local-' + codeD.replace('-', '').toLowerCase(), 40000));
+  await C.page.evaluate(d => window.__friends.pfriends.respond(d, true), 'local-' + codeD.replace('-', '').toLowerCase());
+  ok('C et D sont amis, nom réel affiché chez D', await until(D.page, c => window.__friends.pfriends.friends.some(f => f.id === c && f.psn === 'Chloe'), 'local-' + codeC.replace('-', '').toLowerCase(), 20000));
 
   // the console holding the directory leaves: another one takes it over
   const holder = [A, B, C][holders.indexOf(true)];
-  const rest = [A, B, C].filter(p => p !== holder && p !== B);
+  const rest = [A, C, D].filter(p => p !== holder);
   await holder.ctx.close();
   ok('l’annuaire est repris par une autre console', await until(rest[0].page, () => window.__friends.pfriends.status === 'online', null, 40000)
     && await until(rest[0].page, () => [window.__friends.dirHolder].length && window.__friends.pfriends.players().length >= 1, null, 40000));

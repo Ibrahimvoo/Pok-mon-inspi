@@ -17,7 +17,7 @@ export const GAMES = [
     ] },
 ];
 // Mimic Party (src/mimic): unofficial fan recreation, sounds from the owner's videos.
-GAMES.unshift({ id: 'mimic-party', title: 'Mimic Party', publisher: 'Recréation non officielle', genre: 'Party game', genres: ['Party', 'Musique'],
+GAMES.unshift({ id: 'mimic-party', title: 'Mimic Party', publisher: 'Recréation non officielle', genre: 'Party game', genres: ['Party', 'Humour'],
   release: '2026-10-22', price: 14.99, discount: 0, rating: 4.9, votes: 3120, pegi: 12, size: 1.2, players: '1-8 joueurs (local et en ligne)',
   font: 'unbounded', mood: 'party', thumb: .5, accent: '#ff4fb0', playable: true, real: true,
   tagline: 'Imite les réfs. Fais rire tes potes.',

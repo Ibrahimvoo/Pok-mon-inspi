@@ -64,6 +64,7 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 
 - **Comptes** : au premier lancement, création du compte (identifiant en ligne unique, mot de passe, avatar) avec validation côté client et côté serveur ; connexion, déconnexion, changement d’avatar, plusieurs comptes sur la même console (« Qui utilise cette manette ? »).
 - **Amis** : recherche par identifiant, demandes envoyées / reçues en temps réel, acceptation, suppression, statut en direct (en ligne, joue à…, dans un groupe, vu il y a…).
+- **Code ami (sans serveur)** : chaque profil a un code ami unique (ex. `ABCD-1234`, visible dans *Base de jeu → Ajouter un ami* et *Paramètres › Utilisateurs*). Deux joueurs peuvent avoir le même pseudo, jamais le même code : saisir le code de son ami l’ajoute sans erreur possible, même s’il est hors ligne (la demande lui parvient à sa prochaine connexion). Les confusions O/0 et I/L/1 sont tolérées.
 - **Joueurs en ligne** : *Base de jeu → Ajouter un ami* liste les joueurs connectés ; on peut en inviter un directement dans sa partie, **sans être amis**.
 - **Sans serveur (GitHub Pages, app de l’écran d’accueil)** : les amis fonctionnent aussi. Les consoles en ligne se retrouvent dans un annuaire de joueurs partagé (tenu par l’une d’elles via PeerJS, repris automatiquement si elle s’en va) ; demandes d’ami, invitations et code du groupe passent directement d’une console à l’autre ; la liste d’amis est gardée sur l’appareil, par profil. Le code d’un groupe n’est jamais publié : seuls les amis peuvent le demander, une invitation le contient.
 - **Groupes et sessions** : invitations, rejoindre le groupe ouvert d’un ami, discussion écrite, lancement d’un jeu partagé (les membres sont invités à rejoindre la partie), viseurs et signaux synchronisés en temps réel pendant la session.
@@ -88,6 +89,7 @@ Recréation **non officielle** du jeu de cartes UNO dans l’esprit de la versio
 - **Règles maison** au choix de l’hôte : Accumulation, 7-0, À la volée, Forcer le jeu, Pas de bluff, Pioche jouable.
 - **Solo** contre 1 à 3 ordinateurs, ou **entre amis** jusqu’à 4 : « Entre amis » crée un salon avec un code à 6 caractères, les amis entrent le code dans « Rejoindre ». La console de l’hôte applique les règles et n’envoie à chacun que sa propre main ; un joueur déconnecté est remplacé par l’ordinateur jusqu’à son retour.
 - Manette (←/→, ✕ jouer, □ piocher, △ UNO, R1 Contre-UNO), clavier, souris et tactile (toucher une carte pour la sélectionner, toucher encore pour la jouer).
+- **Sons** : uniquement des bruitages (cartes, actions, annonces) : aucune musique de fond pendant la partie. L’ambiance de la console reste réglable dans *Paramètres › Son*.
 
 ## Photo de profil
 

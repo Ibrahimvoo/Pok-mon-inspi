@@ -27,7 +27,7 @@ export function profileScreen() {
     friendsTitle.replaceChildren('Amis', h('small', `${list.filter(f => social.presenceOf(f.id).online).length} en ligne`));
     friendsShelf.replaceChildren(
       ...list.map(f => { const p = social.presenceOf(f.id); return h('div.friend', { f: true, onok: () => openBase('friends') }, avatarImg(f.avatar, '11rem'), h('div.fn', f.psn), h('div.fs', h(`i.${p.online ? 'online' : 'off'}`), presenceText({ ...p, lastSeen: f.lastSeen }, { short: true }))); }),
-      h('div.friend', { f: true, onok: () => openBase(list.length ? 'friends' : 'add') }, h('div.avatar.add', { html: icon('userPlus') }), h('div.fn', 'Ajouter un ami'), h('div.fs', 'Par identifiant en ligne')));
+      h('div.friend', { f: true, onok: () => openBase('add') }, h('div.avatar.add', { html: icon('userPlus') }), h('div.fn', 'Ajouter un ami'), h('div.fs', social.peer ? 'Par code ami' : 'Par identifiant en ligne')));
   }
   renderFriends();
   const root = h('div.profile', h('div.page', { 'data-scroll': 'y', 'data-pad': 160 },

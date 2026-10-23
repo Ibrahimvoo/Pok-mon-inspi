@@ -42,6 +42,7 @@ let lastPing = 0, watchdog = 0, refreshTimer = 0, retryTimer = 0, rid = 0, gen =
 const asks = new Map();
 const setStatus = s => { if (s !== status) { status = s; emit('status', s); } };
 const self = () => ({ ...me, pid: peer?.id, ...presence });
+const fmtCode = c => { c = String(c).toUpperCase(); return c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 const rel = id => db.friends.some(f => f.id === id) ? 'friend' : db.incoming.some(f => f.id === id) ? 'incoming' : db.outgoing.some(f => f.id === id) ? 'outgoing' : null;
 
 // ---------------------------------------------------------------- directory (held by one console)
@@ -338,6 +339,7 @@ export const pfriends = {
   get outgoing() { return db.outgoing; },
   // online players, without me
   players() { return [...players.values()].filter(p => p.id !== me?.id); },
+  codeOf(id) { return /^local-/.test(id) ? fmtCode(id.slice(6)) : ''; },
   online(id) { return players.has(id); },
   presenceOf(id) {
     const p = players.get(id);
@@ -361,8 +363,32 @@ export const pfriends = {
     if (dirConn?.open) dirConn.send({ t: 'here', u: self() });
   },
   search(q) {
-    const k = str(q, 16).toLowerCase();
-    return this.players().filter(p => p.psn.toLowerCase().includes(k)).sort((a, b) => a.psn.localeCompare(b.psn)).slice(0, 20);
+    const k = str(q, 16).toLowerCase(), c = k.replace(/[^a-z0-9]/g, '');
+    return this.players().filter(p => p.psn.toLowerCase().includes(k) || (c.length >= 4 && p.id.slice(6).startsWith(c))).sort((a, b) => a.psn.localeCompare(b.psn)).slice(0, 20);
+  },
+  // my friend code: the unique part of my profile id (pseudos are not unique, codes are), shown as ABCD-1234
+  get code() { return me ? fmtCode(me.id.replace(/^local-/, '')) : ''; },
+  // a friend request by friend code: sent at once if the player is online, otherwise as soon as they come online
+  async requestByCode(raw) {
+    if (!me) throw new Error('Créez d’abord votre profil.');
+    const c = String(raw ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (c.length < 4 || c.length > 12) throw new Error('Code ami invalide : il fait 8 caractères, par exemple ABCD-1234.');
+    // O/0 and I/L/1 look alike: a code typed with the wrong one still finds the online player it was meant for
+    const loose = x => x.replace(/o/g, '0').replace(/[il]/g, '1');
+    const near = players.has('local-' + c) ? [] : [...players.values()].filter(x => x.id.startsWith('local-') && loose(x.id.slice(6)) === loose(c));
+    const id = near.length === 1 ? near[0].id : 'local-' + c;
+    if (id === me.id || (!players.has(id) && loose(me.id.slice(6)) === loose(c))) throw new Error('C’est votre propre code ami.');
+    const p = players.get(id);
+    if (p) return this.request(p);
+    const r = rel(id);
+    if (r === 'friend') throw new Error('Vous êtes déjà amis.');
+    if (r === 'outgoing') throw new Error('Demande déjà envoyée.');
+    const u = { id, psn: 'Code ' + fmtCode(c), avatar: AVATARS[0] };
+    if (r === 'incoming') { accept(db.incoming.find(f => f.id === id) || u); return { accepted: true }; }
+    db.outgoing.push({ ...u, since: Date.now(), lastSeen: 0 });
+    queue(id, { t: 'freq' });
+    emit('change');
+    return { accepted: false, pending: true };
   },
   async request(u) {
     u = clean(u);

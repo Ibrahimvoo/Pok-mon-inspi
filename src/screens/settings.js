@@ -3,6 +3,7 @@ import { byId, PLANS } from '../data.js';
 import { AVATAR_LIST, AVATARS, isPhoto } from '../avatars.js';
 import { pickPhoto } from '../photo.js';
 import { session } from '../session.js';
+import { pfriends } from '../friends.js';
 import { net } from '../net.js';
 import { IOS, readLifelog } from '../input.js';
 import { state, save, bus, resetAll, usedStorage, builtIn, STORAGE_USABLE, STORAGE_TOTAL } from '../state.js';
@@ -130,6 +131,7 @@ function panelFor(cat, layer) {
         ...AVATAR_LIST.map(g => ({ label: g.name + (g.id === u.avatar ? '  ✓' : ''), icon: 'user', onok: () => setAvatar(g.id) }))], el);
       return [
         info('Identifiant en ligne', u.psn),
+        !u.online && pfriends.code ? info('Code ami', pfriends.code) : null,
         info('Type de compte', u.online ? `Compte en ligne · ${net.status === 'online' ? 'connecté' : 'reconnexion…'}` : 'Profil hors ligne (cet appareil uniquement)'),
         action('Changer d’avatar', null, e => { audio.play('ok'); changeAvatar(e.currentTarget); }, h('div.avatar', { style: { width: '5rem', height: '5rem' } }, img(art.thumb(u.avatar)))),
         info('Porte-monnaie', price(state.wallet)),
@@ -253,7 +255,7 @@ export function settingsScreen({ cat: start = 'sound' } = {}) {
     cat = id;
     catEls.forEach(e => e.classList.toggle('on', e.dataset.cat === id));
     const c = CATEGORIES.find(x => x.id === id);
-    panel.replaceChildren(h('h2', c.label), ...panelFor(id, layer));
+    panel.replaceChildren(h('h2', c.label), ...panelFor(id, layer).filter(Boolean));
     panel.scrollTop = 0;
   }
   const onChange = e => { if (['installed', 'downloads'].includes(e.detail) && cat === 'storage' && nav.top === layer) { if (e.detail === 'installed') layer.refresh(); } };

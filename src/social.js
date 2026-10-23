@@ -43,6 +43,8 @@ export const social = {
     if (this.peer) { const r = await pfriends.request(u); syncPeer(); return r; }
     const r = await net.api('/api/friends/request', { method: 'POST', body: { psn: typeof u === 'string' ? u : u.psn } }); await this.refresh(); return r;
   },
+  // without a server: add a friend by their friend code (unique, unlike pseudos), even if they are offline
+  async requestByCode(code) { const r = await pfriends.requestByCode(code); syncPeer(); return r; },
   async respond(id, accept) {
     if (this.peer) { pfriends.respond(id, accept); syncPeer(); return; }
     await net.api('/api/friends/respond', { method: 'POST', body: { id, accept } }); await this.refresh();
