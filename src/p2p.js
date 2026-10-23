@@ -217,13 +217,25 @@ const transport = {
   },
 };
 
-function openPeer(id) {
+function openPeerOnce(id) {
   return new Promise((resolve, reject) => {
     const p = id ? new Peer(id, peerOptions()) : new Peer(peerOptions());
-    p.once('open', () => resolve(p));
-    p.once('error', reject);
+    // the public broker sometimes hangs instead of answering: give up on this attempt after a while
+    const t = setTimeout(() => { p.destroy(); reject({ type: 'network' }); }, 12000);
+    p.once('open', () => { clearTimeout(t); resolve(p); });
+    p.once('error', e => { clearTimeout(t); p.destroy(); reject(e); });
     p.on('disconnected', () => { if (p2p.active && !p.destroyed) setTimeout(() => { try { p.reconnect(); } catch { /* destroyed */ } }, 1500); });
   });
+}
+// the free broker drops or refuses connections now and then: retry a few times before telling the player
+async function openPeer(id) {
+  for (let i = 0; ; i++) {
+    try { return await openPeerOnce(id); }
+    catch (e) {
+      if (!['network', 'server-error', 'socket-error', 'socket-closed'].includes(e?.type) || i >= 3) throw e;
+      await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
 }
 
 // automated tests (?pfdebug) simulate iOS suspending the app by cutting the broker connection
