@@ -12,8 +12,10 @@ import { social, joinGame } from '../social.js';
 import { pfriends } from '../friends.js';
 import { voice } from '../rtc.js';
 import { openKeyboard } from '../keyboard.js';
+import { messages } from '../messages.js';
+import { messagesView, openChat } from './messages.js';
 
-const TABS = [['friends', 'Amis'], ['party', 'Groupe'], ['requests', 'Demandes'], ['add', 'Ajouter un ami']];
+const TABS = [['friends', 'Amis'], ['messages', 'Messages'], ['party', 'Groupe'], ['requests', 'Demandes'], ['add', 'Ajouter un ami']];
 const PADS = ['ps', 'xbox', 'nintendo', 'generic'];
 const QUICK = ['On joue ?', 'J’arrive !', 'Une minute', 'Bien joué !', 'Je dois y aller'];
 
@@ -28,7 +30,7 @@ export function friendActions(f, run) {
   const p = social.presenceOf(f.id);
   const mine = social.party;
   const inMine = mine?.members.some(m => m.id === f.id);
-  const items = [];
+  const items = [{ label: 'Envoyer un message', icon: 'chat', onok: () => openChat(messages.direct(f)) }];
   if (p.online && !inMine) items.push({ label: 'Démarrer un appel vocal', icon: 'phone', onok: () => run(() => social.call(f.id), `Appel de ${f.psn}…`) });
   if (p.online && !inMine) items.push({ label: mine ? 'Inviter dans mon groupe' : 'Inviter à jouer', icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) });
   if (p.online && p.partyId && !inMine) items.push({ label: p.game ? `Rejoindre sa partie de ${byId[p.game]?.title}` : 'Rejoindre son groupe', icon: 'party', onok: () => run(async () => { await social.join(p.partyId); if (p.game) joinGame(p.game); }) });
@@ -53,8 +55,9 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   function counts() {
     const online = social.friends.filter(f => social.presenceOf(f.id).online).length;
     tabEls[0].lastChild.textContent = social.friends.length ? `${online}/${social.friends.length}` : '';
-    tabEls[1].lastChild.textContent = social.party ? social.party.members.length : '';
-    tabEls[2].lastChild.textContent = social.incoming.length || '';
+    tabEls[1].lastChild.textContent = messages.unread || '';
+    tabEls[2].lastChild.textContent = social.party ? social.party.members.length : '';
+    tabEls[3].lastChild.textContent = social.incoming.length || '';
     if (social.peer) {   // no server: the link that matters is the one to the players' directory
       const s = pfriends.status;
       conn.classList.toggle('hidden', s === 'online');
@@ -320,7 +323,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     counts();
     root.classList.toggle('party-open', tab === 'party');
     const view = !social.available ? (session.online ? offlineView() : salonView())
-      : tab === 'friends' ? friendsView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
+      : tab === 'friends' ? friendsView() : tab === 'messages' ? messagesView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
     const st = body.scrollTop;
     body.replaceChildren(view);
     body.scrollTop = st;
@@ -346,14 +349,15 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     hints: [['ok', 'Sélectionner'], ['back', 'Retour'], ['l1', 'Onglet préc.'], ['r1', 'Onglet suiv.']],
     onAction(a) {
       const i = TABS.findIndex(t => t[0] === tab);
-      if (a === 'l1') { setTab(TABS[(i + 3) % 4][0]); return true; }
-      if (a === 'r1') { setTab(TABS[(i + 1) % 4][0]); return true; }
+      if (a === 'l1') { setTab(TABS[(i + TABS.length - 1) % TABS.length][0]); return true; }
+      if (a === 'r1') { setTab(TABS[(i + 1) % TABS.length][0]); return true; }
     },
     onEnter() {
       offs.push(social.on('friends', render), social.on('presence', () => { if (tab === 'friends') render(); else counts(); }),
         social.on('party', render), social.on('chat', () => { if (tab === 'party') render(); }), social.on('status', counts),
         voice.on('change', () => { if (tab === 'party') render(); }), voice.on('peers', () => { if (tab === 'party') render(); }), voice.on('media', () => { if (tab === 'party' && !typing) render(); }),
         social.on('players', () => { if (tab === 'add') loadPlayers(); }),
+        messages.on('change', () => { if (tab === 'messages') render(); else counts(); }),
         voice.on('levels', lv => { root.querySelectorAll('[data-uid]').forEach(el => { el.style.setProperty('--lv', Math.min(1, (lv[el.dataset.uid] || 0) * 1.6).toFixed(2)); el.classList.toggle('talking', (lv[el.dataset.uid] || 0) > .12); }); }));
       social.refresh();
       if (tab === 'add') loadPlayers();

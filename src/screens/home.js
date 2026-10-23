@@ -16,6 +16,7 @@ import { searchScreen } from './search.js';
 import { settingsScreen } from './settings.js';
 import { profileScreen } from './profile.js';
 import { usersScreen } from './boot.js';
+import { messages } from '../messages.js';
 
 const STEP = 13.2; // small tile + gap, in rem
 
@@ -24,6 +25,7 @@ export function topRight({ cart = false } = {}) {
   const av = h(`div.avatar.tb-avatar${user.online ? '' : '.offline'}`, { f: true, title: user.psn, onok: e => menu([
     { label: 'Profil', icon: 'user', onok: () => go(profileScreen) },
     { label: 'Base de jeu', icon: 'friends', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen)) },
+    { label: messages.unread ? `Messages (${messages.unread} non lu${messages.unread > 1 ? 's' : ''})` : 'Messages', icon: 'chat', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab: 'messages' })) },
     { label: 'Changer d’utilisateur', icon: 'refresh', onok: () => go(usersScreen, { switching: true }) },
   ], e.currentTarget) }, img(art.thumb(user.avatar)));
   return h('div.tb-right',

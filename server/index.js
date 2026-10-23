@@ -193,7 +193,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
 
   // ------------------------------------------------------------ websocket
   // an offer with the camera and share slots (four media sections) is larger than a voice-only one
-  const wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 256 * 1024 });
   server.on('upgrade', async (req, socket, head) => {
     const deny = (code, text) => { socket.write(`HTTP/1.1 ${code} ${text}\r\nConnection: close\r\n\r\n`); socket.destroy(); };
     try {

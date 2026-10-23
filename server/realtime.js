@@ -178,6 +178,13 @@ export function createHub({ acc, log = () => {} }) {
       if (m.to != null) { const to = String(m.to); if (to !== u.id && p.members.has(to)) toUser(to, msg); return; }
       p.members.forEach((_, id) => { if (id !== u.id) toUser(id, msg); });
     },
+    // private and group messages: relayed to an online player; the clients keep them, acknowledge and resend
+    dm(u, m) {
+      const to = String(m.to || '');
+      if (to === u.id || !online(to) || !m.d || typeof m.d !== 'object' || Array.isArray(m.d)) return;
+      if (JSON.stringify(m.d).length > 200000) return;
+      toUser(to, { t: 'dm', from: users.get(u.id), d: m.d });
+    },
     g(u, m) { // in-game cursor / ping, relayed to the party
       const p = parties.get(userParty.get(u.id));
       if (!p?.game) return;

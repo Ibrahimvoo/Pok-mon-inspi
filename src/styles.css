@@ -851,3 +851,38 @@ body { background: var(--bg); }
 .vd-local-share span svg { width: 4rem; height: 4rem; }
 .vd-local-share b { font-size: max(12px, 1.7rem); font-weight: 600; }
 .vd-local-share small { font-size: max(10px, 1.3rem); opacity: .75; }
+
+/* ---------------------------------------------------------------- messages */
+.msg-badge { min-width: 3.4rem; height: 3.4rem; padding: 0 1rem; border-radius: 1.7rem; background: var(--blue); color: #fff; font-size: 1.8rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.gb-row.unread .gb-name { color: #fff; }
+.gb-row.unread .gb-sub { color: rgba(255, 255, 255, .85); font-weight: 600; }
+.gb-row.unread.focused .gb-sub { color: rgba(0, 0, 0, .75); }
+.msg-group-av { position: relative; width: 7.2rem; height: 7.2rem; }
+.msg-group-av .avatar { position: absolute; width: 5rem !important; height: 5rem !important; }
+.msg-group-av .avatar:first-child { top: 0; left: 0; }
+.msg-group-av .avatar:last-child { right: 0; bottom: 0; box-shadow: 0 0 0 .3rem #0a1020; }
+.chat-screen .page-head .icw { width: 3.6rem; height: 3.6rem; }
+.chat-title { display: grid; gap: .3rem; min-width: 0; }
+.chat-title h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-list { max-height: calc(100vh - 52rem); min-height: 18rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.2rem; padding: 2rem; border-radius: 1.6rem; background: rgba(0, 0, 0, .25); max-width: 120rem; margin: 2rem 0 1.6rem; }
+.msg { display: flex; align-items: flex-end; gap: 1.2rem; max-width: 80%; }
+.msg.mine { align-self: flex-end; flex-direction: row-reverse; }
+.msg-av { width: 4.4rem !important; height: 4.4rem !important; flex: none; }
+.msg-bubble { padding: 1.2rem 1.8rem; border-radius: 2rem 2rem 2rem .6rem; background: rgba(255, 255, 255, .1); font-size: 2rem; line-height: 1.4; overflow-wrap: anywhere; }
+.msg.mine .msg-bubble { background: var(--blue); border-radius: 2rem 2rem .6rem 2rem; }
+.msg-from { display: block; font-size: 1.6rem; color: #9cc8ff; margin-bottom: .3rem; }
+.msg-meta { font-size: 1.4rem; opacity: .6; margin-top: .4rem; text-align: right; }
+.msg-sys { align-self: center; text-align: center; }
+.msg-voice { display: inline-flex; align-items: center; gap: 1.2rem; height: 5rem; padding: 0 1.8rem; border: 0; border-radius: 2.5rem; background: rgba(0, 0, 0, .25); color: inherit; font: inherit; font-size: 1.9rem; cursor: pointer; transition: background .2s, transform .2s var(--ease); }
+.msg-voice .icw { width: 2.6rem; height: 2.6rem; }
+.msg-voice.focused { background: #fff; color: #000; transform: scale(1.05); }
+.msg-wave { width: 12rem; height: 2.4rem; background: repeating-linear-gradient(90deg, currentColor 0 .3rem, transparent .3rem .8rem); opacity: .45; -webkit-mask: linear-gradient(0deg, transparent 20%, #000 20% 80%, transparent 80%); mask: radial-gradient(ellipse at center, #000 40%, transparent 72%); }
+.msg-voice.on .msg-wave { opacity: .9; animation: wave 1s linear infinite; }
+@keyframes wave { to { background-position: 0.8rem 0; } }
+.msg-rec { margin: 0 0 1rem; }
+.rec-dot { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: #ff4d5e; animation: recblink 1s ease-in-out infinite; }
+@keyframes recblink { 50% { opacity: .25; } }
+.rec-time { font-variant-numeric: tabular-nums; }
+.pick-list { max-height: 50vh; overflow-y: auto; display: grid; gap: 1rem; padding: .4rem; }
+.gb-row.pick .pick-check { width: 3.4rem; height: 3.4rem; border-radius: 50%; border: .25rem solid currentColor; opacity: .35; padding: .3rem; }
+.gb-row.pick.on .pick-check { opacity: 1; background: var(--blue); border-color: var(--blue); color: #fff; }

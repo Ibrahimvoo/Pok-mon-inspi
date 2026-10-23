@@ -11,6 +11,7 @@ import { audio } from './audio.js';
 import { input } from './input.js';
 import { toast, dialog, go, navExtras, saveNav } from './shell.js';
 import { h, icon, art, img } from './ui.js';
+import { messages } from './messages.js';
 
 const events = new EventTarget();
 const emit = (t, d) => events.dispatchEvent(new CustomEvent(t, { detail: d }));
@@ -138,6 +139,8 @@ function voiceError(e) {
 }
 
 const waitingForHost = () => toast({ title: 'En attente de l’hôte…', sub: 'Son application est peut-être en arrière-plan : nouvelle tentative pendant 40 s', icon: 'party', sound: null, log: false });
+
+messages.setFriendCheck(id => !!social.friend(id));
 
 // ---------------------------------------------------------------- incoming invitations / calls
 let ringing = null;

@@ -126,6 +126,14 @@ test('friends, presence, party invite, signalling and in-game sync', async () =>
   assert.deepEqual([g.x, g.y, g.p], [.25, 1, 1]);
   sb.send('chat', { text: '  on y va ?  ' });
   assert.equal((await sa.next(m => m.t === 'chat')).msg.text, 'on y va ?');
+  // private messages are relayed with the sender's identity, never back to the sender
+  sa.send('dm', { to: bId, d: { k: 'msg', c: { kind: 'dm' }, m: { id: 'x1', text: 'salut' } } });
+  const dm = await sb.next(m => m.t === 'dm');
+  assert.equal(dm.from.psn, 'Alpha');
+  assert.equal(dm.d.m.text, 'salut');
+  sa.send('dm', { to: (await call('/api/me', { cookie: a.cookie })).data.user.id, d: { k: 'msg' } });
+  await new Promise(r => setTimeout(r, 150));
+  assert.ok(!sa.inbox.some(m => m.t === 'dm'));
 
   // leaving hands the party to the remaining member
   sa.send('party.leave');

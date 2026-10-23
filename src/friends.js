@@ -260,6 +260,8 @@ function onDirect(conn, m) {
       return;
     }
     case 'idecl': emit('declined', { by: u, kind: m.kind === 'call' ? 'call' : 'party' }); return;
+    // private and group messages (messages.js decides what to keep)
+    case 'dm': if (m.d && typeof m.d === 'object') emit('dm', { from: u, d: m.d }); return;
     // a friend wants to join my group: only friends get the room code
     case 'where': reply({ t: 'here', rid: m.rid, code: rel(u.id) === 'friend' ? pfriends.roomCode?.() || null : null }); return;
     case 'here': {
@@ -420,6 +422,8 @@ export const pfriends = {
     if (!players.has(id)) return Promise.reject(new Error('Ce joueur est hors ligne.'));
     return direct(id, { t: 'inv', code, kind, game, size });
   },
+  // a message for messages.js: sent at once to an online player (it keeps its own queue for the others)
+  message(id, d) { return direct(id, { t: 'dm', d }); },
   decline(id, kind) { if (players.has(id)) direct(id, { t: 'idecl', kind }).catch(() => {}); },
   // the room code of a friend's group (asked to the friend, who only answers its friends)
   where(id) { return ask(id, { t: 'where' }); },
