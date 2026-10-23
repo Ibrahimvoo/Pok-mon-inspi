@@ -2,7 +2,7 @@
 
 Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, création de compte, choix de l’utilisateur, écran d’accueil, hub de jeu, PlayStation Store, fiches produit, bibliothèque, recherche, profil, Base de jeu (amis, groupes, appels vocaux), centre de contrôle, menu Créer, paramètres. Jouable à la **manette**, au **clavier**, à la **souris** et au **toucher**, dans Safari, Chrome, Firefox ou Edge (ordinateur, iPad, iPhone en paysage).
 
-> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les jeux et leurs visuels sont fictifs et simulés, sauf Mimic Party, qui est réellement jouable ; les achats sont simulés. Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
+> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les jeux et leurs visuels sont fictifs et simulés, sauf Mimic Party et UNO, qui sont réellement jouables ; les achats sont simulés. Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
 ## Jouer avec un ami sans rien installer (salons)
 
@@ -53,6 +53,19 @@ Recréation **non officielle** du jeu d’imitation Mimic Party, jouable depuis 
 - **Multijoueur** : plusieurs joueurs sur la même console (chacun son tour) ou en ligne avec le groupe / salon (tout le monde imite en même temps, les enregistrements sont envoyés au groupe, l’hôte orchestre les manches et la roue).
 - Progression (XP, niveaux, animations et auras à débloquer), statistiques, objectifs reliés aux trophées de la console.
 
+## UNO (jeu jouable)
+
+Recréation **non officielle** du jeu de cartes UNO dans l’esprit de la version console (plateau rouge à facettes, anneau de sens, mains adverses en perspective, salon à 4 places, écran « Conseils / Infos sur la partie »). Cartes et visuels redessinés, aucune ressource originale.
+
+- **Règles officielles** : 108 cartes, Passe ton tour, Inversion (à deux : passe le tour), +2, Joker, Joker +4 avec contestation du bluff, obligation d’annoncer UNO (sinon « Contre-UNO » : 2 cartes), score jusqu’à 500 points (ou manche unique).
+- **Règles maison** au choix de l’hôte : Accumulation, 7-0, À la volée, Forcer le jeu, Pas de bluff, Pioche jouable.
+- **Solo** contre 1 à 3 ordinateurs, ou **entre amis** jusqu’à 4 : « Entre amis » crée un salon avec un code à 6 caractères, les amis entrent le code dans « Rejoindre ». La console de l’hôte applique les règles et n’envoie à chacun que sa propre main ; un joueur déconnecté est remplacé par l’ordinateur jusqu’à son retour.
+- Manette (←/→, ✕ jouer, □ piocher, △ UNO, R1 Contre-UNO), clavier, souris et tactile (toucher une carte pour la sélectionner, toucher encore pour la jouer).
+
+## Photo de profil
+
+À la création du profil (« Ma photo ») ou dans *Paramètres › Utilisateurs › Changer d’avatar*, une photo de la galerie (ou de l’appareil photo) peut remplacer l’avatar : elle est recadrée en carré et compressée (moins de 12 Ko), puis vérifiée par le serveur.
+
 ## Bouton PS de la manette sur iPhone / iPad
 
 Sur iOS, **le bouton Home (PS) est réservé au système** : un appui ouvre l’app Jeux d’Apple et met Safari en arrière-plan. Une page web ne peut pas l’empêcher (seule une app native peut désactiver ce geste via `GCController…preferredSystemGestureState`), et l’API Gamepad de Safari ne transmet pas ce bouton. Ce que fait l’application :
@@ -81,11 +94,12 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 ## Tests
 
 ```bash
-npm test          # API + WebSocket (SQLite en mémoire)
+npm test          # API + WebSocket (SQLite en mémoire) et règles d’UNO (milliers de parties simulées)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
 npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
 npm run e2e:mimic        # Mimic Party sur une console : menus, lobby, 2 joueurs, manches, notation (micro simulé), résultats
+npm run e2e:uno         # UNO : salon par code entre deux navigateurs, partie complète synchronisée, puis partie solo
 npm run e2e:mimic-online # Mimic Party en ligne : deux navigateurs, invitation, lobby commun, partie complète, chat vocal en pause pendant les prises
 ```
 

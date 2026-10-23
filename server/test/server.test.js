@@ -139,3 +139,21 @@ test('websocket refuses anonymous and foreign-origin connections', async () => {
   const foreign = new WebSocket(base.replace('http', 'ws') + '/ws', { headers: { cookie: u.cookie, origin: 'https://evil.example' } });
   await assert.rejects(new Promise((res, rej) => { foreign.on('open', res); foreign.on('error', rej); }));
 });
+
+test('profile photos from the gallery are accepted as avatars, within a size limit', async () => {
+  const photo = 'data:image/jpeg;base64,' + Buffer.alloc(3000, 7).toString('base64');
+  const r = await signup('PhotoFan', 'manette123', photo);
+  assert.equal(r.status, 201);
+  assert.equal(r.data.user.avatar, photo);
+  const big = await signup('PhotoBig', 'manette123', 'data:image/jpeg;base64,' + 'A'.repeat(20000));
+  assert.equal(big.status, 400);
+  assert.ok(big.data.error.fields.avatar);
+  const other = 'data:image/png;base64,' + Buffer.alloc(900, 3).toString('base64');
+  const up = await call('/api/me', { method: 'PATCH', body: { avatar: other }, cookie: r.cookie, origin: base });
+  assert.equal(up.status, 200);
+  assert.equal(up.data.user.avatar, other);
+  const fake = await call('/api/me', { method: 'PATCH', body: { avatar: 'data:text/html;base64,PGgxPg==' }, cookie: r.cookie, origin: base });
+  assert.equal(fake.status, 400);
+  const back = await call('/api/me', { method: 'PATCH', body: { avatar: 'lumen' }, cookie: r.cookie, origin: base });
+  assert.equal(back.data.user.avatar, 'lumen');
+});

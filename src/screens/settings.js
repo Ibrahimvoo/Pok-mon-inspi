@@ -1,5 +1,7 @@
 // Settings: two-pane layout; every option is functional and persisted.
 import { byId, PLANS, GAMES } from '../data.js';
+import { isPhoto } from '../avatars.js';
+import { pickPhoto } from '../photo.js';
 import { session } from '../session.js';
 import { net } from '../net.js';
 import { IOS, readLifelog } from '../input.js';
@@ -110,14 +112,20 @@ function panelFor(cat, layer) {
     case 'users': {
       const u = session.current || { psn: '—', avatar: GAMES[0].id };
       const plan = PLANS.find(p => p.id === state.plan);
-      const changeAvatar = el => menu(GAMES.slice(0, 12).map(g => ({ label: g.title + (g.id === u.avatar ? '  ✓' : ''), icon: 'user', onok: async () => {
+      const setAvatar = async a => {
         try {
-          if (session.online) await net.api('/api/me', { method: 'PATCH', body: { avatar: g.id } });
-          session.use({ ...u, avatar: g.id }, !!u.online);
-          toast({ title: 'Avatar mis à jour', img: art.thumb(g.id), log: false });
+          if (session.online) await net.api('/api/me', { method: 'PATCH', body: { avatar: a } });
+          session.use({ ...u, avatar: a }, !!u.online);
+          toast({ title: isPhoto(a) ? 'Photo de profil mise à jour' : 'Avatar mis à jour', img: art.thumb(a), log: false });
           layer.refresh();
         } catch (e) { toast({ title: 'Modification impossible', sub: e.message, icon: 'user', sound: 'error', log: false }); }
-      } })), el);
+      };
+      const fromGallery = async () => {
+        try { const a = await pickPhoto(); if (a) await setAvatar(a); }
+        catch (e) { toast({ title: 'Photo impossible', sub: e.message, icon: 'user', sound: 'error', log: false }); }
+      };
+      const changeAvatar = el => menu([{ label: 'Choisir une photo (galerie)…', icon: 'plus', onok: fromGallery },
+        ...GAMES.slice(0, 12).map(g => ({ label: g.title + (g.id === u.avatar ? '  ✓' : ''), icon: 'user', onok: () => setAvatar(g.id) }))], el);
       return [
         info('Identifiant en ligne', u.psn),
         info('Type de compte', u.online ? `Compte en ligne · ${net.status === 'online' ? 'connecté' : 'reconnexion…'}` : 'Profil hors ligne (cet appareil uniquement)'),

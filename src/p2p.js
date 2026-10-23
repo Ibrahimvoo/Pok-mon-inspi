@@ -3,7 +3,7 @@
 import { Peer } from 'peerjs';
 import { net } from './net.js';
 import { session } from './session.js';
-import { AVATARS } from './avatars.js';
+import { AVATARS, validAvatar } from './avatars.js';
 import { navExtras, saveNav } from './shell.js';
 import { lifecycle } from './input.js';
 import { PUBLIC_ICE } from './rtc.js';
@@ -32,7 +32,7 @@ let peer = null, hostConn = null, rid = 0, retryTimer = 0;
 const pending = new Map();
 const room = { members: new Map(), chat: [], game: null };   // host only
 
-function me() { const u = session.current; return { id: u.id, psn: u.psn, avatar: AVATARS.includes(u.avatar) ? u.avatar : AVATARS[0] }; }
+function me() { const u = session.current; return { id: u.id, psn: u.psn, avatar: validAvatar(u.avatar) ? u.avatar : AVATARS[0] }; }
 
 // ---------------------------------------------------------------- host side
 function view() {
@@ -117,7 +117,7 @@ function acceptGuest(conn) {
       const prev = room.members.get(id);
       if (prev) { clearTimeout(prev.timer); prev.conn = conn; prev.online = true; }
       else {
-        room.members.set(id, { id, psn, avatar: AVATARS.includes(u.avatar) ? u.avatar : AVATARS[0], muted: false, voice: false, vs: null, online: true, joinedAt: Date.now(), conn });
+        room.members.set(id, { id, psn, avatar: validAvatar(u.avatar) ? u.avatar : AVATARS[0], muted: false, voice: false, vs: null, online: true, joinedAt: Date.now(), conn });
         room.chat.push({ sys: true, text: `${psn} a rejoint le salon`, at: Date.now() });
       }
       conn.memberId = id;
