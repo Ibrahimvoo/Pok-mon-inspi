@@ -78,7 +78,8 @@ try {
 
   // ---------------------------------------------------------------- shared gameplay
   await A.page.keyboard.press('Escape'); await A.page.waitForTimeout(400);
-  await A.page.click('.home .tile.sel');
+  // Pouf Party (UNO is first on the home row and has its own tests)
+  await A.page.click(`.home .tile >> nth=${await A.page.evaluate(() => [...document.querySelectorAll('.home .tile')].findIndex(e => /^Pouf Party/.test(e.querySelector('.tile-label')?.textContent.trim() || '')))}`);
   // in a party, the game opens straight into the members' shared lobby
   ok('partie lancée pendant l’appel', await until(A.page, () => !!document.querySelector('.pf-title .pf-btn, .pf-lobby .pf-btn'), null, 60000));
   if (await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 5000)) await B.page.click('.dialog button:has-text("Plus tard")');

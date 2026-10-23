@@ -62,9 +62,10 @@ try {
   // ---------------------------------------------------------------- the game is back (old Safari save)
   const home = await page.evaluate(() => [...document.querySelectorAll('.home .tile .tile-label')].map(e => e.textContent));
   ok('Pouf Party visible sur l’accueil malgré l’ancienne sauvegarde', home.some(t => t.startsWith('Pouf Party')), JSON.stringify(home));
-  ok('aucun jeu supprimé sur l’accueil', home.length === 3, `${home.length} tuiles`);
+  // the console's three games are offered to every profile; the removed ones never come back
+  ok('aucun jeu supprimé sur l’accueil', ['Pouf Party', 'Mimic Party', 'UNO'].every(g => home.some(t => t.startsWith(g))) && !home.some(t => /Ashen/.test(t)), JSON.stringify(home));
   const saved = await page.evaluate(() => new Promise(r => setTimeout(() => r(JSON.parse(localStorage.getItem('ps5ux.v1'))), 400)));
-  ok('sauvegarde nettoyée', saved && saved.owned.join() === 'pouf-party' && saved.installed.join() === 'pouf-party' && !saved.trophies['ashen-crown'] && saved.captures.length === 1 && !saved.downloads.length && !saved.cart.length, JSON.stringify({ owned: saved?.owned, installed: saved?.installed }));
+  ok('sauvegarde nettoyée', saved && [...saved.owned].sort().join() === 'mimic-party,pouf-party,uno' && [...saved.installed].sort().join() === 'mimic-party,pouf-party,uno' && !saved.trophies['ashen-crown'] && saved.captures.length === 1 && !saved.downloads.length && !saved.cart.length, JSON.stringify({ owned: saved?.owned, installed: saved?.installed }));
   await shot('02-home');
 
   // ---------------------------------------------------------------- avatar → menu → profile

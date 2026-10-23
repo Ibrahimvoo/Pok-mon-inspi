@@ -229,9 +229,12 @@ function openPeerOnce(id) {
   return new Promise((resolve, reject) => {
     const p = id ? new Peer(id, peerOptions()) : new Peer(peerOptions());
     // the public broker sometimes hangs instead of answering: give up on this attempt after a while
-    const t = setTimeout(() => { p.destroy(); reject({ type: 'network' }); }, 12000);
-    p.once('open', () => { clearTimeout(t); resolve(p); });
-    p.once('error', e => { clearTimeout(t); p.destroy(); reject(e); });
+    let open = false;
+    const t = setTimeout(() => { p.off('error', onErr); p.destroy(); reject({ type: 'network' }); }, 12000);
+    // only an error before the broker accepted us fails this attempt (later ones, e.g. a host not back yet, are normal)
+    const onErr = e => { if (open) return; clearTimeout(t); p.off('error', onErr); p.destroy(); reject(e); };
+    p.on('error', onErr);
+    p.once('open', () => { open = true; clearTimeout(t); p.off('error', onErr); resolve(p); });
     p.on('disconnected', () => { if (p2p.active && !p.destroyed) setTimeout(() => { try { p.reconnect(); } catch { /* destroyed */ } }, 1500); });
   });
 }

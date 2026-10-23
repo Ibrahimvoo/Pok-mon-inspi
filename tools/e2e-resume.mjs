@@ -55,7 +55,8 @@ const openBase = async (P, tab) => {
 };
 const launchGame = async P => {
   await P.page.waitForSelector('.home:not(.covered) .tile.sel', { timeout: 10000 });
-  await P.page.click('.home .tile.sel');
+  // Pouf Party (UNO is first on the home row)
+  await P.page.click(`.home .tile >> nth=${await P.page.evaluate(() => [...document.querySelectorAll('.home .tile')].findIndex(e => /^Pouf Party/.test(e.querySelector('.tile-label')?.textContent.trim() || '')))}`);
   return until(P.page, () => !!document.querySelector('.pf-title .pf-btn'), null, 60000);
 };
 
