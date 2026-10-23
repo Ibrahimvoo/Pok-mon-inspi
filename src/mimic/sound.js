@@ -111,9 +111,32 @@ export function refFeatures(id) {
   }
   return feats.get(id);
 }
+// the microphone is recorded raw (no automatic gain, so that noises and melodies stay intact): a voice then comes out
+// far quieter than the refs (about -16 dB). For playback only, the take is brought to the loudness of the refs,
+// measured on the frames where someone is actually making a sound, with a soft limiter instead of clipping
+const TARGET = .17, MAX_GAIN = 20, KNEE = .8;
+function loudness(x) {
+  const F = 320; let e = 0, n = 0, pk = 0;
+  for (let i = 0; i + F <= x.length; i += F) {
+    let f = 0; for (let j = i; j < i + F; j++) { f += x[j] * x[j]; const a = Math.abs(x[j]); if (a > pk) pk = a; }
+    f /= F;
+    if (f > 1e-5) { e += f; n++; }       // above -50 dBFS: a sound, not the room
+  }
+  return n ? TARGET / Math.sqrt(e / n) : 1;
+}
+function leveled(x) {
+  const g = Math.min(MAX_GAIN, Math.max(.5, loudness(x)));
+  if (Math.abs(g - 1) < .05) return x;
+  const y = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) {
+    const v = x[i] * g, a = Math.abs(v);
+    y[i] = a <= KNEE ? v : Math.sign(v) * (KNEE + (1 - KNEE) * Math.tanh((a - KNEE) / (1 - KNEE)));
+  }
+  return y;
+}
 export function pcmBuffer(x) {
   setup();
-  const y = resample(x, SR, ctx.sampleRate), b = ctx.createBuffer(1, Math.max(1, y.length), ctx.sampleRate);
+  const y = resample(leveled(x), SR, ctx.sampleRate), b = ctx.createBuffer(1, Math.max(1, y.length), ctx.sampleRate);
   b.getChannelData(0).set(y);
   return b;
 }
