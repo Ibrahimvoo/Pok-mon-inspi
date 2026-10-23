@@ -132,16 +132,17 @@ try {
   ok('B est invité à rejoindre la partie', await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 10000), gameTitle);
   await B.page.click('.dialog button:has-text("Rejoindre la partie")');
   // Pouf Party is the console's only game: both players are in it (its own lobby is covered by tools/pouf/e2e-invite.mjs)
-  // (software WebGL in this test: starting the 3D game takes ~20 s, a few hundred ms on a phone)
+  // (software WebGL in this test: starting the 3D game takes ~20 s, a few hundred ms on a phone; the second console
+  // compiles its shaders on the CPU while the first one already renders the game, which can take a minute)
   const inGame = () => document.documentElement.classList.contains('pf-playing') && !!document.querySelector('.pf-root .pf-game canvas');
   const t0 = Date.now();
-  ok('A et B dans le jeu du groupe', await until(A.page, inGame, null, 45000) && await until(B.page, inGame, null, 45000), `${((Date.now() - t0) / 1000).toFixed(1)} s`);
+  ok('A et B dans le jeu du groupe', await until(A.page, inGame, null, 90000) && await until(B.page, inGame, null, 90000), `${((Date.now() - t0) / 1000).toFixed(1)} s`);
   await B.shot('08-ingame');
   await A.shot('08b-ingame-A');
 
   // ---------------------------------------------------------------- network loss and recovery
   await B.ctx.setOffline(true);
-  ok('coupure réseau détectée chez B', await until(B.page, () => !document.getElementById('conn-hud')?.classList.contains('hidden'), null, 8000));
+  ok('coupure réseau détectée chez B', await until(B.page, () => !document.getElementById('conn-hud')?.classList.contains('hidden'), null, 20000));
   await B.ctx.setOffline(false);
   ok('reconnexion automatique de B', await until(B.page, () => document.getElementById('conn-hud')?.classList.contains('hidden'), null, 20000));
   ok('B toujours dans le groupe après la coupure', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 8000));
@@ -154,8 +155,8 @@ try {
   await B.page.reload();
   await B.page.keyboard.press('Enter');
   // the 3D game compiles its shaders on the CPU here (software WebGL): the page can be busy for ~20 s
-  ok('après rechargement : session et jeu restaurés sans reconnexion', await until(B.page, () => !!document.querySelector('.pf-root'), null, 45000));
-  ok('après rechargement : groupe conservé', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 45000));
+  ok('après rechargement : session et jeu restaurés sans reconnexion', await until(B.page, () => !!document.querySelector('.pf-root'), null, 90000));
+  ok('après rechargement : groupe conservé', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 90000));
   await B.shot('09-restored');
 
   // ---------------------------------------------------------------- sign out / sign in
