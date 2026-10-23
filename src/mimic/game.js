@@ -17,7 +17,7 @@ import { Stage, AURAS, auraCanvas } from './stage.js';
 import { PRESETS, EMOTES, presetById } from './avatar.js';
 import { logoUrl, fontsReady, resetLogoCache } from './logo.js';
 import { button, icon, bubbly, card, roundBox, Wave, scoreText, wheel, WHEEL, ticket, fmtBonus } from './ui.js';
-import { music, sfx, quiet, loadRef, refFeatures, playBuffer, pcmBuffer } from './sound.js';
+import { REFS_REV, sfx, quiet, loadRef, refFeatures, playBuffer, pcmBuffer } from './sound.js';
 import { mic } from './mic.js';
 import { speech, bestPhrase } from './speech.js';
 import { features, compare, finalScore, tidy } from './dsp.js';
@@ -32,7 +32,7 @@ export const PACKS = [
   { id: 'oubliees', name: 'Réfs oubliées', cover: 'ca-m-emeut' },
   { id: 'tiktok', name: 'TikTok', cover: 'version-neymar' },
 ];
-export const refImg = id => `mimic/refs/${encodeURIComponent(id)}.webp`;
+export const refImg = id => `mimic/refs/${encodeURIComponent(id)}.webp?v=${REFS_REV}`;
 export const refById = id => REFS.find(r => r.id === id);
 const packName = id => PACKS.find(p => p.id === id)?.name || '';
 const MAX = { classic: 5, versus: 4 };
@@ -42,7 +42,7 @@ const AURA_LVL = { none: 1, hearts: 1, stars: 2, notes: 3, bubbles: 4, flames: 6
 const XP_LEVEL = 300;
 const levelOf = xp => 1 + Math.floor(xp / XP_LEVEL);
 const DEF = {
-  settings: { speech: 'auto', level: 'normal', music: true, reactions: true },
+  settings: { speech: 'auto', level: 'normal', reactions: true },
   rules: { rounds: 5, wheel: true, refDuring: false, order: 'fixe', halloween: true, packs: PACKS.map(p => p.id) },
   profile: { char: 'leo', emote: 'wave', aura: 'none', xp: 0, open: true, stats: { games: 0, wins: 0, best: 0, rounds: 0, points: 0 } },
 };
@@ -116,7 +116,6 @@ export class Game {
   }
   playOnce(buf, opts) { this.stopOnce(); this.once = playBuffer(buf, opts); return this.once; }
   stopOnce() { this.once?.stop(); this.once = null; }
-  music(name) { if (this.settings.music) music.play(name); else music.stop(); }
 
   // ---------------------------------------------------------------- scenes, modals, focus
   show(el, { hints = [['ok', 'Sélectionner']], keys = {}, back = null } = {}) {
@@ -189,7 +188,7 @@ export class Game {
   suspend() {
     if (this.paused) return;
     this.paused = true;
-    music.stop(.2); this.stopOnce(); this.stage.stop();
+    this.stopOnce(); this.stage.stop();
     if (this.inTurn && !this.online) { this.aborting = true; this.interrupt(); }
   }
   resume() {
@@ -197,13 +196,12 @@ export class Game {
     this.paused = false;
     audio.duck(0, .6);
     this.stage.start();
-    if (!this.inMatch) this.music('menu');
   }
   destroy() {
     this.closed = true;
     this.newFlow();
     online.leave(this);
-    music.stop(.3); mic.close();
+    mic.close();
     this.stage.dispose();
   }
   portrait(char, bg = '#2f7cf0') {
@@ -233,7 +231,6 @@ export class Game {
   home(focus) {
     this.newFlow(); this.inMatch = false; this.online = null;
     online.leave(this);
-    this.music('menu');
     const a = this.setupHome3D();
     let em = setInterval(() => a.play(this.profile.emote, 2.6), 9000);
     setTimeout(() => a.play(this.profile.emote, 2.6), 900);
@@ -343,7 +340,6 @@ export class Game {
     const rows = [
       ['Reconnaissance des paroles', () => ({ auto: 'AUTO', on: 'AVEC', off: 'SANS' })[s.speech], d => { s.speech = cycle(['auto', 'on', 'off'], s.speech, d); }],
       ['Exigence du jury', () => ({ easy: 'COOL', normal: 'NORMAL', hard: 'DUR' })[s.level], d => { s.level = cycle(['easy', 'normal', 'hard'], s.level, d); }],
-      ['Musique', () => (s.music ? 'AVEC' : 'SANS'), () => { s.music = !s.music; this.music(this.inMatch ? 'play' : 'menu'); }],
       ['Réactions mèmes', () => (s.reactions ? 'AVEC' : 'SANS'), () => { s.reactions = !s.reactions; }],
     ];
     const testVal = h('b', mic.ready ? 'ACTIF' : 'TESTER');
@@ -449,7 +445,6 @@ export class Game {
   lobby({ mode = this.lobbyMode || 'classic' } = {}) {
     this.newFlow(); this.inMatch = false;
     this.lobbyMode = mode;
-    this.music('menu');
     const st = this.stage;
     st.clearAvatars(); this.clearLabels(); st.clearFx(); st.stagePose(); st.setHalloween(this.rules.halloween);
     st.shot('lobby', { dur: 1.2 });
@@ -636,7 +631,6 @@ export class Game {
     });
     st.shot('stage', { dur: 1.4 });
     this.dim.className = 'mmp-dim';
-    this.music('play');
     this.stats = { scores: [], best: null };
   }
   hud(phase, n, extra = []) {
@@ -724,7 +718,6 @@ export class Game {
       wave.el.style.visibility = ''; cap.style.visibility = '';
     } else await this.sleep(900);
     await this.ensureMic();
-    music.stop(.2);
     for (const c of ['3', '2', '1']) { wave.setCount(c); sfx('count'); input.rumble(.2, .1, 60); await this.sleep(750); }
     wave.setCount('');
     cap.textContent = 'GO !';
@@ -910,7 +903,7 @@ export class Game {
     if (a) await this.wait(Promise.race([a.walkTo(mic.x, mic.z, 0), new Promise(r => setTimeout(r, 5000))]));
     a?.play('victory', 99);
     this.mplayers.forEach(p => { if (!winners.includes(p)) st.avatar(p.id)?.play('clap', 99); else if (p !== champ) st.avatar(p.id)?.play('hop', 99); });
-    this.music('podium'); sfx('fanfare');
+    sfx('fanfare');
     this.confetti(5000);
     // progression, stats and trophies (for this console's main player)
     const me = this.mplayers.find(p => p.me);
@@ -939,7 +932,7 @@ export class Game {
     if (this.stack.length > 1) return;
     const local = !this.online;
     if (local) this.suspend();
-    const resume = () => { if (local) this.resume(); if (this.inMatch) this.music('play'); };
+    const resume = () => { if (local) this.resume(); };
     const ctx = this.modal(this.dlg('PAUSE', null, h('div.mmp-text', local && this.inTurn ? 'La prise en cours reprendra depuis le début.' : this.online ? 'La partie continue pour les autres joueurs.' : 'La partie est en pause.'), { gray: true, close: false, foot: [
       button('REPRENDRE', { kind: 'yellow', cls: 'sm', auto: true, onok: () => { this.popModal(); resume(); } }),
       button('QUITTER LA PARTIE', { kind: 'blue', cls: 'sm', onok: () => { this.popModal(true); this.paused = false; this.stage.start(); if (this.online) online.leave(this); this.home(); } }),

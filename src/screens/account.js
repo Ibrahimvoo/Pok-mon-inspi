@@ -1,6 +1,5 @@
 // Account creation and sign-in. Online accounts are validated by the server; without a server, a local profile is offered.
-import { GAMES, byId } from '../data.js';
-import { isPhoto } from '../avatars.js';
+import { AVATAR_LIST, AVATARS, isPhoto } from '../avatars.js';
 import { pickPhoto } from '../photo.js';
 import { h, icon, art, img } from '../ui.js';
 import { nav } from '../nav.js';
@@ -55,7 +54,7 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
   let busy = false;
   const offline = () => net.mode !== 'online';
   const root = h('div.account');
-  let avatar = GAMES[(Math.random() * GAMES.length) | 0].id;
+  let avatar = AVATARS[(Math.random() * AVATARS.length) | 0];
   let f = {};
 
   function render() {
@@ -76,8 +75,8 @@ export function accountScreen({ mode = 'signup', psn = '', first = false, onDone
         pick(photoOpt, url);
       } catch (e) { audio.play('error'); layer.showError(e.message); }
     } }, isPhoto(avatar) ? img(avatar) : [h('span.icw', { html: icon('plus') }), h('small', 'Ma photo')]) : null;
-    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, photoOpt, GAMES.map(g => {
-      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.title, onok: () => pick(el, g.id) }, img(art.thumb(g.id)));
+    const avatars = signup ? h('div.av-pick', { 'data-row': '', 'data-scroll': 'x', 'data-pad': 60 }, photoOpt, AVATAR_LIST.map(g => {
+      const el = h(`div.av-opt${g.id === avatar ? '.on' : ''}`, { f: true, title: g.name, onok: () => pick(el, g.id) }, img(art.thumb(g.id)));
       return el;
     })) : null;
     const preview = h('div.avatar.acc-preview', img(art.thumb(signup ? avatar : (session.known().find(k => k.psn.toLowerCase() === (psn || '').toLowerCase())?.avatar || avatar))));

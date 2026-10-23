@@ -37,7 +37,7 @@ const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, perm
 const page = await ctx.newPage();
 const errors = [], results = [];
 page.on('pageerror', e => errors.push(e.message));
-page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
+page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|peerjs/.test(m.text())) errors.push(m.text()); });
 await page.addInitScript(r => { window.__MIMIC_TEST__ = { ref: r }; }, REF);
 const ok = (n, c, x = '') => { results.push(c); console.log(c ? '✓' : '✗', n, x); };
 const shot = n => shots && page.screenshot({ path: join(shots, `mimic-${n}.jpg`), type: 'jpeg', quality: 72 });

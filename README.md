@@ -2,11 +2,36 @@
 
 Une expérience web qui reproduit l’ergonomie de la PS5 : démarrage, création de compte, choix de l’utilisateur, écran d’accueil, hub de jeu, PlayStation Store, fiches produit, bibliothèque, recherche, profil, Base de jeu (amis, groupes, appels vocaux), centre de contrôle, menu Créer, paramètres. Jouable à la **manette**, au **clavier**, à la **souris** et au **toucher**, dans Safari, Chrome, Firefox ou Edge (ordinateur, iPad, iPhone en paysage).
 
-> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Les jeux et leurs visuels sont fictifs et simulés, sauf Mimic Party et UNO, qui sont réellement jouables ; les achats sont simulés. Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
+> Projet de démonstration **non officiel**, ni affilié à Sony Interactive Entertainment ni approuvé par elle. Le jeu et ses visuels sont originaux ; les achats sont simulés. La console contient trois vrais jeux jouables, **Pouf Party**, **Mimic Party** et **UNO** (voir plus bas) : les 18 jeux fictifs du catalogue d’origine ont été retirés (leurs illustrations restent disponibles comme photos de profil). Le **multijoueur, les comptes et les appels vocaux sont réels** et fonctionnent dès que le serveur est lancé.
 
 ## Jouer avec un ami sans rien installer (salons)
 
-Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
+Ouvrez la console (par exemple https://ibrahimvoo.github.io/Pok-mon-inspi/ps5/), créez votre profil, puis **avatar → Base de jeu → Créer un salon** : le lien est partagé (Messages, WhatsApp…). Votre ami l’ouvre, crée son profil et rejoint directement : chat vocal sans casque, discussion et parties partagées. Les deux appareils sont reliés en direct (WebRTC) après une mise en relation par le service gratuit PeerJS ; aucun serveur à déployer. Si iOS recharge la page, le salon se rétablit tout seul. Safari et l’app ajoutée à l’écran d’accueil jouent ensemble (sur iPhone, un lien s’ouvre toujours dans Safari : depuis l’app, saisissez le code). Si l’hôte est parti envoyer le lien depuis une autre app, son ami patiente jusqu’à 40 s au lieu d’échouer ; dans Pouf Party, si un invité a repris la partie pendant l’absence de l’hôte, celui-ci la rejoint à son retour au lieu de rester seul dans un second salon. Les codes à 5 caractères (partie Pouf Party) et à 6 caractères (salon) sont acceptés aux deux endroits. Sur certains réseaux mobiles très stricts, la connexion directe peut échouer : le Wi-Fi fonctionne en général.
+
+**Installer sur l’écran d’accueil** : la console est une application web installable partout. iPhone / iPad : Safari → *Partager* → *Sur l’écran d’accueil*. Android : Chrome propose *Installer l’application* (menu ⋮ ou bandeau en bas de l’écran), Samsung Internet *Ajouter la page à → Écran d’accueil*, Firefox *Installer*. **Paramètres › Système › Installer sur l’écran d’accueil** montre les étapes du navigateur utilisé (et installe directement quand le navigateur le permet). Le service worker (`public/sw.js`) ne met rien en cache : l’app installée charge toujours la dernière version publiée, la même que le navigateur, ce qui permet de jouer ensemble.
+
+## Pouf Party — un vrai jeu multijoueur 3D dans la console
+
+**Pouf Party** est un jeu de party game original, jouable pour de vrai depuis la console : sélectionnez sa jaquette sur l’accueil (ou dans la bibliothèque / le PlayStation Store, où il est gratuit et déjà installé), ouvrez sa fiche puis **Jouer**. Le jeu se lance en plein écran ; le bouton PS (ou P, ou le pavé tactile sur iOS) ouvre le centre de contrôle, et *Quitter le jeu* ramène à l’accueil.
+
+- **Descentes en bouée (coopération)** : jusqu’à 4 critters sur une bouée ; chacun pousse la bouée depuis son côté à coups de « pouf ». Quatre rivières : *La Descente du Lagon Rose* (reprise des épreuves de référence : rondins à piques, mâchoires, mines, moulins, barres-marteaux, scies, tourbillon, toboggan), *Les Rapides du Glacier* (icebergs, geysers, troncs à la dérive), *Le Marais au Crépuscule* (crocodiles, mines toxiques) et *Les Cascades Turquoise* (trois chutes d’eau dans la jungle, tourniquets à piques qui balaient la rivière : on passe en serrant la berge). Trois coups et la bouée éclate : tout le monde repart du dernier checkpoint validé.
+- **Courses à pied** : *Le Parcours Pétillant* (barres tournantes, plateformes mobiles, marteaux, bumpers, disques qui tournent, tremplin) et *La Grande Glissade* (glace glissante, croix tournante, tapis roulant, ascenseurs). Le premier arrivé gagne, classement à l’arrivée.
+- **Survie** : *Le Grand Tourbillon* (les barres accélèrent, le sol s’enfonce) et *La Patinoire Folle* (bumpers qui foncent, coins qui fondent) ; le dernier debout gagne.
+- **Mode tournoi** : l’hôte enchaîne six épreuves ; chacune rapporte des points (rang en course et en survie, étoiles de l’équipe en descente) et le meilleur total gagne.
+- **En ligne entre amis** : *Jouer* crée un salon avec un code à 5 caractères ; les amis choisissent *Rejoindre une partie* ou ouvrent le lien `…#pouf=CODE`. Les membres d’un groupe ou d’un salon de la console arrivent automatiquement dans le même salon, et les amis en ligne peuvent être invités depuis le jeu. Connexion directe WebRTC (mise en relation PeerJS), l’hôte calcule la partie et les autres reçoivent l’état 20 fois par seconde ; si l’hôte part, un autre joueur reprend le salon. Sans connexion, le jeu reste jouable en solo.
+- **Progression** : personnages (6 espèces), couleurs, chapeaux, accessoires, couleur du gaz, emotes, XP, niveaux, pièces pour débloquer, étoiles, records de la console, trophées de la console.
+- **Commandes** : clavier (ZQSD ou WASD, Espace, Maj/E, R, 1-6, Échap), souris (clic pour capturer la caméra), manette (sticks, ✕/R2, □/R1, △, croix directionnelle, Options) et écran tactile (joystick et boutons).
+
+Le jeu est isolé dans `src/games/pouf/` (chargé à la demande : la console ne télécharge three.js qu’au lancement du jeu) ; `src/games/registry.js` déclare les jeux réellement jouables. Pouf Party est intégré à la console : il est toujours installé et ne peut pas être supprimé. Les visuels de la jaquette sont rendus avec le moteur du jeu (`npm run art:pouf`).
+
+## Caméra et partage de la partie
+
+Pendant un appel vocal de groupe ou de salon, un panneau vidéo apparaît à droite de l’écran (aussi au-dessus du jeu) ; les mêmes commandes sont dans la *Base de jeu → Groupe* et dans le *centre de contrôle*.
+
+- **Caméra** : activée uniquement après un toucher (le navigateur demande l’autorisation), indicateur rouge tant qu’elle filme, bouton *caméra avant / arrière* quand l’appareil en a deux, indépendante du micro (couper l’un ne coupe pas l’autre). Les caméras des amis s’affichent quand ils l’activent ; toucher une vignette l’agrandit.
+- **Partager la partie** : vos amis voient votre partie de Pouf Party en direct, avec le son du jeu. Seule l’image du jeu est transmise (copie réduite du rendu 3D) : cela fonctionne aussi sur iPhone et iPad, où Safari et les apps de l’écran d’accueil ne permettent pas de partager l’écran.
+- **Partager l’écran** (ordinateur : Chrome, Edge, Firefox, Safari macOS) : fenêtre, onglet ou écran entier ; le bouton « Arrêter le partage » du navigateur est pris en compte. Le bouton n’est pas proposé là où la fonction n’existe pas.
+- **Sécurité** : la vidéo passe par les mêmes connexions WebRTC chiffrées que la voix, uniquement entre les membres du vocal d’un même groupe ou salon (le serveur et l’hôte du salon refusent tout autre relais). Raccrocher coupe la caméra et le partage ; rien ne continue de filmer en arrière-plan.
 
 ## Démarrer
 
@@ -39,6 +64,8 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 
 - **Comptes** : au premier lancement, création du compte (identifiant en ligne unique, mot de passe, avatar) avec validation côté client et côté serveur ; connexion, déconnexion, changement d’avatar, plusieurs comptes sur la même console (« Qui utilise cette manette ? »).
 - **Amis** : recherche par identifiant, demandes envoyées / reçues en temps réel, acceptation, suppression, statut en direct (en ligne, joue à…, dans un groupe, vu il y a…).
+- **Joueurs en ligne** : *Base de jeu → Ajouter un ami* liste les joueurs connectés ; on peut en inviter un directement dans sa partie, **sans être amis**.
+- **Sans serveur (GitHub Pages, app de l’écran d’accueil)** : les amis fonctionnent aussi. Les consoles en ligne se retrouvent dans un annuaire de joueurs partagé (tenu par l’une d’elles via PeerJS, repris automatiquement si elle s’en va) ; demandes d’ami, invitations et code du groupe passent directement d’une console à l’autre ; la liste d’amis est gardée sur l’appareil, par profil. Le code d’un groupe n’est jamais publié : seuls les amis peuvent le demander, une invitation le contient.
 - **Groupes et sessions** : invitations, rejoindre le groupe ouvert d’un ami, discussion écrite, lancement d’un jeu partagé (les membres sont invités à rejoindre la partie), viseurs et signaux synchronisés en temps réel pendant la session.
 - **Appels vocaux** : WebRTC entre les membres du groupe, avec annulation d’écho, réduction du bruit et gain automatique pour parler **sans casque** (micro et haut-parleur de l’appareil). Muet, volume par membre (sauf iOS), indicateur de parole, reprise du micro et renégociation après une interruption, la musique de la console se coupe pendant l’appel.
 - **Robustesse** : reconnexion automatique avec délai croissant, détection des connexions mortes (ping), délai de grâce de 15 s côté serveur pour ne pas sortir un joueur de son groupe lors d’un rechargement ou d’un changement d’app, gestion des erreurs réseau et des refus de micro avec des messages clairs.
@@ -47,8 +74,8 @@ Les appels vocaux exigent **HTTPS** (Safari refuse le micro sinon). Le serveur s
 
 Recréation **non officielle** du jeu d’imitation Mimic Party, jouable depuis l’écran d’accueil : salon 3D (personnages, marche, animations, auras), menu, parties disponibles, choix du mode (Classic / Versus), lobby (packs de sons, règles, joueurs), puis les manches **ANNOUNCE → REVEAL → RECORDING → PLAYBACK → WHEEL** et les résultats.
 
-- **Sons** : 42 extraits tirés des vidéos de l’utilisateur (doublons écartés), en 5 packs.
-- **Micro et notation** : une seule prise par manche ; la voix est comparée au son (timbre MFCC + DTW, rythme, mélodie) et, quand le navigateur le permet, les paroles reconnues (Web Speech API) entrent dans la note sur 100.
+- **Sons** : 43 extraits tirés des vidéos de l’utilisateur, découpés aux vraies coupures des vidéos (le « boum » des transitions n’est jamais gardé) puis vérifiés un par un par transcription (`tools/mimic/refs-src.json`, `tools/mimic/cut-refs.py`). Aucune musique de fond dans le jeu : seulement des bruitages.
+- **Micro et notation** : une seule prise par manche ; la voix est comparée au son (timbre MFCC + DTW, rythme, mélodie) et, quand le navigateur le permet, les paroles reconnues (Web Speech API) entrent dans la note sur 100 (pas sur iPhone/iPad en mode automatique : la dictée d’iOS couperait le micro de la prise et du chat vocal).
 - **Chat vocal** : pendant la prise, le micro du chat vocal est coupé et le son des amis mis en pause, puis tout revient pour écouter les imitations ensemble.
 - **Multijoueur** : plusieurs joueurs sur la même console (chacun son tour) ou en ligne avec le groupe / salon (tout le monde imite en même temps, les enregistrements sont envoyés au groupe, l’hôte orchestre les manches et la roue).
 - Progression (XP, niveaux, animations et auras à débloquer), statistiques, objectifs reliés aux trophées de la console.
@@ -94,14 +121,25 @@ Mots de passe hachés avec scrypt (sel aléatoire), jamais stockés sur l’appa
 ## Tests
 
 ```bash
-npm test          # API + WebSocket (SQLite en mémoire) et règles d’UNO (milliers de parties simulées)
+npm test          # API + WebSocket (SQLite en mémoire) + physique de Pouf Party + règles d’UNO (milliers de parties simulées)
 npm run test:pg   # mêmes contrôles de stockage sur un vrai PostgreSQL
 npm run e2e:salon # salons sans serveur : vocal, discussion, partie partagée, reprise après rechargement
+npm run e2e:friends # amis sans serveur : annuaire, demande, invitation d’un joueur non ami, rejoindre un ami, reprise de l’annuaire
+npm run e2e:resume # hôte mis en arrière-plan (page gelée) : l’ami patiente puis rejoint, reprise de la partie sans salon en double
+npm run e2e:video  # caméra dans les deux sens, partage de la partie et de l’écran, arrêt, refus d’autorisation, raccrocher
+npm run e2e:touch # écran tactile de téléphone : carte utilisateur, photo de profil, profil, amis, menus, ancienne sauvegarde Safari, lancement du jeu
 npm run e2e       # deux navigateurs réels : inscription, amis, appel vocal (micro simulé), session partagée, coupure réseau, interruption + rechargement
+npm run e2e:pouf  # Pouf Party : partie en ligne à deux (bouée et course), clavier, manette, tactile, survie, retour à la console
 npm run e2e:mimic        # Mimic Party sur une console : menus, lobby, 2 joueurs, manches, notation (micro simulé), résultats
 npm run e2e:uno         # UNO : salon par code entre deux navigateurs, partie complète synchronisée, puis partie solo
 npm run e2e:mimic-online # Mimic Party en ligne : deux navigateurs, invitation, lobby commun, partie complète, chat vocal en pause pendant les prises
 ```
+
+## Diagnostic sur l’appareil
+
+- *Paramètres → Son → Diagnostic audio* : état de la lecture, session audio iOS, micro de l’appel, boutons **Tester le son** et **Tester le micro** (pour distinguer un problème de lecture d’un problème de micro, avec le haut-parleur, des écouteurs ou des AirPods).
+- *Paramètres → Système → Journal des interruptions* : arrière-plan, rechargements, restaurations, et désormais les changements de sortie audio (écouteurs branchés ou retirés), les relances du son et du micro.
+- *Pouf Party → Options → Journal des dégâts* : chaque coup, éclatement ou renversement avec le piège responsable (type et numéro), la cause, la position (sur la rivière ou dans le niveau), le temps de la partie, l’heure et la source (simulation de l’hôte ou reçu de l’hôte). Avec `?pfdebug` dans l’adresse, ces entrées sont aussi écrites dans la console.
 
 ## Technique
 

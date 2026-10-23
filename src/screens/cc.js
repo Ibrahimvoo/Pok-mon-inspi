@@ -5,7 +5,7 @@ import { voice } from '../rtc.js';
 import { presenceText } from './gamebase.js';
 import { state, bus } from '../state.js';
 import { h, icon, art, img, size, ago, avatarImg } from '../ui.js';
-import { closeLayer, renderHints, timeStr, applySettings, go } from '../shell.js';
+import { closeLayer, renderHints, timeStr, applySettings, go, toast } from '../shell.js';
 import { nav } from '../nav.js';
 import { audio } from '../audio.js';
 import { input } from '../input.js';
@@ -81,6 +81,12 @@ export function openControlCenter({ ingame } = {}) {
         : [h('div.empty', 'Aucun téléchargement en cours.')];
     } else if (kind === 'friends') {
       const openBase = tab => () => { layer.close(false); import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab })); };
+      // camera / share from the Control Center (also during a game): result shown, panel refreshed
+      const media = async fn => {
+        audio.play('ok');
+        try { await fn(); } catch (e) { toast({ title: 'Vidéo', sub: e?.message || 'Action impossible.', icon: 'info', sound: 'error', log: false }); }
+        if (panelKind === kind) { openPanel(kind); openPanel(kind); }
+      };
       title = 'Base de jeu';
       if (!social.available) body = [h('div.empty', 'Jouez et parlez avec un ami grâce à un salon : envoyez-lui simplement le lien.'), listItem(h('span.icw', { html: icon('party') }), 'Créer ou rejoindre un salon', null, openBase('party'))];
       else {
@@ -91,6 +97,11 @@ export function openControlCenter({ ingame } = {}) {
             h('div.cc-party', p.members.map(m => h('div.cc-pm', { 'data-uid': m.id === social.me?.id ? 'me' : m.id }, h('div.avatar.speak', img(art.thumb(m.avatar))), h('span', m.psn), m.muted || !m.voice ? h('span.icw.mic-off', { html: icon('micOff') }) : null))),
             voice.active ? listItem(h('span.icw', { html: icon(voice.muted ? 'micOff' : 'mic') }), voice.muted ? 'Réactiver le micro' : 'Couper le micro', 'Chat vocal du groupe', () => { voice.setMuted(!voice.muted); audio.play('toggle'); openPanel(kind); openPanel(kind); })
               : listItem(h('span.icw', { html: icon('mic') }), 'Rejoindre le chat vocal', null, () => social.joinVoice().then(() => { openPanel(kind); openPanel(kind); })),
+            ...(voice.active ? [
+              listItem(h('span.icw', { html: icon('display') }), voice.camera ? 'Couper la caméra' : 'Activer la caméra', voice.camera ? 'Vos amis vous voient' : 'Visible par les membres du vocal', () => media(() => voice.setCamera(!voice.camera))),
+              ...(voice.sharing || voice.canShareGame || voice.canShareScreen ? [listItem(h('span.icw', { html: icon('switcher') }), voice.sharing ? 'Arrêter le partage' : voice.canShareGame ? 'Partager la partie' : 'Partager l’écran',
+                voice.sharing ? 'Vos amis voient votre partie' : voice.canShareGame ? 'Vos amis voient votre jeu en direct' : 'Fenêtre, onglet ou écran', () => media(() => voice.sharing ? voice.stopShare() : voice.startShare(voice.canShareGame ? 'game' : 'screen')))] : []),
+            ] : []),
             listItem(h('span.icw', { html: icon('party') }), 'Ouvrir le groupe', `${p.members.length} membre${p.members.length > 1 ? 's' : ''}`, openBase('party')),
             listItem(h('span.icw', { html: icon('phoneOff') }), 'Quitter le groupe', null, () => { social.leave(); openPanel(kind); openPanel(kind); }),
           ] : []),

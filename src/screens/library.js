@@ -1,6 +1,6 @@
 // Game library: Installed / Your collection, sortable grid with download states.
 import { byId } from '../data.js';
-import { state, bus, installed, downloading } from '../state.js';
+import { state, bus, installed, downloading, builtIn } from '../state.js';
 import { h, icon, art, img, logo, size, ago } from '../ui.js';
 import { menu, renderHints } from '../shell.js';
 import { nav } from '../nav.js';
@@ -74,7 +74,7 @@ export function libraryScreen() {
         if (!id) { openSort(sortEl); return true; }
         const items = [{ label: installed(id) ? 'Jouer' : downloading(id) ? 'Voir la progression' : 'Télécharger', icon: installed(id) ? 'play' : 'download', onok: () => play(id) },
           { label: 'Informations sur le jeu', icon: 'info', onok: () => openProduct(id) }];
-        if (installed(id)) items.push({ label: 'Supprimer', icon: 'trash', onok: () => uninstall(id) });
+        if (installed(id) && !builtIn(id)) items.push({ label: 'Supprimer', icon: 'trash', onok: () => uninstall(id) });
         menu(items, layer.focused);
         return true;
       }

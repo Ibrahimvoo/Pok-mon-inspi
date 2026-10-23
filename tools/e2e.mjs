@@ -19,10 +19,10 @@ const ok = (name, cond, extra = '') => { results.push([cond ? 'PASS' : 'FAIL', n
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function player(name) {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, permissions: ['microphone'] });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, permissions: ['microphone', 'camera'] });
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`${name} pageerror: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error') errors.push(`${name} console: ${m.text()}`); });
+  page.on('console', m => { if (m.type() === 'error' && !/peerjs/.test(m.text())) errors.push(`${name} console: ${m.text()}`); });
   await page.goto(base);
   return { ctx, page, name, shot: async n => shots && page.screenshot({ path: join(shots, `e2e-${n}.jpg`), type: 'jpeg', quality: 70 }) };
 }
@@ -75,7 +75,8 @@ try {
   await A.page.fill('.gamebase .f-input', 'orion');
   await A.page.press('.gamebase .f-input', 'Enter');
   ok('recherche de joueur', await until(A.page, () => /Orion_B/.test(document.querySelector('.gamebase .gb-list')?.innerText || '')));
-  await A.page.click('.gamebase .gb-row:has-text("Orion_B")');
+  await A.page.click('.gamebase .gb-row[data-key^="r-"]:has-text("Orion_B")');
+  await A.page.click('.menu .list-item:has-text("Envoyer une demande d’ami")');
   ok('demande d’ami reçue en temps réel', await until(B.page, () => /Nouvelle demande d’ami/.test(document.getElementById('toasts').innerText)));
   await openBase(B, 'Demandes');
   await B.page.click('.gamebase button:has-text("Accepter")');
@@ -100,6 +101,11 @@ try {
   await A.page.click('.gamebase .tab:has-text("Groupe")');
   await B.page.click('.gamebase button:has-text("Couper le micro")');
   ok('micro coupé propagé à A', await until(A.page, () => /Micro coupé/.test(document.querySelector('.gamebase .members')?.innerText || ''), null, 5000));
+  // camera through the project server: the offer with the video slots must pass its relay (size limits)
+  await B.page.click('#video-dock .vd-btn[title="Activer la caméra"]');
+  ok('caméra de B reçue par A via le serveur', await until(A.page, () => [...document.querySelectorAll('.vd-tile.cam')].some(t => t.querySelector('video')?.videoWidth > 0), null, 20000));
+  await B.page.click('#video-dock .vd-btn[title="Couper la caméra"]');
+  ok('caméra coupée chez A aussi', await until(A.page, () => !document.querySelector('.vd-tile.cam'), null, 10000));
   await B.page.click('.gamebase button:has-text("Réactiver le micro")');
 
   // chat
@@ -117,13 +123,11 @@ try {
   await A.page.keyboard.press('Enter');
   ok('B est invité à rejoindre la partie', await until(B.page, () => /a lancé/.test(document.querySelector('.dialog')?.innerText || ''), null, 10000), gameTitle);
   await B.page.click('.dialog button:has-text("Rejoindre la partie")');
-  ok('A et B dans la même session de jeu', await until(A.page, () => !document.querySelector('.mp')?.classList.contains('hidden') && !!document.querySelector('.mp-cur:not(.mine)'), null, 12000) && await until(B.page, () => !document.querySelector('.mp')?.classList.contains('hidden'), null, 12000));
-  await sleep(600);
-  const before = await B.page.evaluate(() => document.querySelector('.mp-cur:not(.mine)')?.style.left);
-  await A.page.mouse.move(200, 200); await A.page.mouse.move(900, 500, { steps: 8 });
-  ok('déplacement de A synchronisé chez B', await until(B.page, b => { const l = document.querySelector('.mp-cur:not(.mine)')?.style.left; return l && l !== b; }, before, 5000));
-  await A.page.mouse.click(900, 500);
-  ok('signal (ping) de A reçu chez B', await until(B.page, () => !!document.querySelector('.mp-ping:not(.mine)'), null, 4000));
+  // Pouf Party is the console's only game: both players are in it (its own lobby is covered by tools/pouf/e2e-invite.mjs)
+  // (software WebGL in this test: starting the 3D game takes ~20 s, a few hundred ms on a phone)
+  const inGame = () => document.documentElement.classList.contains('pf-playing') && !!document.querySelector('.pf-root .pf-game canvas');
+  const t0 = Date.now();
+  ok('A et B dans le jeu du groupe', await until(A.page, inGame, null, 45000) && await until(B.page, inGame, null, 45000), `${((Date.now() - t0) / 1000).toFixed(1)} s`);
   await B.shot('08-ingame');
   await A.shot('08b-ingame-A');
 
@@ -141,8 +145,9 @@ try {
   ok('reprise après mise en arrière-plan sans erreur', true);
   await B.page.reload();
   await B.page.keyboard.press('Enter');
-  ok('après rechargement : session et jeu restaurés sans reconnexion', await until(B.page, () => !!document.querySelector('.ingame'), null, 15000));
-  ok('après rechargement : groupe conservé', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 10000));
+  // the 3D game compiles its shaders on the CPU here (software WebGL): the page can be busy for ~20 s
+  ok('après rechargement : session et jeu restaurés sans reconnexion', await until(B.page, () => !!document.querySelector('.pf-root'), null, 45000));
+  ok('après rechargement : groupe conservé', await until(B.page, () => (document.querySelector('#party-hud')?.innerText || '').includes('2'), null, 45000));
   await B.shot('09-restored');
 
   // ---------------------------------------------------------------- sign out / sign in

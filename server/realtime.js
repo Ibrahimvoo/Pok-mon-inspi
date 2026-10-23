@@ -1,7 +1,7 @@
 // Realtime hub over WebSocket: presence, parties (groups), invitations, game sessions,
 // WebRTC signalling relay and in-game input sync. Live state is in memory; accounts/friends are in the DB.
 import { randomUUID, randomBytes } from 'node:crypto';
-import { AVATARS } from './accounts.js';
+import { GAME_IDS } from './accounts.js';
 
 const GRACE_MS = 15000;          // keep a player "online" (and in their party) this long after a dropped socket
 const INVITE_TTL = 2 * 60e3;
@@ -77,16 +77,28 @@ export function createHub({ acc, log = () => {} }) {
     ping() { return { ok: true }; },
     presence(u, m) {
       const activity = ACTIVITIES.includes(m.activity) ? m.activity : 'home';
-      const game = activity === 'game' && AVATARS.includes(m.game) ? m.game : null;
+      const game = activity === 'game' && GAME_IDS.includes(m.game) ? m.game : null;
       presence.set(u.id, { activity, game });
       broadcastPresence(u.id);
+    },
+    // players online right now (friends or not), to invite them straight into a game
+    players(u) {
+      const list = [];
+      for (const id of conns.keys()) {
+        if (id === u.id || !users.has(id)) continue;
+        const { activity, game } = presenceOf(id);
+        list.push({ ...users.get(id), online: true, activity, game, friend: !!isFriend(u.id, id) });
+        if (list.length >= 50) break;
+      }
+      return { ok: true, players: list.sort((a, b) => b.friend - a.friend || a.psn.localeCompare(b.psn)) };
     },
     'party.create'(u) { const p = createParty(u.id); return { ok: true, partyId: p.id }; },
     'party.invite'(u, m) {
       let p = parties.get(userParty.get(u.id));
       if (!p) p = createParty(u.id);
       const to = String(m.to || '');
-      if (!isFriend(u.id, to)) return { error: 'not_friend', message: 'Vous ne pouvez inviter que vos amis.' };
+      // any player online can be invited (friends or not); the invitation is what lets them in
+      if (to === u.id || !users.has(to)) return { error: 'not_found', message: 'Joueur introuvable.' };
       if (p.members.has(to)) return { error: 'already', message: 'Ce joueur est déjà dans le groupe.' };
       if (p.members.size >= MAX_PARTY) return { error: 'full', message: 'Le groupe est complet.' };
       if (!online(to)) return { error: 'offline', message: 'Ce joueur est hors ligne.' };
@@ -140,11 +152,11 @@ export function createHub({ acc, log = () => {} }) {
       const me = p?.members.get(u.id), peer = p?.members.get(String(m.to || ''));
       if (!me?.voice || !peer?.voice) return;
       const data = m.data;
-      if (!data || typeof data !== 'object' || JSON.stringify(data).length > 12000) return;
+      if (!data || typeof data !== 'object' || JSON.stringify(data).length > 48000) return;
       toUser(peer.id, { t: 'rtc', from: u.id, fromVs: me.vs, toVs: m.toVs, data });
     },
     'game.start'(u, m) {
-      const game = AVATARS.includes(m.game) ? m.game : null;
+      const game = GAME_IDS.includes(m.game) ? m.game : null;
       let p = parties.get(userParty.get(u.id));
       if (!game) return { error: 'invalid', message: 'Jeu inconnu.' };
       if (!p) p = createParty(u.id);

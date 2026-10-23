@@ -29,6 +29,8 @@ body {
   cursor: default; font-size: 2rem; line-height: 1.3;
 }
 html[data-device="ps"] body, html[data-device="xbox"] body, html[data-device="generic"] body, html[data-device="nintendo"] body { cursor: none; }
+[data-f], [data-action] { cursor: pointer; }
+html[data-device="ps"] [data-f], html[data-device="xbox"] [data-f], html[data-device="generic"] [data-f], html[data-device="nintendo"] [data-f] { cursor: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
 img { display: block; }
 img.broken { visibility: hidden; }
@@ -466,6 +468,10 @@ html.contrast #shade { background: rgba(0, 0, 0, .7); }
 @keyframes dlgOut { to { transform: scale(.97); opacity: 0; } }
 .dialog h2 { margin: 0 0 2rem; font-size: 3.4rem; font-weight: 400; }
 .dialog .dbody { font-size: 2.1rem; color: rgba(255, 255, 255, .8); line-height: 1.5; }
+.install-steps { margin: 1rem 0 2rem; padding-left: 3rem; display: grid; gap: 1rem; }
+.install-steps b { color: #fff; font-weight: 600; }
+.install-note { display: flex; gap: 1.2rem; align-items: flex-start; font-size: 1.8rem; color: var(--dim); }
+.install-note .icw { flex: none; width: 2.4rem; height: 2.4rem; }
 .dialog .dactions { display: flex; gap: 1.8rem; margin-top: 4rem; flex-wrap: wrap; }
 .dialog .dactions .btn { flex: 1; min-width: 20rem; }
 .dialog.wide { width: 110rem; }
@@ -481,7 +487,7 @@ html.contrast #shade { background: rgba(0, 0, 0, .7); }
 @keyframes spin { to { transform: rotate(360deg); } }
 .success-ic { width: 10rem; height: 10rem; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; font-size: 6rem; margin: 0 auto 3rem; animation: pop .5s var(--ease) both; }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.08); } }
-.menu { position: absolute; width: 50rem; border-radius: 1.8rem; background: rgba(32, 35, 43, .97); padding: 1.4rem; box-shadow: 0 2rem 6rem rgba(0, 0, 0, .55); animation: dlgIn .25s var(--ease) both; }
+.menu { position: absolute; width: 50rem; max-width: calc(100vw - 2rem); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; border-radius: 1.8rem; background: rgba(32, 35, 43, .97); padding: 1.4rem; box-shadow: 0 2rem 6rem rgba(0, 0, 0, .55); animation: dlgIn .25s var(--ease) both; }
 .menu .list-item { font-size: 2.2rem; padding: 1.6rem 2rem; }
 .menu .list-item .ic { font-size: 2.6rem; }
 
@@ -803,4 +809,40 @@ body { background: var(--bg); }
 .salon-card .f-row { justify-self: stretch; }
 .salon-code { letter-spacing: .3em; text-transform: uppercase; font-size: max(16px, 3.4rem); }
 .salon-note { grid-column: 1 / -1; font-size: 1.8rem; color: var(--faint); margin: 0; }
+.gb-hint { font-size: 1.7rem; color: var(--faint); margin: -.6rem 0 1.4rem; }
 .salon-link { margin-top: 1.4rem; padding: 1.4rem 1.8rem; border-radius: 1rem; background: rgba(255, 255, 255, .08); font-family: ui-monospace, monospace; font-size: 1.8rem; word-break: break-all; user-select: text; -webkit-user-select: text; color: #fff; }
+.store-empty { font-size: 2.4rem; color: var(--dim); margin: 2rem 0; }
+
+/* video of the call: camera previews, friends' cameras, shared gameplay */
+#video-dock { position: absolute; right: max(1.6rem, env(safe-area-inset-right)); top: 16rem; bottom: 18rem; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 1rem; pointer-events: none; z-index: 2; }
+#video-dock.hidden { display: none; }
+#video-dock .vd-bar { display: flex; gap: .8rem; pointer-events: auto; padding: .6rem; border-radius: 4rem; background: rgba(14, 16, 22, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+#video-dock .vd-bar.busy { opacity: .6; pointer-events: none; }
+.vd-btn { width: max(40px, 5.4rem); height: max(40px, 5.4rem); border-radius: 50%; border: 0; display: grid; place-items: center; color: #fff; background: rgba(255, 255, 255, .12); cursor: pointer; padding: 0; }
+.vd-btn svg { width: 55%; height: 55%; }
+.vd-btn.on { background: #2f8cff; }
+.vd-btn.danger { background: #e5383b; }
+.vd-btn:active { transform: scale(.92); }
+.vd-tiles { display: flex; flex-direction: column; gap: .8rem; align-items: flex-end; overflow-y: auto; pointer-events: auto; scrollbar-width: none; }
+#video-dock.min .vd-tiles { display: none; }
+.vd-tile { position: relative; width: max(120px, 20rem); aspect-ratio: 4 / 3; border-radius: 1.4rem; overflow: hidden; background: #0b0d12; box-shadow: 0 .8rem 2.4rem rgba(0, 0, 0, .45); cursor: pointer; flex: none; }
+.vd-tile.screen { width: max(170px, 30rem); aspect-ratio: 16 / 9; }
+.vd-tile.shown-big { outline: .3rem solid #2f8cff; }
+#video-big { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; background: rgba(0, 0, 0, .7); pointer-events: auto; cursor: pointer; }
+#video-big.hidden { display: none; }
+.vd-big { position: relative; width: min(92vw, 150vh); aspect-ratio: 16 / 9; border-radius: 1.6rem; overflow: hidden; background: #000; }
+.vd-big.cam { width: min(80vw, 110vh); aspect-ratio: 4 / 3; }
+.vd-big video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.vd-big video.mirror { transform: scaleX(-1); }
+.vd-tile video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+.vd-tile.screen video { object-fit: contain; }
+.vd-tile video.mirror { transform: scaleX(-1); }
+.vd-tile.weak video { opacity: .55; }
+.vd-label { position: absolute; left: .8rem; bottom: .8rem; display: flex; align-items: center; gap: .6rem; padding: .3rem .9rem; border-radius: 2rem; background: rgba(0, 0, 0, .6); color: #fff; font-size: max(11px, 1.5rem); max-width: calc(100% - 1.6rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vd-live { width: .9rem; height: .9rem; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 0 .3rem rgba(255, 59, 48, .3); flex: none; animation: vdLive 1.6s ease-in-out infinite; }
+@keyframes vdLive { 50% { opacity: .35; } }
+.vd-state { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: max(11px, 1.6rem); background: rgba(0, 0, 0, .35); }
+.vd-local-share { width: 100%; height: 100%; display: grid; place-content: center; justify-items: center; gap: .4rem; color: #fff; text-align: center; background: linear-gradient(135deg, #1b2a4a, #0b0d12); }
+.vd-local-share span svg { width: 4rem; height: 4rem; }
+.vd-local-share b { font-size: max(12px, 1.7rem); font-weight: 600; }
+.vd-local-share small { font-size: max(10px, 1.3rem); opacity: .75; }

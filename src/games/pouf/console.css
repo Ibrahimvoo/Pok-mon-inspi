@@ -1,0 +1,8 @@
+/* Console-side styles of Pouf Party (tiles, store page, launch) — the game's own UI lives in pouf.css. */
+.logo-luckiest { font-family: 'Luckiest Guy', 'Arial Black', sans-serif; color: #ffd23f; -webkit-text-stroke: .5rem #1d3557; paint-order: stroke fill; text-shadow: 0 .6rem 0 #1d3557, 0 1.6rem 3rem rgba(0, 0, 0, .35); transform: rotate(-3deg); transform-origin: left center; letter-spacing: .02em; }
+.ptile .tile-logo.logo-luckiest { font-size: 3.2rem; -webkit-text-stroke: .3rem #1d3557; text-shadow: 0 .3rem 0 #1d3557; }
+.case .front .clogo.logo-luckiest { font-size: 4.4rem; -webkit-text-stroke: .35rem #1d3557; }
+.ingame .hud-tl .logo-luckiest { -webkit-text-stroke: .25rem #1d3557; }
+.pf-fail { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 1rem; padding: 4rem; color: #1d3557; font: 600 2.2rem 'Source Sans 3', sans-serif; }
+.pf-fail h2 { font: 400 5rem 'Luckiest Guy', sans-serif; margin: 0; }
+.pf-fail code { font-size: 1.6rem; opacity: .7; }

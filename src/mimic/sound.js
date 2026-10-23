@@ -1,9 +1,9 @@
-// Mimic Party audio: party music (synthesised live), game sound effects, the meme refs and playback of recordings.
+// Mimic Party audio: game sound effects (synthesised live), the meme refs and playback of recordings. No music.
 import { audio } from '../audio.js';
 import { state, bus } from '../state.js';
 import { resample, SR, features } from './dsp.js';
 
-let ctx = null, master, musicBus, fxBus, clipBus, quietGain;
+let ctx = null, master, fxBus, clipBus, quietGain;
 const clips = new Map();     // ref id → Promise<AudioBuffer>
 const feats = new Map();     // ref id → Promise<features>
 const hz = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -16,18 +16,16 @@ function setup() {
   const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -10; comp.ratio.value = 4;
   quietGain = ctx.createGain();
   master.connect(comp); comp.connect(ctx.destination);
-  musicBus = ctx.createGain(); fxBus = ctx.createGain(); clipBus = ctx.createGain();
-  musicBus.connect(quietGain); fxBus.connect(quietGain); quietGain.connect(master); clipBus.connect(master);
+  fxBus = ctx.createGain(); clipBus = ctx.createGain();
+  fxBus.connect(quietGain); quietGain.connect(master); clipBus.connect(master);
   applyVolumes();
   bus.addEventListener('change', e => { if (e.detail === 'settings') applyVolumes(); });
   return true;
 }
-let musicMuted = false;
 function applyVolumes() {
   if (!ctx) return;
   const s = state.settings, t = ctx.currentTime;
   fxBus.gain.setTargetAtTime(s.sfx ? Math.max(.25, s.sfxVol) : 0, t, .05);
-  musicBus.gain.setTargetAtTime(s.music && !musicMuted ? Math.max(.2, s.musicVol) * .55 : 0, t, .2);
   clipBus.gain.setTargetAtTime(1, t, .05);
 }
 
@@ -56,50 +54,7 @@ function noise(t, d, peak, dest, { f = 3000, f2, type = 'bandpass', q = 1 } = {}
 }
 const kick = (t, dest, v = 1) => osc('sine', 150, t, .22, .9 * v, dest, { f2: 42 });
 const clap = (t, dest, v = 1) => { for (let i = 0; i < 3; i++) noise(t + i * .011, .09 + i * .04, .32 * v, dest, { f: 1400, q: .9 }); };
-const hat = (t, dest, v = 1) => noise(t, .035, .12 * v, dest, { f: 8000, type: 'highpass', q: .7 });
-const pluck = (m, t, dest, v = 1, d = .24) => { [0, 7, -5].forEach((dt, i) => osc('sawtooth', hz(m), t, d, (.05 - i * .012) * v, dest, { q: 2400, detune: dt })); };
-const bassN = (m, t, dest, d = .17) => { osc('triangle', hz(m), t, d, .32, dest); osc('square', hz(m), t, d * .8, .05, dest, { q: 700 }); };
 const bell = (m, t, dest, v = 1) => { osc('sine', hz(m), t, .5, .09 * v, dest); osc('sine', hz(m) * 4, t, .12, .025 * v, dest); };
-
-// ---------------------------------------------------------------- music
-// 16-step bars, chords as MIDI root + triad; each track is a little arrangement over a 4-bar loop
-const PROG = [[53, [65, 69, 72]], [50, [62, 65, 69]], [46, [62, 65, 70]], [48, [64, 67, 72]]]; // F – Dm – Bb – C
-const LEAD = [77, 0, 76, 77, 0, 81, 0, 79, 77, 0, 74, 0, 76, 0, 72, 0];
-const TRACKS = {
-  menu: { bpm: 118, kick: [0, 6, 8], clap: [4, 12], hat: [2, 6, 10, 14], stab: [0, 3, 6, 10, 12], bass: [0, 3, 6, 8, 11, 14], lead: true, vol: 1 },
-  play: { bpm: 104, kick: [0, 8], clap: [], hat: [4, 12], stab: [0, 6, 10], bass: [0, 8, 11], lead: false, vol: .55 },
-  podium: { bpm: 128, kick: [0, 4, 8, 12], clap: [4, 12], hat: [2, 6, 10, 14, 15], stab: [0, 2, 6, 8, 10, 14], bass: [0, 2, 4, 6, 8, 10, 12, 14], lead: true, vol: 1.1 },
-};
-let track = null, step = 0, nextT = 0, timer = 0, trackGain = null;
-function tick() {
-  if (!track || !ctx || ctx.state !== 'running') return;
-  const T = TRACKS[track], dt = 60 / T.bpm / 4;
-  while (nextT < ctx.currentTime + .12) {
-    const s = step % 16, bar = Math.floor(step / 16) % 4, [root, triad] = PROG[bar], t = Math.max(nextT, ctx.currentTime);
-    if (T.kick.includes(s)) kick(t, trackGain, T.vol);
-    if (T.clap.includes(s)) clap(t, trackGain, T.vol);
-    if (T.hat.includes(s) || (track === 'podium' && s % 2)) hat(t, trackGain, T.vol);
-    if (T.stab.includes(s)) triad.forEach(m => pluck(m, t, trackGain, T.vol));
-    if (T.bass.includes(s)) bassN(root - 12 + (s === 11 || s === 14 ? 12 : 0), t, trackGain);
-    if (T.lead && LEAD[s] && bar % 2 === 1) bell(LEAD[s] + (bar === 3 ? -2 : 0), t, trackGain, T.vol);
-    nextT += dt; step++;
-  }
-}
-export const music = {
-  play(name) {
-    if (!setup() || track === name) return;
-    this.stop(.3);
-    track = name; step = 0; nextT = ctx.currentTime + .08;
-    trackGain = ctx.createGain(); trackGain.gain.value = 1; trackGain.connect(musicBus);
-    clearInterval(timer); timer = setInterval(tick, 30); tick();
-  },
-  stop(fade = .4) {
-    clearInterval(timer); timer = 0; track = null;
-    if (trackGain && ctx) { const g = trackGain; g.gain.setTargetAtTime(0, ctx.currentTime, fade / 3); setTimeout(() => g.disconnect(), fade * 1000 + 600); }
-    trackGain = null;
-  },
-  get current() { return track; },
-};
 
 // ---------------------------------------------------------------- sound effects
 const FX = {
@@ -133,12 +88,14 @@ export function sfx(name, delay = 0) {
   try { FX[name](ctx.currentTime + delay); } catch { /* a sound never breaks the game */ }
 }
 // ---------------------------------------------------------------- refs and recordings
+// bumped whenever the refs are cut again, so that no browser keeps playing an older cut from its cache
+export const REFS_REV = 2;
 const decode = ab => new Promise((res, rej) => { try { const p = ctx.decodeAudioData(ab, res, rej); p?.catch?.(rej); } catch (e) { rej(e); } });
 export function loadRef(id) {
   setup();
   if (!ctx) return Promise.reject(new Error('Son indisponible'));
   if (!clips.has(id)) {
-    const p = fetch(`mimic/refs/${encodeURIComponent(id)}.mp3`)
+    const p = fetch(`mimic/refs/${encodeURIComponent(id)}.mp3?v=${REFS_REV}`)
       .then(r => { if (!r.ok) throw new Error(`Réf introuvable (${r.status})`); return r.arrayBuffer(); })
       .then(decode);
     p.catch(() => clips.delete(id));
@@ -188,11 +145,9 @@ export function playBuffer(buf, { gain = 1, offset = 0, max = 0 } = {}) {
     },
   };
 }
-// recording phases: no music or effect may leak into the microphone
+// recording phases: no effect may leak into the microphone
 export function quiet(on) {
   if (!setup()) return;
-  musicMuted = !!on;
   quietGain.gain.setTargetAtTime(on ? 0 : 1, ctx.currentTime, .03);
-  applyVolumes();
 }
 export const soundReady = () => setup() && ctx.state === 'running';

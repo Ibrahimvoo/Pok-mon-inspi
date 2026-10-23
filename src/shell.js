@@ -171,7 +171,7 @@ export function confirmDialog(title, text, okLabel, onok, { danger = false } = {
 
 // ---------------------------------------------------------------- options menu
 export function menu(items, anchor) {
-  const box = h('div.menu');
+  const box = h('div.menu', { 'data-scroll': 'y', 'data-pad': 40 });
   const layer = { root: h('div.overlay', box), hints: [['ok', 'Sélectionner'], ['back', 'Fermer']] };
   layer.back = () => { closeLayer(layer); audio.play('back'); };
   layer.onAction = a => { if (a === 'options') { layer.back(); return true; } };
@@ -183,12 +183,13 @@ export function menu(items, anchor) {
   app.append(layer.root);
   const r = anchor?.getBoundingClientRect?.();
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  // long menus scroll inside the screen instead of running off it
   if (r) {
-    box.style.left = Math.min(r.left, innerWidth - 52 * rem) + 'px';
-    const below = r.bottom + 1.4 * rem;
-    if (below + items.length * 8 * rem < innerHeight) box.style.top = below + 'px';
-    else box.style.bottom = (innerHeight - r.top + 1.4 * rem) + 'px';
-  } else { box.style.right = '9rem'; box.style.bottom = '12rem'; }
+    box.style.left = Math.max(rem, Math.min(r.left, innerWidth - 52 * rem)) + 'px';
+    const below = r.bottom + 1.4 * rem, above = r.top - 1.4 * rem, need = items.length * 8 * rem;
+    if (below + need < innerHeight || innerHeight - below >= above) { box.style.top = below + 'px'; box.style.maxHeight = Math.max(20 * rem, innerHeight - below - rem) + 'px'; }
+    else { box.style.bottom = (innerHeight - above) + 'px'; box.style.maxHeight = Math.max(20 * rem, above - rem) + 'px'; }
+  } else { box.style.right = '9rem'; box.style.bottom = '12rem'; box.style.maxHeight = (innerHeight - 14 * rem) + 'px'; }
   nav.push(layer);
   renderHints();
   audio.play('open');
