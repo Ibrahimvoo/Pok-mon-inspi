@@ -7,6 +7,7 @@ varying vec2 v;
 uniform sampler2D i0,d0,i1,d1;
 uniform float mixv,theme,time,dim,parts,has0,has1;
 uniform vec2 res,par;
+uniform vec3 tint;
 float h(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
 vec2 cover(vec2 uv,float z){float sa=res.x/res.y,ia=16./9.;vec2 s=sa>ia?vec2(1.,ia/sa):vec2(sa/ia,1.);return (uv-.5)*s/z+.5;}
 vec3 art(sampler2D im,sampler2D dp,vec2 uv,float z){
@@ -17,13 +18,13 @@ vec3 art(sampler2D im,sampler2D dp,vec2 uv,float z){
   d=texture2D(dp,q).r; q=c+o*(d-.4);
   return texture2D(im,q).rgb;}
 vec3 themeCol(vec2 uv){
-  vec3 c=mix(vec3(.004,.016,.05),vec3(.01,.06,.17),smoothstep(-.2,1.1,uv.y+uv.x*.25));
-  c+=vec3(.02,.12,.36)*exp(-length((uv-vec2(.78,.62))*vec2(1.,1.8))*2.2);
+  vec3 c=mix(tint*.05,tint*.17,smoothstep(-.2,1.1,uv.y+uv.x*.25));
+  c+=tint*.36*exp(-length((uv-vec2(.78,.62))*vec2(1.,1.8))*2.2);
   for(int i=0;i<4;i++){float f=float(i);
     float y=.38+.07*f+.06*sin(uv.x*2.6+time*.11+f*1.9)+.025*sin(uv.x*6.3-time*.17+f*3.);
     float d=abs(uv.y-y);
     float spark=.6+.4*sin(uv.x*90.+time*.6+f*7.);
-    c+=vec3(.3,.55,1.)*exp(-d*260.)*.18*spark+vec3(.12,.3,.85)*exp(-d*22.)*.035;}
+    c+=mix(tint,vec3(1.),.3)*exp(-d*260.)*.18*spark+tint*.85*exp(-d*22.)*.035;}
   return c;}
 void main(){
   vec2 uv=v;
@@ -55,6 +56,17 @@ let cur = null, next = null;         // { img, depth } entries
 let mix = 0, themeV = 1, themeT = 1, dimV = 1, dimT = 1, quality = 'high', parallaxOn = true, frame = 0, reduce = false;
 const par = { x: 0, y: 0, tx: 0, ty: 0 };
 let token = 0, paused = false;
+// console theme: colour of the animated backdrop, and whether game art replaces it
+export const THEMES = {
+  blue: { label: 'Bleu', hex: '#0b6bd8', hi: '#2f8cff', tint: [.06, .35, 1] },
+  violet: { label: 'Violet', hex: '#7a3fd8', hi: '#a77bff', tint: [.42, .2, 1] },
+  red: { label: 'Rouge', hex: '#c8323f', hi: '#ff5a66', tint: [1, .14, .2] },
+  pink: { label: 'Rose', hex: '#c8337e', hi: '#ff5fae', tint: [1, .2, .6] },
+  green: { label: 'Vert', hex: '#12a36a', hi: '#3fdc98', tint: [.06, 1, .55] },
+  gold: { label: 'Or', hex: '#c98a12', hi: '#ffc23d', tint: [1, .62, .08] },
+};
+const tint = [...THEMES.blue.tint], tintT = [...THEMES.blue.tint];
+let fixedTheme = false, lastShow = null;
 
 function tex(src) {
   const t = gl.createTexture();
@@ -112,6 +124,7 @@ function draw(t) {
   const ty = parallaxOn ? (Math.abs(sy) > .05 ? sy : par.ty) + Math.cos(t * .00017) * .1 : 0;
   par.x += (tx - par.x) * .045; par.y += (ty - par.y) * .045;
   themeV += (themeT - themeV) * k; dimV += (dimT - dimV) * k;
+  for (let i = 0; i < 3; i++) tint[i] += (tintT[i] - tint[i]) * k;
   if (next) {
     mix = Math.min(1, mix + (reduce ? 1 : .035));
     if (mix >= 1) { cur = next; next = null; mix = 0; }
@@ -123,6 +136,7 @@ function draw(t) {
   gl.uniform1f(U.has0, cur ? 1 : 0); gl.uniform1f(U.has1, next ? 1 : 0);
   gl.uniform1f(U.mixv, next ? mix : 0);
   gl.uniform1f(U.theme, themeV);
+  gl.uniform3f(U.tint, tint[0], tint[1], tint[2]);
   gl.uniform1f(U.time, t / 1000);
   gl.uniform1f(U.dim, dimV);
   gl.uniform1f(U.parts, quality === 'eco' ? 0 : 1);
@@ -159,7 +173,7 @@ export const bg = {
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const l = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 2, gl.FLOAT, false, 0, 0);
-      for (const n of ['i0', 'd0', 'i1', 'd1', 'mixv', 'theme', 'time', 'dim', 'parts', 'has0', 'has1', 'res', 'par']) U[n] = gl.getUniformLocation(prog, n);
+      for (const n of ['i0', 'd0', 'i1', 'd1', 'mixv', 'theme', 'time', 'dim', 'parts', 'has0', 'has1', 'res', 'par', 'tint']) U[n] = gl.getUniformLocation(prog, n);
       flat = tex(null);
       c.addEventListener('webglcontextlost', e => { e.preventDefault(); cancelAnimationFrame(raf); gl = null; document.documentElement.classList.add('no-webgl'); fallbackShow(cur?.url); });
       raf = requestAnimationFrame(draw);
@@ -171,10 +185,17 @@ export const bg = {
     addEventListener('pointermove', e => { par.tx = (e.clientX / innerWidth) * 2 - 1; par.ty = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
     addEventListener('deviceorientation', e => { if (e.gamma == null) return; par.tx = Math.max(-1, Math.min(1, e.gamma / 25)); par.ty = Math.max(-1, Math.min(1, (e.beta - 45) / 25)); }, { passive: true });
   },
-  configure({ quality: q, parallax, reduceMotion }) { quality = q; parallaxOn = parallax; reduce = reduceMotion; },
+  configure({ quality: q, parallax, reduceMotion, theme, wallpaper }) {
+    quality = q; parallaxOn = parallax; reduce = reduceMotion;
+    tintT.splice(0, 3, ...(THEMES[theme] || THEMES.blue).tint);
+    const fixed = wallpaper === 'theme';
+    if (fixed !== fixedTheme) { fixedTheme = fixed; this.show(...(lastShow || [null])); }
+  },
   // show game art (with optional depth map), or pass null for the default theme
   async show(img, depth) {
+    lastShow = [img, depth];
     const my = ++token;
+    if (fixedTheme) img = null;
     if (!img) { themeT = 1; if (!gl) fallbackShow(null); return; }
     if (!gl) { fallbackShow(img); themeT = 0; return; }
     try {

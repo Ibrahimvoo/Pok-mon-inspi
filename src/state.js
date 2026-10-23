@@ -24,7 +24,7 @@ const defaults = () => ({
   settings: {
     sfx: true, sfxVol: 0.7, music: true, musicVol: 0.4, quality: 'high', parallax: true, reduceMotion: false,
     confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false, noiseSuppression: true,
-    ageLimit: 0, voiceAllowed: true, captureToast: true, cloudSync: true,
+    theme: 'blue', wallpaper: 'game', ageLimit: 0, voiceAllowed: true, captureToast: true, cloudSync: true,
   },
 });
 

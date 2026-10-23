@@ -2,7 +2,7 @@
 import { nav } from './nav.js';
 import { input, IOS, lifecycle } from './input.js';
 import { audio } from './audio.js';
-import { bg } from './bg.js';
+import { bg, THEMES } from './bg.js';
 import { state, save } from './state.js';
 import { h, icon, glyphSvg, img as imgEl, wait } from './ui.js';
 
@@ -212,6 +212,9 @@ export function applySettings() {
   root.classList.toggle('reduce-motion', s.reduceMotion);
   root.classList.toggle('contrast', s.contrast);
   root.classList.toggle('big-text', s.bigText);
+  const th = THEMES[s.theme] || THEMES.blue;
+  root.style.setProperty('--blue', th.hex); root.style.setProperty('--blue-hi', th.hi);
+  root.style.setProperty('--wall', `rgb(${th.tint.map(v => Math.round(v * 140)).join(',')})`);
   document.querySelectorAll('[data-clock]').forEach(el => { el.textContent = timeStr(); });
   renderHints();
 }
