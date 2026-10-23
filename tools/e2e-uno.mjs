@@ -90,6 +90,12 @@ try {
   ok('room created with a code', await until(A, () => /^[A-Z0-9]{6}$/.test(document.querySelector('.ul-code b')?.textContent || ''), 20000));
   const code = await A.textContent('.ul-code b');
   await A.shot('lobby-host');
+  // B first opens its own room and goes back to the title: it is still in that salon when it types A's code
+  await B.click('.ut-tile.blue');
+  await until(B, () => /^[A-Z0-9]{6}$/.test(document.querySelector('.ul-code b')?.textContent || ''), 20000);
+  await B.keyboard.press('Escape'); await B.waitForTimeout(500);
+  await B.click('button:has-text("Fermer")'); await B.waitForTimeout(500);
+  ok('B is still in its own salon on the title screen', await B.evaluate(() => !!document.querySelector('.ut-tile.green')));
   await B.click('.ut-tile.green');
   await B.waitForSelector('.uj-input');
   await B.fill('.uj-input', code.toLowerCase());

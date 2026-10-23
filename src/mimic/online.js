@@ -342,7 +342,8 @@ export const online = {
     code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 6) throw new Error('Le code contient 6 caractères.');
     if (p2p.active && p2p.code === code) { send({ k: 'ask' }); return; }
-    if (social.party) throw new Error('Quitte d’abord ton groupe actuel (Base de jeu) pour rejoindre ce salon.');
+    // already in another group (an old salon left open, a friend's group): leave it for the one of this code
+    if (social.party || p2p.active) await social.leave();
     joining = true; notify();
     try { await social.joinSalon(code); } finally { joining = false; notify(); }
     send({ k: 'ask' });
