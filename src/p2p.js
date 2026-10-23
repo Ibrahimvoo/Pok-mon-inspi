@@ -182,12 +182,20 @@ function retryJoin(code, since) {
 }
 
 // iOS suspends Safari while the link is being shared: reopen the room (host) or reconnect (guest) on return
+let reopening = false;   // one attempt at a time (each one can take a while when the broker is slow)
 async function reopenHost(tries = 0) {
-  if (!p2p.active || !p2p.host) return;
+  if (!p2p.active || !p2p.host || reopening) return;
   if (peer && !peer.destroyed && !peer.disconnected) return;
   try { peer?.destroy(); } catch { /* ignore */ }
-  try { peer = await openPeer(PREFIX + p2p.code); peer.on('connection', acceptGuest); }
-  catch { if (tries < 8) setTimeout(() => reopenHost(tries + 1), 3000); }
+  reopening = true;
+  const code = p2p.code;
+  try {
+    const p = await openPeer(PREFIX + code);
+    // the room was closed or replaced meanwhile: drop this one
+    if (!p2p.active || !p2p.host || p2p.code !== code) { p.destroy(); return; }
+    peer = p; peer.on('connection', acceptGuest);
+  } catch { if (tries < 8) setTimeout(() => reopenHost(tries + 1), 3000); }
+  finally { reopening = false; }
 }
 lifecycle.addEventListener('resume', () => {
   if (!p2p.active) return;
