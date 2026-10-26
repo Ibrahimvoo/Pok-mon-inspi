@@ -3,6 +3,8 @@
 // the silhouette, backpack, visor, outline, shading and proportions are identical for everyone and in every frame.
 // If authorized original sprites are imported (public/among/sprites, see sprites.js), they replace this base.
 import { REF, SHAPES } from './crewmate-ref.js';
+import { DEAD } from './dead-ref.js';
+import { WALK } from './walk-ref.js';
 import { COLORS } from '../core/rules.js';
 import { spriteBase } from './sprites.js';
 
@@ -16,30 +18,24 @@ export const colorOf = id => COLORS.find(c => c.id === id) || COLORS[0];
 function polys(g, list) { for (const p of list) { g.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length; i++) g.lineTo(p[i][0], p[i][1]); g.closePath(); } }
 function fill(g, list, color) { g.beginPath(); polys(g, list); g.fillStyle = color; g.fill(); }
 const bbox = list => { let a = 1e9, b = 1e9, c = -1e9, d = -1e9; for (const p of list) for (const [x, y] of p) { a = Math.min(a, x); b = Math.min(b, y); c = Math.max(c, x); d = Math.max(d, y); } return [a, b, c, d]; };
-const BACK = bbox(SHAPES.backLegIn), FRONT = bbox(SHAPES.frontLegIn);
-const HIP = { back: [(BACK[0] + BACK[2]) / 2, REF.cut], front: [(FRONT[0] + FRONT[2]) / 2, REF.cut] };
 const CROTCH_T = 20;   // thickness of the outline under the suit between the legs (measured on the reference)
 
-// Walk cycle: 12 frames like the original. The traced legs swing around the hips and the body bobs; the shapes
-// themselves never change. (The original walk sprite sheet is not available: see sprites.js to import it.)
-export const WALK_FRAMES = 12;
+// Walk cycle: the 12 frames of the supplied Detective trailer (walk-ref.js, tools/among/trace_walk.py). Legs come from
+// those frames, the upper body is the base itself, lifted by the hop measured against the shadow on the floor.
+export const WALK_FRAMES = WALK.frames.length;
 export function pose(frame) {
-  if (frame < 0) return { bob: 0, back: [0, 0], front: [0, 0] };
-  const t = (frame % WALK_FRAMES) / WALK_FRAMES * Math.PI * 2;
-  const s = Math.sin(t), c = Math.cos(t);
-  const A = .21;                               // swing in radians
-  return {
-    bob: -Math.abs(c) * 7 + 3,
-    front: [-A * s, Math.max(0, c) * 10],        // [angle, lift] — negative angle = foot forward (right)
-    back: [A * s, Math.max(0, -c) * 10],
-  };
+  if (frame < 0) return { bob: 0, legs: null };
+  const f = WALK.frames[frame % WALK_FRAMES];
+  return { bob: -f.lift, legs: f.legs };
 }
-function leg(g, which, [ang, lift], part) {
-  const [hx, hy] = HIP[which];
-  g.save();
-  g.translate(hx, hy - lift); g.rotate(ang); g.translate(-hx, -hy);
+function leg(g, which, part) {
   fill(g, SHAPES[`${which}Leg${part}`], part === 'Sil' ? K.outline : g.shadeColor);
-  g.restore();
+}
+function walkLegs(g, legs, color) {
+  g.beginPath(); polys(g, legs);
+  g.lineJoin = 'round'; g.lineWidth = 2 * CROTCH_T; g.strokeStyle = K.outline; g.stroke();
+  g.fillStyle = K.outline; g.fill();
+  g.beginPath(); polys(g, legs); g.fillStyle = color; g.fill();
 }
 
 // draw at the origin of the reference box (facing right); opts: ghost, noVisor, alpha
@@ -48,16 +44,16 @@ export function drawCrewBase(g, color, frame = -1, opts = {}) {
   const P = pose(frame);
   g.save();
   g.shadeColor = C.shade;
-  if (!opts.ghost) {
-    // legs: outlines first, the dark band under the suit between them, then their fill
-    leg(g, 'back', P.back, 'Sil'); leg(g, 'front', P.front, 'Sil');
-    g.save(); g.translate(0, P.bob);
+  g.translate(0, P.bob);
+  if (!opts.ghost && P.legs) walkLegs(g, P.legs, C.shade);
+  else if (!opts.ghost) {
+    // standing: the traced legs, the dark band under the suit between them, then their fill
+    leg(g, 'back', 'Sil'); leg(g, 'front', 'Sil');
     g.fillStyle = K.outline; g.beginPath();
     g.roundRect ? g.roundRect(REF.gap - 44, REF.cut - 4, 88, CROTCH_T + 4, [0, 0, 10, 10]) : g.rect(REF.gap - 44, REF.cut - 4, 88, CROTCH_T + 4);
-    g.fill(); g.restore();
-    leg(g, 'back', P.back, 'In'); leg(g, 'front', P.front, 'In');
+    g.fill();
+    leg(g, 'back', 'In'); leg(g, 'front', 'In');
   }
-  g.translate(0, P.bob);
   if (opts.ghost) ghostTail(g, C, 'Sil');
   // backpack, behind the suit
   if (opts.ghost) { g.save(); ghostClip(g); }
@@ -77,50 +73,40 @@ export function drawCrewBase(g, color, frame = -1, opts = {}) {
   g.restore();
 }
 
-// ghosts: the same upper body, the legs replaced by a floating scalloped tail
+// Ghosts (from the in-game reference screenshot): the same upper body as the crewmate, no legs; the suit goes on
+// down and trails behind into a pointed tail. Points read on the screenshot, mapped to the base (facing right):
+// x = 272 − (zx − 88) × 0.78, y = 48 + (zy − 290) × 0.78 (zx, zy: 7× zoom of the screenshot at 180,135).
+const GHOST_TAIL = [[272, 149], [269, 259], [264, 321], [251, 360], [216, 374], [190, 378], [160, 370], [130, 376], [118, 371], [60, 352], [10, 335], [-40, 312],
+  [-72, 290], [-92, 272], [-60, 268], [-20, 266], [2, 262], [20, 200], [120, 140]];
+// the lit front of the suit goes on down the tail (screenshot: light front, dark back)
+const GHOST_LIT = [[150, 150], [262, 150], [258, 321], [246, 352], [214, 362], [170, 358], [150, 300]];
 const GHOST_CUT = REF.cut - 6;
-function ghostClip(g) { g.beginPath(); g.rect(-40, -40, SIZE[0] + 80, GHOST_CUT + 40); g.clip(); }
-function ghostPath(g) {
-  const [x0, , x1] = bbox(SHAPES.bodyIn);
-  const y = GHOST_CUT + 46, n = 3, w = (x1 - x0) / n;
-  g.beginPath(); g.moveTo(x0, GHOST_CUT - 30); g.lineTo(x1, GHOST_CUT - 30); g.lineTo(x1, y - 10);
-  for (let i = 0; i < n; i++) { const a = x1 - i * w; g.quadraticCurveTo(a - w * .25, y + 18, a - w * .5, y); g.quadraticCurveTo(a - w * .75, y - 18, a - w, y - 4); }
-  g.lineTo(x0, GHOST_CUT - 30); g.closePath();
-}
+function ghostClip(g) { g.beginPath(); g.rect(-120, -40, SIZE[0] + 160, GHOST_CUT + 40); g.clip(); }
 function ghostTail(g, C, part) {
-  ghostPath(g);
+  g.beginPath(); polys(g, [GHOST_TAIL]);
   if (part === 'Sil') { g.lineJoin = 'round'; g.lineWidth = 2 * CROTCH_T; g.strokeStyle = K.outline; g.stroke(); g.fillStyle = K.outline; g.fill(); }
-  else { g.fillStyle = C.shade; g.fill(); }
+  else { g.fillStyle = C.shade; g.fill(); g.save(); g.clip(); fill(g, [GHOST_LIT], C.body); g.restore(); }
 }
 
-// a dead body: the lower half of the same suit, cut, with the bone
-const BODY_CUT = REF.cut - 70;
+// Dead body (from the same screenshot, traced by tools/among/trace_ghost_body.py): the lower half lying down, legs
+// up, the dark cut facing the camera and the bone sticking out. Colour-keyed: main / shade / deep shade.
+const mix = (a, b, k) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return `rgb(${A.map((v, i) => Math.round(v * (1 - k) + B[i] * k)).join(',')})`; };
 export function drawDeadBase(g, color) {
   const C = colorOf(color);
   g.save();
-  g.beginPath(); g.rect(-40, BODY_CUT, SIZE[0] + 80, SIZE[1]); g.clip();
-  leg(g, 'back', [0, 0], 'Sil'); leg(g, 'front', [0, 0], 'Sil');
-  g.shadeColor = C.shade;
-  fill(g, SHAPES.packSil, K.outline); fill(g, SHAPES.packIn, C.shade);
-  fill(g, SHAPES.bodySil, K.outline);
-  leg(g, 'back', [0, 0], 'In'); leg(g, 'front', [0, 0], 'In');
-  fill(g, SHAPES.bodyIn, C.shade);
-  g.restore();
-  // the cut: outline on top, the inside of the suit, and the bone
-  const [x0, , x1] = bbox(SHAPES.bodyIn);
-  g.fillStyle = K.outline; g.beginPath(); g.roundRect ? g.roundRect(x0 - 18, BODY_CUT - 12, x1 - x0 + 36, 24, 12) : g.rect(x0 - 18, BODY_CUT - 12, x1 - x0 + 36, 24); g.fill();
-  g.fillStyle = C.body; g.beginPath(); g.ellipse((x0 + x1) / 2, BODY_CUT, (x1 - x0) / 2 - 6, 7, 0, 0, Math.PI * 2); g.fill();
-  const bx = (x0 + x1) / 2 + 6;
-  g.lineWidth = 9; g.strokeStyle = K.outline; g.fillStyle = '#f2efe4';
-  g.beginPath(); g.roundRect ? g.roundRect(bx - 12, BODY_CUT - 64, 24, 66, 8) : g.rect(bx - 12, BODY_CUT - 64, 24, 66); g.stroke(); g.fill();
-  for (const dx of [-13, 13]) { g.beginPath(); g.arc(bx + dx, BODY_CUT - 64, 15, 0, Math.PI * 2); g.stroke(); g.fill(); }
-  g.fillRect(bx - 22, BODY_CUT - 66, 44, 14);
+  fill(g, DEAD.sil, K.outline);
+  fill(g, DEAD.inner, mix(C.shade, '#1b0f16', .55));     // inside of the cut
+  fill(g, DEAD.deep, mix(C.shade, '#1b0f16', .45));
+  fill(g, DEAD.shade, C.shade);
+  fill(g, DEAD.main, C.body);
+  fill(g, DEAD.bone, '#b9b6b0');
+  fill(g, DEAD.boneLight, '#f6f4ef');
   g.restore();
 }
 
 // ------------------------------------------------------------------ sprites, cached per colour / frame / size
 const cache = new Map();
-const PAD = 40;
+const PAD = 110;          // room for the ghost tail behind the backpack
 function make(key, scale, draw) {
   let c = cache.get(key);
   if (c) return c;

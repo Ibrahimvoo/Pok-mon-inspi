@@ -13,7 +13,7 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
 const srv = createServer(async (req, res) => {
   const p = decodeURIComponent(req.url.split('?')[0]);
   const f = p === '/__page' ? resolve(page) : p.startsWith('/__abs/') ? p.slice(6) : join(root, p);
-  try { const d = await readFile(f); res.writeHead(200, { 'content-type': types[extname(f)] || 'application/octet-stream' }); res.end(d); }
+  try { let d; try { d = await readFile(f); } catch { d = await readFile(join(root, 'public', p)); } res.writeHead(200, { 'content-type': types[extname(f)] || 'application/octet-stream' }); res.end(d); }
   catch { res.writeHead(404); res.end(); }
 }).listen(0);
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });

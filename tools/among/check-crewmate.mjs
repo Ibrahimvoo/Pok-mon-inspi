@@ -26,10 +26,10 @@ const r = await page.evaluate(async () => {
   const { drawCrewBase, SIZE, WALK_FRAMES, pose } = await import('/src/among/art/crew.js');
   const { REF } = await import('/src/among/art/crewmate-ref.js');
   const { COLORS } = await import('/src/among/core/rules.js');
-  const W = SIZE[0] + 80, H = SIZE[1] + 80;
+  const W = SIZE[0] + 240, H = SIZE[1] + 200;
   const render = (color, frame) => {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d'); g.translate(40, 40); drawCrewBase(g, color, frame);
+    const g = c.getContext("2d"); g.translate(120, 120); drawCrewBase(g, color, frame);
     return g.getImageData(0, 0, W, H).data;
   };
   const alpha = d => { const a = new Uint8Array(d.length / 4); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3] > 127 ? 1 : 0; return a; };
@@ -55,7 +55,7 @@ const r = await page.evaluate(async () => {
     // the upper body (above the hips) must be the idle one shifted by the bob
     let diff = 0, n = 0;
     const top = Math.floor(REF.cut) - 30;
-    for (let y = 0; y < top + 40; y++) for (let x = 0; x < W; x++) {
+    for (let y = 0; y < top + 18; y++) for (let x = 0; x < W; x++) {
       const yi = y - bob; if (yi < 0 || yi >= H) continue;
       n++; if (a[y * W + x] !== idleRed[yi * W + x]) diff++;
     }

@@ -1,0 +1,86 @@
+# Traces the legs of the 12-frame walk cycle from the Detective trailer supplied by the project owner (a white
+# crewmate walking left, followed by the camera). Each frame is anchored on the visor, scaled to the crewmate base
+# and mirrored to face right; the legs below the hips are exported as polygons, the hop as a vertical offset.
+# Usage: python3 -I tools/among/trace_walk.py frames_dir first_frame out.js
+import sys, glob, json, os
+import numpy as np, cv2
+from PIL import Image
+
+frames_dir, first, out = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+UP = 4
+ref = open('src/among/art/crewmate-ref.js').read()
+REF = json.loads(ref.split('export const REF = ')[1].split(';\n')[0])
+SH = json.loads(ref.split('export const SHAPES = ')[1].split(';\n')[0])
+pts = [p for poly_ in SH['visor'] for p in poly_]
+VX0, VY0, VX1 = min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts)
+
+def disk(R): yy, xx = np.mgrid[-R:R + 1, -R:R + 1]; return ((xx ** 2 + yy ** 2) <= R * R).astype(np.uint8)
+def clean(m, k=5):
+    m = cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, np.ones((k, k), np.uint8))
+    return cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((k, k), np.uint8)).astype(bool)
+
+res = []
+files = sorted(glob.glob(os.path.join(frames_dir, '*.png')))[first:first + 12]
+for f in files:
+    im = Image.open(f).convert('RGB')
+    a = np.array(im.resize((im.width * UP, im.height * UP), Image.LANCZOS)).astype(int)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    suit = (r > 165) & (g > 160) & (b > 130) & (abs(r - g) < 40) & ~((b > r + 15) & (b > 175))
+    visor = (b >= r + 6) & (b > 115) & (g > 105) & (r < 205) & ~suit
+    shoe = ((r + g + b) < 220) & (r > b + 25) & (r > 45)
+    suit = clean(suit); visor = clean(visor, 7)
+    n, cc, st, _ = cv2.connectedComponentsWithStats(visor.astype(np.uint8), 8)
+    if n < 2: res.append(None); continue
+    i = 1 + int(np.argmax(st[1:, 4])); vx, vy, vw, vh = st[i][:4]
+    scale = (VX1 - VX0) / vw                          # ref px per upscaled px
+    # facing left in the video: the visor's left edge is the front; mirror so that it lands on the base visor
+    to_ref = lambda x, y: (VX1 - (x - vx) * scale, VY0 + (y - vy) * scale)
+    cut_y = vy + (REF['cut'] - 8 - VY0) / scale        # hips, in frame pixels
+    below = np.arange(a.shape[0])[:, None] > cut_y
+    legs = clean(suit & below, 5)
+    # the dark shoes of the skin are the tips of the feet: keep the ones touching the legs
+    near = cv2.dilate(legs.astype(np.uint8), disk(3 * UP)).astype(bool)
+    legs = clean(legs | (shoe & below & near), 5)
+    # keep what hangs under the body (columns of the suit)
+    sx = np.where(suit.any(axis=0))[0]
+    legs[:, :max(0, sx.min() - 40 * UP)] = False; legs[:, sx.max() + 40 * UP:] = False
+    n, cc, st, _ = cv2.connectedComponentsWithStats(legs.astype(np.uint8), 8)
+    keep = np.zeros_like(legs)
+    for k in range(1, n):
+        if st[k][4] > 60 * UP and st[k][1] <= cut_y + 6 * UP: keep |= cc == k
+    cs, _ = cv2.findContours(keep.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    polys = []
+    for c in cs:
+        if cv2.contourArea(c) < 40 * UP: continue
+        p = c[:, 0, :].astype(float); k = 7
+        pad = np.concatenate([p[-k:], p, p[:k]]); sm = np.array([pad[j:j + 2 * k + 1].mean(axis=0) for j in range(len(p))])
+        ap = cv2.approxPolyDP(sm.astype(np.float32).reshape(-1, 1, 2), 1.4, True)[:, 0, :]
+        polys.append([[round(v, 1) for v in to_ref(x, y)] for x, y in ap])
+    ys = np.where(keep.any(axis=1))[0]
+    lowest = to_ref(0, ys.max())[1] if len(ys) else REF['feet']
+    # height of the visor above the shadow on the floor (the shadow stays on the ground)
+    lum = (r * 299 + g * 587 + b * 114) / 1000
+    sxs = np.where(suit.any(axis=0))[0]
+    low_suit = np.where(suit.any(axis=1))[0].max()
+    prof = [lum[y, sxs.min():sxs.max() + 1].mean() for y in range(a.shape[0])]
+    shadow = min(range(low_suit - 6 * UP, a.shape[0]), key=lambda y: prof[y])
+    res.append({ 'legs': polys, 'low': round(lowest, 1), 'above': (shadow - vy) * scale })
+ok = [x for x in res if x]
+# body lift: the measured visor→shadow height, smoothed by its main harmonic (two steps per 12-frame cycle)
+h = np.array([x['above'] for x in ok]); k = np.arange(len(h))
+c, sn = (h * np.cos(2 * np.pi * k / 6)).mean() * 2, (h * np.sin(2 * np.pi * k / 6)).mean() * 2
+fit = c * np.cos(2 * np.pi * k / 6) + sn * np.sin(2 * np.pi * k / 6)
+lift = fit - fit.min()
+# the legs are placed so that the lowest foot of the lowest frames stands on the feet line of the base
+trough = [i for i in range(len(ok)) if lift[i] < (lift.max() * .25)]
+shift = REF['feet'] - min(ok[i]['low'] for i in trough)
+for i, x in enumerate(ok):
+    x['lift'] = round(float(lift[i]), 1)
+    x['legs'] = [[[p[0], round(p[1] + shift, 1)] for p in poly_] for poly_ in x['legs']]
+    del x['above']
+ground = REF['feet']
+with open(out, 'w') as fh:
+    fh.write('// Generated by tools/among/trace_walk.py from the walk cycle of the supplied Detective trailer: do not edit.\n')
+    fh.write('// 12 frames, legs in crewmate-ref.js coordinates (facing right); `lift`: how high the whole crewmate is above the ground.\n')
+    fh.write('export const WALK = ' + json.dumps({ 'ground': ground, 'frames': res }, separators=(',', ':')) + ';\n')
+print('shift', round(shift, 1), [(x['lift'], len(x['legs'])) if x else None for x in res])
