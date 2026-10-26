@@ -11,6 +11,7 @@ import { WebSocketServer } from 'ws';
 import { openDb } from './db.js';
 import { accounts, publicUser, AppError, SESSION_TTL } from './accounts.js';
 import { createHub } from './realtime.js';
+import { createAmongHub } from './among.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const env = process.env;
@@ -19,7 +20,9 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   const log = quiet ? () => {} : (...a) => console.log(new Date().toISOString(), ...a);
   const db = await openDb(dbUrl);
   const acc = accounts(db);
-  const hub = createHub({ acc, log });
+  let hub = null;
+  const among = createAmongHub({ toUser: (id, msg) => hub?.notify(id, msg), log });
+  hub = createHub({ acc, log, handlers: { au: (u, m, ip) => among.handle(u, m, ip) }, onGone: id => among.dropped(id) });
   const trustProxy = env.TRUST_PROXY === '1';
   const allowed = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
 
@@ -66,7 +69,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
 
   // ------------------------------------------------------------ API
   const routes = [
-    ['GET', /^\/api\/health$/, async () => ({ ok: true, db: db.kind, ...hub.stats() })],
+    ['GET', /^\/api\/health$/, async () => ({ ok: true, db: db.kind, ...hub.stats(), ...among.stats() })],
     ['POST', /^\/api\/auth\/register$/, async (req, res) => {
       if (limited('reg:' + ipOf(req), 10, 15 * 60e3)) throw new AppError(429, 'rate', 'Trop de tentatives, réessayez dans quelques minutes.');
       const b = await body(req);
@@ -200,13 +203,13 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
       if (!originOk(req)) return deny(403, 'Forbidden');
       const user = await userOf(req);
       if (!user) return deny(401, 'Unauthorized');
-      wss.handleUpgrade(req, socket, head, ws => hub.attach(ws, user).catch(e => { log('attach error', e); ws.close(1011); }));
+      wss.handleUpgrade(req, socket, head, ws => hub.attach(ws, user, ipOf(req)).catch(e => { log('attach error', e); ws.close(1011); }));
     } catch (e) { log('upgrade error', e); deny(500, 'Error'); }
   });
 
   await new Promise(r => server.listen(port, r));
   log(`PS5 UX server on :${server.address().port} (${db.kind})`);
-  return { server, port: server.address().port, db, hub, async close() { hub.close(); wss.clients.forEach(c => c.terminate()); await new Promise(r => server.close(r)); await db.close(); } };
+  return { server, port: server.address().port, db, hub, among, async close() { hub.close(); among.close(); wss.clients.forEach(c => c.terminate()); await new Promise(r => server.close(r)); await db.close(); } };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

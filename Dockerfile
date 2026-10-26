@@ -13,6 +13,8 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/server ./server
 COPY --from=build /app/src/data.js ./src/data.js
+COPY --from=build /app/src/avatars.js ./src/avatars.js
+COPY --from=build /app/src/among/core ./src/among/core
 COPY package.json ./
 RUN mkdir -p /app/data && chown -R node:node /app/data
 USER node

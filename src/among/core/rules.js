@@ -5,8 +5,9 @@ export const MIN_PLAYERS = 4;
 export const MAX_PLAYERS = 15;
 export const NAME_MAX = 12;
 
+// main colours sampled from the reference screenshots (customisation grid and the red crewmate); shadows as in the game
 export const COLORS = [
-  { id: 'red', name: 'Rouge', body: '#c51111', shade: '#7a0838' },
+  { id: 'red', name: 'Rouge', body: '#d71e22', shade: '#7a0838' },
   { id: 'blue', name: 'Bleu', body: '#132ed1', shade: '#09158e' },
   { id: 'green', name: 'Vert', body: '#117f2d', shade: '#0a4d2e' },
   { id: 'pink', name: 'Rose', body: '#ed54ba', shade: '#ab2bad' },
@@ -18,7 +19,7 @@ export const COLORS = [
   { id: 'brown', name: 'Marron', body: '#71491e', shade: '#5e2615' },
   { id: 'cyan', name: 'Cyan', body: '#38fedc', shade: '#24a8be' },
   { id: 'lime', name: 'Citron vert', body: '#50ef39', shade: '#15a742' },
-  { id: 'maroon', name: 'Bordeaux', body: '#5f1d22', shade: '#411921' },
+  { id: 'maroon', name: 'Bordeaux', body: '#5f1d2e', shade: '#411921' },
   { id: 'rose', name: 'Rose pâle', body: '#ecc0d3', shade: '#de92b3' },
   { id: 'banana', name: 'Banane', body: '#f0e7a8', shade: '#d2bc89' },
   { id: 'gray', name: 'Gris', body: '#758593', shade: '#46565f' },

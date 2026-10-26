@@ -8,7 +8,7 @@
     "build": "vite build",
     "start": "node --no-warnings server/index.js",
     "serve": "npm run build && npm start",
-    "test": "node --no-warnings --test server/test/*.test.js src/uno/*.test.js",
+    "test": "node --no-warnings --test server/test/*.test.js src/uno/*.test.js src/among/core/*.test.js",
     "test:pg": "TEST_PG=1 node --no-warnings --test server/test/*.test.js",
     "e2e": "npm run build && node --no-warnings tools/e2e.mjs",
     "preview": "vite preview --host",
@@ -17,7 +17,8 @@
     "e2e:salon": "npm run build && node --no-warnings tools/e2e-salon.mjs",
     "e2e:mimic": "npm run build && node --no-warnings tools/e2e-mimic.mjs",
     "e2e:mimic-online": "npm run build && node --no-warnings tools/e2e-mimic-online.mjs",
-    "e2e:uno": "npm run build && node --no-warnings tools/e2e-uno.mjs"
+    "e2e:uno": "npm run build && node --no-warnings tools/e2e-uno.mjs",
+    "check:crewmate": "node tools/among/check-crewmate.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "^17.2.0-beta.15",

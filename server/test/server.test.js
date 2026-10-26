@@ -157,3 +157,53 @@ test('profile photos from the gallery are accepted as avatars, within a size lim
   const back = await call('/api/me', { method: 'PATCH', body: { avatar: 'lumen' }, cookie: r.cookie, origin: base });
   assert.equal(back.data.user.avatar, 'lumen');
 });
+
+test('among us rooms: create, public list, join by code, start, reconnect and signalling isolation', async () => {
+  // a fresh server: the sign-up rate limit of the shared one is already used by the tests above
+  const app2 = await start({ port: 0, dbUrl: ':memory:', quiet: true });
+  const saved = base; base = `http://127.0.0.1:${app2.port}`;
+  try { await amongScenario(); } finally { base = saved; await app2.close(); }
+});
+async function amongScenario() {
+  const users = [];
+  for (const psn of ['AuHost', 'AuTwo', 'AuThree', 'AuFour']) {
+    const r = await signup(psn);
+    const s = socket(r.cookie); await s.open; await s.next(m => m.t === 'hello');
+    users.push({ psn, s, cookie: r.cookie, id: r.data.user.id });
+  }
+  const [A, B, C, D] = users;
+  const au = (u, op, extra = {}) => u.s.req('au', { op, ...extra });
+  const created = await au(A, 'create', { public: true, region: 'Europe', name: 'Hote', look: { color: 'red', hat: 'cowboy' } });
+  assert.ok(created.ok);
+  assert.match(created.code, /^[A-Z]{6}$/);
+  await A.s.next(m => m.t === 'au' && m.k === 'welcome');
+  const list = await au(B, 'list', { region: 'Europe' });
+  assert.ok(list.rooms.some(r => r.code === created.code && r.players === 1 && r.host === 'Hote'));
+  const lan = await au(B, 'list', { lan: true });
+  assert.ok(!lan.rooms.some(r => r.code === created.code), 'public rooms are not "local" rooms');
+  const bad = await au(B, 'join', { code: 'ZZZZZZ' });
+  assert.equal(bad.error, 'join');
+  for (const u of [B, C, D]) { const j = await au(u, 'join', { code: created.code.toLowerCase(), name: u.psn }); assert.ok(j.ok, j.message); }
+  const view = await B.s.next(m => m.t === 'au' && m.k === 'v' && m.v.players.length === 4, 4000);
+  assert.equal(view.v.players.find(p => p.name === 'Hote').hat, 'cowboy');
+  // the host starts: countdown, then roles
+  A.s.send('au', { op: 'msg', m: { k: 'start' } });
+  const intro = await B.s.next(m => m.t === 'au' && m.k === 'ev' && m.e === 'intro', 8000);
+  assert.ok(['crew', 'imp'].includes(intro.team));
+  // B loses its connection then comes back with the same code
+  B.s.close();
+  await new Promise(r => setTimeout(r, 300));
+  const B2 = socket(B.cookie); await B2.open; await B2.next(m => m.t === 'hello');
+  const again = await B2.req('au', { op: 'join', code: created.code, name: 'AuTwo' });
+  assert.ok(again.ok);
+  const back = await B2.next(m => m.t === 'au' && m.k === 'v' && m.v.me, 4000);
+  assert.ok(back.v.me.role, 'the role survives the reconnection');
+  // the realtime hub relays room messages only for members
+  const outsider = await signup('AuOut');
+  const O = socket(outsider.cookie); await O.open; await O.next(m => m.t === 'hello');
+  O.send('au', { op: 'msg', m: { k: 'start' } });
+  const health = await call('/api/health');
+  assert.ok(health.data.amongRooms >= 1);
+  for (const u of [A, C, D]) u.s.close();
+  B2.close(); O.close();
+}

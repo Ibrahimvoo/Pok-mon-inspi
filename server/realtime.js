@@ -8,7 +8,7 @@ const INVITE_TTL = 2 * 60e3;
 const MAX_PARTY = 8;
 const ACTIVITIES = ['home', 'game', 'app', 'store'];
 
-export function createHub({ acc, log = () => {} }) {
+export function createHub({ acc, log = () => {}, handlers = {}, onGone = () => {} }) {
   const conns = new Map();        // userId → Set<ws>
   const users = new Map();        // userId → { id, psn, avatar }
   const friends = new Map();      // userId → Set<friendId>
@@ -185,7 +185,7 @@ export function createHub({ acc, log = () => {} }) {
     return ids;
   }
 
-  async function attach(ws, user) {
+  async function attach(ws, user, ip = '?') {
     const u = { id: user.id, psn: user.psn, avatar: user.avatar };
     users.set(u.id, u);
     const wasOnline = online(u.id) || offlineTimers.has(u.id);
@@ -195,15 +195,19 @@ export function createHub({ acc, log = () => {} }) {
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
 
-    // simple token bucket per socket: 40 messages/s burst, refilled continuously
-    let tokens = 40, last = Date.now();
+    // token buckets per socket: 40 messages/s burst for the console, a larger one for real-time game traffic
+    // (movement at 20 Hz plus the voice signalling of up to 14 peers)
+    let tokens = 40, last = Date.now(), gTokens = 200, gLast = Date.now();
     ws.on('message', async raw => {
-      const now = Date.now(); tokens = Math.min(40, tokens + (now - last) * .03); last = now;
-      if (tokens < 1) return; tokens--;
       let m; try { m = JSON.parse(raw); } catch { return; }
-      if (!m || typeof m.t !== 'string' || !Object.hasOwn(H, m.t)) return;
+      if (!m || typeof m.t !== 'string') return;
+      const now = Date.now();
+      if (m.t === 'au') { gTokens = Math.min(200, gTokens + (now - gLast) * .12); gLast = now; if (gTokens < 1) return; gTokens--; }
+      else { tokens = Math.min(40, tokens + (now - last) * .03); last = now; if (tokens < 1) return; tokens--; }
+      const fn = Object.hasOwn(H, m.t) ? H[m.t] : Object.hasOwn(handlers, m.t) ? handlers[m.t] : null;
+      if (!fn) return;
       try {
-        const res = await H[m.t](u, m);
+        const res = await fn(u, m, ip);
         if (m.rid && res) send(ws, { t: 'res', rid: m.rid, ...res });
       } catch (e) { log('ws handler error', e); if (m.rid) send(ws, { t: 'res', rid: m.rid, error: 'server', message: 'Erreur du serveur.' }); }
     });
@@ -212,6 +216,7 @@ export function createHub({ acc, log = () => {} }) {
       set?.delete(ws);
       if (set && !set.size) {
         conns.delete(u.id);
+        onGone(u.id);
         // grace period: a page reload or an iOS app switch should not kick the player out of their party
         offlineTimers.set(u.id, setTimeout(() => {
           offlineTimers.delete(u.id);
