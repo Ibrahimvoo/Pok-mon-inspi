@@ -37,7 +37,12 @@ export class AmongApp {
   screen(cls, ...kids) { this.ui.replaceChildren(el('div', `au-screen ${cls}`, kids)); this.stars.el.hidden = false; this.layerFocus(); return this.ui.firstChild; }
   layerFocus() { queueMicrotask(() => { const f = this.ui.querySelector('[data-autofocus]') || this.ui.querySelector('button,input'); f?.focus({ preventScroll: true }); }); }
   btn(label, onClick, cls = '', attrs = {}) { const b = el('button', /^(am|hs)-/.test(cls) ? cls : `au-btn ${cls}`, label, { type: 'button', ...attrs }); b.addEventListener('click', () => { sfx.play('click'); onClick(); }); return b; }
-  toast(msg) { const t = el('div', 'au-toast', msg); this.root.append(t); setTimeout(() => t.remove(), 3800); }
+  // long messages (why a connection failed) stay long enough to be read
+  toast(msg) {
+    const ms = Math.max(3800, String(msg).length * 70), t = el('div', 'au-toast', msg);
+    t.style.animationDuration = `${ms - 300}ms`;
+    this.root.append(t); setTimeout(() => t.remove(), ms);
+  }
 
   // ------------------------------------------------------------------ menus
   // Laid out like the game's main menu: account bar, logo and the button column on the left, the big screen on the

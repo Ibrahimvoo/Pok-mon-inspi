@@ -2,12 +2,14 @@
 // free public brokers. It carries the game when the direct connection (WebRTC) between two phones cannot be made
 // (different networks, mobile data) and keeps the list of public games (retained messages).
 // Only what the game needs: QoS 0 publish / subscribe, retained messages, keep-alive, reconnection.
-const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
+// Several brokers are used at once (the first one that carries the host's answer is kept); the last one listens on the
+// HTTPS port, which networks that block the other ports (some mobile, school or work networks) still let through.
+const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io:443/mqtt'];
 export const TOPIC = 'ps5ux/au1/';
-// tests point to a local broker with ?mqtt=ws://host:port
+// tests point to local brokers with ?mqtt=ws://host:port[,ws://host:port…]
 export function brokers() {
   const o = new URLSearchParams(location.search).get('mqtt');
-  return o ? [o] : BROKERS;
+  return o ? o.split(',') : BROKERS;
 }
 const enc = new TextEncoder(), dec = new TextDecoder();
 const str = s => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
@@ -18,9 +20,10 @@ function packet(type, body) {
 }
 
 export class Mqtt {
-  constructor(url) {
-    this.url = url; this.subs = new Map(); this.ws = null; this.open = false; this.closed = false; this.pid = 1;
-    this.buf = new Uint8Array(0); this.waiting = [];
+  // keep: dial again whenever the connection is lost, even before anything is subscribed (a host's relay)
+  constructor(url, keep = false) {
+    this.url = url; this.subs = new Map(); this.ws = null; this.open = false; this.closed = false; this.pid = 1; this.keep = keep;
+    this.buf = new Uint8Array(0); this.waiting = []; this.fails = 0; this.heard = 0; this.pingAt = 0;
   }
   // resolves once the broker accepted the connection (rejects after `ms`)
   connect(ms = 8000) {
@@ -33,22 +36,50 @@ export class Mqtt {
     });
   }
   dial() {
-    if (this.closed) return;
+    clearTimeout(this.rt);
+    if (this.closed || this.ws) return;
     let ws;
     try { ws = new WebSocket(this.url, 'mqtt'); } catch (e) { this.fail(e); return; }
     ws.binaryType = 'arraybuffer';
     this.ws = ws;
+    // a broker that does not answer (port filtered by the network) is given up after a while, then dialled again
+    clearTimeout(this.dt); this.dt = setTimeout(() => { if (this.ws === ws && !this.open) this.drop(); }, 10000);
     ws.onopen = () => {
       const id = 'ps5ux' + Math.random().toString(36).slice(2, 12);
       ws.send(packet(0x10, [...str('MQTT'), 4, 0x02, 0, 60, ...str(id)]));
     };
-    ws.onmessage = e => this.data(new Uint8Array(e.data));
-    ws.onclose = ws.onerror = () => {
-      if (this.ws !== ws) return;
-      this.ws = null; this.open = false; clearInterval(this.ping);
-      this.fail(new Error('broker closed'));
-      if (!this.closed && this.subs.size) setTimeout(() => { if (!this.ws && !this.closed) this.dial(); }, 2000);
-    };
+    ws.onmessage = e => { if (this.ws !== ws) return; this.heard = Date.now(); this.data(new Uint8Array(e.data)); };
+    ws.onclose = ws.onerror = () => this.lost(ws);
+  }
+  lost(ws) {
+    if (this.ws !== ws) return;
+    this.ws = null; this.open = false; this.buf = new Uint8Array(0); clearInterval(this.ping); clearTimeout(this.ct);
+    this.fail(new Error('broker closed'));
+    // dial again: at once after a working connection, then less and less often while the broker stays unreachable
+    if (!this.closed && (this.keep || this.subs.size)) this.rt = setTimeout(() => this.dial(), Math.min(30000, 1000 * 2 ** this.fails++));
+  }
+  // drop the connection and dial again (a socket that looks open but no longer carries anything)
+  drop() {
+    const ws = this.ws;
+    if (!ws) return;
+    this.lost(ws);
+    try { ws.close(); } catch { /* ignore */ }
+  }
+  // every 10 s a ping; when the previous one is still unanswered the connection is dead. A phone back from the
+  // background often keeps such a socket: it never closes by itself, and nothing goes through it any more.
+  keepAlive() {
+    if (!this.open) return;
+    if (this.pingAt && this.heard < this.pingAt) { if (Date.now() - this.pingAt > 8000) this.drop(); return; }
+    this.pingAt = Date.now(); this.send(packet(0xC0, []));
+  }
+  // the page comes back to the foreground: check the connection now (answer within 4 s) or dial at once
+  check() {
+    if (this.closed) return;
+    if (!this.ws) { if (this.keep || this.subs.size) { this.fails = 0; this.dial(); } return; }
+    if (!this.open) return;
+    this.pingAt = Date.now(); this.send(packet(0xC0, []));
+    clearTimeout(this.ct);
+    this.ct = setTimeout(() => { if (this.open && this.heard < this.pingAt) this.drop(); }, 4000);
   }
   fail(e) { const w = this.waiting; this.waiting = []; w.forEach(x => { clearTimeout(x.t); x.reject(e); }); }
   data(chunk) {
@@ -68,8 +99,8 @@ export class Mqtt {
     const type = h >> 4;
     if (type === 2) {                              // CONNACK
       if (body[1] !== 0) { this.fail(new Error('broker refused')); return; }
-      this.open = true;
-      this.ping = setInterval(() => this.send(packet(0xC0, [])), 30000);
+      this.open = true; this.fails = 0; this.pingAt = 0;
+      clearInterval(this.ping); this.ping = setInterval(() => this.keepAlive(), 10000);
       for (const t of this.subs.keys()) this.subscribe(t);
       const w = this.waiting; this.waiting = []; w.forEach(x => { clearTimeout(x.t); x.resolve(this); });
     } else if (type === 3) {                       // PUBLISH (QoS 0)
@@ -87,32 +118,23 @@ export class Mqtt {
     return () => { const s = this.subs.get(topic); s?.delete(fn); if (s && !s.size) { this.subs.delete(topic); const id = this.pid = (this.pid % 65000) + 1; this.send(packet(0xA2, [id >> 8, id & 255, ...str(topic)])); } };
   }
   pub(topic, text, retain = false) { return this.send(packet(0x30 | (retain ? 1 : 0), [...str(topic), ...enc.encode(text)])); }
-  close() { this.closed = true; this.fail(new Error('closed')); clearInterval(this.ping); try { this.send(packet(0xE0, [])); this.ws?.close(); } catch { /* ignore */ } this.ws = null; }
+  close() { this.closed = true; this.fail(new Error('closed')); clearInterval(this.ping); clearTimeout(this.rt); clearTimeout(this.ct); clearTimeout(this.dt); try { this.send(packet(0xE0, [])); this.ws?.close(); } catch { /* ignore */ } this.ws = null; }
 }
 function match(pat, topic) {
   const a = pat.split('/'), b = topic.split('/');
   for (let i = 0; i < a.length; i++) { if (a[i] === '#') return true; if (a[i] !== '+' && a[i] !== b[i]) return false; }
   return a.length === b.length;
 }
-// the first broker that answers (each one is tried in turn)
-export async function anyBroker() {
-  let last;
-  for (const url of brokers()) {
-    const m = new Mqtt(url);
-    try { await m.connect(); return m; } catch (e) { last = e; m.close(); }
-  }
-  throw last || new Error('no broker');
-}
-// every broker that answers (the host listens on all of them: guests may reach a different one)
-export async function allBrokers() {
-  const res = await Promise.all(brokers().map(async url => { const m = new Mqtt(url); try { return await m.connect(); } catch { m.close(); return null; } }));
+// every broker that answers within `ms` (the public list is read from all of them)
+export async function allBrokers(ms = 8000) {
+  const res = await Promise.all(brokers().map(async url => { const m = new Mqtt(url); try { return await m.connect(ms); } catch { m.close(); return null; } }));
   return res.filter(Boolean);
 }
 
 // public games of the consoles: one retained message per room, refreshed by its host
 export async function listPublic(map) {
   const out = new Map();
-  const ms = await allBrokers();
+  const ms = await allBrokers(5000);
   if (!ms.length) throw new Error('Impossible de joindre le service des parties publiques. Vérifiez votre connexion.');
   await new Promise(r => {
     ms.forEach(m => m.sub(TOPIC + 'pub/+', text => { try { const i = JSON.parse(text); if (i?.code) out.set(i.code, i); } catch { /* empty = removed */ } }));
