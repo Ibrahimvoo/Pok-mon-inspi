@@ -4,3 +4,4 @@ dist
 tools/.cache
 dist-artifact
 data
+__pycache__/
