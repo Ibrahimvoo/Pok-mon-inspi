@@ -1,5 +1,5 @@
 // Simulated console operations: purchases, downloads, installs, trophies. No real payment ever happens.
-import { state, save, owns, installed, downloading, finalPrice } from './state.js';
+import { state, save, owns, installed, downloading, finalPrice, builtIn } from './state.js';
 import { byId, PLANS } from './data.js';
 import { toast, dialog, confirmDialog, go } from './shell.js';
 import { h, art, price, size, icon, img } from './ui.js';
@@ -43,6 +43,7 @@ export function cancelDownload(id) {
 
 export function uninstall(id) {
   const g = byId[id];
+  if (builtIn(id)) { toast({ title: 'Jeu intégré à la console', sub: `${g.title} ne peut pas être supprimé`, img: art.thumb(id), sound: 'error', log: false }); return; }
   confirmDialog('Supprimer le jeu ?', `${g.title} sera supprimé du stockage de la console (${size(g.size)} libérés). Vos sauvegardes sont conservées.`, 'Supprimer', () => {
     state.installed = state.installed.filter(x => x !== id);
     save('installed');

@@ -95,6 +95,8 @@ addEventListener('click', e => {
   if (act) { e.preventDefault(); fire(act.dataset.action, e); return; }
   const el = e.target.closest?.('[data-f]');
   const t = nav.top;
+  // a tap on the dimmed backdrop around a menu or a dialog closes it, like ○ / Échap
+  if (!el && t && !t.isScreen && !t.pf && !t.noTapClose && t.back && t.root.classList.contains('overlay') && (e.target === t.root || e.target.classList?.contains('dlg-back'))) { e.preventDefault(); t.back(); return; }
   if (!el || !t || !t.root.contains(el)) return;
   e.preventDefault();
   // on touch, the first tap on a home tile only selects it (launching a game needs a second tap)

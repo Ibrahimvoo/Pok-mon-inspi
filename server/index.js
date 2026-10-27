@@ -46,12 +46,12 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
 
   const SEC = {
     'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY',
-    'Permissions-Policy': 'microphone=(self), camera=(), geolocation=(), gamepad=(self)',
+    'Permissions-Policy': 'microphone=(self), camera=(self), display-capture=(self), geolocation=(), gamepad=(self)',
     'Cross-Origin-Opener-Policy': 'same-origin',
   };
   function csp(req) {
     const host = req.headers.host;
-    return `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self' wss://${host} ws://${host}; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'`;
+    return `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self' wss://${host} ws://${host} https://0.peerjs.com wss://0.peerjs.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'`;
   }
   function json(res, status, body, extra = {}) {
     res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...SEC, ...extra });
@@ -164,7 +164,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   }
 
   // ------------------------------------------------------------ static client
-  const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon' };
+  const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
   const gzCache = new Map();
   async function serveStatic(req, res, url) {
     let p = decodeURIComponent(url.pathname);
@@ -178,7 +178,7 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
       'Cache-Control': p.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : p.startsWith('/art/') ? 'public, max-age=604800' : 'no-cache' };
     if (ext === '.html') headers['Content-Security-Policy'] = csp(req);
     let data = await readFile(file);
-    if (/\.(html|js|css|svg|json)$/.test(ext) && /gzip/.test(req.headers['accept-encoding'] || '')) {
+    if (/\.(html|js|css|svg|json|webmanifest)$/.test(ext) && /gzip/.test(req.headers['accept-encoding'] || '')) {
       const key = file + st.mtimeMs;
       if (!gzCache.has(key)) gzCache.set(key, gzipSync(data));
       data = gzCache.get(key); headers['Content-Encoding'] = 'gzip'; headers.Vary = 'Accept-Encoding';
@@ -195,7 +195,8 @@ export async function start({ port = +(env.PORT || 8080), dbUrl = env.DATABASE_U
   });
 
   // ------------------------------------------------------------ websocket
-  const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
+  // an offer with the camera and share slots (four media sections) is larger than a voice-only one
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 256 * 1024 });
   server.on('upgrade', async (req, socket, head) => {
     const deny = (code, text) => { socket.write(`HTTP/1.1 ${code} ${text}\r\nConnection: close\r\n\r\n`); socket.destroy(); };
     try {

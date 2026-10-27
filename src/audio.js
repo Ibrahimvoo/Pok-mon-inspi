@@ -121,6 +121,37 @@ function schedule() {
     nextBell = now + M.rate * (.6 + Math.random() * .9);
   }
 }
+// ---------------------------------------------------------------- output device changes (speaker, AirPods, headphones)
+// iOS can stop or interrupt the audio context when the route changes (AirPods put in or taken out, headphones,
+// a phone call, Siri) without the page being hidden, and nothing restarted it: every sound was silently dropped
+// until the app was reloaded. The context is now watched and restarted, from the next tap when iOS requires one.
+const IOS_DEVICE = /iP(hone|ad|od)/.test(navigator.platform || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const events = new EventTarget();
+let wanted = 'running', rerouteT = 0;
+function note(kind, detail = {}) {
+  events.dispatchEvent(new CustomEvent('log', { detail: { kind, ...detail, state: ctx?.state || 'none' } }));
+}
+function revive(why) {
+  if (!ctx || wanted !== 'running' || ctx.state === 'running' || ctx.state === 'closed' || document.hidden) return;
+  ctx.resume().then(() => { if (ctx.state === 'running') note('resumed', { why }); }).catch(() => {});
+}
+// a tap or a key is a user gesture: iOS accepts the restart from it
+for (const ev of ['touchend', 'pointerdown', 'keydown']) addEventListener(ev, () => revive('gesture'), { capture: true, passive: true });
+// Safari 16.4+: the audio session decides how the page sounds. 'playback' keeps playing with the silent switch on and
+// leaves Bluetooth headphones on their high-quality profile; a voice call needs 'play-and-record' (microphone).
+function sessionType(type) {
+  try { if (navigator.audioSession && navigator.audioSession.type !== type) { navigator.audioSession.type = type; note('session', { session: type }); } } catch { /* not supported */ }
+}
+function reroute(why) {
+  if (!ctx || wanted !== 'running') return;
+  note('route', { why });
+  // reopening the output makes iOS pick the new route (and its sample rate) instead of a device that is gone
+  if (IOS_DEVICE && ctx.state === 'running') ctx.suspend().then(() => ctx.resume()).catch(() => {}).finally(() => revive(why));
+  else revive(why);
+  events.dispatchEvent(new CustomEvent('reroute', { detail: { why } }));
+}
+navigator.mediaDevices?.addEventListener?.('devicechange', () => { clearTimeout(rerouteT); rerouteT = setTimeout(() => reroute('devicechange'), 400); });
+
 function applyMusicGain(fade = 1.2) {
   if (!ctx) return;
   const g = musicOn ? musicVol * duck : 0;
@@ -128,7 +159,10 @@ function applyMusicGain(fade = 1.2) {
   musicBus.gain.setTargetAtTime(g, ctx.currentTime, fade / 3);
 }
 
+let callMode = false;
+const capturing = new Set();   // who uses the microphone right now (voice call, Mimic Party, the mic test)
 export const audio = {
+  events, ios: IOS_DEVICE,
   get ready() { return !!ctx && ctx.state === 'running'; },
   get ctx() { return ctx; },
   init() {
@@ -144,6 +178,11 @@ export const audio = {
       musicBus = ctx.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
       verb = ctx.createConvolver(); verb.buffer = impulse();
       verbSend = ctx.createGain(); verbSend.gain.value = .5; verbSend.connect(verb); verb.connect(master);
+      ctx.onstatechange = () => {
+        // stopped by the system (route change, call, Siri…) and not by us: note it and start again
+        if (ctx.state !== 'running' && wanted === 'running') { note('state'); setTimeout(() => revive('statechange'), 120); }
+      };
+      if (!callMode) sessionType('playback');
       if (ctx.state !== 'running') ctx.resume();
       timer = setInterval(schedule, 250);
       applyMusicGain(3);
@@ -169,13 +208,29 @@ export const audio = {
     applyMusicGain(.6);
   },
   duck(v, fade = 1.2) { duck = v; applyMusicGain(fade); },
-  suspend() { ctx?.suspend(); },
-  // iOS can leave the context 'interrupted' after a call or an app switch; retry on the next real gesture
+  suspend() { wanted = 'suspended'; ctx?.suspend(); },
+  // iOS can leave the context 'interrupted' after a call or an app switch; the next real gesture retries (see revive)
   resume() {
+    wanted = 'running';
     if (!ctx) return;
-    const tryIt = () => ctx.resume().catch(() => {});
-    tryIt();
-    if (ctx.state !== 'running') for (const ev of ['pointerdown', 'keydown', 'touchend']) addEventListener(ev, tryIt, { once: true, capture: true });
+    ctx.resume().catch(() => {});
+  },
+  // the microphone needs the 'play-and-record' session (iOS refuses or silences capture in a 'playback' one); plain
+  // playback comes back only when nobody captures any more: a call ending must not cut Mimic Party's microphone
+  capture(owner, on) {
+    if (on) capturing.add(owner); else capturing.delete(owner);
+    const want = capturing.size > 0;
+    if (want === callMode) return;
+    callMode = want;
+    sessionType(want ? 'play-and-record' : 'playback');
+    if (!want) setTimeout(() => reroute('call-ended'), 250);
+  },
+  setCallMode(on) { this.capture('call', on); },
+  reroute,
+  // what Settings › Sound shows to tell a playback problem from a microphone problem
+  diagnostics() {
+    return { state: ctx?.state || 'non démarré', rate: ctx?.sampleRate || 0, latency: ctx?.baseLatency || 0,
+      session: navigator.audioSession ? navigator.audioSession.type : null, sfx: sfxOn ? sfxVol : 0, music: musicOn ? musicVol : 0 };
   },
   stop() { clearInterval(timer); },
 };

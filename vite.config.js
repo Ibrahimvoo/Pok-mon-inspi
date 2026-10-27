@@ -11,5 +11,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: ['es2020', 'safari14'], assetsInlineLimit: 0, chunkSizeWarningLimit: 800,
     outDir: mode === 'artifact' ? 'dist-artifact' : 'dist',
+    // the single-page artifact cannot load extra chunks: the lazily loaded game is bundled in
+    rollupOptions: mode === 'artifact' ? { output: { inlineDynamicImports: true } } : {},
   },
 }));

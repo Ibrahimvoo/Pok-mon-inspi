@@ -15,7 +15,7 @@ import { Table, sortHand } from './table.js';
 import { cardEl, robotAvatar, HEX } from './cards.js';
 import { online, ID, SEATS, INFO_MS } from './online.js';
 import { handPoints } from './rules.js';
-import { sfx, playMusic } from './sound.js';
+import { sfx } from './sound.js';
 import { unlockTrophy } from '../actions.js';
 import { state } from '../state.js';
 
@@ -207,9 +207,9 @@ export class UnoGame {
     if (this.table && this.scene === this.table.root) return this.table.hints();
     return typeof this.top.hints === 'function' ? this.top.hints() : this.top.hints;
   }
-  start() { playMusic(true); this.titleScreen(); return Promise.resolve(); }
-  suspend() { this.suspended = true; online.pause(); playMusic(false); }
-  resume() { this.suspended = false; if (!this.overlay) online.resume(); playMusic(true); renderHints(); }
+  start() { this.titleScreen(); return Promise.resolve(); }
+  suspend() { this.suspended = true; online.pause(); }
+  resume() { this.suspended = false; if (!this.overlay) online.resume(); renderHints(); }
   destroy() {
     this.closed = true;
     this.clearTimers();
@@ -217,7 +217,6 @@ export class UnoGame {
     online.leave();
     this.table?.destroy();
     this.bg.destroy();
-    playMusic(false);
   }
   onWatch() {
     if (this.closed) return;

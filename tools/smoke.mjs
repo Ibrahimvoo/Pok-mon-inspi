@@ -22,8 +22,8 @@ const [vw, vh] = (process.env.VIEWPORT || '1280x720').split('x').map(Number);
 const page = await browser.newPage({ viewport: { width: vw, height: vh }, hasTouch: !!process.env.TOUCH, isMobile: !!process.env.TOUCH });
 const errors = [];
 page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.type() + ': ' + m.text()); });
-page.on('requestfailed', r => errors.push('requestfailed: ' + r.url()));
+page.on('console', m => { if ((m.type() === 'error' || m.type() === 'warning') && !/peerjs/.test(m.text())) errors.push(m.type() + ': ' + m.text()); });
+page.on('requestfailed', r => { if (!/peerjs/.test(r.url())) errors.push('requestfailed: ' + r.url()); });
 if (process.env.FAKEPAD) await page.addInitScript(id => {
   // a fake standard-mapping controller driven by the "pad:<button>" step
   const pad = { id, index: 0, connected: true, mapping: 'standard', timestamp: 0, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };

@@ -1,8 +1,7 @@
 // Microphone for Mimic Party: one stream for the whole game (a copy of the voice-call microphone when a call is
 // running), a live level and pitch for the animations, and raw capture for scoring.
 import { audio } from '../audio.js';
-import { voice } from '../rtc.js';
-import { IOS } from '../input.js';
+import { voice, micErrorText } from '../rtc.js';
 import { resample, SR, detectPitch } from './dsp.js';
 
 export class MicError extends Error {}
@@ -10,15 +9,12 @@ export class MicError extends Error {}
 let stream = null, src = null, an = null, proc = null, sink = null, td = null, chunks = null, fromCall = false;
 let lvl = 0, peak = 0, rawSum = 0, rawN = 0;
 
-function errorFor(e) {
-  if (e?.name === 'NotAllowedError' || e?.name === 'SecurityError') return new MicError(IOS
-    ? 'Accès au micro refusé. Dans Safari : touchez « aA » puis « Réglages du site web » → Micro → Autoriser, puis réessayez.'
-    : 'Accès au micro refusé. Autorisez le micro dans les réglages du site (icône à gauche de l’adresse), puis réessayez.');
-  if (e?.name === 'NotFoundError' || e?.name === 'OverconstrainedError') return new MicError('Aucun micro n’a été détecté sur cet appareil.');
-  if (e?.name === 'NotReadableError' || e?.name === 'AbortError') return new MicError('Le micro est déjà utilisé par une autre application.');
-  return new MicError('Impossible d’accéder au micro.');
-}
-const live = () => stream?.getAudioTracks().some(t => t.readyState === 'live');
+const errorFor = e => new MicError(micErrorText(e));
+// a track can stay "live" while the system silences it (muted): it would record pure silence
+const live = () => stream?.getAudioTracks().some(t => t.readyState === 'live' && !t.muted);
+// a voice call started after the microphone opened: record from a copy of the call's microphone instead (on iOS two
+// captures of the same microphone silence each other); never in the middle of a take
+voice.on('change', d => { if (d.joined && stream && !fromCall && !chunks) mic.close(); });
 
 function build() {
   const ctx = audio.ctx;
@@ -44,25 +40,28 @@ function teardown() {
 }
 
 export const mic = {
-  get ready() { return live(); },
+  get ready() { return live() && !!src && (fromCall || !voice.active); },
   get fromCall() { return fromCall; },
   get rate() { return audio.ctx?.sampleRate || 48000; },
   async open() {
-    if (live() && src) return;
+    if (this.ready) return;
     this.close();
     audio.init();
     const ctx = audio.ctx;
     if (!ctx) throw new MicError('Le son est indisponible sur cet appareil.');
+    // iOS only records in a 'play-and-record' audio session (in 'playback' the capture is refused or silent)
+    audio.capture('mimic', true);
     if (ctx.state !== 'running') await ctx.resume().catch(() => {});
-    let s = voice.active ? voice.captureStream() : null;
+    let s = null;
+    if (voice.active) { await voice.ensureLive(); s = voice.captureStream(); }
     fromCall = !!s;
     if (!s) {
-      if (!navigator.mediaDevices?.getUserMedia) throw new MicError(location.protocol !== 'https:' && !/^(localhost|127\.)/.test(location.hostname)
-        ? 'Le micro exige une connexion sécurisée (adresse en https://).' : 'Ce navigateur ne donne pas accès au micro.');
+      if (!navigator.mediaDevices?.getUserMedia) { audio.capture('mimic', false); throw new MicError(location.protocol !== 'https:' && !/^(localhost|127\.)/.test(location.hostname)
+        ? 'Le micro exige une connexion sécurisée (adresse en https://).' : 'Ce navigateur ne donne pas accès au micro.'); }
       try {
         // raw sound: the imitation of a noise or a melody must not be "cleaned" by the voice processing
         s = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, video: false });
-      } catch (e) { throw errorFor(e); }
+      } catch (e) { audio.capture('mimic', false); throw errorFor(e); }
     }
     stream = s;
     build();
@@ -72,6 +71,7 @@ export const mic = {
     teardown();
     stream?.getTracks().forEach(t => t.stop());
     stream = null; fromCall = false; lvl = 0;
+    audio.capture('mimic', false);
   },
   // 0…1, smoothed for mouth animation and meters
   level() {

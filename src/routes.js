@@ -11,3 +11,5 @@ export const ROUTES = { store: storeScreen, product: productScreen, library: lib
 for (const [name, f] of Object.entries(ROUTES)) f.route = name;
 import { galleryScreen } from './screens/create.js';
 ROUTES.gallery = galleryScreen; galleryScreen.route = 'gallery';
+import { chatScreen } from './screens/messages.js';
+ROUTES.chat = chatScreen; chatScreen.route = 'chat';

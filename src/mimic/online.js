@@ -15,7 +15,7 @@ import { button, icon, bubbly } from './ui.js';
 import { WHEEL } from './ui.js';
 import { PRESETS } from './avatar.js';
 import { adpcmEncode, adpcmDecode, toBase64, fromBase64 } from './dsp.js';
-import { sfx } from './sound.js';
+import { sfx, REFS_REV } from './sound.js';
 import { CANCEL, ID } from './signals.js';
 import REFS from './refs.json';
 
@@ -162,7 +162,6 @@ function guestLobby(g) {
   const ep = g.newFlow();
   g.inMatch = false; g.online = S;
   S.phase = 'lobby';
-  g.music('menu');
   const st = g.stage;
   st.clearAvatars(); g.clearLabels(); st.clearFx(); st.stagePose();
   st.shot('lobby', { dur: 1.2 });
@@ -177,7 +176,7 @@ function guestLobby(g) {
     const R = L.rules || {};
     const names = { snap: 'Réfs Snap', africa: 'Mèmes africains', petits: 'Réfs de petits', oubliees: 'Réfs oubliées', tiktok: 'TikTok' };
     packsEl.replaceChildren(h('div.head', 'PACKS MIMIC'), h('div.count', `${(R.packs || []).length} pack(s) choisi(s) par l’hôte`),
-      ...(R.packs || []).filter(id => names[id]).map(id => { const c = REFS.find(r => r.pack === id); return h('div.packrow', c ? h('img', { src: `mimic/refs/${encodeURIComponent(c.id)}.webp`, alt: '' }) : null, h('span.grow', names[id]), icon('check')); }));
+      ...(R.packs || []).filter(id => names[id]).map(id => { const c = REFS.find(r => r.pack === id); return h('div.packrow', c ? h('img', { src: `mimic/refs/${encodeURIComponent(c.id)}.webp?v=${REFS_REV}`, alt: '' }) : null, h('span.grow', names[id]), icon('check')); }));
     playersEl.replaceChildren(...L.players.map(p => h('div.mmp-prow', { f: p.id === myId() ? true : null, onok: p.id === myId() ? () => pickChar() : null },
       h('div.av', h('img', { src: g.portrait(p.char, '#e5483f'), alt: '' }), p.host ? icon('crown', 'crown') : null),
       voice.active && !p.couch ? icon('speaker', 'sp') : null,
@@ -343,7 +342,8 @@ export const online = {
     code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 6) throw new Error('Le code contient 6 caractères.');
     if (p2p.active && p2p.code === code) { send({ k: 'ask' }); return; }
-    if (social.party) throw new Error('Quitte d’abord ton groupe actuel (Base de jeu) pour rejoindre ce salon.');
+    // already in another group (an old salon left open, a friend's group): leave it for the one of this code
+    if (social.party || p2p.active) await social.leave();
     joining = true; notify();
     try { await social.joinSalon(code); } finally { joining = false; notify(); }
     send({ k: 'ask' });

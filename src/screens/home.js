@@ -16,6 +16,7 @@ import { searchScreen } from './search.js';
 import { settingsScreen } from './settings.js';
 import { profileScreen } from './profile.js';
 import { usersScreen } from './boot.js';
+import { messages } from '../messages.js';
 
 const STEP = 13.2; // small tile + gap, in rem
 
@@ -24,6 +25,7 @@ export function topRight({ cart = false } = {}) {
   const av = h(`div.avatar.tb-avatar${user.online ? '' : '.offline'}`, { f: true, title: user.psn, onok: e => menu([
     { label: 'Profil', icon: 'user', onok: () => go(profileScreen) },
     { label: 'Base de jeu', icon: 'friends', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen)) },
+    { label: messages.unread ? `Messages (${messages.unread} non lu${messages.unread > 1 ? 's' : ''})` : 'Messages', icon: 'chat', onok: () => import('./gamebase.js').then(m => go(m.gamebaseScreen, { tab: 'messages' })) },
     { label: 'Changer d’utilisateur', icon: 'refresh', onok: () => go(usersScreen, { switching: true }) },
   ], e.currentTarget) }, img(art.thumb(user.avatar)));
   return h('div.tb-right',
@@ -133,11 +135,11 @@ export function homeScreen() {
     let content;
     if (it.kind === 'game') { hub = renderHub(it.g.id, { compact: true }); content = hub.el; }
     else if (it.kind === 'store') {
-      const deals = GAMES.filter(g => g.discount || g.preorder).slice(0, 5);
+      const deals = GAMES.filter(g => g.discount || g.preorder).slice(0, 5), picks = deals.length ? deals : GAMES.slice(0, 5);
       content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'PlayStation Store'),
         h('div.hub-meta', 'Nouveautés, offres du moment et abonnements'),
         h('div.actions', h('button.btn.primary.play', { f: true, onok: () => open(it) }, h('span.icw', { html: icon('bag') }), 'Ouvrir le PlayStation Store'))),
-        h('div.cards-title', 'Offres à ne pas manquer'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, deals.map(cardFor)));
+        h('div.cards-title', deals.length ? 'Offres à ne pas manquer' : 'À la une'), h('div.cards', { 'data-scroll': 'x', 'data-row': '' }, picks.map(cardFor)));
     } else if (it.kind === 'library') {
       const notInst = state.owned.filter(id => !state.installed.includes(id));
       content = h('div', h('div.hub-hero.swap', h('div.logo', { style: { fontWeight: 300 } }, 'Bibliothèque'),

@@ -5,22 +5,25 @@ const KEY = 'ps5ux.v1';
 const now = Date.now();
 const H = 3600e3;
 
+// Free games every console owns and keeps installed, including consoles saved before they existed
+// (Pouf Party, Mimic Party, UNO and Among Us are the console's games: they must always be on the home screen).
+const GIFTS = ['pouf-party', 'mimic-party', 'uno', 'among-us'];
 const defaults = () => ({
   user: null,
-  owned: ['among-us', 'uno', 'mimic-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound', 'moonlit-bay', 'hollow-pines', 'abyssal'],
-  installed: ['among-us', 'uno', 'mimic-party', 'ashen-crown', 'starfall', 'neon-requiem', 'valewalker', 'lumen', 'tidebreaker', 'northbound'],
-  lastPlayed: { 'among-us': now - 30e3, 'mimic-party': now - 60e3, uno: now - 90e3, 'ashen-crown': now - 2 * H, 'neon-requiem': now - 26 * H, starfall: now - 50 * H, valewalker: now - 96 * H, lumen: now - 140 * H, tidebreaker: now - 200 * H, northbound: now - 300 * H },
-  playTime: { 'ashen-crown': 41 * 60, 'neon-requiem': 12 * 60, starfall: 63 * 60, valewalker: 88 * 60, lumen: 7 * 60, tidebreaker: 15 * 60, northbound: 22 * 60 },
-  trophies: { 'ashen-crown': [0, 1, 2], 'neon-requiem': [0], starfall: [0, 1, 3, 4], valewalker: [0, 1, 2, 3, 4, 5], lumen: [0, 1], tidebreaker: [0], northbound: [0, 1] },
-  wishlist: ['sands-meridian'],
+  gifts: [...GIFTS],
+  owned: [...GIFTS],
+  installed: [...GIFTS],
+  lastPlayed: { 'mimic-party': now - 60e3, uno: now - 90e3, 'pouf-party': now - 2 * H },
+  playTime: {},
+  trophies: {},
+  wishlist: [],
   cart: [],
   wallet: 124.5,
   plan: null,
   downloads: [],
   notifications: [],
-  recentSearch: ['valewalker', 'course'],
+  recentSearch: ['pouf', 'course'],
   captures: [],
-  gifts: ['mimic-party', 'uno', 'among-us'],
   settings: {
     sfx: true, sfxVol: 0.7, music: true, musicVol: 0.4, quality: 'high', parallax: true, reduceMotion: false,
     confirm: 'cross', vib: 2, glyphs: 'auto', clock24: true, bigText: false, contrast: false, noiseSuppression: true,
@@ -34,18 +37,23 @@ function load() {
     const s = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (!s) return d;
     const merged = { ...d, ...s, settings: { ...d.settings, ...s.settings } };
-    // drop ids that no longer exist in the catalogue
-    for (const k of ['owned', 'installed', 'wishlist', 'cart']) merged[k] = merged[k].filter(id => byId[id]);
-    merged.downloads = merged.downloads.filter(x => byId[x.id]);
-    // consoles saved before a game was added receive it once, installed and on the home screen
-    merged.gifts = Array.isArray(s.gifts) ? s.gifts : [];
-    for (const id of ['mimic-party', 'uno', 'among-us']) {
-      if (merged.gifts.includes(id)) continue;
-      merged.gifts.push(id);
-      if (!merged.owned.includes(id)) merged.owned.unshift(id);
-      if (!merged.installed.includes(id)) merged.installed.unshift(id);
-      merged.lastPlayed[id] = Date.now();
+    // drop ids that no longer exist in the catalogue (games removed from the console)
+    const known = id => !!byId[id];
+    for (const k of ['owned', 'installed', 'wishlist', 'cart']) merged[k] = (Array.isArray(merged[k]) ? merged[k] : []).filter(known);
+    merged.downloads = (Array.isArray(merged.downloads) ? merged.downloads : []).filter(x => known(x?.id));
+    for (const k of ['lastPlayed', 'playTime', 'trophies']) merged[k] = Object.fromEntries(Object.entries(merged[k] || {}).filter(([id]) => known(id)));
+    merged.captures = (Array.isArray(merged.captures) ? merged.captures : []).filter(c => c && (!c.game || known(c.game)));
+    merged.gifts = Array.isArray(merged.gifts) ? merged.gifts : [];
+    // The gifts are re-checked on every start: an older cached build (Safari keeps one per tab) used to drop them
+    // from `owned` while leaving them in `gifts`, which hid the game for good in Safari but not in the home-screen app.
+    for (const id of GIFTS) {
+      if (!merged.gifts.includes(id)) merged.gifts.push(id);
+      if (!merged.owned.includes(id)) merged.owned.push(id);
+      if (!merged.installed.includes(id) && !merged.downloads.some(x => x.id === id)) merged.installed.push(id);
+      merged.lastPlayed[id] ||= Date.now() - 60e3;
     }
+    // write the repaired save back now, not at the next change
+    try { localStorage.setItem(KEY, JSON.stringify(merged)); } catch { /* private mode */ }
     return merged;
   } catch { return d; }
 }
@@ -64,6 +72,7 @@ export function resetAll() {
   save('reset');
 }
 
+export const builtIn = id => GIFTS.includes(id);   // part of the console: always installed, cannot be deleted
 export const owns = id => state.owned.includes(id);
 export const installed = id => state.installed.includes(id);
 export const downloading = id => state.downloads.find(d => d.id === id);

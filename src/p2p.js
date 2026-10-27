@@ -4,6 +4,7 @@ import { Peer } from 'peerjs';
 import { net } from './net.js';
 import { session } from './session.js';
 import { AVATARS, validAvatar } from './avatars.js';
+import { byId } from './data.js';
 import { navExtras, saveNav } from './shell.js';
 import { lifecycle } from './input.js';
 import { PUBLIC_ICE } from './rtc.js';
@@ -14,7 +15,7 @@ const GRACE = 15000;
 const emit = (t, d) => net.inject(t, d);
 const nonce = () => Math.random().toString(16).slice(2, 14);
 // tests can point to a local PeerJS server with ?peerhost=host:port
-const peerOptions = () => {
+export const peerOptions = () => {
   const o = new URLSearchParams(location.search).get('peerhost');
   if (!o) return { debug: 0, config: { iceServers: PUBLIC_ICE } };
   const [host, port] = o.split(':');
@@ -26,6 +27,8 @@ const errText = e => ({
   network: 'Connexion au service de mise en relation impossible. Vérifiez votre connexion Internet.',
   'server-error': 'Le service de mise en relation ne répond pas. Réessayez dans un instant.',
   'browser-incompatible': 'Ce navigateur ne permet pas le jeu en ligne direct.',
+  // the room exists, but no direct or relayed path between the two devices was found in time
+  timeout: 'Le salon de votre ami est bien ouvert, mais vos deux appareils n’arrivent pas à se connecter. Vérifiez que votre ami garde la console ouverte au premier plan, puis réessayez.',
 }[e?.type] || 'La connexion au salon a échoué.');
 
 let peer = null, hostConn = null, rid = 0, retryTimer = 0;
@@ -75,7 +78,7 @@ function hostHandle(fromId, m) {
       return;
     }
     case 'game.start': {
-      if (!AVATARS.includes(m.game)) return { error: 'invalid', message: 'Jeu inconnu.' };
+      if (!byId[m.game]) return { error: 'invalid', message: 'Jeu inconnu.' };
       room.game = { id: m.game, by: fromId, at: Date.now() };
       pushRoom();
       broadcast({ t: 'game.started', game: m.game, by: { id: u.id, psn: u.psn, avatar: u.avatar }, partyId: p2p.code }, fromId);
@@ -162,7 +165,7 @@ function connectToHost(code, first) {
       emit('status', 'reconnecting');
       retryJoin(code, Date.now());
     });
-    setTimeout(() => fail({ type: 'peer-unavailable' }), 20000);
+    setTimeout(() => { if (!opened) { try { conn.close(); } catch { /* ignore */ } fail({ type: 'timeout' }); } }, 20000);
     if (first) conn.on('error', fail);
   });
 }
@@ -179,12 +182,20 @@ function retryJoin(code, since) {
 }
 
 // iOS suspends Safari while the link is being shared: reopen the room (host) or reconnect (guest) on return
+let reopening = false;   // one attempt at a time (each one can take a while when the broker is slow)
 async function reopenHost(tries = 0) {
-  if (!p2p.active || !p2p.host) return;
+  if (!p2p.active || !p2p.host || reopening) return;
   if (peer && !peer.destroyed && !peer.disconnected) return;
   try { peer?.destroy(); } catch { /* ignore */ }
-  try { peer = await openPeer(PREFIX + p2p.code); peer.on('connection', acceptGuest); }
-  catch { if (tries < 8) setTimeout(() => reopenHost(tries + 1), 3000); }
+  reopening = true;
+  const code = p2p.code;
+  try {
+    const p = await openPeer(PREFIX + code);
+    // the room was closed or replaced meanwhile: drop this one
+    if (!p2p.active || !p2p.host || p2p.code !== code) { p.destroy(); return; }
+    peer = p; peer.on('connection', acceptGuest);
+  } catch { if (tries < 8) setTimeout(() => reopenHost(tries + 1), 3000); }
+  finally { reopening = false; }
 }
 lifecycle.addEventListener('resume', () => {
   if (!p2p.active) return;
@@ -214,14 +225,32 @@ const transport = {
   },
 };
 
-function openPeer(id) {
+function openPeerOnce(id) {
   return new Promise((resolve, reject) => {
     const p = id ? new Peer(id, peerOptions()) : new Peer(peerOptions());
-    p.once('open', () => resolve(p));
-    p.once('error', reject);
+    // the public broker sometimes hangs instead of answering: give up on this attempt after a while
+    let open = false;
+    const t = setTimeout(() => { p.off('error', onErr); p.destroy(); reject({ type: 'network' }); }, 12000);
+    // only an error before the broker accepted us fails this attempt (later ones, e.g. a host not back yet, are normal)
+    const onErr = e => { if (open) return; clearTimeout(t); p.off('error', onErr); p.destroy(); reject(e); };
+    p.on('error', onErr);
+    p.once('open', () => { open = true; clearTimeout(t); p.off('error', onErr); resolve(p); });
     p.on('disconnected', () => { if (p2p.active && !p.destroyed) setTimeout(() => { try { p.reconnect(); } catch { /* destroyed */ } }, 1500); });
   });
 }
+// the free broker drops or refuses connections now and then: retry a few times before telling the player
+async function openPeer(id) {
+  for (let i = 0; ; i++) {
+    try { return await openPeerOnce(id); }
+    catch (e) {
+      if (!['network', 'server-error', 'socket-error', 'socket-closed'].includes(e?.type) || i >= 3) throw e;
+      await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+}
+
+// automated tests (?pfdebug) simulate iOS suspending the app by cutting the broker connection
+if (/[?&]pfdebug/.test(location.search)) window.__p2p = { get peer() { return peer; } };
 
 export const p2p = {
   active: false, host: false, code: null,
@@ -243,17 +272,29 @@ export const p2p = {
     pushRoom();
     return this.code;
   },
-  async join(code) {
+  // onWait: called once when the host is not reachable yet (its app is in the background while it shares the link:
+  // iOS suspends it, Safari tab or home-screen app alike). The guest keeps trying instead of failing at once.
+  async join(code, { onWait, wait = 40000 } = {}) {
     code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 6) throw new Error('Le code du salon contient 6 caractères.');
     this.leave();
+    const until = Date.now() + wait;
     try {
       peer = await openPeer();
       this.code = code; this.active = true; this.host = false;
       net.transport = transport;
-      await connectToHost(code, true);
+      for (let tries = 0; ; tries++) {
+        try { await connectToHost(code, true); break; }
+        catch (e) {
+          if ((e?.type !== 'peer-unavailable' && e?.type !== 'timeout') || Date.now() > until || !this.active || this.code !== code) throw e;
+          if (!tries) onWait?.();
+          await new Promise(r => setTimeout(r, 2500));
+          if (!this.active || this.code !== code) throw e;
+          if (peer?.disconnected) peer.reconnect();
+        }
+      }
       navExtras.salon = { code, host: false }; saveNav();
-    } catch (e) { this.leave(); throw new Error(e instanceof Error ? e.message : errText(e)); }
+    } catch (e) { if (this.code === code) this.leave(); throw new Error(e instanceof Error ? e.message : errText(e)); }
   },
   leave() {
     clearTimeout(retryTimer);

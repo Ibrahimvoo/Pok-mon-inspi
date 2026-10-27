@@ -9,10 +9,13 @@ import { audio } from '../audio.js';
 import { net } from '../net.js';
 import { session } from '../session.js';
 import { social, joinGame } from '../social.js';
+import { pfriends } from '../friends.js';
 import { voice } from '../rtc.js';
 import { openKeyboard } from '../keyboard.js';
+import { messages } from '../messages.js';
+import { messagesView, openChat } from './messages.js';
 
-const TABS = [['friends', 'Amis'], ['party', 'Groupe'], ['requests', 'Demandes'], ['add', 'Ajouter un ami']];
+const TABS = [['friends', 'Amis'], ['messages', 'Messages'], ['party', 'Groupe'], ['requests', 'Demandes'], ['add', 'Ajouter un ami']];
 const PADS = ['ps', 'xbox', 'nintendo', 'generic'];
 const QUICK = ['On joue ?', 'J’arrive !', 'Une minute', 'Bien joué !', 'Je dois y aller'];
 
@@ -27,16 +30,23 @@ export function friendActions(f, run) {
   const p = social.presenceOf(f.id);
   const mine = social.party;
   const inMine = mine?.members.some(m => m.id === f.id);
-  const items = [];
+  const items = [{ label: 'Envoyer un message', icon: 'chat', onok: () => openChat(messages.direct(f)) }];
   if (p.online && !inMine) items.push({ label: 'Démarrer un appel vocal', icon: 'phone', onok: () => run(() => social.call(f.id), `Appel de ${f.psn}…`) });
-  if (p.online && mine && !inMine) items.push({ label: 'Inviter dans mon groupe', icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) });
+  if (p.online && !inMine) items.push({ label: mine ? 'Inviter dans mon groupe' : 'Inviter à jouer', icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) });
   if (p.online && p.partyId && !inMine) items.push({ label: p.game ? `Rejoindre sa partie de ${byId[p.game]?.title}` : 'Rejoindre son groupe', icon: 'party', onok: () => run(async () => { await social.join(p.partyId); if (p.game) joinGame(p.game); }) });
   return items;
 }
 const dotClass = p => (!p?.online ? 'off' : p.activity === 'game' ? 'game' : 'on');
 
+async function mediaAction(fn) {
+  audio.play('ok');
+  try { await fn(); } catch (e) { toast({ title: 'Vidéo', sub: e?.message || 'Action impossible.', icon: 'info', sound: 'error', log: false }); }
+}
+
 export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
-  let tab = startTab === 'friends' && social.salon ? 'party' : startTab, query = '', results = null, searching = false, draft = '', typing = false;
+  // without a server and without friends yet, the room (create / join by code) is the way in: open on it
+  let tab = startTab === 'friends' && (social.salon || social.peer) && !social.friends.length ? 'party' : startTab, query = '', results = null, searching = false, draft = '', typing = false, codeDraft = '';
+  let players = null, playersTimer = 0;   // players online right now (Add tab), friends or not
   const tabEls = TABS.map(([k, l]) => h('button.tab', { f: true, 'data-key': 'tab-' + k, onok: () => setTab(k) }, h('span', l), h('span.tab-count')));
   const conn = h('div.conn-pill.hidden');
   const body = h('div.page', { 'data-scroll': 'y', 'data-pad': 160 });
@@ -45,10 +55,18 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   function counts() {
     const online = social.friends.filter(f => social.presenceOf(f.id).online).length;
     tabEls[0].lastChild.textContent = social.friends.length ? `${online}/${social.friends.length}` : '';
-    tabEls[1].lastChild.textContent = social.party ? social.party.members.length : '';
-    tabEls[2].lastChild.textContent = social.incoming.length || '';
+    tabEls[1].lastChild.textContent = messages.unread || '';
+    tabEls[2].lastChild.textContent = social.party ? social.party.members.length : '';
+    tabEls[3].lastChild.textContent = social.incoming.length || '';
+    if (social.peer) {   // no server: the link that matters is the one to the players' directory
+      const s = pfriends.status;
+      conn.classList.toggle('hidden', s === 'online');
+      conn.textContent = s === 'offline' ? 'Annuaire injoignable' : 'Connexion à l’annuaire…';
+      return;
+    }
     const s = net.status;
-    conn.classList.toggle('hidden', !social.available || s === 'online');
+    // a room by code does not use the server: its connection is the friends themselves, never « Hors ligne »
+    conn.classList.toggle('hidden', !social.available || s === 'online' || !!social.salon);
     conn.textContent = s === 'reconnecting' || s === 'connecting' ? 'Reconnexion au serveur…' : 'Hors ligne';
   }
 
@@ -60,7 +78,10 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
       h('div.gb-controls', { 'data-row': '' },
         h('button.btn.primary', { f: true, 'data-key': 'share', onok: () => social.shareSalon() }, h('span.icw', { html: icon('userPlus') }), 'Partager le lien'),
         h('button.btn', { f: true, 'data-key': 'open-party', onok: () => setTab('party') }, h('span.icw', { html: icon('party') }), 'Voir le groupe')));
-    const join = async code => {
+    const join = async input => {
+      const code = String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      // a 5 character code is a Pouf Party lobby: open the game straight into it
+      if (code.length === 5) { const { joinGameCode } = await import('../games/pouf/console.js'); joinGameCode(code); return; }
       try { await social.joinSalon(code); setTab('party'); }
       catch (e) { toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); render(); }
     };
@@ -79,9 +100,9 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
           try { await social.createSalon(); setTab('party'); social.shareSalon(); }
           catch (e) { toast({ title: 'Création du salon impossible', sub: e.message, icon: 'party', sound: 'error', log: false }); }
         } }, h('span.icw', { html: icon('party') }), 'Créer un salon')),
-      h('div.salon-card', h('h2', 'Rejoindre un salon'), h('p', 'Ouvrez le lien reçu, ou saisissez le code à 6 caractères.'), codeRow,
+      h('div.salon-card', h('h2', 'Rejoindre un salon'), h('p', 'Ouvrez le lien reçu, ou saisissez le code du salon (6 caractères) ou d’une partie de Pouf Party (5 caractères). Safari et l’app de l’écran d’accueil peuvent jouer ensemble.'), codeRow,
         h('button.btn', { f: true, 'data-key': 'join-salon', onok: () => join(inp.value) }, 'Rejoindre')),
-      session.current && !session.current.online ? h('p.salon-note', 'Les comptes en ligne, la liste d’amis et les invitations nécessitent le serveur du projet. Les salons fonctionnent partout.') : null);
+      social.peer ? h('p.salon-note', 'Vous pouvez aussi inviter directement vos amis ou n’importe quel joueur en ligne (onglet « Ajouter un ami ») : le salon est créé pour vous.') : null);
   }
 
   function offlineView() {
@@ -107,7 +128,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     if (!social.loaded) return h('div.gb-loading', h('div.spinner'), 'Chargement de vos amis…');
     if (social.error && !social.friends.length) return h('div.gb-empty', h('h2', 'Liste indisponible'), h('p', social.error), h('button.btn.primary', { f: true, 'data-key': 'reload', onok: () => social.refresh() }, 'Réessayer'));
     if (!social.friends.length) return h('div.gb-empty', h('div.gb-empty-ic', { html: icon('userPlus') }), h('h2', 'Aucun ami pour le moment'),
-      h('p', 'Ajoutez des joueurs avec leur identifiant en ligne pour voir leur statut, les inviter et les appeler.'),
+      h('p', social.peer ? 'Échangez vos codes ami (onglet « Ajouter un ami ») pour voir le statut de vos amis, les inviter et les appeler. Votre ami n’a pas besoin d’être en ligne : la demande lui parviendra à sa prochaine connexion.' : 'Ajoutez des joueurs avec leur identifiant en ligne pour voir leur statut, les inviter et les appeler.'),
       h('button.btn.primary', { f: true, 'data-key': 'go-add', onok: () => setTab('add') }, h('span.icw', { html: icon('userPlus') }), 'Ajouter un ami'));
     const sorted = [...social.friends].sort((a, b) => (social.presenceOf(b.id).online - social.presenceOf(a.id).online) || a.psn.localeCompare(b.psn));
     const on = sorted.filter(f => social.presenceOf(f.id).online), off = sorted.filter(f => !social.presenceOf(f.id).online);
@@ -136,7 +157,12 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
       voice.active
         ? h(`button.btn${voice.muted ? '.on' : ''}`, { f: true, 'data-key': 'mute', onok: () => { voice.setMuted(!voice.muted); audio.play('toggle'); render(); } }, h('span.icw', { html: icon(voice.muted ? 'micOff' : 'mic') }), voice.muted ? 'Réactiver le micro' : 'Couper le micro')
         : h('button.btn.primary', { f: true, 'data-key': 'voice', onok: () => social.joinVoice().then(render) }, h('span.icw', { html: icon('mic') }), voice.joining ? 'Connexion…' : 'Rejoindre le chat vocal'),
-      h('button.btn', { f: true, 'data-key': 'invite', onok: e => (p.salon ? social.shareSalon() : inviteMenu(e.currentTarget)) }, h('span.icw', { html: icon('userPlus') }), p.salon ? `Inviter · ${p.id}` : 'Inviter'),
+      // camera and share: only inside the call, and only after a tap (the browser then asks for permission)
+      voice.active ? h(`button.btn${voice.camera ? '.on' : ''}`, { f: true, 'data-key': 'camera', onok: () => mediaAction(() => voice.setCamera(!voice.camera)) }, h('span.icw', { html: icon('display') }), voice.camera ? 'Couper la caméra' : 'Caméra') : null,
+      voice.active && (voice.sharing || voice.canShareGame || voice.canShareScreen) ? h(`button.btn${voice.sharing ? '.on' : ''}`, { f: true, 'data-key': 'share', onok: () => mediaAction(() => voice.sharing ? voice.stopShare() : voice.startShare(voice.canShareGame ? 'game' : 'screen')) },
+        h('span.icw', { html: icon('switcher') }), voice.sharing ? 'Arrêter le partage' : voice.canShareGame ? 'Partager la partie' : 'Partager l’écran') : null,
+      h('button.btn', { f: true, 'data-key': 'invite', onok: e => inviteMenu(e.currentTarget) }, h('span.icw', { html: icon('userPlus') }), 'Inviter'),
+      p.salon ? h('button.btn', { f: true, 'data-key': 'share-link', onok: () => social.shareSalon() }, h('span.icw', { html: icon('switcher') }), `Lien · ${p.id}`) : null,
       h('button.btn', { f: true, 'data-key': 'play', onok: e => playMenu(e.currentTarget) }, h('span.icw', { html: icon('play') }), g ? `Rejoindre ${g.title}` : 'Jouer ensemble'),
       h('button.btn', { f: true, 'data-key': 'leave', onok: () => confirmDialog(p.salon ? 'Quitter le salon ?' : 'Quitter le groupe ?', p.salon && social.salon?.host ? 'Vous êtes l’hôte : le salon sera fermé pour tout le monde.' : 'Le chat vocal sera coupé pour vous.', 'Quitter', () => social.leave(), { danger: true }) }, h('span.icw', { html: icon('phoneOff') }), 'Quitter'));
     const chatList = h('div.chat-list', { 'data-scroll': 'y' }, p.chat.map(m => m.sys ? h('div.chat-sys', m.text) : h(`div.chat-msg${m.from === session.current.id ? '.mine' : ''}`, h('b', m.psn), h('span', m.text))));
@@ -165,7 +191,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   function requestsView() {
     const inc = social.incoming, out = social.outgoing;
     if (!inc.length && !out.length) return h('div.gb-empty', h('div.gb-empty-ic', { html: icon('bell') }), h('h2', 'Aucune demande en attente'), h('p', 'Les demandes d’ami reçues et envoyées apparaissent ici.'));
-    const row = (u, actions) => h('div.gb-row.static', h('div.gb-av', h('div.avatar', img(art.thumb(u.avatar)))), h('div.grow', h('div.gb-name', u.psn), h('div.gb-sub', `Demande du ${new Date(u.since).toLocaleDateString('fr-FR')}`)), h('div.gb-actions', { 'data-row': '' }, actions));
+    const row = (u, actions) => h('div.gb-row.static', h('div.gb-av', h('div.avatar', img(art.thumb(u.avatar)))), h('div.grow', h('div.gb-name', u.psn, social.peer && pfriends.codeOf(u.id) ? h('small.gb-code-tag', ' · ' + pfriends.codeOf(u.id)) : null), h('div.gb-sub', social.peer && out.includes(u) && !u.lastSeen && !pfriends.online(u.id) ? 'En attente : partira dès que ce joueur sera en ligne' : `Demande du ${new Date(u.since).toLocaleDateString('fr-FR')}`)), h('div.gb-actions', { 'data-row': '' }, actions));
     const act = (key, label, ic, fn, primary) => h(`button.btn.small${primary ? '.primary' : ''}`, { f: true, 'data-key': key, onok: async () => { try { await fn(); audio.play('ok'); } catch (e) { toast({ title: 'Action impossible', sub: e.message, icon: 'info', sound: 'error', log: false }); } } }, h('span.icw', { html: icon(ic) }), label);
     return h('div.gb-list',
       inc.length ? [h('div.section-title', { style: { marginTop: 0 } }, 'Demandes reçues', h('small', inc.length)), inc.map(u => row(u, [act('acc-' + u.id, 'Accepter', 'check', () => social.respond(u.id, true), true), act('dec-' + u.id, 'Refuser', 'close', () => social.respond(u.id, false))]))] : null,
@@ -173,7 +199,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   }
 
   function addView() {
-    const inp = h('input.f-input', { type: 'text', value: query, maxLength: 16, autocapitalize: 'none', autocorrect: 'off', spellcheck: false, enterkeyhint: 'search', placeholder: 'Identifiant en ligne', 'aria-label': 'Identifiant en ligne' });
+    const inp = h('input.f-input', { type: 'text', value: query, maxLength: 16, autocapitalize: 'none', autocorrect: 'off', spellcheck: false, enterkeyhint: 'search', placeholder: social.peer ? 'Pseudo ou code ami' : 'Identifiant en ligne', 'aria-label': 'Rechercher un joueur' });
     const doSearch = async v => {
       query = v.trim(); results = null;
       if (query.length < 2) { render(); return; }
@@ -185,19 +211,78 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     const fieldRow = h('div.f-row', { f: true, 'data-key': 'q', onok: () => {
       if (PADS.includes(input.device)) openKeyboard({ title: 'Identifiant en ligne', value: query, maxLength: 16, onDone: doSearch });
       else inp.focus();
-    } }, h('label.f-label', 'Rechercher un joueur'), inp, h('div.f-hint', 'Saisissez au moins 2 caractères de son identifiant en ligne, puis validez.'));
+    } }, h('label.f-label', social.peer ? 'Ou rechercher un joueur en ligne' : 'Rechercher un joueur'), inp, h('div.f-hint', social.peer ? 'Pseudo (au moins 2 caractères) ou code ami. Vérifiez le code affiché à côté du pseudo : deux joueurs peuvent avoir le même.' : 'Saisissez au moins 2 caractères de son identifiant en ligne, puis validez.'));
     const known = new Set([...social.friends, ...social.outgoing, ...social.incoming].map(u => u.id));
     let list = null;
     if (searching) list = h('div.gb-loading', h('div.spinner'), 'Recherche…');
     else if (results?.error) list = h('div.gb-empty', h('p', results.error));
     else if (results && !results.length) list = h('div.gb-empty', h('p', `Aucun joueur trouvé pour « ${query} ».`));
-    else if (results) list = h('div.gb-list', results.map(u => h('div.gb-row', { f: true, 'data-key': 'r-' + u.id, onok: async () => {
-      if (known.has(u.id)) { toast({ title: 'Déjà dans vos relations', sub: u.psn, img: art.thumb(u.avatar), sound: 'error', log: false }); return; }
-      try { const r = await social.request(u.psn); audio.play('ok'); toast({ title: r.accepted ? 'Vous êtes maintenant amis' : 'Demande d’ami envoyée', sub: u.psn, img: art.thumb(u.avatar), log: false }); render(); }
+    else if (results) list = h('div.gb-list', results.map(u => playerRow(u, 'r-', known)));
+    const inMine = id => social.party?.members.some(m => m.id === id);
+    const others = (players || []).filter(u => u.id !== session.current?.id);
+    const onlineList = players === null ? h('div.gb-loading', h('div.spinner'), 'Recherche des joueurs en ligne…')
+      : !others.length ? h('div.gb-empty', h('p', social.peer && pfriends.status !== 'online' ? 'Connexion à l’annuaire des joueurs…' : 'Aucun autre joueur en ligne pour le moment.'))
+      : h('div.gb-list', others.map(u => playerRow(u, 'o-', known, inMine(u.id))));
+    return h('div', social.peer ? codeCard() : null, fieldRow, list,
+      h('div.section-title', 'Joueurs en ligne', h('small', others.length || '')),
+      h('p.gb-hint', 'Invitez n’importe quel joueur en ligne dans votre partie, même s’il n’est pas votre ami.'),
+      onlineList);
+  }
+  // without a server: pseudos are not unique, friend codes are. Share mine, or type a friend's to add them exactly
+  function codeCard() {
+    const mine = pfriends.code;
+    const send = async v => {
+      const c = String(v || '').trim();
+      if (!c) return;
+      try {
+        const r = await social.requestByCode(c);
+        audio.play('ok');
+        codeDraft = '';
+        toast({ title: r.accepted ? 'Vous êtes maintenant amis' : 'Demande d’ami envoyée', sub: r.pending ? 'Elle partira dès que ce joueur sera en ligne (onglet « Demandes »)' : null, icon: 'userPlus', log: false });
+        render();
+      } catch (e) { toast({ title: 'Demande impossible', sub: e.message, icon: 'userPlus', sound: 'error', log: false }); }
+    };
+    const inp = h('input.f-input.gb-code-in', { type: 'text', value: codeDraft, maxLength: 12, autocapitalize: 'characters', autocorrect: 'off', autocomplete: 'off', spellcheck: false, enterkeyhint: 'send', placeholder: 'ABCD-1234', 'aria-label': 'Code ami de votre ami' });
+    inp.addEventListener('input', () => { codeDraft = inp.value; });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); inp.blur(); send(inp.value); } });
+    const share = async () => {
+      audio.play('ok');
+      const text = `Ajoute-moi en ami sur la console : mon code ami est ${mine}`;
+      try { if (navigator.share) { await navigator.share({ title: 'Mon code ami', text }); return; } } catch (e) { if (e?.name === 'AbortError') return; }
+      try { await navigator.clipboard.writeText(mine); toast({ title: 'Code ami copié', sub: mine, icon: 'userPlus', log: false }); }
+      catch { toast({ title: 'Votre code ami', sub: mine, icon: 'userPlus', log: false }); }
+    };
+    return h('div.gb-code',
+      h('div.gb-code-mine', h('div', h('div.f-label', 'Votre code ami'), h('div.gb-code-val', mine)),
+        h('button.btn.small', { f: true, 'data-key': 'share-code', onok: share }, h('span.icw', { html: icon('switcher') }), 'Partager')),
+      h('div.f-row', { f: true, 'data-key': 'code', onok: () => {
+        if (PADS.includes(input.device)) openKeyboard({ title: 'Code ami de votre ami', value: codeDraft, maxLength: 12, onDone: v => { codeDraft = v; send(v); } });
+        else inp.focus();
+      } }, h('label.f-label', 'Ajouter avec un code ami'), inp, h('div.f-hint', 'Le moyen le plus sûr : demandez son code ami à votre ami (même s’il est hors ligne), saisissez-le puis validez.')));
+  }
+  // a player from the search or the online list: invite to play, or send a friend request
+  function playerRow(u, prefix, known, inMine = false) {
+    const p = social.peer ? pfriends.presenceOf(u.id) : { online: u.online, activity: u.activity, game: u.game };
+    const sub = u.createdAt && !p.online ? `Membre depuis ${new Date(u.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}` : presenceText(p);
+    return h('div.gb-row', { f: true, 'data-key': prefix + u.id, onok: e => playerMenu(u, e.currentTarget, known, p, inMine) },
+      h('div.gb-av', h('div.avatar', img(art.thumb(u.avatar))), p.online ? h(`i.pdot.${dotClass(p)}`) : null),
+      h('div.grow', h('div.gb-name', u.psn, social.peer && pfriends.codeOf(u.id) ? h('small.gb-code-tag', ' · ' + pfriends.codeOf(u.id)) : null), h('div.gb-sub', inMine ? 'Dans votre groupe' : sub)),
+      h('span.gb-tag', social.friend(u.id) ? 'Ami' : known.has(u.id) ? 'Demande en cours' : p.online ? 'Inviter · Ajouter' : 'Ajouter'));
+  }
+  function playerMenu(u, anchor, known, p, inMine) {
+    const items = [];
+    if (p.online && !inMine) items.push({ label: social.party ? 'Inviter dans mon groupe' : 'Inviter à jouer', icon: 'party', onok: () => run(() => social.invite(u.id), `Invitation envoyée à ${u.psn}`) });
+    if (!known.has(u.id)) items.push({ label: 'Envoyer une demande d’ami', icon: 'userPlus', onok: async () => {
+      try { const r = await social.request(u); audio.play('ok'); toast({ title: r.accepted ? 'Vous êtes maintenant amis' : 'Demande d’ami envoyée', sub: u.psn, img: art.thumb(u.avatar), log: false }); render(); }
       catch (e) { toast({ title: 'Demande impossible', sub: e.message, icon: 'userPlus', sound: 'error', log: false }); }
-    } }, h('div.gb-av', h('div.avatar', img(art.thumb(u.avatar)))), h('div.grow', h('div.gb-name', u.psn), h('div.gb-sub', `Membre depuis ${new Date(u.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`)),
-      h('span.gb-tag', known.has(u.id) ? 'Déjà ajouté' : 'Envoyer une demande'))));
-    return h('div', fieldRow, list);
+    } });
+    if (!items.length) { toast({ title: social.friend(u.id) ? 'Déjà dans vos amis' : 'Demande déjà en cours', sub: u.psn, img: art.thumb(u.avatar), sound: 'error', log: false }); return; }
+    menu(items, anchor);
+  }
+  async function loadPlayers() {
+    const before = JSON.stringify(players);
+    try { players = await social.players(); } catch { players = players || []; }
+    if (tab === 'add' && JSON.stringify(players) !== before) render();
   }
 
   // ------------------------------------------------------------ menus
@@ -212,10 +297,12 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     if (!voice.canSetVolume) { toast({ title: 'Volume de l’appel', sub: 'Sur iPhone et iPad, utilisez les boutons de volume de l’appareil', icon: 'volume', sound: 'error', log: false }); return; }
     menu([1, .75, .5, .25, 0].map(v => ({ label: `Volume de ${m.psn} : ${v ? Math.round(v * 100) + ' %' : 'coupé'}${voice.volume(m.id) === v ? '  ✓' : ''}`, icon: v ? 'volume' : 'micOff', onok: () => voice.setVolume(m.id, v) })), anchor);
   }
-  function inviteMenu(anchor) {
-    const list = social.friends.filter(f => social.presenceOf(f.id).online && !social.party?.members.some(m => m.id === f.id));
-    if (!list.length) { toast({ title: 'Aucun ami disponible', sub: 'Vos amis en ligne apparaîtront ici', icon: 'friends', sound: 'error', log: false }); return; }
-    menu(list.map(f => ({ label: f.psn, icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) })), anchor);
+  async function inviteMenu(anchor) {
+    const away = id => !social.party?.members.some(m => m.id === id) && id !== session.current?.id;
+    const list = social.friends.filter(f => social.presenceOf(f.id).online && away(f.id));
+    try { for (const u of await social.players()) if (away(u.id) && !list.some(f => f.id === u.id)) list.push(u); } catch { /* friends only */ }
+    if (!list.length) { toast({ title: 'Aucun joueur disponible', sub: 'Les joueurs en ligne apparaîtront ici', icon: 'friends', sound: 'error', log: false }); return; }
+    menu(list.slice(0, 12).map(f => ({ label: social.friend(f.id) ? f.psn : `${f.psn} (joueur en ligne)`, icon: 'userPlus', onok: () => run(() => social.invite(f.id), `Invitation envoyée à ${f.psn}`) })), anchor);
   }
   function playMenu(anchor) {
     const p = social.party;
@@ -236,8 +323,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     counts();
     root.classList.toggle('party-open', tab === 'party');
     const view = !social.available ? (session.online ? offlineView() : salonView())
-      : social.salon && tab !== 'party' ? salonView()
-      : tab === 'friends' ? friendsView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
+      : tab === 'friends' ? friendsView() : tab === 'messages' ? messagesView() : tab === 'party' ? partyView() : tab === 'requests' ? requestsView() : addView();
     const st = body.scrollTop;
     body.replaceChildren(view);
     body.scrollTop = st;
@@ -250,6 +336,7 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
   function setTab(k) {
     if (k === tab) return;
     tab = k; audio.play('tab');
+    if (k === 'add') loadPlayers();
     tabEls.forEach((t, i) => t.classList.toggle('on', TABS[i][0] === k));
     render();
     nav.focus(tabEls[TABS.findIndex(t => t[0] === k)], { silent: true });
@@ -262,17 +349,22 @@ export function gamebaseScreen({ tab: startTab = 'friends' } = {}) {
     hints: [['ok', 'Sélectionner'], ['back', 'Retour'], ['l1', 'Onglet préc.'], ['r1', 'Onglet suiv.']],
     onAction(a) {
       const i = TABS.findIndex(t => t[0] === tab);
-      if (a === 'l1') { setTab(TABS[(i + 3) % 4][0]); return true; }
-      if (a === 'r1') { setTab(TABS[(i + 1) % 4][0]); return true; }
+      if (a === 'l1') { setTab(TABS[(i + TABS.length - 1) % TABS.length][0]); return true; }
+      if (a === 'r1') { setTab(TABS[(i + 1) % TABS.length][0]); return true; }
     },
     onEnter() {
       offs.push(social.on('friends', render), social.on('presence', () => { if (tab === 'friends') render(); else counts(); }),
         social.on('party', render), social.on('chat', () => { if (tab === 'party') render(); }), social.on('status', counts),
-        voice.on('change', () => { if (tab === 'party') render(); }), voice.on('peers', () => { if (tab === 'party') render(); }),
+        voice.on('change', () => { if (tab === 'party') render(); }), voice.on('peers', () => { if (tab === 'party') render(); }), voice.on('media', () => { if (tab === 'party' && !typing) render(); }),
+        social.on('players', () => { if (tab === 'add') loadPlayers(); }),
+        messages.on('change', () => { if (tab === 'messages') render(); else counts(); }),
         voice.on('levels', lv => { root.querySelectorAll('[data-uid]').forEach(el => { el.style.setProperty('--lv', Math.min(1, (lv[el.dataset.uid] || 0) * 1.6).toFixed(2)); el.classList.toggle('talking', (lv[el.dataset.uid] || 0) > .12); }); }));
       social.refresh();
+      if (tab === 'add') loadPlayers();
+      // the server does not push the list of players online: refresh it while the Add tab is open
+      playersTimer = setInterval(() => { if (tab === 'add' && !social.peer && session.online) loadPlayers(); }, 10000);
     },
-    onLeave() { offs.forEach(f => f()); },
+    onLeave() { offs.forEach(f => f()); clearInterval(playersTimer); },
   };
   render();
   (body.querySelector('[data-f]') || tabEls[0]).setAttribute('data-autofocus', '');

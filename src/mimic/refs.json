@@ -2,7 +2,7 @@
  {
   "id": "tu-m-sors-ton-pepper-spray",
   "title": "Tu m'sors ton pepper spray",
-  "dur": 5.08,
+  "dur": 7.86,
   "say": [
    "tu me sors ton pepper spray",
    "pepper spray"
@@ -12,7 +12,7 @@
  {
   "id": "ohh-mange-bien",
   "title": "Ohh mange bien",
-  "dur": 5.86,
+  "dur": 5.92,
   "say": [
    "oh mange bien",
    "mange bien"
@@ -22,7 +22,7 @@
  {
   "id": "des-chevals-qui-appellent-des-chevals",
   "title": "Des chevals qui appellent des chevals",
-  "dur": 5.99,
+  "dur": 6.78,
   "say": [
    "des chevals qui appellent des chevals",
    "des chevaux qui appellent des chevaux"
@@ -32,7 +32,7 @@
  {
   "id": "je-change-de-vie",
   "title": "Je change de vie",
-  "dur": 6.81,
+  "dur": 6.72,
   "say": [
    "je change de vie"
   ],
@@ -41,7 +41,7 @@
  {
   "id": "allons-allons-allons",
   "title": "Allons allons allons",
-  "dur": 4.39,
+  "dur": 4.17,
   "say": [
    "allons allons allons"
   ],
@@ -53,7 +53,7 @@
  {
   "id": "guettez-le-gateau",
   "title": "Guettez le gâteau",
-  "dur": 5.12,
+  "dur": 5.52,
   "say": [
    "guettez le gâteau",
    "regardez le gâteau"
@@ -63,28 +63,28 @@
  {
   "id": "ref-mystere-le-velo",
   "title": "Réf mystère : le vélo",
-  "dur": 6.89,
+  "dur": 7.04,
   "mystery": true,
   "pack": "snap"
  },
  {
   "id": "ref-mystere-l-interview",
   "title": "Réf mystère : l'interview",
-  "dur": 4.29,
+  "dur": 4.35,
   "mystery": true,
   "pack": "snap"
  },
  {
   "id": "ref-mystere-le-selfie-de-nuit",
   "title": "Réf mystère : le selfie de nuit",
-  "dur": 2.89,
+  "dur": 5.01,
   "mystery": true,
   "pack": "snap"
  },
  {
   "id": "ca-va-mieux",
   "title": "Ça va mieux",
-  "dur": 5.89,
+  "dur": 6.0,
   "say": [
    "ça va mieux"
   ],
@@ -96,7 +96,7 @@
  {
   "id": "sakura-sasuke-remix",
   "title": "Sakura – Sasuke (remix)",
-  "dur": 4.79,
+  "dur": 5.1,
   "say": [
    "sakura sasuke"
   ],
@@ -105,7 +105,7 @@
  {
   "id": "dehors",
   "title": "Dehors !",
-  "dur": 2.29,
+  "dur": 1.72,
   "say": [
    "dehors"
   ],
@@ -117,27 +117,29 @@
  {
   "id": "descends",
   "title": "Descends !",
-  "dur": 7.59,
+  "dur": 4.83,
   "say": [
-   "descends"
+   "descends",
+   "arrête de crier"
   ],
   "pack": "africa"
  },
  {
   "id": "je-roucoule",
   "title": "Je roucoule",
-  "dur": 5.18,
+  "dur": 6.34,
   "say": [
-   "je roucoule"
+   "je roucoule",
+   "je t'attache"
   ],
   "pack": "africa"
  },
  {
   "id": "ton-gros-front-la",
   "title": "Ton gros front là !",
-  "dur": 5.48,
+  "dur": 2.41,
   "say": [
-   "ton gros front là",
+   "mon gros front",
    "gros front"
   ],
   "pack": "africa"
@@ -145,21 +147,21 @@
  {
   "id": "version-neymar",
   "title": "Version Neymar",
-  "dur": 5.79,
+  "dur": 5.86,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "ref-mystere-le-maillot-blanc",
   "title": "Réf mystère : le maillot blanc",
-  "dur": 5.09,
+  "dur": 5.13,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "y-que-fue",
   "title": "Y que fue",
-  "dur": 6.09,
+  "dur": 6.13,
   "say": [
    "y que fue",
    "i que fue"
@@ -169,14 +171,14 @@
  {
   "id": "ref-mystere-le-stream",
   "title": "Réf mystère : le stream",
-  "dur": 3.39,
+  "dur": 3.46,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "dedicace-a-mon-coach-brrr-on-est-la",
   "title": "Dédicace à mon coach, brrr on est là",
-  "dur": 3.79,
+  "dur": 3.8,
   "say": [
    "dédicace à mon coach",
    "on est là"
@@ -186,21 +188,21 @@
  {
   "id": "ref-mystere-le-doigt-sur-le-front",
   "title": "Réf mystère : le doigt sur le front",
-  "dur": 5.66,
+  "dur": 5.74,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "ref-mystere-la-canette",
   "title": "Réf mystère : la canette",
-  "dur": 6.7,
+  "dur": 6.74,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "sondouiche-pouli",
   "title": "Sondouiche pouli",
-  "dur": 6.79,
+  "dur": 6.78,
   "say": [
    "sandwich poulet",
    "sondouiche pouli"
@@ -210,7 +212,7 @@
  {
   "id": "c-est-moi-wesh",
   "title": "C'est moi wesh",
-  "dur": 5.09,
+  "dur": 6.82,
   "say": [
    "c'est moi wesh"
   ],
@@ -219,7 +221,7 @@
  {
   "id": "arrete-d-mentir",
   "title": "Arrête d'mentir",
-  "dur": 4.79,
+  "dur": 4.92,
   "say": [
    "arrête de mentir"
   ],
@@ -231,7 +233,7 @@
  {
   "id": "c-est-a-moi-qu-tu-parles",
   "title": "C'est à moi qu'tu parles ?",
-  "dur": 4.39,
+  "dur": 3.81,
   "say": [
    "c'est à moi que tu parles"
   ],
@@ -240,7 +242,7 @@
  {
   "id": "gros-bebe-cadum",
   "title": "Gros bébé Cadum",
-  "dur": 6.22,
+  "dur": 6.21,
   "say": [
    "gros bébé cadum"
   ],
@@ -249,7 +251,7 @@
  {
   "id": "l-alarme",
   "title": "L'alarme ?",
-  "dur": 4.99,
+  "dur": 4.42,
   "say": [
    "l'alarme"
   ],
@@ -261,21 +263,21 @@
  {
   "id": "ref-mystere-la-tele",
   "title": "Réf mystère : la télé",
-  "dur": 2.39,
+  "dur": 2.43,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "ref-mystere-le-paquet-de-chips",
   "title": "Réf mystère : le paquet de chips",
-  "dur": 6.09,
+  "dur": 6.33,
   "mystery": true,
   "pack": "tiktok"
  },
  {
   "id": "on-ne-pleure-pas",
   "title": "On ne pleure pas",
-  "dur": 5.48,
+  "dur": 7.87,
   "say": [
    "on ne pleure pas"
   ],
@@ -287,7 +289,7 @@
  {
   "id": "quelle-humiliation",
   "title": "Quelle humiliation",
-  "dur": 6.1,
+  "dur": 7.64,
   "say": [
    "quelle humiliation"
   ],
@@ -299,7 +301,7 @@
  {
   "id": "echouwey",
   "title": "Echouwey",
-  "dur": 6.84,
+  "dur": 7.41,
   "say": [
    "echouwey",
    "échouer"
@@ -309,7 +311,7 @@
  {
   "id": "moi-je-mange-pas-le-nem",
   "title": "Moi je mange pas le nem",
-  "dur": 4.7,
+  "dur": 4.72,
   "say": [
    "moi je mange pas le nem",
    "je mange pas le nem"
@@ -319,7 +321,7 @@
  {
   "id": "un-proverbe-chinois",
   "title": "Un proverbe chinois",
-  "dur": 5.6,
+  "dur": 8.04,
   "say": [
    "un proverbe chinois"
   ],
@@ -328,7 +330,7 @@
  {
   "id": "un-entonnoir-un-entonnoir",
   "title": "Un entonnoir, un entonnoir !",
-  "dur": 6.99,
+  "dur": 7.27,
   "say": [
    "un entonnoir un entonnoir",
    "entonnoir"
@@ -338,7 +340,7 @@
  {
   "id": "un-p-tit-wrap",
   "title": "Un p'tit wrap",
-  "dur": 7.19,
+  "dur": 6.03,
   "say": [
    "un petit wrap",
    "un p'tit wrap"
@@ -348,7 +350,7 @@
  {
   "id": "je-broie-la-langue-de-moliere",
   "title": "Je broie la langue de Molière",
-  "dur": 3.31,
+  "dur": 1.74,
   "say": [
    "je broie la langue de molière"
   ],
@@ -357,7 +359,7 @@
  {
   "id": "ca-m-emeut",
   "title": "Ça m'émeut",
-  "dur": 2.16,
+  "dur": 2.2,
   "say": [
    "ça m'émeut"
   ],
@@ -369,7 +371,7 @@
  {
   "id": "chante-skype",
   "title": "Chante Skype",
-  "dur": 7.49,
+  "dur": 7.84,
   "say": [
    "chante skype"
   ],
@@ -378,17 +380,26 @@
  {
   "id": "tu-touches-a-ma-sensibilite",
   "title": "Tu touches à ma sensibilité",
-  "dur": 5.66,
+  "dur": 2.66,
   "say": [
-   "tu touches à ma sensibilité",
-   "oui je l'ai"
+   "tu touches à ma sensibilité"
+  ],
+  "pack": "africa"
+ },
+ {
+  "id": "oui-je-l-ai",
+  "title": "Oui je l'ai",
+  "dur": 7.22,
+  "say": [
+   "oui je l'ai",
+   "dis-moi la marchandise"
   ],
   "pack": "africa"
  },
  {
   "id": "ca-va-peter",
   "title": "Ça va péter",
-  "dur": 6.3,
+  "dur": 7.93,
   "say": [
    "ça va péter",
    "nous y est",

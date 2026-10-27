@@ -2,13 +2,13 @@
 import { scrypt as scryptCb, randomBytes, timingSafeEqual, createHash, randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 import { GAMES } from '../src/data.js';
-import { isPhoto } from '../src/avatars.js';
+import { AVATARS, validAvatar } from '../src/avatars.js';
 
 const scrypt = promisify(scryptCb);
 const SCRYPT = { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
 export const SESSION_TTL = 30 * 24 * 3600e3;
-export const AVATARS = GAMES.map(g => g.id);
-const avatarOk = a => AVATARS.includes(a) || isPhoto(a);   // a game thumbnail or a small profile photo
+export { AVATARS };
+export const GAME_IDS = GAMES.map(g => g.id);
 const PSN_RE = /^[A-Za-z][A-Za-z0-9_-]{2,15}$/;
 
 export class AppError extends Error {
@@ -20,7 +20,7 @@ export function validateSignup({ psn, password, avatar }) {
   if (typeof psn !== 'string' || !PSN_RE.test(psn)) errors.psn = 'De 3 à 16 caractères : lettres, chiffres, « - » ou « _ », en commençant par une lettre.';
   if (typeof password !== 'string' || password.length < 8 || password.length > 128) errors.password = 'Au moins 8 caractères.';
   else if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) errors.password = 'Utilisez au moins une lettre et un chiffre.';
-  if (!avatarOk(avatar)) errors.avatar = 'Choisissez un avatar ou une photo (image trop lourde ?).';
+  if (!validAvatar(avatar)) errors.avatar = 'Choisissez un avatar ou une photo (image trop lourde ?).';
   return errors;
 }
 
@@ -81,7 +81,7 @@ export function accounts(db) {
     },
     async destroySession(token) { if (token) await db.run('DELETE FROM sessions WHERE token_hash = ?', [sha(token)]); },
     async setAvatar(userId, avatar) {
-      if (!avatarOk(avatar)) throw new AppError(400, 'invalid', 'Avatar inconnu ou photo trop lourde.');
+      if (!validAvatar(avatar)) throw new AppError(400, 'invalid', 'Avatar inconnu ou photo trop lourde.');
       await db.run('UPDATE users SET avatar = ? WHERE id = ?', [avatar, userId]);
     },
     async touch(userId) { await db.run('UPDATE users SET last_seen = ? WHERE id = ?', [Date.now(), userId]); },

@@ -1,14 +1,17 @@
-// Friends, presence, parties (voice groups), invitations and game sessions, backed by the realtime server.
+// Friends, presence, parties (voice groups), invitations and game sessions: backed by the realtime server when the
+// account is online, and by the peer-to-peer directory (friends.js) with rooms by code (p2p.js) without a server.
 import { net } from './net.js';
 import { voice, VoiceError } from './rtc.js';
 import { session } from './session.js';
 import { p2p } from './p2p.js';
+import { pfriends } from './friends.js';
 import { byId } from './data.js';
 import { owns, installed, state } from './state.js';
 import { audio } from './audio.js';
 import { input } from './input.js';
 import { toast, dialog, go, navExtras, saveNav } from './shell.js';
 import { h, icon, art, img } from './ui.js';
+import { messages } from './messages.js';
 
 const events = new EventTarget();
 const emit = (t, d) => events.dispatchEvent(new CustomEvent(t, { detail: d }));
@@ -17,11 +20,14 @@ export const social = {
   friends: [], incoming: [], outgoing: [], party: null, loaded: false, error: null,
   presence: new Map(),
   on(type, fn) { const h2 = e => fn(e.detail); events.addEventListener(type, h2); return () => events.removeEventListener(type, h2); },
-  get available() { return session.online || p2p.active; },
+  // without a server, a local profile still has friends: the peer-to-peer directory (see friends.js)
+  get peer() { return !session.online && pfriends.enabled; },
+  get available() { return session.online || p2p.active || pfriends.enabled; },
   get salon() { return p2p.active ? p2p : null; },
   get me() { return session.current; },
 
   async refresh() {
+    if (this.peer) { syncPeer(); return; }
     if (!session.online) { emit('friends', this); return; }
     try {
       const r = await net.api('/api/friends');
@@ -33,22 +39,43 @@ export const social = {
   },
   presenceOf(id) { return this.presence.get(id) || { online: false }; },
   friend(id) { return this.friends.find(f => f.id === id); },
-  async request(psn) { const r = await net.api('/api/friends/request', { method: 'POST', body: { psn } }); await this.refresh(); return r; },
-  async respond(id, accept) { await net.api('/api/friends/respond', { method: 'POST', body: { id, accept } }); await this.refresh(); },
-  async remove(id) { await net.api(`/api/friends/${encodeURIComponent(id)}`, { method: 'DELETE' }); await this.refresh(); },
-  async search(q) { return (await net.api(`/api/users/search?q=${encodeURIComponent(q)}`)).users; },
+  // u: a player from the search or the online list ({ id, psn, avatar }), or an online ID
+  async request(u) {
+    if (this.peer) { const r = await pfriends.request(u); syncPeer(); return r; }
+    const r = await net.api('/api/friends/request', { method: 'POST', body: { psn: typeof u === 'string' ? u : u.psn } }); await this.refresh(); return r;
+  },
+  // without a server: add a friend by their friend code (unique, unlike pseudos), even if they are offline
+  async requestByCode(code) { const r = await pfriends.requestByCode(code); syncPeer(); return r; },
+  async respond(id, accept) {
+    if (this.peer) { pfriends.respond(id, accept); syncPeer(); return; }
+    await net.api('/api/friends/respond', { method: 'POST', body: { id, accept } }); await this.refresh();
+  },
+  async remove(id) {
+    if (this.peer) { pfriends.remove(id); syncPeer(); return; }
+    await net.api(`/api/friends/${encodeURIComponent(id)}`, { method: 'DELETE' }); await this.refresh();
+  },
+  async search(q) {
+    if (this.peer) { if (pfriends.status !== 'online' && !pfriends.players().length) throw new Error('Connexion à l’annuaire des joueurs en cours… Réessayez dans un instant.'); return pfriends.search(q); }
+    return (await net.api(`/api/users/search?q=${encodeURIComponent(q)}`)).users;
+  },
+  // players online right now (friends or not): they can be invited straight into a game
+  async players() {
+    if (this.peer) return pfriends.players();
+    if (!session.online) return [];
+    return (await net.req('players')).players || [];
+  },
 
-  setPresence(activity, game = null) { this._presence = { activity, game }; net.send('presence', this._presence); },
+  setPresence(activity, game = null) { this._presence = { activity, game }; net.send('presence', this._presence); pfriends.setPresence({ activity, game }); },
 
   // ------------------------------------------------------------ parties & calls
   // ------------------------------------------------------------ rooms by code (no server needed)
   async createSalon(code) { await p2p.create(code); await this.joinVoice(); return p2p.code; },
   // after iOS reloaded the page: reopen the same room (host) or reconnect to it (guest)
   async restoreSalon({ code, host }) {
-    try { if (host) await p2p.create(code); else await p2p.join(code); toast({ title: 'Salon rétabli', sub: `Code ${p2p.code}`, icon: 'party', sound: null, log: false }); }
+    try { if (host) await p2p.create(code); else await p2p.join(code, { onWait: waitingForHost }); toast({ title: 'Salon rétabli', sub: `Code ${p2p.code}`, icon: 'party', sound: null, log: false }); }
     catch (e) { toast({ title: 'Salon perdu', sub: e.message, icon: 'party', sound: 'error', log: false }); }
   },
-  async joinSalon(code) { await p2p.join(code); await this.joinVoice(); },
+  async joinSalon(code) { await p2p.join(code, { onWait: waitingForHost }); await this.joinVoice(); },
   async shareSalon() {
     if (!p2p.active) return;
     const text = `Rejoins mon salon sur la console : code ${p2p.code}`;
@@ -57,13 +84,32 @@ export const social = {
     catch { dialog({ title: `Code du salon : ${p2p.code}`, body: h('div', 'Envoyez ce lien à votre ami :', h('div.salon-link', p2p.link)), actions: [{ label: 'OK', primary: true }] }); }
   },
   async invite(friendId, kind = 'party') {
+    if (this.peer && !session.online) {
+      // no server: the invitation carries the code of my room (created on the spot if needed)
+      if (!pfriends.online(friendId)) throw new Error('Ce joueur est hors ligne.');
+      if (!p2p.active) await this.createSalon();
+      if (!p2p.active) throw new Error('Le salon n’a pas pu être créé.');
+      await pfriends.invite(friendId, { code: p2p.code, kind, game: this.party?.game?.id || null, size: this.party?.members.length || 1 });
+      return { ok: true, partyId: p2p.code };
+    }
     const r = await net.req('party.invite', { to: friendId, kind });
     if (!voice.active) await this.joinVoice();
     return r;
   },
   async call(friendId) { return this.invite(friendId, 'call'); },
-  async createParty() { await net.req('party.create'); await this.joinVoice(); },
+  async createParty() {
+    if (!session.online) { await this.createSalon(); return; }
+    await net.req('party.create'); await this.joinVoice();
+  },
   async join(partyId, { withVoice = true } = {}) {
+    if (!session.online) {
+      // a friend's group seen in the directory: ask them for the code; an invitation already carries it
+      const code = String(partyId).startsWith('f:') ? await pfriends.where(String(partyId).slice(2)) : String(partyId);
+      if (p2p.active && p2p.code === code) return;
+      await p2p.join(code, { onWait: waitingForHost });
+      if (withVoice) await this.joinVoice();
+      return;
+    }
     await net.req('party.join', { partyId });
     if (withVoice) await this.joinVoice();
   },
@@ -80,7 +126,7 @@ export const social = {
     if (p2p.active) { p2p.leave(); this.party = null; emit('party', null); return; }
     await net.req('party.leave').catch(() => {}); this.party = null; emit('party', null);
   },
-  decline(partyId, kind) { net.send('party.decline', { partyId, kind }); },
+  decline(partyId, kind, from) { if (!session.online && from) pfriends.decline(from.id, kind); else net.send('party.decline', { partyId, kind }); },
   chat(text) { net.send('chat', { text }); },
   startGame(game) { if (this.party) net.req('game.start', { game }).catch(() => {}); },
   stopGame() { if (this.party?.game) net.send('game.stop'); },
@@ -91,6 +137,10 @@ function voiceError(e) {
   const msg = e instanceof VoiceError ? e.message : e?.message || 'Le chat vocal n’a pas pu démarrer.';
   dialog({ title: 'Micro indisponible', body: h('div', msg, h('div.sim-note', h('span.icw', { html: icon('info') }), 'Vous restez dans le groupe et pouvez discuter par écrit.')), actions: [{ label: 'OK', primary: true }] });
 }
+
+const waitingForHost = () => toast({ title: 'En attente de l’hôte…', sub: 'Son application est peut-être en arrière-plan : nouvelle tentative pendant 40 s', icon: 'party', sound: null, log: false });
+
+messages.setFriendCheck(id => !!social.friend(id));
 
 // ---------------------------------------------------------------- incoming invitations / calls
 let ringing = null;
@@ -104,7 +154,7 @@ function incoming({ kind, from, party }) {
   const d = dialog({
     title,
     body: h('div.call-card', h('div.avatar.call-av', img(art.thumb(from.avatar))), h('div', h('div.call-name', from.psn),
-      h('div.call-sub', isCall ? 'Appel vocal · le micro et le haut-parleur de l’appareil seront utilisés' : `Groupe de ${party.size} joueur${party.size > 1 ? 's' : ''}${game ? ' · session de jeu' : ''}`))),
+      h('div.call-sub', isCall ? 'Appel vocal · micro et son de l’appareil (haut-parleur, écouteurs ou AirPods)' : `Groupe de ${party.size} joueur${party.size > 1 ? 's' : ''}${game ? ' · session de jeu' : ''}`))),
     actions: [
       { label: isCall ? 'Répondre' : 'Rejoindre', icon: isCall ? 'phone' : 'party', primary: true, onok: async () => {
         stop();
@@ -113,20 +163,23 @@ function incoming({ kind, from, party }) {
           if (game) joinGame(game.id);
         } catch (e) { toast({ title: 'Impossible de rejoindre', sub: e.message, icon: 'party', sound: 'error', log: false }); }
       } },
-      { label: 'Refuser', icon: 'phoneOff', sound: 'back', onok: () => { stop(); social.decline(party.id, kind); } },
+      { label: 'Refuser', icon: 'phoneOff', sound: 'back', onok: () => { stop(); social.decline(party.id, kind, from); } },
     ],
     onClose: stop,
   });
   d.root.classList.add('incoming');
+  d.noTapClose = true;   // a stray tap next to the card must not hang up on a ringing call
   ringing = d;
   audio.play('ring'); input.rumble(.6, .6, 300);
   ringTimer = setInterval(() => { audio.play('ring'); input.rumble(.4, .4, 200); }, 2600);
-  timeout = setTimeout(() => { if (ringing === d) { d.close(null); social.decline(party.id, kind); toast({ title: 'Appel manqué', sub: from.psn, img: art.thumb(from.avatar), sound: 'error' }); } }, 40000);
+  timeout = setTimeout(() => { if (ringing === d) { d.close(null); social.decline(party.id, kind, from); toast({ title: 'Appel manqué', sub: from.psn, img: art.thumb(from.avatar), sound: 'error' }); } }, 40000);
 }
 
 // opening a game launched by someone else in the party
 export async function joinGame(gameId) {
   const g = byId[gameId];
+  // a friend on an older version of the console may share a game that is no longer in the catalogue
+  if (!g) { toast({ title: 'Jeu indisponible', sub: 'Ce jeu n’existe plus sur la console', icon: 'info', sound: 'error', log: false }); return; }
   const { launch } = await import('./screens/game.js');
   const { openProduct, startDownload } = await import('./actions.js');
   if (!owns(gameId)) {
@@ -161,6 +214,7 @@ net.on('party', m => {
   const prev = social.party;
   social.party = m.party;
   navExtras.party = !!m.party; saveNav();
+  pfriends.setPresence({ party: !!m.party && p2p.active, size: m.party?.members.length || 0 });
   voice.sync(m.party);
   if (!m.party && prev && m.reason === 'disconnected') toast({ title: 'Groupe quitté', sub: 'Connexion perdue trop longtemps', icon: 'party', sound: 'error' });
   if (m.party && prev) {
@@ -177,6 +231,7 @@ net.on('chat', m => {
 });
 net.on('game.started', m => {
   const g = byId[m.game];
+  if (!g) return;
   dialog({ title: `${m.by.psn} a lancé ${g.title}`, body: 'Rejoignez la session de jeu de votre groupe.', actions: [
     { label: 'Rejoindre la partie', icon: 'play', primary: true, onok: () => joinGame(m.game) },
     { label: 'Plus tard', sound: 'back' },
@@ -202,4 +257,36 @@ net.on('auth', () => {
   voice.leave({ notify: false });
   toast({ title: 'Session expirée', sub: 'Reconnectez-vous pour retrouver vos amis', icon: 'user', sound: 'error' });
   import('./screens/account.js').then(m => go(m.accountScreen, { mode: 'login', psn: session.current?.psn }));
+});
+
+// ---------------------------------------------------------------- friends without a server (peer-to-peer directory)
+function syncPeer() {
+  if (!social.peer) return;
+  social.friends = pfriends.friends.map(f => ({ ...f }));
+  social.incoming = pfriends.incoming.map(f => ({ ...f }));
+  social.outgoing = pfriends.outgoing.map(f => ({ ...f }));
+  social.presence = new Map(social.friends.map(f => [f.id, pfriends.presenceOf(f.id)]));
+  social.loaded = true; social.error = null;
+  emit('friends', social);
+}
+pfriends.roomCode = () => (p2p.active ? p2p.code : null);
+pfriends.on('change', syncPeer);
+pfriends.on('players', () => {
+  if (!social.peer) return;
+  for (const f of social.friends) {
+    const before = social.presence.get(f.id), p = pfriends.presenceOf(f.id);
+    if (JSON.stringify(before) !== JSON.stringify(p)) { social.presence.set(f.id, p); emit('presence', p); }
+  }
+  emit('players');
+});
+pfriends.on('status', s => { if (social.peer) emit('status', s); });
+pfriends.on('online', f => toast({ title: `${f.psn} est en ligne`, img: art.thumb(f.avatar), sound: null, log: false }));
+pfriends.on('request', u => toast({ title: 'Nouvelle demande d’ami', sub: `${u.psn} souhaite vous ajouter`, img: art.thumb(u.avatar) }));
+pfriends.on('accepted', u => toast({ title: 'Demande d’ami acceptée', sub: `${u.psn} fait maintenant partie de vos amis`, img: art.thumb(u.avatar) }));
+pfriends.on('invite', m => { if (social.party && p2p.active && p2p.code === m.party.id) return; incoming(m); });
+pfriends.on('declined', m => toast({ title: m.kind === 'call' ? 'Appel refusé' : 'Invitation refusée', sub: m.by.psn, img: art.thumb(m.by.avatar), sound: 'error', log: false }));
+document.addEventListener('session:change', e => {
+  pfriends.use(e.detail);
+  if (social.peer) syncPeer();
+  else { social.friends = []; social.incoming = []; social.outgoing = []; social.presence = new Map(); social.loaded = false; }
 });

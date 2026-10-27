@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Console UI — Concept PS5",
+  "short_name": "Console",
+  "description": "Interface de console inspirée de la PS5 avec Pouf Party, jouable au toucher, à la manette et au clavier.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#02060f",
+  "theme_color": "#02060f",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
