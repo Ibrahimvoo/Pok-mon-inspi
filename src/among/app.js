@@ -67,7 +67,7 @@ export class AmongApp {
     const server = this.online();
     const code = el('input', 'au-code', [], { maxlength: 6, placeholder: 'CODE', 'aria-label': 'Code de la partie', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false' });
     code.addEventListener('input', () => { code.value = code.value.toUpperCase().replace(/[^A-Z]/g, ''); });
-    code.addEventListener('keydown', e => { if (e.key === 'Enter') join(); });
+    code.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); join(); } });   // no keypress reaching the focused « Annuler »
     const join = () => { if (code.value.length !== 6) { this.toast('Le code contient 6 lettres.'); return; } this.connect({ join: code.value }); };
     const note = lan && !server ? el('p', 'au-note', 'Le mode Local trouve les parties créées sur le même réseau grâce au serveur du jeu. Sans serveur, crée une partie et partage son code.') : !server ? el('p', 'au-note', 'Sans serveur : la console qui crée la partie l’héberge, les autres rejoignent avec le code (connexion directe).') : null;
     this.screen('au-online',
@@ -125,8 +125,8 @@ export class AmongApp {
   // ------------------------------------------------------------------ connection
   async connect(opts) {
     const me = this.me;
-    this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { link?.close(); this.menu(); }, 'ghost'));
-    let link = null;
+    this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { cancelled = true; link?.close(); this.menu(); }, 'ghost'));
+    let link = null, cancelled = false;
     try {
       if (opts.freeplay) { link = new LocalLink(me); }
       else if (this.online()) {
@@ -134,7 +134,8 @@ export class AmongApp {
         if (opts.join) await link.join(opts.join, this.hello()); else await link.create({ settings: opts.create, public: opts.public, lan: opts.lan, region: 'Europe' }, this.hello());
       } else if (opts.join) { link = new GuestLink(me); await link.join(opts.join, this.hello()); }
       else { link = new HostLink(me); await link.create(this.hello(), opts.create); }
-    } catch (e) { link?.close(); sfx.play('leave'); this.onlineMenuError(e.message || 'Connexion impossible.'); return; }
+    } catch (e) { link?.close(); if (cancelled) return; sfx.play('leave'); this.onlineMenuError(e.message || 'Connexion impossible.'); return; }
+    if (cancelled) { link.close(); return; }       // « Annuler » pressed while connecting: leave the room we just entered
     const client = new GameClient(link, me);
     this.play = new Play(this, client, { freeplay: opts.freeplay });
     if (opts.freeplay) { link.start(this.hello()); queueMicrotask(() => client.send({ k: 'fp', a: 'start', map: opts.freeplay, role: 'crewmate' })); }

@@ -190,6 +190,11 @@ async function amongScenario() {
   A.s.send('au', { op: 'msg', m: { k: 'start' } });
   const intro = await B.s.next(m => m.t === 'au' && m.k === 'ev' && m.e === 'intro', 8000);
   assert.ok(['crew', 'imp'].includes(intro.team));
+  // snapshots and pongs keep the socket type `t: 'au'` (their own time travels as `at`)
+  const snap = await B.s.next(m => m.t === 'au' && m.k === 's', 4000);
+  assert.ok(Number.isFinite(snap.at) && Array.isArray(snap.p));
+  B.s.send('au', { op: 'msg', m: { k: 'ping', t: 123 } });
+  assert.equal((await B.s.next(m => m.t === 'au' && m.k === 'pong', 4000)).at, 123);
   // B loses its connection then comes back with the same code
   B.s.close();
   await new Promise(r => setTimeout(r, 300));

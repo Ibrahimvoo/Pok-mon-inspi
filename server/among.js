@@ -29,7 +29,8 @@ export function createAmongHub({ toUser, log = () => {} }) {
     const code = newCode();
     const room = new Room({
       code, hostId: u.id, isPublic: !!m.public && !m.lan, region: REGIONS.includes(m.region) ? m.region : REGIONS[0], mode: 'online', log,
-      send: (id, msg) => toUser(id, { t: 'au', code, ...msg }),
+      // `t` is the socket's message type: a room field of the same name (snapshot and pong times) travels as `at`
+      send: (id, msg) => toUser(id, 't' in msg ? { ...msg, at: msg.t, t: 'au', code } : { ...msg, t: 'au', code }),
       onEmpty: () => { rooms.delete(code); lanOf.delete(code); for (const [id, c] of where) if (c === code) where.delete(id); },
     });
     if (m.settings) room.settings = cleanSettings(m.settings, room.settings);

@@ -95,7 +95,7 @@ export function stage(el, api, o) {
   const onResize = () => fit();
   addEventListener('resize', onResize);
   const prevClose = api.onClose;
-  api.onClose = () => { cancelAnimationFrame(raf); removeEventListener('resize', onResize); o.close?.(S); prevClose?.(); };
+  api.onClose = () => { cancelAnimationFrame(raf); removeEventListener('resize', onResize); o.onClose?.(S); prevClose?.(); };
   // screen position of a point of the reference screen (used by the end-to-end tests)
   el.toScreen = (x, y) => { const r = cv.getBoundingClientRect(); return [r.left + S.ox + x * S.k, r.top + S.oy + (y + S.slide) * S.k]; };
   fit();

@@ -26,14 +26,12 @@ function minimap(id, sab) {
   svg.setAttribute('viewBox', `${x0} ${y0} ${w} ${h}`);
   svg.setAttribute('class', 'au-minimap' + (sab ? ' sab' : ''));
   svg.innerHTML = html;
-  // world units -> map coordinates: fitted line plus the residuals at the room centres, interpolated
-  const at = (x, y) => {
-    let X = D.kx * x + D.bx, Y = D.ky * y + D.by, sw = 0, sx = 0, sy = 0;
-    for (const [ax, ay, dx, dy] of D.anchors) { const q = 1 / (((x - ax) ** 2 + (y - ay) ** 2) ** 1.5 + 1e-3); sw += q; sx += dx * q; sy += dy * q; }
-    if (sw) { X += sx / sw; Y += sy / sw; }
-    return [(X - x0) / w * 100 + '%', (Y - y0) / h * 100 + '%'];
-  };
-  return { svg, ratio: w / h, at };
+  // world units -> map coordinates: one scale and offset, like the game's own map screen (the player icon moves
+  // linearly with the player); fitted on the traced rooms, it puts every console in its room of the map
+  const proj = (x, y) => [D.kx * x + D.bx, D.ky * y + D.by];
+  const xy = (x, y) => { const [X, Y] = proj(x, y); return [(X - x0) / w * 100, (Y - y0) / h * 100]; };
+  const at = (x, y) => xy(x, y).map(v => v + '%');
+  return { svg, ratio: w / h, at, xy };
 }
 import { sfx } from './sound.js';
 import { el, crewIcon, mapLogo, fmtTime } from './ui.js';
@@ -48,6 +46,32 @@ import { input, stick, IOS } from '../input.js';
 import { voice as partyVoice } from '../rtc.js';
 import { audio } from '../audio.js';
 
+// the yellow « ! » of the map: one per console still to visit; marks that would overlap (several tasks in the same
+// corner of a room) are set side by side, centred on their places, instead of hiding each other
+const MARK = 4.3;                // marker width in % of the map width (.mk.task)
+function taskMarks(V, M, xy, ratio) {
+  const seen = new Set(), pts = [];
+  for (const t of V.tasks || []) {
+    if (t.done) continue;
+    const id = t.steps[t.step]?.console, cs = M.consoles[id];
+    if (!cs || seen.has(id)) continue;
+    seen.add(id); pts.push(xy(cs.x, cs.y));
+  }
+  const gx = MARK * 1.08, gy = MARK * ratio * 1.08;           // one marker in % of the width / of the height
+  let groups = pts.map(p => [p]);
+  const spread = g => { const cx = g.reduce((s, p) => s + p[0], 0) / g.length, cy = g.reduce((s, p) => s + p[1], 0) / g.length; return g.map((p, i) => [cx + (i - (g.length - 1) / 2) * gx, cy]); };
+  for (let pass = 0; pass < 8; pass++) {
+    const placed = groups.map(spread);
+    let merged = false;
+    outer: for (let i = 0; i < groups.length; i++) for (let j = i + 1; j < groups.length; j++) {
+      if (placed[i].some(p => placed[j].some(q => Math.abs(p[0] - q[0]) < gx && Math.abs(p[1] - q[1]) < gy))) {
+        groups[i] = [...groups[i], ...groups[j]].sort((a, b) => a[0] - b[0]); groups.splice(j, 1); merged = true; break outer;
+      }
+    }
+    if (!merged) break;
+  }
+  return groups.flatMap(spread);
+}
 const colorOf = id => COLORS.find(c => c.id === id) || COLORS[0];
 const d2 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const SAB = { reactor: 'Réacteur', o2: 'O2', lights: 'Électricité', comms: 'Communications', seismic: 'Stabilisateurs sismiques' };
@@ -61,7 +85,7 @@ export class Play {
     this.root = el('div', 'au-play');
     this.canvas = el('canvas', 'au-canvas');
     this.hud = el('div', 'au-hud'); this.ov = el('div', 'au-ov'); this.fs = el('div', 'au-fs');
-    this.root.append(this.canvas, this.hud, this.ov, this.fs);
+    this.root.append(this.canvas, this.hud, this.ov, this.fs, el('div', 'au-flash'));
     app.ui.replaceChildren(this.root); app.stars.el.hidden = true;
     this.r = new Renderer(this.canvas, client);
     this.voice = new ProximityVoice(client);
@@ -81,6 +105,7 @@ export class Play {
     this.last = performance.now();
     this.raf = requestAnimationFrame(t => this.loop(t));
     globalThis.__au = this;          // handle for the end-to-end tests
+    this.minigames = MINIGAMES;
     const fps = +new URLSearchParams(location.search).get('aufps'); if (fps) this.minFrame = 1000 / fps - 2;
   }
 
@@ -317,7 +342,7 @@ export class Play {
     // lobby countdown
     if (lobby && V?.phase === 'countdown') { const s = Math.ceil(c.left(V.countdown) / 1000); this.countdown.textContent = s > 0 ? `Lancement dans ${s}` : ''; if (s !== this.lastCount) { this.lastCount = s; if (s > 0) sfx.play('countdown'); } } else this.countdown.textContent = '';
     // sabotage countdown in the task list
-    if (V?.sab?.endsAt && play) { const line = this.taskList.querySelector('.sabline'); if (line) line.textContent = `${SAB_LINE[V.sab.kind]} dans ${Math.ceil(c.left(V.sab.endsAt) / 1000)} s.`; }
+    if (V?.sab && play) { const line = this.taskList.querySelector('.sabline'); if (line) line.textContent = this.sabText(V); }
   }
   updateVentArrows(me) {
     const c = this.c;
@@ -404,6 +429,15 @@ export class Play {
     if (to === 'lobby') { this.clearFs(); this.endShown = null; sfx.stopAll(); }
     this.lastPhase = to;
   }
+  // the sabotage line of the task list, as in the footage: « Reactor Meltdown in 26 (0/2) », « Oxygen Depleted in
+  // 19 (1/2) », « Fix Lights (%0) », « Comms Sabotaged »
+  sabText(V) {
+    const S = V.sab, k = S.kind;
+    if (k === 'lights') return `${SAB_LINE.lights} (%${(S.sw || []).every(Boolean) ? 100 : 0})`;
+    if (k === 'comms') return SAB_LINE.comms;
+    const n = k === 'o2' ? (S.fixed || []).filter(Boolean).length : (S.holds || []).filter(h => h >= 0).length;
+    return `${SAB_LINE[k]} dans ${Math.ceil(this.c.left(S.endsAt) / 1000)} (${n}/2)`;
+  }
   renderTasks(V) {
     const c = this.c, M = c.map;
     const show = c.inGame && ['play', 'meeting', 'intro'].includes(V.phase);
@@ -413,7 +447,7 @@ export class Play {
     if (!show) return;
     const imp = V.me?.team === 'imp';
     const lines = [];
-    if (V.sab) lines.push(el('div', 'sabline', V.sab.endsAt ? `${SAB_LINE[V.sab.kind]} dans ${Math.ceil(c.left(V.sab.endsAt) / 1000)} s.` : SAB_LINE[V.sab.kind]));
+    if (V.sab) lines.push(el('div', 'sabline', this.sabText(V)));
     if (imp) lines.push(el('div', 'imp', 'Sabote et tue tout le monde.'), el('div', 'fake', 'Fausses tâches :'));
     else if (c.ghost) lines.push(el('div', 'ghost', 'Tu es mort, mais termine tes tâches pour aider ton équipe à gagner.'));
     if (V.me?.role && V.me.role !== 'crewmate' && V.me.role !== 'impostor') lines.push(el('div', 'role', `${ROLES[V.me.role].name} : ${ROLES[V.me.role].blurb}.`));
@@ -424,7 +458,7 @@ export class Play {
       const wait = !t.done && t.readyAt > c.serverNow();
       lines.push(el('div', t.done ? 'done' : t.step > 0 ? 'started' : '', `${room} : ${def?.name || t.id}${multi}${wait ? ' — en attente' : ''}`));
     }
-    if (V.sab?.kind === 'comms' && !imp) lines.splice(1, lines.length, el('div', 'sabline', 'Communications sabotées : tâches inconnues.'));
+    if (V.sab?.kind === 'comms' && !imp) lines.splice(1, lines.length);      // crewmates only see « Comms Sabotaged »
     this.taskList.replaceChildren(...lines);
   }
   renderLobby(V) {
@@ -635,7 +669,7 @@ export class Play {
       P.render = () => {
         layer.replaceChildren();
         const VV = c.v; if (!VV) return;
-        if (!sabotage) for (const t of VV.tasks || []) { if (t.done) continue; const cs = M.consoles[t.steps[t.step]?.console]; if (cs) marker('task', cs.x, cs.y, el('i')); }
+        if (!sabotage) taskMarks(VV, M, art.xy, art.ratio).forEach(([l, t]) => { const d = el('div', 'mk task', el('i')); d.style.left = l + '%'; d.style.top = t + '%'; layer.append(d); });
         marker('me', c.pos.x, c.pos.y, crewIcon(c.self?.color || 'red', 26));
         if (VV.trackPos) marker('track', VV.trackPos[0], VV.trackPos[1], crewIcon(c.player(VV.me.track?.n)?.color || 'red', 22));
         if (VV.sab) for (const s of M.sabotage[VV.sab.kind] || []) marker('sabspot', s.x, s.y, '⚠');
@@ -659,6 +693,7 @@ export class Play {
           }
         }
       };
+      P.at = art.at;
       P.render();
       let acc = 0; P.tick = dt => { acc += dt; if (acc > .25) { acc = 0; P.render(); } };
     }, { walk: true });

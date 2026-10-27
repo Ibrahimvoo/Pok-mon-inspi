@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const shots = process.argv[2] || null;
 if (shots) await mkdir(shots, { recursive: true });
-const app = await start({ port: 0, dbUrl: ':memory:', quiet: true });
+const app = await start({ port: 0, dbUrl: ':memory:', quiet: !process.env.AU_LOG });
 const url = `http://localhost:${app.port}/?aufps=12`;
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] });
 const results = [], errors = [];
@@ -83,15 +83,21 @@ try {
   const colors = await A.evaluate(() => globalThis.__au.c.v.players.map(p => p.color));
   ok('four different colours', new Set(colors).size === 4, colors.join(','));
   // the host changes a setting: the others see it
-  await A.evaluate(() => globalThis.__au.c.send({ k: 'set', settings: { killCooldown: 10, discussionTime: 0, votingTime: 30, emergencyCooldown: 0 } }));
-  ok('settings synchronised to the guests', await until(B, () => globalThis.__au.c.v.settings.killCooldown === 10, 5000));
+  await A.evaluate(() => globalThis.__au.c.send({ k: 'set', settings: { killCooldown: 10, discussionTime: 0, votingTime: 120, emergencyCooldown: 0 } }));
+  ok('settings synchronised to the guests', await until(B, () => globalThis.__au.c.v.settings.killCooldown === 10, 5000), JSON.stringify(await Promise.all([A, B].map(p => p.evaluate(() => { const c = globalThis.__au?.c; return { host: c?.v?.host, n: c?.n, kc: c?.v?.settings?.killCooldown, status: c?.link?.constructor?.name }; })))));
   ok('a guest cannot start the game', await B.evaluate(() => document.querySelector('.au-start').hidden));
   // voice: every player opens the (fake) microphone; in the lobby everyone is connected to everyone
   for (const p of P) await p.evaluate(() => globalThis.__au.voice.start());
-  ok('lobby voice: each player connected to the 3 others', await until(A, () => globalThis.__au.voice.peers.size === 3, 25000) && await until(D, () => globalThis.__au.voice.peers.size === 3, 25000));
+  ok('lobby voice: each player connected to the 3 others', await until(A, () => globalThis.__au.voice.peers.size === 3, 25000) && await until(D, () => globalThis.__au.voice.peers.size === 3, 25000), JSON.stringify(await Promise.all(P.map(p => p.evaluate(() => { const v = globalThis.__au.voice; return { st: v.state, g: v.group, peers: [...v.peers.values()].map(x => x.pc?.connectionState || x.state || '?'), allowed: v.allowed.size }; })))));
   await A.click('.au-start');
   ok('countdown then roles on every console', (await Promise.all(P.map(p => until(p, () => globalThis.__au.c.phase === 'play', 30000)))).every(Boolean));
   await A.shot('play');
+  for (const p of P) await p.evaluate(() => { const c = globalThis.__au.c; globalThis.__ph = []; c.on('phase', x => globalThis.__ph.push([x.to, Math.round(c.serverNow() / 100) / 10, c.v.meeting && { ve: c.v.meeting.voteEnd, de: c.v.meeting.discussEnd }])); });
+  const room0 = [...app.among.rooms.values()][0], sent = {}, osend = room0.send;
+  room0.send = (id, m) => { sent[m.k] = (sent[m.k] || 0) + 1; return osend.call(room0, id, m); };
+  const seen = await Promise.all(P.map(p => p.evaluate(() => new Promise(r => { const c = globalThis.__au.c, o = c.receive.bind(c); let s = 0, last = null; c.receive = m => { if (m?.k === 's') { s++; last = m.p.length; } return o(m); }; setTimeout(() => { c.receive = o; r({ s, last, others: c.others.size, pos: [c.pos.x, c.pos.y] }); }, 1000); }))));
+  ok('snapshots flow during the game and show the other crewmates', seen.every(x => x.s >= 5 && x.others > 0), JSON.stringify(seen) + JSON.stringify(sent) + room0.phase);
+  room0.send = osend;
   const S = await Promise.all(P.map(state));
   const imps = S.filter(s => s.team === 'imp');
   ok('exactly one impostor, roles only known to their owner', imps.length === 1 && S.every(s => s.role), S.map(s => s.role).join(','));
@@ -102,8 +108,9 @@ try {
   const victim = crew[0], vs = await state(victim);
   await victim.evaluate(() => { globalThis.__au.autoDir = null; });
   ok('impostor walks to a crewmate', await walkTo(impPage, vs.x - .45, vs.y));
+  const pre = await impPage.evaluate(() => { const P = globalThis.__au, c = P.c; P.updateButtons(); return { cd: c.v.me.killAt - c.serverNow(), t: P.T?.kill?.n ?? null, pos: [c.pos.x, c.pos.y], others: [...c.others].map(([n, o]) => [n, +o.x.toFixed(2), +o.y.toFixed(2), o.f]), toasts: [...document.querySelectorAll('.au-toast')].map(t => t.textContent) }; });
   await impPage.keyboard.press('KeyQ');
-  ok('kill: the victim becomes a ghost', await until(victim, () => globalThis.__au.c.v.me.alive === false, 6000));
+  ok('kill: the victim becomes a ghost', await until(victim, () => globalThis.__au.c.v.me.alive === false, 6000), JSON.stringify({ pre, victim: [vs.x, vs.y], server: [...app.among.rooms.values()][0] && [...[...app.among.rooms.values()][0].players.values()].map(u => [u.n, +u.x.toFixed(2), +u.y.toFixed(2), u.alive, !!u.conn, u.vent, u.vanished]), snap: await impPage.evaluate(() => new Promise(r => { const c = globalThis.__au.c, o = c.receive.bind(c); let got = null; c.receive = m => { if (m?.k === 's' && !got) got = m; return o(m); }; setTimeout(() => { c.receive = o; r(got); }, 600); })), toasts: await impPage.evaluate(() => [...document.querySelectorAll('.au-toast')].map(t => t.textContent)) }));
   ok('the victim sees the kill animation', await until(victim, () => !!document.querySelector('.au-kill'), 3000));
   await victim.shot('killed');
   const others = crew.slice(1);
@@ -123,7 +130,7 @@ try {
   ok('the tablet opens after the splash', await until(reporter, () => !!document.querySelector('.mt-tablet'), 9000));
   await reporter.shot('meeting');
   await reporter.evaluate(() => globalThis.__au.c.send({ k: 'chat', text: 'c est lui' }));
-  ok('meeting chat reaches the living', await until(impPage, () => globalThis.__au.c.chat.some(m => m.text === 'c est lui'), 5000));
+  ok('meeting chat reaches the living', await until(impPage, () => globalThis.__au.c.chat.some(m => m.text === 'c est lui'), 5000), JSON.stringify(await Promise.all([reporter, impPage].map(p => p.evaluate(() => ({ phase: globalThis.__au.c.phase, ph: globalThis.__ph, chat: globalThis.__au.c.chat.slice(-3).map(m => m.text), toasts: [...document.querySelectorAll('.au-toast')].map(t => t.textContent) }))))));
   ok('…and the ghost too', await until(victim, () => globalThis.__au.c.chat.some(m => m.text === 'c est lui'), 5000));
   const impName = (await state(impPage)).players.find(p => p.n === imps[0].n).name;
   for (const p of [...others, impPage]) {

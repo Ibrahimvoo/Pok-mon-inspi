@@ -51,7 +51,7 @@ export class ServerLink extends Base {
   constructor() {
     super();
     this.kind = 'server'; this.code = null; this.hello = null;
-    this.off = [net.on('au', m => { if (!this.code || m.code === this.code) this.emit(m); }), net.on('status', s => this.onStatus(s))];
+    this.off = [net.on('au', m => { if (!this.code || m.code === this.code) this.emit('at' in m ? { ...m, t: m.at } : m); }), net.on('status', s => this.onStatus(s))];
   }
   async onStatus(s) {
     if (s !== 'online') { if (this.code) this.status('reconnecting'); return; }

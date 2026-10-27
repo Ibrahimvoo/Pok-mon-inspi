@@ -1403,9 +1403,12 @@ export function manifolds(el, api) {
 }
 
 // ------------------------------------------------------------------ Empty Garbage
-// pull the lever down and hold it: the pile drops out of the chute
+// pull the lever down and hold it: the pile drops out of the chute. Leaves for the O2 chute (and the second step of
+// « Empty Chute »), household junk for the cafeteria bin and its second step in Storage
+const JUNK = ['can', 'bottle', 'paper', 'banana', 'box', 'can', 'paper'];
 export function garbage(el, api) {
-  const leaves = Array.from({ length: 60 }, () => ({ x: rnd(180, 368), y: rnd(125, 330), a: rnd(-2.2, -.9), w: rnd(26, 44), h: rnd(8, 13), c: ['#8c6a4a', '#b07a3a', '#d98a2a', '#6f5f55', '#a0928a', '#c7b8a8', '#3d342f'][Math.random() * 7 | 0], v: rnd(.8, 1.4) }));
+  const junk = api.task ? api.task.id === 'emptyGarbage' && api.task.steps?.[0]?.console !== 'o2_garbage' : !/o2/.test(api.step?.console || '');
+  const leaves = Array.from({ length: junk ? 34 : 60 }, () => ({ x: rnd(180, 368), y: rnd(125, 330), a: rnd(-2.2, -.9), w: rnd(26, 44), h: rnd(8, 13), c: ['#8c6a4a', '#b07a3a', '#d98a2a', '#6f5f55', '#a0928a', '#c7b8a8', '#3d342f'][Math.random() * 7 | 0], v: rnd(.8, 1.4), kind: junk ? JUNK[Math.random() * JUNK.length | 0] : 'leaf', hue: Math.random() * 360 | 0 }));
   let pull = 0, drag = null, drop = 0;
   stage(el, api, {
     box: [172, 32, 296, 296], close: [153, 47],
@@ -1428,6 +1431,7 @@ export function garbage(el, api) {
       for (const l of leaves) {
         const y = l.y + drop * drop * 360 * l.v;
         g.save(); g.translate(l.x + shake, y); g.rotate(l.a);
+        if (l.kind !== 'leaf') { junkItem(g, l); g.restore(); continue; }
         // crumpled leaf: pointed ends, ribs
         g.beginPath(); g.moveTo(-l.w, 0); g.quadraticCurveTo(-l.w * .2, -l.h * 1.6, l.w, -l.h * .2); g.quadraticCurveTo(0, l.h * 1.4, -l.w, 0); g.closePath();
         g.fillStyle = l.c; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#1d1712'; g.stroke();
@@ -1452,4 +1456,14 @@ export function garbage(el, api) {
       g.strokeStyle = '#1c1e21'; g.beginPath(); g.moveTo(417, ly - 8); g.lineTo(417, ly + 21); g.moveTo(433, ly - 8); g.lineTo(433, ly + 21); g.stroke();
     },
   });
+}
+// one piece of household junk of the cafeteria bin, centred on 0,0
+function junkItem(g, l) {
+  g.lineWidth = 1.6; g.strokeStyle = '#1d1712';
+  const w = l.w * .8;
+  if (l.kind === 'can') { g.fillStyle = `hsl(${l.hue} 55% 45%)`; rrect(g, -w * .6, -11, w * 1.2, 22, 4); g.fill(); g.stroke(); g.fillStyle = '#c9ced3'; g.fillRect(-w * .6, -11, 5, 22); g.strokeRect(-w * .6, -11, 5, 22); }
+  else if (l.kind === 'bottle') { g.fillStyle = 'rgba(90,170,110,.85)'; g.beginPath(); g.moveTo(-w * .7, -9); g.lineTo(w * .2, -9); g.lineTo(w * .45, -4); g.lineTo(w * .8, -4); g.lineTo(w * .8, 4); g.lineTo(w * .45, 4); g.lineTo(w * .2, 9); g.lineTo(-w * .7, 9); g.closePath(); g.fill(); g.stroke(); }
+  else if (l.kind === 'paper') { g.fillStyle = '#ecebe4'; g.beginPath(); for (let k = 0; k < 9; k++) { const a = k / 9 * Math.PI * 2, r = (k % 2 ? 9 : 14) * (w / 28); g.lineTo(Math.cos(a) * r, Math.sin(a) * r); } g.closePath(); g.fill(); g.stroke(); g.beginPath(); g.moveTo(-5, -3); g.lineTo(4, 2); g.moveTo(-2, 5); g.lineTo(5, -5); g.stroke(); }
+  else if (l.kind === 'banana') { g.fillStyle = '#f0d23a'; g.beginPath(); g.moveTo(-w, -2); g.quadraticCurveTo(0, 16, w, -4); g.quadraticCurveTo(0, 6, -w, -2); g.closePath(); g.fill(); g.stroke(); g.fillStyle = '#4a3a1a'; g.fillRect(w - 3, -6, 4, 4); }
+  else { g.fillStyle = '#b8874f'; g.fillRect(-w * .55, -12, w * 1.1, 24); g.strokeRect(-w * .55, -12, w * 1.1, 24); g.beginPath(); g.moveTo(-w * .55, -4); g.lineTo(w * .55, -4); g.stroke(); }
 }

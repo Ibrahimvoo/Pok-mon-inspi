@@ -78,7 +78,9 @@
 .au-tasklist.hide { display: none; }
 .au-tasklist .done { color: #43d86b; }
 .au-tasklist .started { color: #ffe23c; }
-.au-tasklist .sabline { color: #ff3b3b; animation: auBlink 1s steps(2) infinite; }
+/* the sabotage line of the task list alternates red and yellow, like the footage */
+.au-tasklist .sabline { color: #ff3b3b; animation: auSabLine 1s steps(2) infinite; }
+@keyframes auSabLine { 50% { color: #ffe23c; } }
 .au-tasklist .imp, .au-tasklist .fake { color: #ff4d4d; }
 .au-tasklist .ghost, .au-tasklist .role { color: #9fe3ff; }
 @keyframes auBlink { 50% { opacity: .35; } }
@@ -113,8 +115,10 @@
 .au-ventarrows { position: absolute; left: 50%; top: 50%; pointer-events: none; }
 .au-ventarrow { position: absolute; left: -28px; top: -28px; width: 56px; height: 56px; border-radius: 50%; border: 3px solid #fff; background: rgba(0,0,0,.6); font-size: 26px; pointer-events: auto; }
 .au-cursor { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border-radius: 50%; border: 3px solid #fff; background: rgba(255,233,60,.6); z-index: 80; pointer-events: none; }
-.au-play.alarm .au-canvas { animation: auAlarm 1s steps(2) infinite; }
-@keyframes auAlarm { 50% { filter: sepia(1) saturate(4) hue-rotate(-30deg) brightness(.85); } }
+/* critical sabotage: a red flash over the whole screen (world, HUD and open screens), measured on the footage */
+.au-flash { position: absolute; inset: 0; z-index: 60; pointer-events: none; background: rgb(255,30,0); opacity: 0; }
+.au-play.alarm .au-flash { animation: auAlarm 1.1s ease-in-out infinite; }
+@keyframes auAlarm { 0%, 100% { opacity: 0; } 50% { opacity: .42; } }
 
 /* lobby (screenshot: code panel on the right, notices on the left, host line and start at the bottom) */
 .au-lobby { position: absolute; right: 1.2vw; top: 13vh; width: min(270px, 34vw); background: #2d3034; border: 4px solid #4a4f55; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
@@ -426,7 +430,7 @@
 /* task screens drawn by src/among/tasks (one canvas in reference-screen units, no backdrop) */
 .au-panelwrap.mgw { background: transparent; }
 .au-panelwrap.mgw .au-close { display: none; }
-.au-panel.mgx { position: absolute; inset: 0; background: none; border: 0; border-radius: 0; padding: 0; max-width: none; max-height: none; overflow: hidden; box-shadow: none; }
+.au-panel.mgx { position: absolute; inset: 0; width: auto; background: none; border: 0; border-radius: 0; padding: 0; max-width: none; max-height: none; overflow: hidden; box-shadow: none; }
 .mgx canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
 .mg-complete { position: absolute; left: 50%; z-index: 40; transform: translate(-50%, -50%); font-family: Arial, 'Liberation Sans', Helvetica, sans-serif; color: #fff; white-space: nowrap; pointer-events: none;
   text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 2px 0 #000; animation: mgRise 1.9s ease-out forwards; }

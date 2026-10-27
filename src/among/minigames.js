@@ -2,6 +2,7 @@
 // when the player really completed it (the room also refuses completions faster than the task's minimum time).
 // api: { done(), close(), sfx(name), step: { console, game, target }, roomName(id), sab, fix(msg) }
 import * as POLUS from './tasks/polus.js';
+import * as SKELD from './tasks/skeld.js';
 const NS = 'http://www.w3.org/2000/svg';
 const $ = (tag, attrs = {}, kids = []) => { const e = document.createElement(tag); for (const k in attrs) { if (k === 'style') e.style.cssText = attrs[k]; else if (k === 'text') e.textContent = attrs[k]; else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); } kids.forEach(c => c && e.append(c)); return e; };
 const svg = (w, h, html) => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', `0 0 ${w} ${h}`); s.innerHTML = html; return s; };
@@ -78,32 +79,6 @@ export const MINIGAMES = {
     };
   },
   upload(el, api) { MINIGAMES.download(el, api, true); },
-  divert(el, api) {
-    panel(el, 'mg-divert', 'Dériver l’énergie');
-    const target = api.step.target, rooms = ['upper_power', 'lower_power', 'sec_power', 'nav_power', 'shields_power', 'weapons_power', 'o2_power', 'comms_power'];
-    const box = $('div', { class: 'mg-sliders' });
-    rooms.forEach(r => {
-      const s = $('div', { class: 'mg-slider' + (r === target ? ' target' : '') }, [$('i'), $('span', { text: api.roomName(r).slice(0, 9) })]);
-      drag(s, { move: e => { const R = s.getBoundingClientRect(); const k = Math.max(0, Math.min(1, (R.bottom - e.clientY) / R.height)); s.style.setProperty('--k', k); if (k > .92) { if (r === target) finish(api, el); else s.style.setProperty('--k', 0); } } });
-      box.append(s);
-    });
-    el.append(box, $('div', { class: 'mg-small', text: 'Monte le levier qui clignote.' }));
-  },
-  accept(el, api) {
-    panel(el, 'mg-accept', 'Accepter l’énergie dérivée');
-    const sw = $('button', { class: 'mg-bigswitch', text: '⏻' });
-    sw.onclick = () => { sw.classList.add('on'); finish(api, el); };
-    el.append(sw);
-  },
-  align(el, api) {
-    panel(el, 'mg-align', 'Aligner la sortie moteur');
-    const s = svg(600, 420, `<rect width="600" height="420" fill="#20262b"/><path d="M80 210 H560" stroke="#3fe07a" stroke-width="3" stroke-dasharray="12 8"/><g class="eng"><rect x="80" y="180" width="420" height="60" rx="10" fill="#9aa4aa"/><circle cx="500" cy="210" r="40" fill="#cdd5da"/></g><rect class="knob" x="555" y="190" width="34" height="40" fill="#e8c23a"/>`);
-    el.append(s);
-    let off = rnd(-130, 130); if (Math.abs(off) < 40) off = 90;
-    const put = () => { s.querySelector('.eng').setAttribute('transform', `rotate(${off / 6} 80 210) translate(0 ${off})`); s.querySelector('.knob').setAttribute('y', 190 + off); };
-    put();
-    drag(s, { move: e => { const [, y] = local(e, s, 600, 420); off = Math.max(-160, Math.min(160, y - 210)); put(); }, up: () => { if (Math.abs(off) < 10) { off = 0; put(); finish(api, el); } } });
-  },
   fuelFill(el, api) { holdFill(el, api, 'Remplir le jerrican', 3200, '#f2c230'); },
   fuelPour(el, api) { holdFill(el, api, 'Faire le plein', 3200, '#f2c230', true); },
   jugFill(el, api) { holdFill(el, api, 'Remplir la bonbonne', 2600, '#4fb6ff'); },
@@ -130,29 +105,6 @@ export const MINIGAMES = {
     const bad = Math.floor(Math.random() * 5);
     el.append($('div', { class: 'mg-tubes' }, [0, 1, 2, 3, 4].map(i => { const t = $('button', { class: 'tube ' + (i === bad ? 'red' : 'blue') }); t.onclick = () => { if (i === bad) finish(api, el); else { api.sfx('click'); el.querySelector('.mg-small').textContent = 'Mauvais tube ! Recommence l’analyse plus tard.'; } }; return t; })), $('div', { class: 'mg-small', text: 'Touche le tube différent.' }));
   },
-  reactor(el, api) {
-    panel(el, 'mg-reactor', 'Démarrer le réacteur');
-    const left = $('div', { class: 'mg-pad show' }), right = $('div', { class: 'mg-pad' });
-    for (let i = 0; i < 9; i++) { left.append($('i')); const b = $('button'); b.dataset.i = i; right.append(b); }
-    const lamps = $('div', { class: 'mg-lamps' }, [0, 1, 2, 3, 4].map(() => $('i')));
-    el.append($('div', { class: 'mg-row' }, [left, right]), lamps);
-    const seq = Array.from({ length: 5 }, () => Math.floor(Math.random() * 9));
-    let round = 1, pos = 0, busy = true;
-    const show = async () => {
-      busy = true; pos = 0;
-      await new Promise(r => setTimeout(r, 600));
-      for (let k = 0; k < round; k++) { if (!el.isConnected) return; left.children[seq[k]].classList.add('lit'); api.sfx('taskStep'); await new Promise(r => setTimeout(r, 420)); left.children[seq[k]].classList.remove('lit'); await new Promise(r => setTimeout(r, 160)); }
-      busy = false;
-    };
-    right.onclick = e => {
-      const b = e.target.closest('button'); if (!b || busy) return;
-      const i = +b.dataset.i;
-      if (i !== seq[pos]) { api.sfx('click'); el.classList.add('err'); setTimeout(() => el.classList.remove('err'), 300); round = 1; [...lamps.children].forEach(l => l.classList.remove('on')); show(); return; }
-      pos++; api.sfx('click');
-      if (pos === round) { lamps.children[round - 1].classList.add('on'); round++; if (round > 5) finish(api, el); else show(); }
-    };
-    show();
-  },
   scan(el, api) {
     panel(el, 'mg-scan', 'Soumettre l’analyse');
     const bar = $('i'), info = $('div', { class: 'mg-lcd', text: 'Analyse en cours…' });
@@ -177,13 +129,6 @@ export const MINIGAMES = {
     const tick = () => { if (!el.isConnected || el.dataset.done) return; if (++t % 34 === 0 && rocks.length < 7) spawn(); for (const r of [...rocks]) { r.x += r.vx; r.y += r.vy; r.e.setAttribute('cx', r.x); r.e.setAttribute('cy', r.y); if (r.x < -40) { r.e.remove(); rocks.splice(rocks.indexOf(r), 1); } } requestAnimationFrame(tick); };
     spawn(); tick();
   },
-  calibrate(el, api) {
-    panel(el, 'mg-cal', 'Calibrer le distributeur');
-    const rows = [0, 1, 2].map(i => { const d = $('div', { class: 'mg-dial' }, [$('i'), $('b')]); const btn = $('button', { class: 'mg-btn small', text: 'Calibrer' }); const r = $('div', { class: 'mg-row' }, [d, btn]); return { d, btn, a: rnd(0, 360), sp: [2.2, 3.1, 4][i], ok: false, r }; });
-    rows.forEach((r, i) => { r.btn.disabled = i > 0; r.btn.onclick = () => { const a = ((r.a % 360) + 360) % 360; if (a < 28 || a > 332) { r.ok = true; r.d.classList.add('ok'); r.btn.disabled = true; api.sfx('taskStep'); if (rows[i + 1]) rows[i + 1].btn.disabled = false; else finish(api, el); } else { api.sfx('click'); rows.forEach(x => { x.ok = false; x.d.classList.remove('ok'); x.btn.disabled = true; }); rows[0].btn.disabled = false; } }; el.append(r.r); });
-    const tick = () => { if (!el.isConnected) return; rows.forEach(r => { if (!r.ok) r.a += r.sp; r.d.querySelector('i').style.transform = `rotate(${r.a}deg)`; }); requestAnimationFrame(tick); };
-    tick();
-  },
   chart(el, api) {
     panel(el, 'mg-chart', 'Tracer la route');
     const pts = [[60, 330], [170, rnd(120, 320)], [290, rnd(100, 330)], [410, rnd(100, 330)], [540, rnd(120, 300)]];
@@ -191,34 +136,6 @@ export const MINIGAMES = {
     el.append(s);
     let k = 0; const ship = s.querySelector('.ship'); const at = (x, y) => ship.setAttribute('transform', `translate(${x} ${y})`); at(...pts[0]);
     drag(s, { down: e => { const [x, y] = local(e, s, 600, 420); return Math.hypot(x - pts[k][0], y - pts[k][1]) < 40; }, move: e => { const [x, y] = local(e, s, 600, 420); at(x, y); if (Math.hypot(x - pts[k + 1][0], y - pts[k + 1][1]) < 22) { k++; api.sfx('taskStep'); if (k === pts.length - 1) { at(...pts[k]); finish(api, el); } } }, up: () => at(...pts[k]) });
-  },
-  filter(el, api) {
-    panel(el, 'mg-filter', 'Nettoyer le filtre O2');
-    const s = svg(600, 420, '<rect width="600" height="420" fill="#3d4b45"/><rect x="0" y="150" width="70" height="120" fill="#151a18"/><g class="l"></g>');
-    el.append(s, $('div', { class: 'mg-small', text: 'Glisse les feuilles dans le conduit à gauche.' }));
-    const g = s.querySelector('.l'); let left = 6;
-    for (let i = 0; i < 6; i++) {
-      const leaf = document.createElementNS(NS, 'ellipse'); let x = rnd(240, 560), y = rnd(40, 380);
-      leaf.setAttribute('rx', 30); leaf.setAttribute('ry', 14); leaf.setAttribute('fill', '#5aa23c'); leaf.setAttribute('stroke', '#23441a'); leaf.setAttribute('stroke-width', 4);
-      const put = () => { leaf.setAttribute('cx', x); leaf.setAttribute('cy', y); }; put(); g.append(leaf);
-      drag(leaf, { move: e => { [x, y] = local(e, s, 600, 420); put(); }, up: () => { if (x < 80 && y > 140 && y < 280) { leaf.remove(); api.sfx('taskStep'); if (--left === 0) finish(api, el); } } });
-    }
-  },
-  shields(el, api) {
-    panel(el, 'mg-shields', 'Activer les boucliers');
-    const s = svg(600, 420, '<rect width="600" height="420" fill="#2c3036"/>');
-    const H = [[300, 210], [300, 110], [300, 310], [213, 160], [387, 160], [213, 260], [387, 260]];
-    let red = 0;
-    H.forEach(([x, y]) => { const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', [0, 1, 2, 3, 4, 5].map(i => [x + 52 * Math.cos(i * Math.PI / 3), y + 52 * Math.sin(i * Math.PI / 3)].join(',')).join(' ')); const on = Math.random() < .55; p.setAttribute('fill', on ? '#e9eef2' : '#d83a3a'); if (!on) red++; p.dataset.on = on ? 1 : 0; p.setAttribute('stroke', '#111'); p.setAttribute('stroke-width', 4); p.addEventListener('pointerdown', () => { const v = p.dataset.on === '1'; p.dataset.on = v ? 0 : 1; p.setAttribute('fill', v ? '#d83a3a' : '#e9eef2'); red += v ? 1 : -1; api.sfx('click'); if (!red) finish(api, el); }); s.append(p); });
-    if (!red) { const p = s.querySelector('polygon'); p.dataset.on = 0; p.setAttribute('fill', '#d83a3a'); red = 1; }
-    el.append(s);
-  },
-  steer(el, api) {
-    panel(el, 'mg-steer', 'Stabiliser la direction');
-    const s = svg(600, 420, '<rect width="600" height="420" fill="#0b2340"/><circle cx="300" cy="210" r="150" fill="none" stroke="#4d86c7" stroke-width="3"/><path d="M300 50v320M140 210h320" stroke="#4d86c7" stroke-width="2"/><g class="c"><circle r="24" fill="none" stroke="#ffd24a" stroke-width="5"/><path d="M0 -36v72M-36 0h72" stroke="#ffd24a" stroke-width="4"/></g>');
-    el.append(s);
-    let x = 300 + rnd(-140, 140), y = 210 + rnd(-140, 140); const c = s.querySelector('.c'); const put = () => c.setAttribute('transform', `translate(${x} ${y})`); put();
-    drag(s, { move: e => { [x, y] = local(e, s, 600, 420); put(); }, up: () => { if (Math.hypot(x - 300, y - 210) < 16) { x = 300; y = 210; put(); finish(api, el); } } });
   },
   manifolds(el, api) {
     panel(el, 'mg-mani', 'Déverrouiller les collecteurs');
@@ -315,37 +232,6 @@ export const MINIGAMES = {
   },
 
   // ---------------------------------------------------------------- sabotages
-  reactorHand(el, api) { handScan(el, api, 'Réacteur — maintiens ta main sur le scanner', 'Attente du second scanner…'); },
-  seismicHand(el, api) { handScan(el, api, 'Stabilisateurs sismiques — maintiens le scanner', 'Attente du second scanner…'); },
-  o2Keypad(el, api) {
-    panel(el, 'mg-keypad', 'Saisir le code');
-    const code = api.sab?.code || '00000';
-    const note = $('div', { class: 'mg-note', text: `Code du jour : ${code}` }), scr = $('div', { class: 'mg-lcd big', text: '' });
-    const pad = $('div', { class: 'mg-keys12' });
-    let v = '';
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, '✕', 0, '✓'].forEach(k => { const b = $('button', { text: k }); b.onclick = () => { api.sfx('click'); if (k === '✕') v = ''; else if (k === '✓') { api.fix({ a: 'code', code: v }); v = ''; } else if (v.length < 5) v += k; scr.textContent = v; }; pad.append(b); });
-    el.append(note, scr, pad);
-    if (api.sab?.fixed?.[api.index]) scr.textContent = 'OK';
-  },
-  lights(el, api) {
-    panel(el, 'mg-lights', 'Réparer l’électricité');
-    const row = $('div', { class: 'mg-row' });
-    const render = () => { row.replaceChildren(...(api.sab?.sw || [0, 0, 0, 0, 0]).map((on, i) => { const b = $('button', { class: 'switch' + (on ? ' on' : '') }); b.onclick = () => { api.sfx('click'); api.fix({ a: 'switch', s: i }); }; return b; })); };
-    render(); el.append(row, $('div', { class: 'mg-small', text: 'Allume les cinq interrupteurs.' }));
-    api.onSab = render;
-  },
-  comms(el, api) {
-    panel(el, 'mg-comms', 'Réparer les communications');
-    const target = api.sab?.target ?? .5;
-    const s = svg(600, 420, `<rect width="600" height="420" fill="#16211c"/><path class="wave" fill="none" stroke="#3fe07a" stroke-width="4"/><g class="knob" transform="translate(300 330)"><circle r="60" fill="#555c60" stroke="#222" stroke-width="6"/><rect x="-6" y="-58" width="12" height="30" fill="#ffd24a"/></g>`);
-    el.append(s, $('div', { class: 'mg-small', text: 'Tourne le bouton jusqu’à ce que le signal soit net.' }));
-    let v = (target + .5) % 1, sent = 0;
-    const draw = () => { const err = Math.abs(v - target); let d = 'M40 140'; for (let x = 40; x <= 560; x += 6) d += ` L${x} ${140 + Math.sin(x / 18) * 40 * Math.min(1, err * 4) + (Math.random() - .5) * 120 * Math.min(1, err * 3)}`; s.querySelector('.wave').setAttribute('d', d); s.querySelector('.knob').setAttribute('transform', `translate(300 330) rotate(${v * 300 - 150})`); };
-    let last = null;
-    drag(s, { move: e => { const [x, y] = local(e, s, 600, 420); const a = Math.atan2(y - 330, x - 300); if (last != null) { let d = a - last; if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; v = Math.max(0, Math.min(1, v + d / 5.2)); draw(); if (Math.abs(v - target) < .03 && performance.now() - sent > 300) { sent = performance.now(); api.fix({ a: 'tune', v }); } } last = a; }, up: () => { last = null; } });
-    const iv = setInterval(() => { if (!el.isConnected) clearInterval(iv); else draw(); }, 120);
-    draw();
-  },
   door(el, api) {
     panel(el, 'mg-door', 'Ouvrir la porte');
     let n = 0; const row = $('div', { class: 'mg-row' });
@@ -367,14 +253,10 @@ function leverTask(el, api, title, dir, msg) {
   el.append(lever, $('div', { class: 'mg-small', text: dir === 'down' ? 'Abaisse le levier pour éteindre le Wi-Fi.' : 'Relève le levier pour rallumer le Wi-Fi.' }));
   drag(lever, { move: e => { const R = lever.getBoundingClientRect(); const down = e.clientY > R.top + R.height * .65, up = e.clientY < R.top + R.height * .35; if (dir === 'down' && down) { lever.classList.add('down'); finish(api, el, msg); } if (dir === 'up' && up) { lever.classList.remove('down'); finish(api, el); } } });
 }
-function handScan(el, api, title, wait) {
-  panel(el, 'mg-hand', title);
-  const pad = $('div', { class: 'mg-handpad', text: '✋' }), info = $('div', { class: 'mg-small', text: 'Maintiens jusqu’à ce que l’autre scanner soit aussi utilisé.' });
-  el.append(pad, info);
-  hold(pad, { start: () => { api.fix({ a: 'hold', on: true }); info.textContent = wait; }, stop: () => { api.fix({ a: 'hold', on: false }); info.textContent = 'Maintiens jusqu’à ce que l’autre scanner soit aussi utilisé.'; } });
-  api.onClose = () => api.fix({ a: 'hold', on: false });
-}
 
 // task screens reproduced from the in-game footage replace the earlier versions
 for (const k of ['asteroids', 'download', 'upload', 'wifi', 'wifiEnd', 'weather', 'weatherLab', 'temperature', 'telescope', 'sample', 'sampleEnd', 'scan', 'drill',
   'chart', 'keys', 'fuelFill', 'fuelPour', 'jugFill', 'jugPour', 'canisters', 'waterwheel', 'swipe', 'boarding', 'tree', 'wires', 'manifolds', 'garbage']) MINIGAMES[k] = POLUS[k];
+// the Skeld task screens and the sabotage repair screens (measured on the sabotage footage)
+for (const k of ['divert', 'accept', 'align', 'calibrate', 'filter', 'shields', 'steer', 'reactor', 'lights', 'comms', 'o2Keypad']) MINIGAMES[k] = SKELD[k];
+MINIGAMES.reactorHand = MINIGAMES.seismicHand = SKELD.handScan;

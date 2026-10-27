@@ -14,7 +14,7 @@ export class ProximityVoice extends EventTarget {
   constructor(client) {
     super();
     this.c = client; this.prefs = readPrefs();
-    this.peers = new Map(); this.allowed = new Set(); this.group = null; this.gains = new Map();
+    this.peers = new Map(); this.allowed = new Set(); this.group = null; this.gains = new Map(); this.early = new Map();
     this.stream = null; this.track = null; this.ctx = null; this.level = 0; this.state = 'off'; this.error = '';
     this.pttDown = false; this.selfMuted = false; this.talkSent = false; this.ice = PUBLIC_ICE;
     this.offs = [client.on('view', v => this.sync(v)), client.on('hear', m => this.hear(m)), client.on('rtc', m => this.signal(m))];
@@ -106,6 +106,7 @@ export class ProximityVoice extends EventTarget {
     }
     for (const id of [...this.peers.keys()]) if (!allowed.has(id)) this.closePeer(id);
     this.allowed = allowed;
+    for (const [id, m] of this.early) { this.early.delete(id); if (allowed.has(id) && m.g === group) this.signal(m); }
     if (this.state !== 'on') return;
     for (const id of allowed) if (!this.peers.has(id) && this.c.me.id < id) this.connect(id, true);
     if (force) this.applyGains();
@@ -144,7 +145,11 @@ export class ProximityVoice extends EventTarget {
       if (s === 'failed' || s === 'disconnected') p.restart = setTimeout(() => { if (this.peers.get(id) === p && this.allowed.has(id)) { this.closePeer(id); if (this.c.me.id < id) this.connect(id, true); } }, s === 'failed' ? 500 : 5000);
       this.emit('peers');
     };
-    if (offer) pc.createOffer().then(o => pc.setLocalDescription(o)).then(() => this.c.send({ k: 'rtc', to: id, data: { type: 'offer', sdp: pc.localDescription.sdp } })).catch(() => {});
+    if (offer) {
+      pc.createOffer().then(o => pc.setLocalDescription(o)).then(() => this.c.send({ k: 'rtc', to: id, data: { type: 'offer', sdp: pc.localDescription.sdp } })).catch(() => {});
+      // the other side may not have had its microphone on (or not known us yet) when the offer came: offer again
+      p.retry = setTimeout(() => { if (this.peers.get(id) === p && pc.connectionState !== 'connected' && this.allowed.has(id) && this.state === 'on') { this.closePeer(id); this.connect(id, true); } }, 7000);
+    }
     return p;
   }
   attach(p, stream) {
@@ -169,7 +174,7 @@ export class ProximityVoice extends EventTarget {
   }
   closePeer(id) {
     const p = this.peers.get(id); if (!p) return;
-    clearTimeout(p.restart);
+    clearTimeout(p.restart); clearTimeout(p.retry);
     try { p.gain?.disconnect(); p.src?.disconnect(); } catch { /* ignore */ }
     try { p.pc.close(); } catch { /* ignore */ }
     if (p.el) { p.el.muted = true; p.el.srcObject = null; p.el.remove(); }
@@ -177,7 +182,9 @@ export class ProximityVoice extends EventTarget {
     this.emit('peers');
   }
   async signal({ from, data, g }) {
-    if (this.state !== 'on' || !this.allowed.has(from) || g !== this.group || !data) return;
+    if (this.state !== 'on' || g !== this.group || !data) return;
+    // an offer can arrive just before the view that lists its sender: keep it until the room allows that peer
+    if (!this.allowed.has(from)) { if (data.type === 'offer') this.early.set(from, { from, data, g }); return; }
     let p = this.peers.get(from);
     try {
       if (data.type === 'offer') {

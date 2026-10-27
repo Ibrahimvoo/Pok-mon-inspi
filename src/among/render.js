@@ -128,32 +128,65 @@ export class Renderer {
     g.drawImage(shade, 0, 0);
   }
   toScreen(x, y) { return [this.W / 2 + (x - this.cam.x) * this.U, this.H / 2 + (y - this.cam.y) * this.U]; }
-  drawArrows(V) {
-    const { g, W, H } = this, c = this.c, M = c.map;
-    const targets = [];
-    for (const t of V.tasks || []) {
-      if (t.done || t.fake && false) continue;
-      const st = t.steps[t.step]; const cs = st && M.consoles[st.console];
-      if (cs) targets.push({ x: cs.x, y: cs.y, color: '#ffe23c' });
+  // Arrows of the original (ArrowBehaviour): a task shows one only once it is under way and its next step is somewhere
+  // else (accept the diverted power, upload in Admin, pour the fuel…), never for a task not yet started; a sabotage
+  // shows one per console still to fix, flashing red and yellow. Off screen the arrow sits on the edge of the screen
+  // pointing at the target; on screen it hangs just before the target, smaller as the player gets close.
+  arrowTargets(V) {
+    const c = this.c, M = c.map, out = [], seen = new Set();
+    const add = (key, x, y, kind, color) => { if (seen.has(key)) return; seen.add(key); out.push({ x, y, kind, color }); };
+    const imp = V.me?.team === 'imp';
+    if (!(V.sab?.kind === 'comms' && !imp)) {
+      for (const t of V.tasks || []) {
+        if (t.done || t.step <= 0) continue;
+        const st = t.steps[t.step], prev = t.steps[t.step - 1];
+        if (!st || st.game === 'wires' || st.console === prev?.console) continue;
+        const cs = M.consoles[st.console];
+        if (cs) add('c:' + st.console, cs.x, cs.y, 'task');
+      }
     }
-    if (V.sab) for (const s of M.sabotage[V.sab.kind] || []) targets.push({ x: s.x, y: s.y, color: '#ff2c2c', blink: true });
-    if (V.trackPos) targets.push({ x: V.trackPos[0], y: V.trackPos[1], color: colorOf(c.player(V.me.track?.n)?.color).body, big: true });
-    for (const a of V.alerts || []) targets.push({ x: a.x, y: a.y, color: '#ffffff', blink: true });
-    const m = 46 * this.dpr;
-    for (const t of targets) {
+    if (V.sab && (V.me?.alive || imp)) (M.sabotage[V.sab.kind] || []).forEach((s, i) => { if (!V.sab.fixed?.[i]) add('s:' + i, s.x, s.y, 'sab'); });
+    if (V.trackPos) out.push({ x: V.trackPos[0], y: V.trackPos[1], kind: 'track', color: colorOf(c.player(V.me.track?.n)?.color).body });
+    for (const a of V.alerts || []) out.push({ x: a.x, y: a.y, kind: 'alert' });
+    return out;
+  }
+  drawArrows(V) {
+    const { g, W, H, U } = this, c = this.c;
+    const m = 34 * this.dpr, size = H * .036;
+    const red = Math.floor(this.time * 2.5) % 2 === 1;          // sabotage arrows alternate red / yellow
+    for (const t of this.arrowTargets(V)) {
       const [sx, sy] = this.toScreen(t.x, t.y);
-      if (sx > m && sx < W - m && sy > m && sy < H - m) continue;     // on screen: no arrow, like the original
-      if (t.blink && Math.floor(this.time * 3) % 2) continue;
-      const a = Math.atan2(sy - H / 2, sx - W / 2);
-      const k = Math.min((W / 2 - m) / Math.abs(Math.cos(a) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(a) || 1e-6));
-      const x = W / 2 + Math.cos(a) * k, y = H / 2 + Math.sin(a) * k, s = (t.big ? 26 : 20) * this.dpr;
-      g.save(); g.translate(x, y); g.rotate(a);
-      g.beginPath(); g.moveTo(s, 0); g.lineTo(-s * .6, -s * .7); g.lineTo(-s * .25, 0); g.lineTo(-s * .6, s * .7); g.closePath();
-      g.fillStyle = t.color; g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 3 * this.dpr; g.stroke(); g.fill();
-      g.restore();
+      const [px, py] = this.toScreen(c.pos.x, c.pos.y - .35);
+      let a = Math.atan2(sy - py, sx - px), x, y, k = 1;
+      if (sx > m && sx < W - m && sy > m && sy < H - m) {
+        // on screen: just before the target, pointing at it
+        const d = Math.hypot(sx - px, sy - py) / U;
+        if (d < .45) continue;
+        x = sx - Math.cos(a) * .32 * U; y = sy - Math.sin(a) * .32 * U;
+        k = Math.max(.35, Math.min(1, d / 2.6));
+      } else {
+        a = Math.atan2(sy - H / 2, sx - W / 2);
+        const r = Math.min((W / 2 - m) / Math.abs(Math.cos(a) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(a) || 1e-6));
+        x = W / 2 + Math.cos(a) * r; y = H / 2 + Math.sin(a) * r;
+      }
+      const [light, dark] = t.kind === 'sab' ? (red ? ['#ff3b22', '#c8120c'] : ['#ffe14a', '#e0a600'])
+        : t.kind === 'task' ? ['#ffe14a', '#e0a600'] : t.kind === 'alert' ? ['#ffffff', '#c9cdd2'] : [t.color, shade(t.color)];
+      drawArrow(g, x, y, a, size * k, light, dark);
     }
   }
 }
+// the arrow sprite: a notched head, light on one half and darker on the other, thin dark outline (pointing along +x)
+function drawArrow(g, x, y, a, s, light, dark) {
+  g.save(); g.translate(x, y); g.rotate(a);
+  const tip = [s * .55, 0], l = [-s * .55, -s * .5], r = [-s * .55, s * .5], n = [-s * .2, 0];
+  g.lineJoin = 'round';
+  g.beginPath(); g.moveTo(...tip); g.lineTo(...l); g.lineTo(...n); g.closePath(); g.fillStyle = light; g.fill();
+  g.beginPath(); g.moveTo(...tip); g.lineTo(...r); g.lineTo(...n); g.closePath(); g.fillStyle = dark; g.fill();
+  g.beginPath(); g.moveTo(...tip); g.lineTo(...l); g.lineTo(...n); g.lineTo(...r); g.closePath();
+  g.lineWidth = Math.max(1, s * .07); g.strokeStyle = 'rgba(60,20,0,.85)'; g.stroke();
+  g.restore();
+}
+function shade(hex) { const v = parseInt(hex.slice(1), 16); const f = x => Math.round(x * .72).toString(16).padStart(2, '0'); return '#' + f(v >> 16) + f(v >> 8 & 255) + f(v & 255); }
 function drawVentOpen(g, x, y, k) {
   g.save(); g.translate(x, y);
   g.fillStyle = '#0b0e10'; g.fillRect(-.34, -.18, .68, .36);

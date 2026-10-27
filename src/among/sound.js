@@ -73,9 +73,23 @@ const SYNTH = {
   countdown: t => { tone(880, t, .1, .2, 'square'); },
   chat: t => { tone(1320, t, .06, .12, 'sine'); },
   shhh: t => { noise(t, 1.2, .3, 5000, 1.5, 'highpass'); },
+  // task screens
+  error: t => { tone(150, t, .28, .25, 'square'); tone(155, t, .28, .18, 'sawtooth'); },
+  beep0: t => { tone(523, t, .16, .16, 'square'); }, beep1: t => { tone(587, t, .16, .16, 'square'); }, beep2: t => { tone(659, t, .16, .16, 'square'); },
+  beep3: t => { tone(698, t, .16, .16, 'square'); }, beep4: t => { tone(784, t, .16, .16, 'square'); }, beep5: t => { tone(880, t, .16, .16, 'square'); },
+  beep6: t => { tone(988, t, .16, .16, 'square'); }, beep7: t => { tone(1046, t, .16, .16, 'square'); }, beep8: t => { tone(1175, t, .16, .16, 'square'); },
+  toggle: t => { noise(t, .05, .35, 2500, 2); tone(300, t, .05, .15, 'square', .6); },
+  lever: t => { noise(t, .12, .3, 900, 1.5, 'bandpass', .5); tone(140, t, .12, .2, 'square', .7); },
+  suck: t => { noise(t, .45, .3, 600, 1.2, 'bandpass', 4); },
+  zap: t => { noise(t, .35, .25, 3000, 4, 'bandpass', .4); tone(90, t, .35, .12, 'sawtooth', 1.4); },
+  power: t => { tone(110, t, .7, .2, 'sawtooth', 3); noise(t, .6, .12, 1800, 3, 'bandpass', 2); },
+  hex: t => { tone(1320, t, .12, .12, 'sine', 1.3); },
+  dial: t => { noise(t, .03, .25, 4000, 3); },
+  keypad: t => { tone(1400, t, .06, .12, 'square'); },
+  scanner: t => { tone(440, t, .4, .08, 'sine', 2); },
 };
 // gap (ms) under which the same sound is not played again (no uncontrolled repetitions)
-const GAP = { step: 280, click: 40, alarm: 850, vote: 120, chat: 150 };
+const GAP = { step: 280, click: 40, alarm: 850, vote: 120, chat: 150, dial: 45, keypad: 30, hex: 30, toggle: 30 };
 
 export const sfx = {
   play(name, gain = 1) {
