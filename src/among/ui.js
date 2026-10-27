@@ -4,7 +4,8 @@ import { drawCrew } from './art/crew.js';
 export function el(tag, cls = '', kids = [], attrs = {}) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
-  for (const k in attrs) if (attrs[k] != null && attrs[k] !== false) e.setAttribute(k, attrs[k] === true ? '' : attrs[k]);
+  // style through the CSSOM: the page's Content-Security-Policy (style-src 'self') drops style attributes
+  for (const k in attrs) if (attrs[k] != null && attrs[k] !== false) { if (k === 'style') e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k] === true ? '' : attrs[k]); }
   for (const k of [].concat(kids)) if (k != null && k !== false) e.append(k instanceof Node ? k : document.createTextNode(String(k)));
   return e;
 }

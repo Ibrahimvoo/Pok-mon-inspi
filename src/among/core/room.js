@@ -417,7 +417,7 @@ export class Room {
     const g = this.game, now = this.now(), s = this.settings;
     t.alive = false; t.deadAt = now; t.vent = null; t.sys = null; t.openTask = null; t.shift = null; t.vanished = false; t.track = null;
     this.releaseHolds(t);
-    if (t.role === 'guardianAngel') { t.ghostRole = 'guardianAngel'; t.abAt = now + FIRST_CD; }
+    if (t.role === 'guardianAngel' || t.role === 'influencer') { t.ghostRole = t.role; t.abAt = now + FIRST_CD; }
     if (how === 'kill') {
       g.kills++;
       const where = new Map();
@@ -506,6 +506,7 @@ export class Room {
     const g = this.game, M = g?.meeting, s = this.settings.roles.judge;
     if (!M || M.results || p.role !== 'judge' || !p.alive || p.uses <= 0) return;
     if (!s.firstMeeting && g.meetings <= 1) return this.err(p.id, 'Le verdict n’est possible qu’à partir de la deuxième réunion.');
+    if (judgeLocked(p, s)) return this.err(p.id, `Termine ${s.taskUnlock} % de tes tâches pour débloquer le verdict.`);
     if (this.now() < M.startedAt + SPLASH) return;
     const t = this.players.get(target);
     if (!t || !t.alive || t === p || t.spectator) return;
@@ -572,14 +573,14 @@ export class Room {
       if (p.role !== 'judge') p.abAt = now + Math.min(FIRST_CD, this.abilityCooldown(p));
       p.round = 0;
     });
-    this.players.forEach(p => { if (!p.alive && p.ghostRole === 'guardianAngel') p.abAt = Math.max(p.abAt, now + FIRST_CD); });
+    this.players.forEach(p => { if (!p.alive && p.ghostRole) p.abAt = Math.max(p.abAt, now + FIRST_CD); });
     this.changed();
     this.flush();
   }
   abilityCooldown(p) {
     const r = this.settings.roles;
     return 1000 * ({ scientist: r.scientist.vitalsCooldown, engineer: r.engineer.ventCooldown, tracker: r.tracker.trackCooldown, detective: r.detective.interrogateCooldown,
-      shapeshifter: r.shapeshifter.shiftCooldown, phantom: r.phantom.vanishCooldown, guardianAngel: r.guardianAngel.protectCooldown }[p.ghostRole || p.role] || 10);
+      shapeshifter: r.shapeshifter.shiftCooldown, phantom: r.phantom.vanishCooldown, guardianAngel: r.guardianAngel.protectCooldown, influencer: r.influencer.messageCooldown }[p.ghostRole || p.role] || 10);
   }
 
   // ------------------------------------------------------------------ tasks
@@ -781,6 +782,15 @@ export class Room {
         p.round++;
         p.abAt = now + s.detective.interrogateCooldown * 1000;
         this.send(p.id, { k: 'ev', e: 'interrogated', n: t.n, room: where });
+        return;
+      }
+      case 'influencer:message': {
+        // a dead influencer writes to the crewmates still alive (not during meetings: the ghost chat stays separate)
+        const text = str(m.text, 80);
+        if (p.alive || !ready || !text || this.phase !== 'play') return;
+        p.abAt = now + s.influencer.messageCooldown * 1000;
+        this.players.forEach(q => { if (q.alive && !q.bot) this.send(q.id, { k: 'ev', e: 'influence', n: p.n, text }); });
+        this.send(p.id, { k: 'ev', e: 'influenceSent' });
         return;
       }
       case 'scientist:vitals':
@@ -1120,3 +1130,8 @@ export class Room {
 }
 
 export { COLORS, ROLES, GAMES, taskDef };
+// the judge's verdict unlocks once this share of its tasks is done (role settings of the game)
+export function judgeLocked(p, s) {
+  const total = p.tasks?.length || 0;
+  return total > 0 && p.tasks.filter(t => t.done).length * 100 < s.taskUnlock * total;
+}

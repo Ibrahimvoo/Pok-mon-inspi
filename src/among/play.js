@@ -37,10 +37,10 @@ import { sfx } from './sound.js';
 import { el, crewIcon, mapLogo, fmtTime } from './ui.js';
 import { drawCrew, drawDead } from './art/crew.js';
 import { mapImage } from './art/maparts.js';
-import { getMap } from './core/room.js';
+import { getMap, judgeLocked } from './core/room.js';
 import { MINIMAP } from './art/minimap.js';
 import { taskDef, GAMES } from './core/tasks.js';
-import { ROLES, COLORS, SETTINGS, SETTING_GROUPS, LABELS, ROLE_OPTIONS, ROLE_LABELS, CREW_ROLES, IMP_ROLES, PRESETS, KILL_RANGE, USE_RANGE, REPORT_RANGE, ABILITY_RANGE, MIN_PLAYERS, CREW_HEIGHT, fmtSetting, fmtRoleOpt, cleanSettings } from './core/rules.js';
+import { ROLES, ROLE_INFO, COLORS, SETTINGS, SETTING_GROUPS, LABELS, ROLE_OPTIONS, ROLE_LABELS, CREW_ROLES, IMP_ROLES, PRESETS, MAX_PLAYERS, KILL_RANGE, USE_RANGE, REPORT_RANGE, ABILITY_RANGE, MIN_PLAYERS, CREW_HEIGHT, fmtSetting, fmtRoleOpt, cleanSettings } from './core/rules.js';
 import { saveProfile } from './app.js';
 import { input, stick, IOS } from '../input.js';
 import { voice as partyVoice } from '../rtc.js';
@@ -76,7 +76,7 @@ const colorOf = id => COLORS.find(c => c.id === id) || COLORS[0];
 const d2 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const SAB = { reactor: 'Réacteur', o2: 'O2', lights: 'Électricité', comms: 'Communications', seismic: 'Stabilisateurs sismiques' };
 const SAB_LINE = { reactor: 'Fusion du réacteur', o2: 'Épuisement de l’oxygène', seismic: 'Défaillance des stabilisateurs sismiques', lights: 'Réparer l’électricité', comms: 'Communications sabotées' };
-const ABILITY = { shapeshifter: ['Métamorphose', 'shift'], phantom: ['Disparaître', 'vanish'], tracker: ['Traquer', 'track'], guardianAngel: ['Protéger', 'protect'], scientist: ['Signes vitaux', 'vitals'], detective: ['Interroger', 'interrogate'], engineer: null };
+const ABILITY = { shapeshifter: ['Métamorphose', 'shift'], phantom: ['Disparaître', 'vanish'], tracker: ['Traquer', 'track'], guardianAngel: ['Protéger', 'protect'], influencer: ['Message', 'message'], scientist: ['Signes vitaux', 'vitals'], detective: ['Interroger', 'interrogate'], engineer: null };
 const isTouch = () => matchMedia('(pointer: coarse)').matches || input.device === 'touch';
 
 export class Play {
@@ -279,7 +279,9 @@ export class Play {
     const out = { use: null, report: null, kill: null, vent: null, ability: null };
     if (!V) return out;
     if (!c.inGame) {
-      const lap = M.consoles.laptop; if (lap && d2(me, lap) < 1.3) out.use = { kind: 'customize', x: lap.x, y: lap.y };
+      // the laptop and the hat chest of the dropship open the customisation, like the game
+      const near = ['laptop', 'chest'].filter(id => M.consoles[id] && d2(me, M.consoles[id]) < 1.3);
+      if (near.length) out.use = { kind: 'customize', x: M.consoles[near[0]].x, y: M.consoles[near[0]].y, glow: near };
       return out;
     }
     if (c.phase !== 'play') return out;
@@ -319,6 +321,8 @@ export class Play {
     const set = (b, enabled, cd = 0) => { b.disabled = !enabled || cd > 0; b.querySelector('.au-cd').textContent = cd > 0 ? Math.ceil(cd / 1000) : ''; b.classList.toggle('cooling', cd > 0); };
     const me = V?.me, role = me?.alive ? me?.role : me?.ghostRole;
     this.wardrobe.hidden = !lobby;
+    const pc = lobby && T.use?.kind === 'customize';
+    if (this.wardrobe.dataset.pc !== String(pc)) { this.wardrobe.dataset.pc = pc; this.wardrobe.firstChild.src = `among/ui/${pc ? 'customize' : 'wardrobe'}.webp`; this.wardrobe.title = pc ? 'Personnaliser' : 'Vestiaire'; }
     show(B.use, play && !!me); set(B.use, !!T.use || !!me?.vent);
     B.use.classList.toggle('exitvent', !!me?.vent);
     B.use.querySelector('b').textContent = me?.vent ? 'Sortir' : T.use?.kind === 'sys' ? { admin: 'Admin', cams: 'Sécurité', vitals: 'Signes vitaux' }[T.use.s] : T.use?.kind === 'button' ? 'Urgence' : 'Utiliser';
@@ -328,7 +332,7 @@ export class Play {
     show(B.sabotage, play && imp); set(B.sabotage, true);
     show(B.vent, play && !!me?.alive && (imp || me?.role === 'engineer')); set(B.vent, !!T.vent && !me.vent, me?.role === 'engineer' && !imp ? me.abAt - now : 0);
     const ab = role && ABILITY[role];
-    show(B.ability, play && !!ab && (me.alive || role === 'guardianAngel'));
+    show(B.ability, play && !!ab && (me.alive || role === 'guardianAngel' || role === 'influencer'));
     if (ab) {
       const active = (role === 'shapeshifter' && me.shift != null) || (role === 'phantom' && me.vanished);
       B.ability.querySelector('b').textContent = active ? (role === 'shapeshifter' ? 'Redevenir' : 'Réapparaître') : ab[0];
@@ -396,7 +400,21 @@ export class Play {
     if (role === 'shapeshifter') { if (me.shift != null) c.send({ k: 'ab', a: 'unshift' }); else this.pickShift(); return; }
     if (role === 'phantom') { c.send({ k: 'ab', a: me.vanished ? 'appear' : 'vanish' }); sfx.play('vanish'); return; }
     if (role === 'scientist') { c.send({ k: 'ab', a: 'vitals' }); this.openSystem('vitals'); return; }
+    if (role === 'influencer') return this.openInfluence();
     if (T?.id) { c.send({ k: 'ab', a: ABILITY[role][1], id: T.id }); sfx.play(role === 'guardianAngel' ? 'protect' : 'click'); }
+  }
+  // the dead influencer writes a message to the living crewmates
+  openInfluence() {
+    const c = this.c;
+    this.openPanel((box, api) => {
+      box.className = 'au-panel au-influence';
+      const inp = el('input', 'au-chatin', [], { maxlength: 80, placeholder: 'Message aux coéquipiers en vie…', autocomplete: 'off' });
+      const send = () => { const text = inp.value.trim(); if (!text) return; c.send({ k: 'ab', a: 'message', text }); api.close(); };
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); send(); } });
+      const go = el('button', 'au-btn primary', 'Envoyer', { type: 'button' }); go.onclick = send;
+      box.append(el('h2', '', 'Influenceur'), el('div', 'au-row', [inp, go]));
+      setTimeout(() => inp.focus(), 50);
+    }, { walk: true });
   }
   pickShift() {
     const c = this.c;
@@ -483,7 +501,7 @@ export class Play {
       el('hr'),
       el('div', 'lb-label', 'PARAMÈTRES DU SALON'),
       el('div', 'lb-map', s.map === 'skeld' ? el('img', '', [], { src: 'among/ui/logo-skeld.webp', alt: 'The Skeld' }) : mapLogo(s.map)),
-      el('div', 'lb-row', [el('span', '', 'CAPACITÉ'), el('b', 'lb-cap', [crewIcon('red', 30), `${n}/${s.maxPlayers}`])]),
+      el('div', 'lb-row', [el('span', '', 'CAPACITÉ'), btn('lb-cap', [crewIcon('red', 30), `${n}/${s.maxPlayers}`], () => this.openCapacity(), !host || this.freeplay)]),
       el('div', 'lb-row', [el('span', '', 'PRÉRÉGLAGE'), el('b', '', PRESETS[V.preset]?.name.toUpperCase() || 'PERSONNALISÉ')]),
       el('div', 'lb-row', [el('span', 'sm', 'CONFIDENTIALITÉ'), btn('lb-priv' + (V.public ? ' pub' : ''), V.public ? 'PUBLIC' : 'PRIVÉ', () => c.send({ k: 'privacy', public: !V.public }), !host || V.mode !== 'online')]),
       el('div', 'lb-label', 'PARAMÈTRES DE JEU'),
@@ -520,6 +538,8 @@ export class Play {
       case 'fixPart': sfx.play('fixed'); return;
       case 'fixed': sfx.play('fixed'); if (this.panel?.sab) this.closePanel(); return;
       case 'vent': this.r.ventFx(m.x, m.y); if (!m.me) sfx.play('vent', .6); return;
+      case 'influence': { const p = c.player(m.n); sfx.play('chat'); this.toast(`📣 ${p?.name || 'Influenceur'} : ${m.text}`); return; }
+      case 'influenceSent': this.toast('Message envoyé aux coéquipiers en vie.'); return;
       case 'interrogated': this.toast(`${c.player(m.n)?.name} était : ${m.room} au moment du meurtre.`); return;
       case 'settings': { for (const k of m.keys) if (LABELS[k]) this.notice('Changement effectué : ', `${LABELS[k]} = ${fmtSetting(k, c.v?.settings?.[k])}.`); return; }
     }
@@ -757,6 +777,20 @@ export class Play {
     }, { walk: true });
   }
 
+  // the host changes the capacity of the room from the CAPACITÉ box of the lobby panel
+  openCapacity() {
+    const c = this.c;
+    this.openPanel((box, api, P) => {
+      box.className = 'au-panel au-capacity';
+      const render = () => {
+        const V = c.v; if (!V || c.inGame) return;
+        const n = V.players.filter(p => !p.bot).length, m = V.settings.maxPlayers, D = SETTINGS.maxPlayers;
+        const pm = (t, d, ok) => { const b = el('button', 'gs-pm', t, { type: 'button' }); b.disabled = !ok; b.onclick = () => { sfx.play('click'); c.send({ k: 'set', settings: { maxPlayers: m + d } }); }; return b; };
+        box.replaceChildren(el('h2', '', 'CAPACITÉ'), el('div', 'gs-step', [pm('−', -1, m > Math.max(D.min, n)), el('b', 'gs-val', [crewIcon('red', 30), ` ${m}`]), pm('+', 1, m < D.max)]));
+      };
+      render(); P.onView = render;
+    }, { walk: true });
+  }
   // the tablet of the lobby: who is in the room (the host can exclude a player)
   openPlayers() {
     const c = this.c;
@@ -796,42 +830,83 @@ export class Play {
     }, { walk: false });
   }
 
+  // « Paramètres de jeu », laid out like the game: help box and three tabs on the left; presets, game settings (map,
+  // sections) or role settings (strip of role tabs, counts and chances, then each role's page) on the right
   openGameSettings(edit) {
     const c = this.c;
     this.openPanel((box, api, P) => {
-      box.className = 'au-panel au-gs';
-      let tab = 'presets';
+      box.className = 'gs';
+      P.wrap.classList.add('gsw');
+      this.root.classList.add('gsopen');
+      let tab = 'presets', role = 'all';
       const left = el('div', 'gs-left'), right = el('div', 'gs-right');
-      box.append(el('div', 'gs-wrap', [left, right]));
+      box.append(left, right);
       const S = () => c.v.settings;
       const send = patch => { if (edit) c.send({ k: 'set', settings: patch }); };
-      const stepper = (val, onDec, onInc) => el('div', 'gs-step', [(() => { const b = el('button', '', '−', { type: 'button' }); b.disabled = !edit; b.onclick = onDec; return b; })(), el('b', '', val), (() => { const b = el('button', '', '+', { type: 'button' }); b.disabled = !edit; b.onclick = onInc; return b; })()]);
-      const setting = k => {
-        const d = SETTINGS[k], v = S()[k];
-        if (d.type === 'bool') return el('div', 'gs-line', [el('span', '', LABELS[k]), (() => { const b = el('button', 'gs-check' + (v ? ' on' : ''), v ? '✓' : '', { type: 'button' }); b.disabled = !edit; b.onclick = () => send({ [k]: !v }); return b; })()]);
-        if (d.type === 'enum') { const i = d.opts.findIndex(o => o[0] === v); return el('div', 'gs-line', [el('span', '', LABELS[k]), stepper(fmtSetting(k, v), () => send({ [k]: d.opts[(i - 1 + d.opts.length) % d.opts.length][0] }), () => send({ [k]: d.opts[(i + 1) % d.opts.length][0] }))]); }
-        return el('div', 'gs-line', [el('span', '', LABELS[k]), stepper(fmtSetting(k, v), () => send({ [k]: v - d.step }), () => send({ [k]: v + d.step }))]);
+      const ui = (src, cls = '') => el('img', cls, [], { src: `among/ui/gs/${src}.webp`, alt: '', draggable: 'false' });
+      const btn = (cls, kids, fn, disabled = false) => { const b = el('button', cls, kids, { type: 'button' }); b.disabled = disabled; b.onclick = () => { sfx.play('click'); fn(); }; return b; };
+      const stepper = (val, dec, inc, canDec = true, canInc = true) => el('div', 'gs-step', [
+        btn('gs-pm', '−', dec, !edit || !canDec), el('b', 'gs-val', val), btn('gs-pm', '+', inc, !edit || !canInc)]);
+      const check = (on, fn) => btn('gs-check' + (on ? ' on' : ''), [], fn, !edit);
+      const label = text => el('span', 'gs-lbl' + (text.length > 24 ? ' long' : ''), text);
+      const control = (def, v, set, fmt) => {
+        if (def.type === 'bool') return check(v, () => set(!v));
+        if (def.type === 'enum') { const i = def.opts.findIndex(o => o[0] === v); return stepper(fmt(v), () => set(def.opts[i - 1][0]), () => set(def.opts[i + 1][0]), i > 0, i < def.opts.length - 1); }
+        return stepper(fmt(v), () => set(+(v - def.step).toFixed(2)), () => set(+(v + def.step).toFixed(2)), v > def.min, v < def.max);
+      };
+      const setting = k => [label(LABELS[k]), control(SETTINGS[k], S()[k], x => send({ [k]: x }), x => fmtSetting(k, x))];
+      const section = name => el('div', 'gs-sec', el('i', '', name));
+      const HELP = { presets: 'Appliquez les paramètres recommandés dans le salon du jeu.', game: 'Modifiez les paramètres de votre salon de jeu.', roles: 'Modifiez les paramètres des rôles de votre salon.' };
+      const MAPS = ['skeld', 'mira', 'polus', 'airship', 'fungle'];
+      const pages = {
+        presets: () => [el('div', 'gs-presets', Object.entries(PRESETS).map(([id, p]) => btn('gs-preset' + (c.v.preset === id ? ' on' : ''), [ui('preset-' + id), el('b', '', p.name.toUpperCase())], () => c.send({ k: 'set', preset: id }), !edit)))],
+        game: () => [el('div', 'gs-scroll', [
+          el('div', 'gs-banner ' + S().map, S().map === 'skeld' ? ui('banner-skeld') : [el('img', '', [], { src: `among/maps/${S().map}.webp`, alt: '' }), el('b', '', 'POLUS')]),
+          el('div', 'gs-maprow', [el('span', 'gs-maplbl', 'CARTE'), ...MAPS.map(m => {
+            const on = S().map === m, ok = SETTINGS.map.opts.some(o => o[0] === m);
+            const b = btn('gs-map' + (on ? ' on' : '') + (ok ? '' : ' na'), ui(`map-${m}${on ? '-on' : ''}`), () => (ok ? send({ map: m }) : this.toast('Cette carte n’est pas encore disponible.')), !edit && ok);
+            b.title = ok ? SETTINGS.map.opts.find(o => o[0] === m)[1] : 'Bientôt';
+            return b;
+          })]),
+          ...SETTING_GROUPS.flatMap(([g, keys]) => [section(g.toUpperCase()), el('div', 'gs-grid', keys.flatMap(setting))]),
+        ])],
+        roles: () => {
+          const R = S().roles, list = [...CREW_ROLES, ...IMP_ROLES];
+          const strip = el('div', 'gs-strip', [btn('gs-rtab all', ui(role === 'all' ? 'tab-all-on' : 'tab-all'), () => { role = 'all'; render(); }),
+            ...list.map(r => btn('gs-rtab', ui(`tab-${r}${role === r ? '-on' : ''}`), () => { role = r; render(); }))]);
+          strip.querySelectorAll('.gs-rtab')[role === 'all' ? 0 : list.indexOf(role) + 1].classList.add('on');
+          let body;
+          if (role === 'all') {
+            const table = (team, roles, title) => [el('div', 'gs-team ' + team, el('i', '', title)),
+              el('div', 'gs-table ' + team, [el('span', 'h'), el('span', 'h', 'NBRE DE RÔLES'), el('span', 'h', '% DE CHANCE'),
+                ...roles.flatMap(r => [btn('gs-rname', ROLES[r].name, () => { role = r; render(); }),
+                  stepper(String(R[r].count), () => send({ roles: { [r]: { count: R[r].count - 1 } } }), () => send({ roles: { [r]: { count: R[r].count + 1 } } }), R[r].count > 0, R[r].count < (team === 'imp' ? 3 : MAX_PLAYERS)),
+                  stepper(String(R[r].chance), () => send({ roles: { [r]: { chance: R[r].chance - 10 } } }), () => send({ roles: { [r]: { chance: R[r].chance + 10 } } }), R[r].chance > 0, R[r].chance < 100)])])];
+            body = el('div', 'gs-scroll roles', [section('NOMBRE DE RÔLES'), ...table('crew', CREW_ROLES, 'Rôles des coéquipiers'), ...table('imp', IMP_ROLES, 'Rôles des imposteurs')]);
+          } else {
+            const team = ROLES[role].team;
+            const opts = Object.entries(ROLE_OPTIONS[role]).filter(([, d]) => !d.hidden);
+            body = el('div', 'gs-scroll roles', [section('PARAMÈTRES DES RÔLES'), el('div', 'gs-team name ' + team, el('i', '', ROLES[role].name)),
+              el('div', 'gs-rolebox', [ui('role-' + role, 'pic'), el('div', 'gs-info', [el('b', '', 'INFO'), el('p', '', ROLE_INFO[role])]),
+                el('div', 'gs-grid opts', opts.flatMap(([k, d]) => [label(ROLE_LABELS[k]), control(d, R[role][k], x => send({ roles: { [role]: { [k]: x } } }), x => fmtRoleOpt(role, k, x))]))])]);
+          }
+          return [strip, body];
+        },
       };
       const render = () => {
         if (!c.v) return;
-        left.replaceChildren(el('h2', '', 'PARAMÈTRES DE JEU'), el('div', 'gs-help', edit ? 'Modifiez les paramètres de votre salon de jeu.' : 'Paramètres du salon (lecture seule).'),
-          ...[['presets', 'PRÉRÉGLAGES DE JEU'], ['game', 'PARAMÈTRES DE JEU'], ['roles', 'RÉGLAGES DES RÔLES']].map(([k, n]) => { const b = el('button', 'gs-tab' + (tab === k ? ' on' : ''), n, { type: 'button' }); b.onclick = () => { tab = k; render(); }; return b; }));
-        if (tab === 'presets') right.replaceChildren(el('div', 'gs-presets', Object.entries(PRESETS).map(([id, p]) => { const b = el('button', 'gs-preset' + (c.v.preset === id ? ' on' : ''), [el('div', 'art ' + id, presetArt(id)), el('b', '', p.name.toUpperCase())], { type: 'button', title: p.desc }); b.disabled = !edit; b.onclick = () => c.send({ k: 'set', preset: id }); return b; })), el('p', 'gs-desc', PRESETS[c.v.preset]?.desc || ''));
-        if (tab === 'game') right.replaceChildren(
-          el('div', 'gs-maprow', [el('span', '', 'CARTE'), ...['skeld', 'polus'].map(m => { const b = el('button', 'gs-map' + (S().map === m ? ' on' : ''), mapLogo(m), { type: 'button' }); b.disabled = !edit; b.onclick = () => send({ map: m }); return b; })]),
-          setting('maxPlayers'),
-          ...SETTING_GROUPS.map(([g, keys]) => el('div', 'gs-group', [el('div', 'gs-gtitle', g.toUpperCase()), ...keys.map(setting)])));
-        if (tab === 'roles') {
-          const R = S().roles;
-          const row = r => el('div', 'gs-rrow', [el('button', 'gs-rname ' + ROLES[r].team, ROLES[r].name, { type: 'button', title: ROLES[r].desc, onclick: '' }), stepper(String(R[r].count), () => send({ roles: { [r]: { count: R[r].count - 1 } } }), () => send({ roles: { [r]: { count: R[r].count + 1 } } })), stepper(String(R[r].chance), () => send({ roles: { [r]: { chance: R[r].chance - 10 } } }), () => send({ roles: { [r]: { chance: R[r].chance + 10 } } }))]);
-          const opts = r => el('div', 'gs-ropts', [el('div', 'gs-gtitle', ROLES[r].name.toUpperCase()), el('p', 'gs-desc', ROLES[r].desc), ...Object.entries(ROLE_OPTIONS[r]).map(([k, d]) => d.type === 'bool'
-            ? el('div', 'gs-line', [el('span', '', ROLE_LABELS[k]), (() => { const b = el('button', 'gs-check' + (R[r][k] ? ' on' : ''), R[r][k] ? '✓' : '', { type: 'button' }); b.disabled = !edit; b.onclick = () => send({ roles: { [r]: { [k]: !R[r][k] } } }); return b; })()])
-            : el('div', 'gs-line', [el('span', '', ROLE_LABELS[k]), stepper(fmtRoleOpt(r, k, R[r][k]), () => send({ roles: { [r]: { [k]: R[r][k] - d.step } } }), () => send({ roles: { [r]: { [k]: R[r][k] + d.step } } }))]))]);
-          right.replaceChildren(el('div', 'gs-rhead', [el('span', '', 'Rôles des coéquipiers'), el('span', '', 'NBRE'), el('span', '', '% DE CHANCE')]), ...CREW_ROLES.map(row), el('div', 'gs-rhead imp', [el('span', '', 'Rôles des imposteurs'), el('span', '', 'NBRE'), el('span', '', '% DE CHANCE')]), ...IMP_ROLES.map(row), ...[...CREW_ROLES, ...IMP_ROLES].filter(r => R[r].count > 0 && R[r].chance > 0).map(opts));
-        }
+        const scroll = right.querySelector('.gs-scroll')?.scrollTop || 0, sl = right.querySelector('.gs-strip')?.scrollLeft;
+        left.replaceChildren(el('h2', '', 'PARAMÈTRES DE JEU'), el('div', 'gs-help', [ui('help'), el('p', '', HELP[tab])]),
+          ...[['presets', 'PRÉRÉGLAGES DE JEU'], ['game', 'PARAMÈTRES DE JEU'], ['roles', 'RÉGLAGES DES RÔLES']].map(([k, n]) => btn('gs-tab' + (tab === k ? ' on' : ''), el('span', '', n), () => { tab = k; role = 'all'; render(); })));
+        right.replaceChildren(el('div', 'gs-head'), ...pages[tab]());
+        const sc = right.querySelector('.gs-scroll'); if (sc && P.lastTab === tab + role) sc.scrollTop = scroll;
+        const st = right.querySelector('.gs-strip');
+        if (st) st.scrollLeft = sl ?? 0; if (st && P.lastTab !== tab + role) st.querySelector('.gs-rtab.on')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+        P.lastTab = tab + role;
       };
       render();
       P.onView = () => render();
+      P.onClosed = () => this.root.classList.remove('gsopen');
     }, { walk: false });
   }
   openFreeplayRoles() {
@@ -949,7 +1024,7 @@ export class Play {
       update: V => {
         const M = V.meeting; if (!M) return;
         const me = V.me, voting = c.left(M.discussEnd) <= 0 && !M.results, canVote = me.alive && M.myVote == null && voting;
-        const judge = me.role === 'judge' && me.alive && me.uses > 0 && !M.results && c.left(M.startedAt + 3000) <= 0 && (V.settings.roles.judge.firstMeeting || true);
+        const judge = me.role === 'judge' && me.alive && me.uses > 0 && !M.results && c.left(M.startedAt + 3000) <= 0 && !judgeLocked({ tasks: V.tasks }, V.settings.roles.judge);
         notes.hidden = !(me.role === 'detective');
         const res = M.results;
         const players = V.players.filter(p => !p.bot && !p.spectator).sort((a, b) => (a.dead - b.dead) || a.n - b.n);
@@ -1052,13 +1127,6 @@ function chatLine(c, m) {
   if (m.sys) return el('div', 'cl sys', m.text);
   const mine = m.n === c.n;
   return el('div', 'cl' + (mine ? ' mine' : '') + (m.ghost ? ' ghost' : ''), [crewIcon(m.color, 30, { ghost: m.ghost }), el('div', 'bubble', [el('b', '', m.name), el('p', '', m.text)])]);
-}
-function presetArt(id) {
-  const cv = el('canvas', '', [], { width: 240, height: 240 }); const g = cv.getContext('2d');
-  g.fillStyle = id === 'classic' ? '#0d1b3a' : '#2b2b2b'; g.fillRect(0, 0, 240, 240);
-  const list = id === 'classic' ? [['red', 70, 120, false], ['yellow', 160, 150, true], ['blue', 90, 220, false]] : [['white', 80, 130, false], ['gray', 170, 120, true], ['white', 130, 225, false]];
-  list.forEach(([c, x, y, l]) => drawCrew(g, c, x, y, 95, { left: l, ghost: id !== 'classic' && c === 'gray' }));
-  return cv;
 }
 const face = n => `<img src="among/ui/top-${n}.webp" alt="" draggable="false">`;
 const ICONS = {

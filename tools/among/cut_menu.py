@@ -2,33 +2,13 @@
 # screenshots supplied by the project owner (2532 x 1170 phone captures) and removes their backgrounds.
 # Usage: python3 tools/among/cut_menu.py <main menu> <play> <online> <lobby> <host>   (writes public/among/ui/*.webp)
 import sys
-from collections import deque
 from pathlib import Path
-from PIL import Image, ImageFilter
+from PIL import Image
+sys.path.insert(0, str(Path(__file__).parent))
+from cut_menu_lib import flood_key
 
 OUT = Path(__file__).resolve().parents[2] / 'public/among/ui'
 menu, play, online, lobby, host = (Image.open(p).convert('RGB') for p in sys.argv[1:6])
-
-def flood_key(im, is_bg, edges=True):
-    """transparent background: flood fill from the borders through the pixels is_bg accepts (the art has dark outlines)"""
-    im = im.convert('RGBA'); w, h = im.size; px = im.load()
-    seen = bytearray(w * h); q = deque()
-    for x in range(w): q.extend([(x, 0), (x, h - 1)])
-    for y in range(h): q.extend([(0, y), (w - 1, y)])
-    while q:
-        x, y = q.popleft()
-        if x < 0 or y < 0 or x >= w or y >= h or seen[y * w + x]: continue
-        seen[y * w + x] = 1
-        if not is_bg(px[x, y]): continue
-        px[x, y] = (0, 0, 0, 0)
-        q.extend([(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)])
-    # rows of the button border caught by the crop: clear the lines that are opaque across the whole width
-    for y in [*range(8), *range(h - 8, h)] if edges else []:
-        if sum(px[x, y][3] > 0 for x in range(w)) > w * .8:
-            for x in range(w): px[x, y] = (0, 0, 0, 0)
-    # soften the cut edge by one pixel
-    a = im.getchannel('A').filter(ImageFilter.GaussianBlur(.6)); im.putalpha(Image.eval(a, lambda v: min(255, v * 1.6)))
-    return im
 
 def teal(p):          # bright teal of the big buttons and its light diagonal stripes
     r, g, b = p[:3]; return g > 170 and b > 150 and r < 190 and g - r > 45

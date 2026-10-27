@@ -47,13 +47,19 @@ async function walkTo(page, tx, ty, ms = 60000) {
   const M = getMap(st.map);
   const path = findPath(M, st.x, st.y, tx, ty, []);
   if (!path) return false;
-  const t0 = Date.now();
+  const t0 = Date.now(), stuck = {};
   for (let i = 0; i < path.length; i += 3) {
     const [wx, wy] = path[Math.min(path.length - 1, i + 2)];
     for (;;) {
-      if (Date.now() - t0 > ms) { console.log('walk timeout', page.name, JSON.stringify(await page.evaluate(() => { const c = globalThis.__au.c; return { pos: [c.pos.x, c.pos.y], corrections: c.corrections, fps: globalThis.__au.fpsCount }; })), 'waypoint', wx, wy, 'path', JSON.stringify(path.map(p => p.map(v => +v.toFixed(2))))); await page.evaluate(() => { globalThis.__au.autoDir = null; }); return false; }
-      const d = await page.evaluate(([x, y]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy); P.autoDir = l > .08 ? [dx / l, dy / l] : null; return l; }, [wx, wy]);
+      if (Date.now() - t0 > ms) { console.log('walk timeout', page.name, JSON.stringify(await page.evaluate(() => { const c = globalThis.__au.c; const A = globalThis.__au; return { pos: [c.pos.x, c.pos.y], corrections: c.corrections, panel: A.panel ? A.panel.el.className + (A.panel.walk ? ' walk' : '') : null, seq: Math.round(A.seqUntil - performance.now()), auto: A.autoDir, phase: c.phase, alive: c.v?.me?.alive, fs: A.fs.className + ':' + A.fs.childElementCount, sinceLoop: Math.round(performance.now() - A.last), paused: A.paused, closed: A.closed, hidden: document.hidden, vis: document.visibilityState, canMove: c.canMove(), mv: c.moveVector?.() || A.moveVector() }; })), 'waypoint', wx, wy, 'path', JSON.stringify(path.map(p => p.map(v => +v.toFixed(2))))); await page.evaluate(() => { globalThis.__au.autoDir = null; }); return false; }
+      const d = await page.evaluate(([x, y]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy); const k = Math.min(1, l / .4); P.autoDir = l > .08 ? [dx / l * k, dy / l * k] : null; return l; }, [wx, wy]);
       if (d <= .14) break;
+      // blocked head-on by a corner (a player would steer around it): step aside for a moment
+      if (Math.abs(d - (stuck.d ?? Infinity)) > .03) { stuck.d = d; stuck.n = 0; } else if (++stuck.n > 15) {
+        stuck.n = 0; stuck.side = -(stuck.side || 1);
+        await page.evaluate(([x, y, side]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy) || 1; P.autoDir = [-dy / l * side, dx / l * side]; }, [wx, wy, stuck.side]);
+        await page.waitForTimeout(350);
+      }
       await page.waitForTimeout(60);
     }
   }

@@ -43,7 +43,8 @@ async function open(game, step = {}, sab = null) {
     }, { walk: false, onDone: () => { globalThis.__mg.done++; } });
   }, [game, step, sab]);
   // wait for the screen to finish sliding up
-  for (let i = 0, prev = null; i < 30; i++) { await sleep(120); const y = await P(() => globalThis.__mg.el.toScreen(0, 0)[1]); if (prev !== null && Math.abs(y - prev) < .5) break; prev = y; }
+  await page.waitForFunction(() => globalThis.__mg.el.opened?.(), null, { timeout: 10000 }).catch(() => {});
+  await sleep(150);
 }
 const probe = () => P(() => globalThis.__mg.el.probe());
 const scr = async (x, y) => P(([x, y]) => globalThis.__mg.el.toScreen(x, y), [x, y]);
@@ -115,7 +116,8 @@ try {
   ok('stabilize steering: reticle centred', await done());
   // Start Reactor: repeat the sequence round after round
   await open('reactor');
-  for (let i = 0; i < 200 && !(await P(() => globalThis.__mg.done)); i++) {
+  // five rounds of « watch then repeat »: on the slow software renderer this takes longer than a fixed number of polls
+  for (const t0 = Date.now(); Date.now() - t0 < 120000 && !(await P(() => globalThis.__mg.done));) {
     const q = await probe();
     if (q.state !== 'input') { await sleep(120); continue; }
     for (const k of q.seq.slice(q.pos)) { await tap(...q.keys[k]); await sleep(60); }

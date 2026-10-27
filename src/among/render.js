@@ -5,6 +5,7 @@ import { drawCrew, drawDead, WALK_FRAMES } from './art/crew.js';
 import { mapArt, drawMapImage } from './art/maparts.js';
 import { COLORS, CREW_HEIGHT, VIEW_HEIGHT, VISION_BASE, LIGHTS_VISION, USE_RANGE } from './core/rules.js';
 
+const LOBBY_GLOW = { laptop: { r: [437, 290, 79, 109] }, chest: { r: [641, 314, 75, 69] } };   // dropship image px
 const colorOf = id => COLORS.find(c => c.id === id) || COLORS[0];
 const WALK_FPS = 24;
 
@@ -46,7 +47,8 @@ export class Renderer {
     this.vents = this.vents.filter(v => (v.t += dt) < .45);
     for (const v of this.vents) drawVentOpen(g, v.x, v.y, Math.sin(Math.min(1, v.t / .45) * Math.PI));
     // usable objects glow in yellow like the original
-    if (this.highlight) { const h = this.highlight; g.save(); g.strokeStyle = 'rgba(255,233,60,.95)'; g.lineWidth = .07; g.shadowColor = '#ffe93c'; g.shadowBlur = 10; g.beginPath(); g.arc(h.x, h.y, .38, 0, Math.PI * 2); g.stroke(); g.restore(); }
+    if (this.highlight?.glow && art.lobby) this.lobbyGlow(this.highlight.glow, M.k);
+    else if (this.highlight) { const h = this.highlight; g.save(); g.strokeStyle = 'rgba(255,233,60,.95)'; g.lineWidth = .07; g.shadowColor = '#ffe93c'; g.shadowBlur = 10; g.beginPath(); g.arc(h.x, h.y, .38, 0, Math.PI * 2); g.stroke(); g.restore(); }
     // bodies
     for (const [n, x, y, dissolve] of c.bodies) {
       const L = this.look(n);
@@ -69,6 +71,14 @@ export class Renderer {
     // arrows to the current steps of my tasks, the tracked player and the noisemaker alert
     g.setTransform(1, 0, 0, 1, 0, 0);
     if (inPlay) this.drawArrows(V);
+  }
+  // usable objects of the dropship get a white outline (sprites from tools/among/cut_lobby_glow.py)
+  lobbyGlow(ids, k) {
+    for (const id of ids) {
+      const G = LOBBY_GLOW[id];
+      if (!G.img) { G.img = new Image(); G.img.src = `among/ui/glow-${id}.webp`; }
+      if (G.img.complete && G.img.naturalWidth) this.g.drawImage(G.img, G.r[0] / k, G.r[1] / k, G.r[2] / k, G.r[3] / k);
+    }
   }
   // the dropship: the hull around the cabin window in the dark, like the lobby of the game
   cabinShade(M) {

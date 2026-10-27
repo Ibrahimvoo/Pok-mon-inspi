@@ -448,10 +448,14 @@ test('judge verdicts: right and wrong', () => {
   const s = new Sim({ seed: 16 });
   s.start(8, { settings: { impostors: 2, discussionTime: 0, roles: { judge: { diesIfWrong: true } } }, roles: { p0: 'impostor', p1: 'impostor', p2: 'judge' } });
   s.p('p2').uses = 2;
+  const unlock = () => s.p('p2').tasks.forEach((t, i, all) => { if (i < Math.ceil(all.length / 2)) t.done = true; });
   const B = getMap('skeld').button;
   s.walk('p3', B.x + 1.3, B.y + 1.3); s.step(15000); s.send('p3', { k: 'button' });
   s.step(3100);
   s.send('p1', { k: 'vote', id: 'p3' });
+  s.send('p2', { k: 'judge', id: 'p1' });
+  assert.ok(s.p('p1').alive, 'the verdict stays locked until half of the judge\'s tasks are done');
+  unlock();
   s.send('p2', { k: 'judge', id: 'p1' });
   assert.ok(!s.p('p1').alive, 'a guilty impostor is eliminated');
   assert.ok(!s.room.game.meeting.votes.has('p1'), 'their vote is removed');
@@ -462,7 +466,7 @@ test('judge verdicts: right and wrong', () => {
 
 test('role abilities: shapeshifter, phantom, tracker, guardian angel, detective, viper, noisemaker, scientist', () => {
   const s = new Sim({ seed: 17 });
-  s.start(10, { settings: { impostors: 3, discussionTime: 0 }, roles: { p0: 'shapeshifter', p1: 'phantom', p2: 'viper', p3: 'tracker', p4: 'guardianAngel', p5: 'detective', p6: 'noisemaker', p7: 'scientist', p8: 'crewmate', p9: 'crewmate' } });
+  s.start(10, { settings: { impostors: 3, discussionTime: 0, roles: { noisemaker: { impostorsAlerted: false } } }, roles: { p0: 'shapeshifter', p1: 'phantom', p2: 'viper', p3: 'tracker', p4: 'guardianAngel', p5: 'detective', p6: 'noisemaker', p7: 'scientist', p8: 'crewmate', p9: 'crewmate' } });
   s.step(10000);
   // shapeshifter looks like p8
   s.send('p0', { k: 'ab', a: 'shift', id: 'p8' });
@@ -493,7 +497,7 @@ test('role abilities: shapeshifter, phantom, tracker, guardian angel, detective,
   s.send('p2', { k: 'kill', id: 'p6' });
   assert.ok(!s.p('p6').alive);
   assert.equal(s.ev('p8', 'alert').length, 1, 'the crew is alerted');
-  assert.equal(s.ev('p0', 'alert').length, 0, 'impostors are not alerted by default');
+  assert.equal(s.ev('p0', 'alert').length, 0, 'impostors are not alerted when the option is off');
   assert.ok(s.room.game.bodies[0].dissolveAt > 0);
   s.step(25100);
   assert.equal(s.room.game.bodies.length, 0, 'the body dissolved');
@@ -606,4 +610,24 @@ test('settings sanitising never produces invalid values', () => {
   const s = cleanSettings({ impostors: 'x', killDistance: 7, taskBar: 'nope', anonymousVotes: 'yes', roles: { viper: { count: 9, chance: 33, dissolveTime: -4 } } });
   assert.equal(s.impostors, 1); assert.equal(s.killDistance, 1); assert.equal(s.taskBar, 'always'); assert.equal(s.anonymousVotes, false);
   assert.equal(s.roles.viper.count, 3); assert.equal(s.roles.viper.chance, 30); assert.equal(s.roles.viper.dissolveTime, 5);
+});
+
+test('influencer: once dead, messages reach the living crewmates only, with a cooldown', () => {
+  const s = new Sim({ seed: 21 });
+  s.start(6, { settings: { discussionTime: 0 }, roles: { p0: 'impostor', p1: 'influencer' } });
+  s.step(10000);
+  s.send('p1', { k: 'ab', a: 'message', text: 'coucou' });
+  assert.equal(s.ev('p2', 'influence').length, 0, 'nothing while alive');
+  s.readyKill('p0');
+  assert.ok(s.walk('p0', s.p('p1').x - .6, s.p('p1').y));
+  s.send('p0', { k: 'kill', id: 'p1' });
+  assert.equal(s.p('p1').ghostRole, 'influencer');
+  s.p('p1').abAt = 0;
+  s.send('p1', { k: 'ab', a: 'message', text: 'le rouge <b>ment</b>' });
+  const got = s.ev('p2', 'influence');
+  assert.equal(got.length, 1);
+  assert.equal(got[0].text, 'le rouge bment/b');
+  assert.equal(s.ev('p1', 'influence').length, 0, 'the ghost does not receive its own message');
+  s.send('p1', { k: 'ab', a: 'message', text: 'encore' });
+  assert.equal(s.ev('p2', 'influence').length, 1, 'cooldown between two messages');
 });

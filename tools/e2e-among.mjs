@@ -57,7 +57,7 @@ export async function walkTo(page, tx, ty, ms = 40000) {
     const [wx, wy] = path[Math.min(path.length - 1, i + 2)];
     for (;;) {
       if (Date.now() - t0 > ms) { await page.evaluate(() => { globalThis.__au.autoDir = null; }); return false; }
-      const p = await page.evaluate(([x, y]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy); P.autoDir = l > .08 ? [dx / l, dy / l] : null; return l; }, [wx, wy]);
+      const p = await page.evaluate(([x, y]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy); const k = Math.min(1, l / .4); P.autoDir = l > .08 ? [dx / l * k, dy / l * k] : null; return l; }, [wx, wy]);
       if (p <= .12) break;
       await page.waitForTimeout(40);
     }

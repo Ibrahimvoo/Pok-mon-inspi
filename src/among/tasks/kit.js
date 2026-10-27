@@ -97,6 +97,7 @@ export function stage(el, api, o) {
   const prevClose = api.onClose;
   api.onClose = () => { cancelAnimationFrame(raf); removeEventListener('resize', onResize); o.onClose?.(S); prevClose?.(); };
   // screen position of a point of the reference screen (used by the end-to-end tests)
+  el.opened = () => S.t > .22 && !S.closing && S.slide < .5;         // finished sliding up (tests wait for it before tapping)
   el.toScreen = (x, y) => { const r = cv.getBoundingClientRect(); return [r.left + S.ox + x * S.k, r.top + S.oy + (y + S.slide) * S.k]; };
   fit();
   raf = requestAnimationFrame(frame);
