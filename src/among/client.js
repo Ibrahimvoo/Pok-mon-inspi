@@ -55,7 +55,7 @@ export class GameClient extends EventTarget {
       }
       case 'pos':
         if (m.map && m.map !== this.mapId) { this.mapId = m.map; this.others.clear(); this.emit('map'); }
-        this.pos = { x: m.x, y: m.y }; this.moving = false; this.lastSend = 0;
+        this.pos = { x: m.x, y: m.y }; this.moving = false; this.lastSend = 0; this.corrections = (this.corrections || 0) + 1;
         this.emit('teleport', m);
         break;
       case 's': this.snapshot(m); break;

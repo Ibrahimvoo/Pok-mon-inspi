@@ -51,7 +51,7 @@ async function walkTo(page, tx, ty, ms = 60000) {
   for (let i = 0; i < path.length; i += 3) {
     const [wx, wy] = path[Math.min(path.length - 1, i + 2)];
     for (;;) {
-      if (Date.now() - t0 > ms) { await page.evaluate(() => { globalThis.__au.autoDir = null; }); return false; }
+      if (Date.now() - t0 > ms) { console.log('walk timeout', page.name, JSON.stringify(await page.evaluate(() => { const c = globalThis.__au.c; return { pos: [c.pos.x, c.pos.y], corrections: c.corrections, fps: globalThis.__au.fpsCount }; })), 'waypoint', wx, wy, 'path', JSON.stringify(path.map(p => p.map(v => +v.toFixed(2))))); await page.evaluate(() => { globalThis.__au.autoDir = null; }); return false; }
       const d = await page.evaluate(([x, y]) => { const P = globalThis.__au, c = P.c; const dx = x - c.pos.x, dy = y - c.pos.y, l = Math.hypot(dx, dy); P.autoDir = l > .08 ? [dx / l, dy / l] : null; return l; }, [wx, wy]);
       if (d <= .14) break;
       await page.waitForTimeout(60);
