@@ -4,6 +4,7 @@
 import { net } from '../net.js';
 import { session as account } from '../session.js';
 import { ServerLink, HostLink, GuestLink, LocalLink } from './link.js';
+import { listPublic } from './relay.js';
 import { GameClient } from './client.js';
 import { Play } from './play.js';
 import { sfx } from './sound.js';
@@ -83,7 +84,7 @@ export class AmongApp {
         el('div', 'am-online', [
           el('div', 'am-col', [card('card-create', 'CRÉER UNE PARTIE', () => this.hostScreen(false), 'wide', { 'data-autofocus': '' }), card('card-code', 'ENTRER UN CODE', () => this.page('code'), 'wide')]),
           el('i', 'am-vsep'),
-          card('card-find', 'TROUVER UNE PARTIE', () => (this.online() ? this.findScreen() : this.toast('Trouver une partie demande le serveur du jeu. Sans serveur, rejoins tes amis avec leur code.')), 'bright tall'),
+          card('card-find', 'TROUVER UNE PARTIE', () => this.findScreen(), 'bright tall'),
         ])); break;
       case 'code': this.codePage(head('ENTRER UN CODE', () => this.page('online'))); break;
       case 'freeplay': S.replaceChildren(head('ENTRAÎNEMENT', () => this.page('play')),
@@ -178,7 +179,7 @@ export class AmongApp {
     const load = async () => {
       list.replaceChildren(el('p', 'hs-empty', 'Recherche…'));
       try {
-        const rooms = await ServerLink.list({ map: mapF || undefined });
+        const rooms = this.online() ? await ServerLink.list({ map: mapF || undefined }) : await listPublic(mapF || undefined);
         list.replaceChildren(...(rooms.length ? rooms.map(r => this.btn([el('b', '', r.host), mapLogo(r.map), el('span', '', `${r.players}/${r.max}`), el('span', '', `${r.impostors} imp.`)], () => this.connect({ join: r.code }), 'hs-room')) : [el('p', 'hs-empty', 'Aucune partie publique pour le moment. Crée la tienne !')]));
         this.layerFocus();
       } catch (e) { list.replaceChildren(el('p', 'hs-empty', e.message || 'Impossible de charger la liste.')); }

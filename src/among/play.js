@@ -507,7 +507,7 @@ export class Play {
       el('div', 'lb-map', s.map === 'skeld' ? el('img', '', [], { src: 'among/ui/logo-skeld.webp', alt: 'The Skeld' }) : mapLogo(s.map)),
       el('div', 'lb-row', [el('span', '', 'CAPACITÉ'), btn('lb-cap', [crewIcon('red', 30), `${n}/${s.maxPlayers}`], () => this.openCapacity(), !host || this.freeplay)]),
       el('div', 'lb-row', [el('span', '', 'PRÉRÉGLAGE'), el('b', '', PRESETS[V.preset]?.name.toUpperCase() || 'PERSONNALISÉ')]),
-      el('div', 'lb-row', [el('span', 'sm', 'CONFIDENTIALITÉ'), btn('lb-priv' + (V.public ? ' pub' : ''), V.public ? 'PUBLIC' : 'PRIVÉ', () => c.send({ k: 'privacy', public: !V.public }), !host || V.mode !== 'online')]),
+      el('div', 'lb-row', [el('span', 'sm', 'CONFIDENTIALITÉ'), btn('lb-priv' + (V.public ? ' pub' : ''), V.public ? 'PUBLIC' : 'PRIVÉ', () => c.send({ k: 'privacy', public: !V.public }), !host || V.mode === 'freeplay')]),
       el('div', 'lb-label', 'PARAMÈTRES DE JEU'),
       el('div', 'lb-btns', [btn('lb-btn', 'MODIFIER', () => this.openGameSettings(true), !host), btn('lb-btn', 'VOIR', () => this.openGameSettings(false))]),
     );

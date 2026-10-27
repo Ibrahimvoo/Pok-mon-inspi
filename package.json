@@ -29,9 +29,11 @@
     "e2e:among": "npm run build && node --no-warnings tools/e2e-among.mjs",
     "e2e:among-online": "npm run build && node --no-warnings tools/e2e-among-online.mjs",
     "e2e:among-tasks": "npm run build && node --no-warnings tools/e2e-among-tasks.mjs",
-    "e2e:among-p2p": "npm run build && node --no-warnings tools/e2e-among-p2p.mjs"
+    "e2e:among-p2p": "npm run build && node --no-warnings tools/e2e-among-p2p.mjs",
+    "e2e:among-relay": "npm run build && node --no-warnings tools/e2e-among-relay.mjs"
   },
   "devDependencies": {
+    "aedes": "^0.51.3",
     "embedded-postgres": "^17.2.0-beta.15",
     "peer": "^1.0.2",
     "vite": "^5.4.21"

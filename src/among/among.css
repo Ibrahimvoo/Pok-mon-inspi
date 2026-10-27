@@ -240,7 +240,7 @@
 .lb-row .lb-cap canvas, .au-capacity canvas { width: calc(var(--u) * 4.4) !important; height: calc(var(--u) * 4.4) !important; }
 .lb-priv { border-radius: calc(var(--u) * .5); font: 800 calc(var(--u) * 2.8) var(--bf) !important; color: #4d0b0b !important;
   background: #c8161c linear-gradient(112deg, transparent 32%, rgba(255,255,255,.22) 32% 45%, transparent 45% 50%, rgba(255,255,255,.22) 50% 58%, transparent 58%) !important; box-shadow: 0 calc(var(--u) * .3) 0 rgba(0,0,0,.45); }
-.lb-priv.pub { background-color: #2ab84a !important; color: #0b3d16 !important; }
+.lb-priv.pub { background-color: #89e72b !important; color: #3d6614 !important; }
 .lb-btns { display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 1.3); margin-top: calc(var(--u) * .6); }
 .lb-btn { height: calc(var(--u) * 6.5); border-radius: calc(var(--u) * .8); font: 400 calc(var(--u) * 5.4) var(--tt) !important; color: #163a33 !important;
   background: var(--mint) linear-gradient(112deg, transparent 32%, var(--mint2) 32% 45%, transparent 45% 51%, var(--mint2) 51% 60%, transparent 60%) !important; box-shadow: 0 calc(var(--u) * .35) 0 rgba(0,0,0,.45); }
