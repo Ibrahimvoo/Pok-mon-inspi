@@ -6,11 +6,41 @@ import { Renderer } from './render.js';
 import { ProximityVoice } from './voice.js';
 import { MINIGAMES } from './minigames.js';
 const PEEK = new Set(['wifiEnd', 'sampleEnd']);
+// the in-game map overlay (traced on the game's own map screen, see art/minimap.js) as a crisp SVG
+const SVGNS = 'http://www.w3.org/2000/svg';
+function minimap(id, sab) {
+  const D = MINIMAP[id];
+  if (!D) return null;
+  const [x0, y0, x1, y1] = D.box, w = x1 - x0, h = y1 - y0;
+  const pts = P => P.map(p => p.join(',')).join(' ');
+  const poly = (P, cls) => `<polygon class="${cls}" points="${pts(P)}"/>`;
+  let html = '';
+  if (D.ground) html += poly(D.ground, 'gr');
+  for (const P of D.halls) html += poly(P, 'hl');
+  for (const P of D.pale) html += poly(P, 'pl');
+  for (const [cx, cy, r, sx0, sx1, sy] of D.pins) html += `<path class="hl" d="M${sx0},${sy} L${sx0},${cy + r * .6} A${r},${r} 0 1 1 ${sx1},${cy + r * .6} L${sx1},${sy} Z"/>`;
+  if (D.shell) html += poly(D.shell, 'sh') + poly(D.ship, 'sp') + `<line class="ds" x1="${D.dash[0][0]}" y1="${D.dash[0][1]}" x2="${D.dash[1][0]}" y2="${D.dash[1][1]}"/>`;
+  for (const P of D.rooms) html += poly(P, 'rm');
+  for (const [name, x, y, small] of D.labels) html += `<text x="${x}" y="${y + (small ? 7 : 9)}" class="lb${small ? ' sm' : ''}">${name}</text>`;
+  const svg = document.createElementNS(SVGNS, 'svg');
+  svg.setAttribute('viewBox', `${x0} ${y0} ${w} ${h}`);
+  svg.setAttribute('class', 'au-minimap' + (sab ? ' sab' : ''));
+  svg.innerHTML = html;
+  // world units -> map coordinates: fitted line plus the residuals at the room centres, interpolated
+  const at = (x, y) => {
+    let X = D.kx * x + D.bx, Y = D.ky * y + D.by, sw = 0, sx = 0, sy = 0;
+    for (const [ax, ay, dx, dy] of D.anchors) { const q = 1 / (((x - ax) ** 2 + (y - ay) ** 2) ** 1.5 + 1e-3); sw += q; sx += dx * q; sy += dy * q; }
+    if (sw) { X += sx / sw; Y += sy / sw; }
+    return [(X - x0) / w * 100 + '%', (Y - y0) / h * 100 + '%'];
+  };
+  return { svg, ratio: w / h, at };
+}
 import { sfx } from './sound.js';
 import { el, crewIcon, mapLogo, fmtTime } from './ui.js';
 import { drawCrew, drawDead } from './art/crew.js';
 import { mapImage } from './art/maparts.js';
 import { getMap } from './core/room.js';
+import { MINIMAP } from './art/minimap.js';
 import { taskDef, GAMES } from './core/tasks.js';
 import { ROLES, COLORS, SETTINGS, SETTING_GROUPS, LABELS, ROLE_OPTIONS, ROLE_LABELS, CREW_ROLES, IMP_ROLES, PRESETS, KILL_RANGE, USE_RANGE, REPORT_RANGE, ABILITY_RANGE, MIN_PLAYERS, CREW_HEIGHT, fmtSetting, fmtRoleOpt, cleanSettings } from './core/rules.js';
 import { saveProfile } from './app.js';
@@ -592,17 +622,21 @@ export class Play {
     if (this.panel?.mapPanel) { this.closePanel(); return; }
     const P = this.openPanel((box, api, P) => {
       box.className = 'au-panel au-mappanel' + (sabotage ? ' sab' : '');
-      const img = el('img', '', [], { src: `among/maps/${M.id}.webp`, alt: 'Carte' });
+      // the in-game map: rooms in blue, corridors lighter, white outlines, over the game
+      const art = minimap(M.id, sabotage);
       const layer = el('div', 'au-maplayer');
-      const wrap = el('div', 'au-mapwrap', [img, layer]);
+      const wrap = el('div', 'au-mapwrap', [art.svg, layer]);
+      wrap.style.aspectRatio = String(art.ratio);
+      // same size on screen as in the game (the traced screenshots are 2000×924)
+      const [bx0, by0, bx1, by1] = MINIMAP[M.id].box; wrap.style.width = `min(${(bx1 - bx0) / 20}vw, ${(by1 - by0) / 9.24 * art.ratio}vh)`;
       box.append(wrap);
-      const pos = (x, y) => { const W = img.naturalWidth || 1170, H = img.naturalHeight || 907; return [x * M.k / W * 100 + '%', y * M.k / H * 100 + '%']; };
+      const pos = art.at;
       const marker = (cls, x, y, content) => { const d = el('div', 'mk ' + cls, content); const [l, t] = pos(x, y); d.style.left = l; d.style.top = t; layer.append(d); return d; };
       P.render = () => {
         layer.replaceChildren();
         const VV = c.v; if (!VV) return;
+        if (!sabotage) for (const t of VV.tasks || []) { if (t.done) continue; const cs = M.consoles[t.steps[t.step]?.console]; if (cs) marker('task', cs.x, cs.y, el('i')); }
         marker('me', c.pos.x, c.pos.y, crewIcon(c.self?.color || 'red', 26));
-        if (!sabotage) for (const t of VV.tasks || []) { if (t.done) continue; const cs = M.consoles[t.steps[t.step]?.console]; if (cs) marker('task' + (t.fake ? ' fake' : ''), cs.x, cs.y, '!'); }
         if (VV.trackPos) marker('track', VV.trackPos[0], VV.trackPos[1], crewIcon(c.player(VV.me.track?.n)?.color || 'red', 22));
         if (VV.sab) for (const s of M.sabotage[VV.sab.kind] || []) marker('sabspot', s.x, s.y, '⚠');
         if (sabotage) {
@@ -625,11 +659,11 @@ export class Play {
           }
         }
       };
-      img.onload = () => P.render();
       P.render();
       let acc = 0; P.tick = dt => { acc += dt; if (acc > .25) { acc = 0; P.render(); } };
     }, { walk: true });
     P.mapPanel = true;
+    this.root.classList.add('mapopen'); P.onClosed = () => this.root.classList.remove('mapopen');
   }
 
   openChat() {

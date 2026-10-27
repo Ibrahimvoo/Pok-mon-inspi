@@ -196,14 +196,28 @@
 .nt-victim p { margin: 2px 0; }
 .nt-sus > div { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
 /* map */
-.au-mappanel { padding: 6px; background: #12304a; border-color: #5a86b0; }
-.au-mappanel.sab { background: #4a1212; border-color: #b05a5a; }
-.au-mapwrap { position: relative; width: min(86vw, 132vh); }
-.au-mapwrap img { width: 100%; display: block; opacity: .9; }
+.au-mappanel, .au-mappanel.sab { padding: 0; background: none; border: 0; box-shadow: none; overflow: visible; }
+.au-mapwrap { position: relative; }
+.au-mapwrap canvas { width: 100%; height: 100%; display: block; image-rendering: auto; }
 .au-maplayer { position: absolute; inset: 0; }
 .au-maplayer .mk, .au-maplayer button { position: absolute; transform: translate(-50%, -50%); }
-.mk.task { width: 22px; height: 22px; border-radius: 50%; background: #ffe23c; color: #111; font-weight: 900; text-align: center; line-height: 22px; border: 2px solid #111; animation: auBlink 1.2s steps(2) infinite; }
-.mk.task.fake { background: #ff7b7b; }
+.mk.task { width: 4.3%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #e1dd7d, #b9b65a 70%); border: 2px solid #34331a; box-shadow: inset 0 0 0 2px rgba(255,255,210,.35); }
+.mk.task i { position: absolute; left: 50%; top: 14%; width: 15%; height: 50%; transform: translateX(-50%); background: #f3ee2e; border: 1.5px solid #3a3810; border-radius: 3px; }
+.mk.task i::after { content: ''; position: absolute; left: 50%; top: 125%; width: 115%; aspect-ratio: 1; transform: translateX(-50%); background: #f3ee2e; border: 1.5px solid #3a3810; border-radius: 50%; }
+.au-minimap { width: 100%; height: 100%; display: block; overflow: visible; }
+.au-minimap polygon, .au-minimap path { stroke: #f2f5ff; stroke-width: 3.4; stroke-linejoin: miter; }
+.au-minimap .rm { fill: #1838ee; fill-opacity: .92; }
+.au-minimap .hl { fill: #b3c0ff; fill-opacity: .8; }
+.au-minimap .pl { fill: #e2e6f8; fill-opacity: .82; }
+.au-minimap .gr { fill: #7f8fe4; fill-opacity: .55; stroke: #22327e; stroke-width: 3; }
+.au-minimap .sh { fill: #2c3a3d; fill-opacity: .9; }
+.au-minimap .sp { fill: #b5c6c6; fill-opacity: .82; stroke-width: 4; }
+.au-minimap .ds { stroke: #f2f5ff; stroke-width: 3; stroke-dasharray: 9 6; }
+.au-minimap .lb { font: 700 27px Arial, 'Liberation Sans', Helvetica, sans-serif; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: #1c1d2c; stroke-width: 4px; stroke-linejoin: round; }
+.au-minimap .lb.sm { font-size: 20px; }
+.au-minimap.sab .rm { fill: #e01818; }
+.au-minimap.sab .hl, .au-minimap.sab .gr { fill: #f0a0a0; }
+.mk.me { z-index: 2; }
 .mk.sabspot { color: #ff2c2c; font-size: 26px; animation: auBlink .8s steps(2) infinite; }
 .sabbtn { background: #c51111; border: 3px solid #fff; border-radius: 50%; width: 64px; height: 64px; font: 800 11px var(--f) !important; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .sabbtn i { font-style: normal; font-size: 18px; }
@@ -417,3 +431,4 @@
 .mg-complete { position: absolute; left: 50%; z-index: 40; transform: translate(-50%, -50%); font-family: Arial, 'Liberation Sans', Helvetica, sans-serif; color: #fff; white-space: nowrap; pointer-events: none;
   text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 2px 0 #000; animation: mgRise 1.9s ease-out forwards; }
 @keyframes mgRise { 0%, 25% { transform: translate(-50%, -50%); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, calc(-50% + var(--rise, -70px))); opacity: 0; } }
+.au-play.mapopen .au-taskwrap { visibility: hidden; }
