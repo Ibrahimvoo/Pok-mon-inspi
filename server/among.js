@@ -75,6 +75,13 @@ export function createAmongHub({ toUser, log = () => {} }) {
       out.sort((a, b) => b.players - a.players);
       return { ok: true, rooms: out.slice(0, 40), total: rooms.size };
     },
+    // what the « Entrer un code » screen shows before joining (host, capacity, region)
+    peek(u, m) {
+      const room = rooms.get(String(m.code || '').toUpperCase());
+      if (!room) return { error: 'code', message: 'Aucune partie avec ce code.' };
+      const { host, players, max, region, map, phase } = room.info();
+      return { ok: true, room: { host, players, max, region, map, phase, voice: room.settings.voiceChat !== false } };
+    },
     msg(u, m) {
       const code = where.get(u.id);
       const room = code && rooms.get(code);

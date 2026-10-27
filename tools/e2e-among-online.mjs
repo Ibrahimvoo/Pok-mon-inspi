@@ -67,16 +67,19 @@ try {
   for (const n of names) P.push(await signIn(n));
   const [A, B, C, D] = P;
   // A creates a private room
-  await A.click('.au-btn:has-text("En ligne")');
-  await A.click('.au-btn:has-text("Créer une partie")');
-  await A.click('.au-btn:has-text("Confirmer")');
+  await A.click('.am-big:has-text("JOUER")');
+  await A.click('.am-card:has-text("EN LIGNE")');
+  await A.click('.am-card:has-text("CRÉER UNE PARTIE")');
+  await A.click('.hs-btn:has-text("Classique")');
   ok('room created, host in the dropship lobby', await until(A, () => globalThis.__au?.c?.v?.phase === 'lobby', 20000));
   const code = (await state(A)).code;
   ok('6-letter room code shown in the lobby panel', /^[A-Z]{6}$/.test(code) && await until(A, c => document.querySelector('.lb-code b')?.textContent === c, 5000, code), code);
   for (const p of [B, C, D]) {
-    await p.click('.au-btn:has-text("En ligne")');
-    await p.fill('.au-code', code.toLowerCase());
-    await p.press('.au-code', 'Enter');
+    await p.click('.am-big:has-text("JOUER")');
+    await p.click('.am-card:has-text("EN LIGNE")');
+    await p.click('.am-card:has-text("ENTRER UN CODE")');
+    await p.fill('.am-code', code.toLowerCase());
+    await p.press('.am-code', 'Enter');
   }
   ok('three friends join with the code', await until(A, () => globalThis.__au.c.v.players.length === 4, 30000));
   await A.shot('lobby');
@@ -85,7 +88,7 @@ try {
   // the host changes a setting: the others see it
   await A.evaluate(() => globalThis.__au.c.send({ k: 'set', settings: { killCooldown: 10, discussionTime: 0, votingTime: 120, emergencyCooldown: 0 } }));
   ok('settings synchronised to the guests', await until(B, () => globalThis.__au.c.v.settings.killCooldown === 10, 5000), JSON.stringify(await Promise.all([A, B].map(p => p.evaluate(() => { const c = globalThis.__au?.c; return { host: c?.v?.host, n: c?.n, kc: c?.v?.settings?.killCooldown, status: c?.link?.constructor?.name }; })))));
-  ok('a guest cannot start the game', await B.evaluate(() => document.querySelector('.au-start').hidden));
+  ok('a guest cannot start the game', await B.evaluate(() => document.querySelector('.au-start').disabled));
   // voice: every player opens the (fake) microphone; in the lobby everyone is connected to everyone
   for (const p of P) await p.evaluate(() => globalThis.__au.voice.start());
   ok('lobby voice: each player connected to the 3 others', await until(A, () => globalThis.__au.voice.peers.size === 3, 25000) && await until(D, () => globalThis.__au.voice.peers.size === 3, 25000), JSON.stringify(await Promise.all(P.map(p => p.evaluate(() => { const v = globalThis.__au.voice; return { st: v.state, g: v.group, peers: [...v.peers.values()].map(x => x.pc?.connectionState || x.state || '?'), allowed: v.allowed.size }; })))));

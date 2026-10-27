@@ -76,8 +76,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const A = await openConsole(`http://localhost:${web.address().port}/?aufps=20`, 'Solo');
     await A.shot('menu');
-    await A.click('.au-btn:has-text("Entraînement")');
-    await A.click('.au-mapbtn >> nth=0');
+    await A.click('.am-big:has-text("JOUER")');
+    await A.click('.am-small:has-text("ENTRAÎNEMENT")');
+    await A.click('.am-map >> nth=0');
     ok('free play starts on the Skeld', await until(A, () => globalThis.__au?.c?.phase === 'play', 25000));
     await A.waitForTimeout(7000);
     await A.shot('freeplay');

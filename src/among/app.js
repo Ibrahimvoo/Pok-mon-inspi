@@ -35,97 +35,166 @@ export class AmongApp {
   start() { this.menu(); }
   screen(cls, ...kids) { this.ui.replaceChildren(el('div', `au-screen ${cls}`, kids)); this.stars.el.hidden = false; this.layerFocus(); return this.ui.firstChild; }
   layerFocus() { queueMicrotask(() => { const f = this.ui.querySelector('[data-autofocus]') || this.ui.querySelector('button,input'); f?.focus({ preventScroll: true }); }); }
-  btn(label, onClick, cls = '', attrs = {}) { const b = el('button', `au-btn ${cls}`, label, { type: 'button', ...attrs }); b.addEventListener('click', () => { sfx.play('click'); onClick(); }); return b; }
+  btn(label, onClick, cls = '', attrs = {}) { const b = el('button', /^(am|hs)-/.test(cls) ? cls : `au-btn ${cls}`, label, { type: 'button', ...attrs }); b.addEventListener('click', () => { sfx.play('click'); onClick(); }); return b; }
   toast(msg) { const t = el('div', 'au-toast', msg); this.root.append(t); setTimeout(() => t.remove(), 3800); }
 
   // ------------------------------------------------------------------ menus
-  menu() {
-    const hero = el('canvas', 'au-menu-crew', [], { width: 420, height: 260 });
-    const g = hero.getContext('2d');
-    ['red', 'blue', 'lime', 'pink', 'orange'].forEach((c, i) => drawCrew(g, c, 60 + i * 75, 210 - (i % 2) * 30, 120, { left: i > 2 }));
-    this.screen('au-main',
-      el('div', 'au-logo', [el('span', '', 'AMONG'), el('span', '', 'US')]),
-      el('div', 'au-sub', 'Recréation non officielle — jouable à 4 à 15 joueurs'),
-      hero,
-      el('div', 'au-menu-col', [
-        this.btn('En ligne', () => this.onlineMenu(false), 'big', { 'data-autofocus': '' }),
-        this.btn('Local', () => this.onlineMenu(true), 'big'),
-        this.btn('Entraînement', () => this.freeplayMenu(), 'big'),
-      ]),
-      el('div', 'au-menu-row', [
-        this.btn('Comment jouer', () => this.howTo()),
-        this.btn('Quitter', () => this.exit?.(), 'ghost'),
-      ]),
-      el('div', 'au-legal', 'Projet de fan non officiel, non affilié à Innersloth. Cartes, personnages et bruitages proviennent des références fournies par le propriétaire du projet.'));
+  // Laid out like the game's main menu: account bar, logo and the button column on the left, the big screen on the
+  // right whose page changes (Jouer → Local / En ligne → Créer / Entrer un code / Trouver). Pictures and icons are
+  // cut from the reference screenshots (tools/among/cut_menu.py).
+  menu(page = 'home') {
+    if (!this.shell?.isConnected) this.buildShell();
+    this.page(page);
   }
-  nameField() {
-    const inp = el('input', 'au-name', [], { maxlength: NAME_MAX, value: this.prof.name, 'aria-label': 'Ton pseudo', autocomplete: 'off', spellcheck: 'false' });
-    inp.addEventListener('change', () => { this.prof.name = inp.value.replace(/[<>]/g, '').trim().slice(0, NAME_MAX) || this.prof.name; inp.value = this.prof.name; saveProfile(this.prof); });
-    return el('label', 'au-namebox', [el('span', '', 'Pseudo'), inp]);
+  buildShell() {
+    this.nameTag = el('span', 'am-name', this.prof.name);
+    const big = (icon, label, page, attrs) => this.btn([img(icon), el('span', '', label)], () => this.page(page), 'am-big', attrs);
+    const small = (icon, label, page) => this.btn([img(icon), el('span', '', label)], () => this.page(page), 'am-small');
+    this.stage = el('div', 'am-stagein');
+    this.shell = el('div', 'am-shell au-main', [
+      el('div', 'am-top', [img('ic-badge', 'am-badge'), el('i', 'am-dot'), this.nameTag, this.btn('AMIS', () => this.page('friends'), 'am-friends')]),
+      el('div', 'am-side', [
+        img('logo', 'am-logo'),
+        el('div', 'am-panel', [
+          big('ic-play', 'JOUER', 'play', { 'data-autofocus': '' }), big('ic-inventory', 'INVENTAIRE', 'inventory'), big('ic-store', 'BOUTIQUE', 'store'),
+          el('hr'),
+          small('ic-news', 'INFOS', 'news'), small('ic-account', 'MON COMPTE', 'account'), small('ic-settings', 'RÉGLAGES', 'settings'),
+          this.btn('CRÉDITS', () => this.page('credits'), 'am-credits'),
+        ]),
+        el('div', 'am-ver', 'Recréation non officielle · v1.0'),
+      ]),
+      el('div', 'am-stage', [floaters(this), this.stage]),
+    ]);
+    this.ui.replaceChildren(this.shell); this.stars.el.hidden = true;
   }
-  onlineMenu(lan) {
-    const server = this.online();
-    const code = el('input', 'au-code', [], { maxlength: 6, placeholder: 'CODE', 'aria-label': 'Code de la partie', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false' });
-    code.addEventListener('input', () => { code.value = code.value.toUpperCase().replace(/[^A-Z]/g, ''); });
-    code.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); join(); } });   // no keypress reaching the focused « Annuler »
+  page(p) {
+    this.cur = p;
+    const S = this.stage;
+    S.parentElement.classList.toggle('home', p === 'home');      // the empty screen is plain space, like the game
+    const head = (title, back) => el('div', 'am-head', [back ? this.btn([el('i', 'am-tri'), el('span', '', 'RETOUR')], back, 'am-back back') : null, el('h1', '', title)]);
+    const card = (picture, label, fn, cls = '', attrs) => this.btn([img(picture), el('span', 'am-band', el('b', '', label))], fn, 'am-card ' + cls, attrs);
+    const text = (...ps) => el('div', 'am-text', ps.map(t => el('p', '', t)));
+    switch (p) {
+      case 'home': S.replaceChildren(); break;
+      case 'play': S.replaceChildren(head('JOUER'),
+        el('div', 'am-cards', [card('card-local', 'LOCAL', () => this.hostScreen(true), 'bright', { 'data-autofocus': '' }), card('card-online', 'EN LIGNE', () => this.page('online'), 'bright')]),
+        el('div', 'am-under', [this.btn('COMMENT JOUER', () => this.page('howto'), 'am-small'), this.btn('ENTRAÎNEMENT', () => this.page('freeplay'), 'am-small')])); break;
+      case 'online': S.replaceChildren(head('EN LIGNE', () => this.page('play')),
+        el('div', 'am-online', [
+          el('div', 'am-col', [card('card-create', 'CRÉER UNE PARTIE', () => this.hostScreen(false), 'wide', { 'data-autofocus': '' }), card('card-code', 'ENTRER UN CODE', () => this.page('code'), 'wide')]),
+          el('i', 'am-vsep'),
+          card('card-find', 'TROUVER UNE PARTIE', () => (this.online() ? this.findScreen() : this.toast('Trouver une partie demande le serveur du jeu. Sans serveur, rejoins tes amis avec leur code.')), 'bright tall'),
+        ])); break;
+      case 'code': this.codePage(head('ENTRER UN CODE', () => this.page('online'))); break;
+      case 'freeplay': S.replaceChildren(head('ENTRAÎNEMENT', () => this.page('play')),
+        el('div', 'am-maps', ['skeld', 'polus'].map((m, i) => this.btn([el('img', '', [], { src: `among/maps/${m}.webp`, alt: '' }), m === 'skeld' ? img('logo-skeld', 'am-maplogo') : mapLogo(m)], () => this.connect({ freeplay: m }), 'am-map', i ? {} : { 'data-autofocus': '' }))),
+        el('p', 'am-hint', 'Explore la carte seul avec des mannequins, essaie toutes les tâches et tous les rôles.')); break;
+      case 'howto': S.replaceChildren(head('COMMENT JOUER', () => this.page('play')), text(
+        'Équipiers : termine tes tâches (liste en haut à gauche, flèches jaunes) et trouve les Imposteurs. Signale les corps et appelle des réunions pour voter.',
+        'Imposteurs : élimine l’équipage sans te faire voir, sabote le vaisseau et voyage par les conduits. Tes fausses tâches ne comptent pas.',
+        'Fantômes : après ta mort, continue tes tâches (équipiers) ou tes sabotages (imposteurs). Tu ne parles et n’écris qu’aux autres fantômes.',
+        'Commandes : flèches / WASD ou stick gauche pour marcher · E, Espace ou ✕ : Utiliser · Q ou □ : Tuer · R ou △ : Signaler · F : Saboter · V : Conduit · C : Capacité · Tab : Carte · Entrée : Discussion · T (maintenir) : parler si « Appuyer pour parler » est activé.',
+        'Chat vocal de proximité : plus un joueur est loin, moins tu l’entends ; au-delà de la portée, plus du tout. Les vivants n’entendent que les vivants, les fantômes que les fantômes.')); break;
+      case 'inventory': this.inventoryPage(head('INVENTAIRE')); break;
+      case 'store': S.replaceChildren(head('BOUTIQUE'), text('Pas de boutique dans cette recréation : toutes les couleurs sont gratuites.'), el('div', 'am-under', [this.btn('OUVRIR L’INVENTAIRE', () => this.page('inventory'), 'am-small', { 'data-autofocus': '' })])); break;
+      case 'news': S.replaceChildren(head('INFOS'), text(
+        'Parties en ligne de 4 à 15 joueurs sur The Skeld et Polus, rôles officiels, sabotages et réunions.',
+        'Chat vocal de proximité intégré : active le micro dans le salon (bouton micro en haut à droite).',
+        'Sans serveur, la console qui crée la partie l’héberge : partage le code du salon à tes amis.')); break;
+      case 'account': {
+        const inp = el('input', 'am-input', [], { maxlength: NAME_MAX, value: this.prof.name, 'aria-label': 'Ton pseudo', autocomplete: 'off', spellcheck: 'false', 'data-autofocus': '' });
+        inp.addEventListener('change', () => { this.prof.name = inp.value.replace(/[<>]/g, '').trim().slice(0, NAME_MAX) || this.prof.name; inp.value = this.prof.name; this.nameTag.textContent = this.prof.name; saveProfile(this.prof); });
+        S.replaceChildren(head('MON COMPTE'), el('div', 'am-form', [el('label', '', 'PSEUDO'), inp, el('label', '', 'COMPTE'), el('div', 'am-fval', account.current?.psn || 'Invité')]), text('Le pseudo est affiché au-dessus de ton personnage et dans les réunions.'));
+        break;
+      }
+      case 'settings': S.replaceChildren(head('RÉGLAGES'), text('Micro, écouteurs et volume de chaque joueur se règlent dans la partie (bouton engrenage en haut à droite).', 'Manette : ✕ Utiliser · □ Tuer · △ Signaler · L1 Carte · R1 Saboter · L2 Conduit · R2 Capacité · Options : Réglages.'), el('div', 'am-under', [this.btn('QUITTER AMONG US', () => this.exit?.(), 'am-small', { 'data-autofocus': '' })])); break;
+      case 'credits': S.replaceChildren(head('CRÉDITS'), text('Projet de fan non officiel, non affilié à Innersloth.', 'Cartes, personnages, illustrations des menus et bruitages proviennent des références fournies par le propriétaire du projet.')); break;
+      case 'friends': S.replaceChildren(head('AMIS'), text('Crée une partie puis donne le code du salon à tes amis : ils le tapent dans Jouer → En ligne → Entrer un code.', 'Tes amis de la console peuvent aussi t’envoyer une invitation depuis le Centre de contrôle.')); break;
+    }
+    this.layerFocus();
+  }
+  codePage(head) {
+    const code = el('input', 'am-code', [], { maxlength: 6, placeholder: 'Entrer le code...', 'aria-label': 'Code de la partie', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'data-autofocus': '' });
+    const F = ['HÔTE', 'CAPACITÉ', 'RÉGION', 'TYPE DE CHAT'].map(l => [l, el('div', 'am-fval')]);
     const join = () => { if (code.value.length !== 6) { this.toast('Le code contient 6 lettres.'); return; } this.connect({ join: code.value }); };
-    const note = lan && !server ? el('p', 'au-note', 'Le mode Local trouve les parties créées sur le même réseau grâce au serveur du jeu. Sans serveur, crée une partie et partage son code.') : !server ? el('p', 'au-note', 'Sans serveur : la console qui crée la partie l’héberge, les autres rejoignent avec le code (connexion directe).') : null;
-    this.screen('au-online',
-      el('h1', '', lan ? 'Local' : 'En ligne'), this.nameField(),
-      el('div', 'au-cards', [
-        el('div', 'au-card', [el('h2', '', 'Héberger'), el('p', '', 'Crée une partie et invite tes amis.'), this.btn('Créer une partie', () => this.createMenu(lan), 'primary', { 'data-autofocus': '' })]),
-        el('div', 'au-card', [el('h2', '', lan ? 'Réseau local' : 'Public'), el('p', '', lan ? 'Parties ouvertes sur ton réseau.' : 'Trouve une partie publique.'), this.btn('Trouver une partie', () => this.findMenu(lan), '', server ? {} : { disabled: '' })]),
-        el('div', 'au-card', [el('h2', '', 'Privé'), el('p', '', 'Rejoins une partie avec son code.'), el('div', 'au-coderow', [code, this.btn('→', join, 'primary')])]),
-      ]),
-      note, this.btn('Retour', () => this.menu(), 'ghost back'));
-  }
-  createMenu(lan) {
-    const s = { ...defaultSettings(), map: this.prof.map || 'skeld', maxPlayers: 10, impostors: 1 };
-    let pub = false;
-    const maps = el('div', 'au-maps');
-    const drawMaps = () => maps.replaceChildren(...['skeld', 'polus'].map(m => { const b = this.btn([el('img', '', [], { src: `among/maps/${m}.webp`, alt: '' }), mapLogo(m)], () => { s.map = m; drawMaps(); }, 'au-mapbtn' + (s.map === m ? ' on' : '')); return b; }));
-    drawMaps();
-    const stepper = (label, key, min, max) => { const v = el('b', '', String(s[key])); return el('div', 'au-step', [el('span', '', label), this.btn('−', () => { s[key] = Math.max(min, s[key] - 1); v.textContent = s[key]; }), v, this.btn('+', () => { s[key] = Math.min(max, s[key] + 1); v.textContent = s[key]; })]); };
-    const privacy = this.btn('Privée', () => { pub = !pub; privacy.textContent = pub ? 'Publique' : 'Privée'; privacy.classList.toggle('pub', pub); }, 'au-privacy');
-    this.screen('au-create', el('h1', '', 'Créer une partie'), maps,
-      el('div', 'au-steps', [stepper('Imposteurs', 'impostors', 1, 3), stepper('Joueurs max', 'maxPlayers', 4, 15), lan || !this.online() ? null : el('div', 'au-step', [el('span', '', 'Confidentialité'), privacy])]),
-      el('div', 'au-menu-row', [this.btn('Confirmer', () => { this.prof.map = s.map; saveProfile(this.prof); this.connect({ create: cleanSettings(s), public: pub, lan }); }, 'primary big', { 'data-autofocus': '' }), this.btn('Retour', () => this.onlineMenu(lan), 'ghost back')]));
-  }
-  async findMenu(lan) {
-    const list = el('div', 'au-list', el('p', 'au-note', 'Recherche…'));
-    let mapF = '';
-    const filters = el('div', 'au-menu-row', ['', 'skeld', 'polus'].map(m => this.btn(m ? (m === 'skeld' ? 'The Skeld' : 'Polus') : 'Toutes les cartes', () => { mapF = m; load(); }, 'small')));
-    this.screen('au-find', el('h1', '', lan ? 'Parties sur le réseau local' : 'Trouver une partie'), filters, list, el('div', 'au-menu-row', [this.btn('Actualiser', () => load()), this.btn('Retour', () => this.onlineMenu(lan), 'ghost back')]));
-    const load = async () => {
-      list.replaceChildren(el('p', 'au-note', 'Recherche…'));
+    const go = this.btn('REJOINDRE UNE PARTIE', join, 'am-join', { disabled: '' });
+    let seq = 0;
+    code.addEventListener('input', async () => {
+      code.value = code.value.toUpperCase().replace(/[^A-Z]/g, '');
+      const ok = code.value.length === 6; go.disabled = !ok;
+      F.forEach(([, v]) => { v.textContent = ''; });
+      if (!ok || !this.online()) return;
+      const s = ++seq;
       try {
-        const rooms = await ServerLink.list({ lan, map: mapF || undefined });
-        if (!rooms.length) { list.replaceChildren(el('p', 'au-note', 'Aucune partie trouvée. Crée la tienne !')); return; }
-        list.replaceChildren(...rooms.map(r => this.btn([mapLogo(r.map), el('b', '', r.host), el('span', '', `${r.players}/${r.max}`), el('span', '', `${r.impostors} imp.`), r.roles ? el('i', '', 'Rôles') : null], () => this.connect({ join: r.code }), 'au-room')));
-        this.layerFocus();
-      } catch (e) { list.replaceChildren(el('p', 'au-note', e.message || 'Impossible de charger la liste.')); }
+        const r = await ServerLink.peek(code.value);
+        if (s !== seq) return;
+        const vals = [r.host, `${r.players}/${r.max}`, r.region, r.voice ? 'Chat libre + vocal' : 'Chat libre'];
+        F.forEach(([, v], i) => { v.textContent = vals[i]; });
+      } catch (e) { if (s === seq) F[0][1].textContent = e.message; }
+    });
+    code.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); join(); } });
+    this.stage.replaceChildren(head, el('div', 'am-codeform', [code, el('div', 'am-form', F.flatMap(([l, v]) => [el('label', '', l), v])), go]));
+  }
+  inventoryPage(head) {
+    const preview = el('canvas', 'am-preview', [], { width: 300, height: 380 }), label = el('div', 'am-plabel');
+    const grid = el('div', 'am-swatches');
+    const draw = () => {
+      const g = preview.getContext('2d'); g.clearRect(0, 0, 300, 380);
+      drawCrew(g, this.prof.color, 150, 350, 320);
+      label.textContent = (COLORS.find(c => c.id === this.prof.color) || COLORS[0]).name.toUpperCase();
+      grid.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.c === this.prof.color));
+    };
+    grid.append(...COLORS.map((c, i) => this.btn([], () => { this.prof.color = c.id; saveProfile(this.prof); draw(); }, 'am-swatch', { title: c.name, 'data-c': c.id, style: `--c:${c.body};--s:${c.shade}`, ...(i ? {} : { 'data-autofocus': '' }) })));
+    this.stage.replaceChildren(head, el('div', 'am-inv', [grid, el('div', 'am-pwrap', [preview, label])]));
+    draw();
+  }
+  // full-screen pages on the starry background, like the game's « Héberger » screen
+  hostScreen(lan) {
+    const s = { ...defaultSettings(), map: this.prof.map || 'skeld', maxPlayers: 15 };
+    const create = () => this.connect({ create: cleanSettings(s), public: false, lan });
+    const list = el('div', 'hs-list');
+    this.screen('hs',
+      el('div', 'hs-head', [img('host-avatar', 'hs-av'), el('div', 'hs-right', [el('h1', '', 'HÉBERGER'),
+        el('div', 'hs-create', [el('span', '', 'Créer'), this.btn('Classique', create, 'hs-btn', { 'data-autofocus': '' }), this.btn('Cache-cache', () => this.toast('Le mode Cache-cache n’existe pas encore dans cette recréation.'), 'hs-btn')])])]),
+      el('div', 'hs-label', lan ? 'Parties disponibles' : 'Le salon est créé en privé : la carte, la capacité et les règles se changent dans le salon (Modifier).'),
+      lan ? list : null,
+      this.btn('Retour', () => this.menu(lan ? 'play' : 'online'), 'hs-btn hs-back back'));
+    if (!lan) return;
+    if (!this.online()) { list.append(el('p', 'hs-empty', 'Sans serveur, les parties du réseau ne sont pas visibles : crée une partie et partage son code.')); return; }
+    const load = async () => {
+      if (!list.isConnected) return;
+      try {
+        const rooms = await ServerLink.list({ lan: true });
+        if (!list.isConnected) return;
+        list.replaceChildren(...rooms.map(r => this.btn([el('b', '', r.host), mapLogo(r.map), el('span', '', `${r.players}/${r.max}`)], () => this.connect({ join: r.code }), 'hs-room')));
+      } catch { /* the next refresh tries again */ }
+      setTimeout(load, 3000);
     };
     load();
   }
-  freeplayMenu() {
-    this.screen('au-create', el('h1', '', 'Entraînement'), el('p', 'au-note', 'Explore une carte seul avec des mannequins, essaie toutes les tâches et tous les rôles.'),
-      el('div', 'au-maps', ['skeld', 'polus'].map(m => this.btn([el('img', '', [], { src: `among/maps/${m}.webp`, alt: '' }), mapLogo(m)], () => this.connect({ freeplay: m }), 'au-mapbtn'))),
-      this.btn('Retour', () => this.menu(), 'ghost back'));
-  }
-  howTo() {
-    this.screen('au-how', el('h1', '', 'Comment jouer'), el('div', 'au-howtext', [
-      el('p', '', 'Équipiers : termine tes tâches (liste en haut à gauche, flèches jaunes) et trouve les Imposteurs. Signale les corps et appelle des réunions pour voter.'),
-      el('p', '', 'Imposteurs : élimine l’équipage sans te faire voir, sabote le vaisseau et voyage par les conduits. Tes fausses tâches ne comptent pas.'),
-      el('p', '', 'Fantômes : après ta mort, continue tes tâches (équipiers) ou tes sabotages (imposteurs). Tu ne parles et n’écris qu’aux autres fantômes.'),
-      el('p', '', 'Commandes : flèches / WASD ou stick gauche pour marcher · E, Espace ou ✕ : Utiliser · Q ou □ : Tuer · R ou △ : Signaler · F : Saboter · V : Conduit · C : Capacité · Tab : Carte · Entrée : Discussion · T (maintenir) : parler si « Appuyer pour parler » est activé.'),
-      el('p', '', 'Chat vocal de proximité : plus un joueur est loin, moins tu l’entends ; au-delà de la portée, plus du tout. Les vivants n’entendent que les vivants, les fantômes que les fantômes.'),
-    ]), this.btn('Retour', () => this.menu(), 'ghost back', { 'data-autofocus': '' }));
+  findScreen() {
+    const list = el('div', 'hs-list', el('p', 'hs-empty', 'Recherche…'));
+    let mapF = '';
+    const load = async () => {
+      list.replaceChildren(el('p', 'hs-empty', 'Recherche…'));
+      try {
+        const rooms = await ServerLink.list({ map: mapF || undefined });
+        list.replaceChildren(...(rooms.length ? rooms.map(r => this.btn([el('b', '', r.host), mapLogo(r.map), el('span', '', `${r.players}/${r.max}`), el('span', '', `${r.impostors} imp.`)], () => this.connect({ join: r.code }), 'hs-room')) : [el('p', 'hs-empty', 'Aucune partie publique pour le moment. Crée la tienne !')]));
+        this.layerFocus();
+      } catch (e) { list.replaceChildren(el('p', 'hs-empty', e.message || 'Impossible de charger la liste.')); }
+    };
+    this.screen('hs',
+      el('div', 'hs-head', [img('card-find', 'hs-av'), el('div', 'hs-right', [el('h1', '', 'TROUVER'),
+        el('div', 'hs-create', [el('span', '', 'Carte'), ...[['', 'Toutes'], ['skeld', 'The Skeld'], ['polus', 'Polus']].map(([m, n], i) => this.btn(n, () => { mapF = m; load(); }, 'hs-btn', i ? {} : { 'data-autofocus': '' })), this.btn('Actualiser', () => load(), 'hs-btn')])])]),
+      el('div', 'hs-label', 'Parties disponibles'), list,
+      this.btn('Retour', () => this.menu('online'), 'hs-btn hs-back back'));
+    load();
   }
 
   // ------------------------------------------------------------------ connection
   async connect(opts) {
     const me = this.me;
-    this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { cancelled = true; link?.close(); this.menu(); }, 'ghost'));
+    this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { cancelled = true; link?.close(); this.menu(this.cur || 'home'); }, 'ghost back'));
     let link = null, cancelled = false;
     try {
       if (opts.freeplay) { link = new LocalLink(me); }
@@ -140,16 +209,52 @@ export class AmongApp {
     this.play = new Play(this, client, { freeplay: opts.freeplay });
     if (opts.freeplay) { link.start(this.hello()); queueMicrotask(() => client.send({ k: 'fp', a: 'start', map: opts.freeplay, role: 'crewmate' })); }
   }
-  onlineMenuError(msg) { this.menu(); this.toast(msg); }
+  onlineMenuError(msg) { this.menu(this.cur || 'home'); this.toast(msg); }
   leaveWorld(reason) {
     this.play?.destroy(); this.play = null;
     this.menu();
     if (reason) this.toast(reason);
   }
   // console hooks
-  action(a, ev) { if (this.play) return this.play.action(a, ev); if (a === 'back') { const b = this.ui.querySelector('.back'); if (b) { b.click(); return true; } } return false; }
+  action(a, ev) {
+    if (this.play) return this.play.action(a, ev);
+    if (a === 'back') { const b = this.ui.querySelector('.back'); if (b) { b.click(); return true; } if (this.shell?.isConnected && this.cur !== 'home') { this.page('home'); return true; } }
+    return false;
+  }
   suspend() { this.play?.suspend(); }
   resume() { this.play?.resume(); }
   destroy() { this.closed = true; this.play?.destroy(); this.stars.stop(); }
+}
+
+const img = (name, cls = '') => el('img', cls, [], { src: `among/ui/${name}.webp`, alt: '', draggable: 'false' });
+// the space behind the right screen of the main menu: stars and two crewmates drifting and turning
+function floaters(app) {
+  const c = el('canvas', 'am-float'), shell = () => app.shell;
+  let mine = null;                                                 // the menu this canvas belongs to (set on the first frame)
+  const stars = Array.from({ length: 60 }, () => ({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.6 }));
+  const crew = [{ color: 'cyan', x: .25, y: .3, vx: .012, vy: .004, a: -1.1, va: .25, h: .2 }, { color: 'orange', x: .78, y: .22, vx: -.008, vy: .006, a: .9, va: -.18, h: .26 }];
+  let last = performance.now();
+  const tick = t => {
+    mine ||= shell();
+    if (app.closed || shell() !== mine) return;                    // the app closed or the menu was rebuilt: stop
+    requestAnimationFrame(tick);
+    const dt = Math.min(.05, (t - last) / 1000); last = t;
+    if (!c.isConnected) return;                                    // in a game: the menu waits
+    const w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const g = c.getContext('2d');
+    g.clearRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,.35)';
+    for (const s of stars) { g.beginPath(); g.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2); g.fill(); }
+    for (const k of crew) {
+      k.x += k.vx * dt; k.y += k.vy * dt; k.a += k.va * dt;
+      if (k.x < -.2) k.x = 1.2; if (k.x > 1.2) k.x = -.2; if (k.y < -.2) k.y = 1.2; if (k.y > 1.2) k.y = -.2;
+      const H = k.h * h;
+      g.save(); g.translate(k.x * w, k.y * h); g.rotate(k.a); drawCrew(g, k.color, 0, H / 2, H); g.restore();
+    }
+  };
+  requestAnimationFrame(tick);
+  return c;
 }
 export { COLORS, CREW_HEIGHT };

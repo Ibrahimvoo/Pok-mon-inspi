@@ -73,6 +73,7 @@ export class ServerLink extends Base {
     return r.code;
   }
   static async list(opts) { return (await net.req('au', { op: 'list', ...opts }, 8000)).rooms; }
+  static async peek(code) { return (await net.req('au', { op: 'peek', code }, 6000)).room; }
   send(m) { return net.send('au', { op: 'msg', m }); }
   close() { if (this.code) net.send('au', { op: 'leave' }); this.code = null; this.off.forEach(f => f()); }
 }

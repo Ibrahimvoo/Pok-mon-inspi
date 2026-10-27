@@ -20,3 +20,7 @@ import '@fontsource/montserrat/latin-500';
 import '@fontsource/montserrat/latin-600';
 import '@fontsource/montserrat/latin-700';
 import '@fontsource/montserrat/latin-800';
+import '@fontsource/barlow/latin-500';
+import '@fontsource/barlow/latin-600';
+import '@fontsource/barlow/latin-700';
+import '@fontsource/pathway-gothic-one/latin-400';

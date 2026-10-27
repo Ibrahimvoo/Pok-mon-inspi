@@ -41,6 +41,7 @@ export class Renderer {
     g.setTransform(U, 0, 0, U, W / 2 - cx * U, H / 2 - cy * U);
     drawMapImage(g, art);
     const M = c.map, V = c.v, inPlay = c.inGame && c.phase === 'play';
+    if (art.lobby && M.def.cabin) this.cabinShade(M);
     // vents opening and closing
     this.vents = this.vents.filter(v => (v.t += dt) < .45);
     for (const v of this.vents) drawVentOpen(g, v.x, v.y, Math.sin(Math.min(1, v.t / .45) * Math.PI));
@@ -69,6 +70,14 @@ export class Renderer {
     g.setTransform(1, 0, 0, 1, 0, 0);
     if (inPlay) this.drawArrows(V);
   }
+  // the dropship: the hull around the cabin window in the dark, like the lobby of the game
+  cabinShade(M) {
+    const { g } = this, k = M.k;
+    g.save(); g.beginPath(); g.rect(-50, -50, 100, 100);
+    M.def.cabin.forEach(([x, y], i) => (i ? g.lineTo(x / k, y / k) : g.moveTo(x / k, y / k))); g.closePath();
+    g.fillStyle = 'rgba(0,0,0,.66)'; g.fill('evenodd');
+    g.restore();
+  }
   crewmate(p, iAmImp) {
     const { g } = this, c = this.c;
     const L = this.look(p.look), real = this.look(p.n);
@@ -92,7 +101,7 @@ export class Renderer {
     if (name) {
       const fs = .2;
       g.save(); g.globalAlpha = alpha === 1 ? 1 : Math.max(.5, alpha);
-      g.font = `600 ${fs}px Sniglet, "Arial Rounded MT Bold", Arial, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'bottom';
+      g.font = `700 ${fs}px Barlow, "Arial Rounded MT Bold", Arial, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'bottom';
       g.lineWidth = .045; g.strokeStyle = 'rgba(0,0,0,.85)'; g.lineJoin = 'round';
       const ny = p.y + bob - CREW_HEIGHT - .05;
       g.strokeText(name, p.x, ny); g.fillStyle = imp ? '#ff1b1b' : '#fff'; g.fillText(name, p.x, ny);

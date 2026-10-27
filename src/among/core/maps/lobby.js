@@ -12,6 +12,8 @@ export default {
   ],
   consoles: { laptop: { x: 476, y: 392 }, chest: { x: 681, y: 384 } },
   spawn: [575, 430],
+  // inner edge of the cabin window: only the cabin is lit, the hull around it stays in the dark (lobby screenshot)
+  cabin: [[313, 157], [480, 101], [687, 101], [853, 160], [853, 580], [813, 633], [347, 633], [313, 580]],
   meeting: { x: 588, y: 470, r: 80 },
   props: [
     { t: 'laptopCrate', r: [447, 320, 505, 384] }, { t: 'hatChest', r: [652, 334, 710, 376] },

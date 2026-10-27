@@ -23,7 +23,7 @@ const [idx, cur] = await page.evaluate(() => { const t = [...document.querySelec
 for (let i = cur; i < idx; i++) await page.keyboard.press('ArrowRight');
 for (let i = cur; i > idx; i--) await page.keyboard.press('ArrowLeft');
 await page.keyboard.press('Enter'); await page.waitForSelector('.au-main');
-await page.click('.au-btn:has-text("Entraînement")'); await page.click(`.au-mapbtn >> nth=${map === 'polus' ? 1 : 0}`);
+await page.click('.am-big:has-text("JOUER")'); await page.click('.am-small:has-text("ENTRAÎNEMENT")'); await page.click(`.am-map >> nth=${map === 'polus' ? 1 : 0}`);
 await page.waitForFunction(() => globalThis.__au?.c?.phase === 'play' && globalThis.__au.c.v?.tasks?.length, null, { timeout: 30000 });
 const P = (fn, arg) => page.evaluate(fn, arg);
 const shot = n => page.screenshot({ path: join(out, n + '.png'), timeout: 120000 });

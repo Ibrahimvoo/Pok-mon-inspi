@@ -126,22 +126,29 @@ export class Play {
     // touch joystick (left part of the screen) and mouse hold-to-walk, like the original
     this.canvas.addEventListener('pointerdown', e => {
       this.voice.unblock();
-      if (e.pointerType === 'touch') { if (e.clientX < innerWidth * .5 && !this.joy) { this.joy = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0 }; this.showJoy(); } }
+      if (e.pointerType === 'touch') { if (e.clientX < innerWidth * .5 && !this.joy) { const o = this.joyCenter(); this.joy = { id: e.pointerId, x0: o.x, y0: o.y, dx: 0, dy: 0 }; this.moveJoy(e); } }
       else if (e.button === 0) this.mouseMove = { x: e.clientX, y: e.clientY };
       this.canvas.setPointerCapture?.(e.pointerId);
     });
     this.canvas.addEventListener('pointermove', e => {
-      if (this.joy && e.pointerId === this.joy.id) { const R = 60; let dx = e.clientX - this.joy.x0, dy = e.clientY - this.joy.y0; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } this.joy.dx = dx / R; this.joy.dy = dy / R; this.showJoy(); }
+      if (this.joy && e.pointerId === this.joy.id) this.moveJoy(e);
       else if (this.mouseMove) { this.mouseMove.x = e.clientX; this.mouseMove.y = e.clientY; }
     });
     const end = e => { if (this.joy && e.pointerId === this.joy.id) { this.joy = null; this.showJoy(); } if (e.pointerType !== 'touch') this.mouseMove = null; };
     this.canvas.addEventListener('pointerup', end); this.canvas.addEventListener('pointercancel', end);
   }
+  // the joystick stays at the bottom left of touch screens; a touch anywhere on the left half steers from its centre
+  joyCenter() { if (!this.joyEl) this.showJoy(); this.joyEl.classList.add('on'); const r = this.joyEl.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, R: r.width * .38 || 60 }; }
+  moveJoy(e) {
+    const { R } = this.joyCenter(); let dx = e.clientX - this.joy.x0, dy = e.clientY - this.joy.y0;
+    const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; }
+    this.joy.dx = dx / R; this.joy.dy = dy / R; this.showJoy();
+  }
   showJoy() {
     if (!this.joyEl) { this.joyEl = el('div', 'au-joy', el('i')); this.hud.append(this.joyEl); }
     const j = this.joy;
-    this.joyEl.classList.toggle('on', !!j);
-    if (j) { this.joyEl.style.left = j.x0 + 'px'; this.joyEl.style.top = j.y0 + 'px'; this.joyEl.firstChild.style.transform = `translate(${j.dx * 40}px, ${j.dy * 40}px)`; }
+    this.joyEl.classList.toggle('on', !!j || isTouch());
+    this.joyEl.firstChild.style.transform = j ? `translate(${j.dx * 76}%, ${j.dy * 76}%)` : '';
   }
   moveVector() {
     if (this.autoDir) return this.autoDir;          // set by the end-to-end tests
@@ -188,7 +195,6 @@ export class Play {
     this.btns = {
       use: B('use', 'Utiliser', () => this.doUse()), report: B('report', 'Signaler', () => this.doReport()), kill: B('kill', 'Tuer', () => this.doKill()),
       sabotage: B('sabotage', 'Saboter', () => this.openMap(true)), vent: B('vent', 'Conduit', () => this.doVent()), ability: B('ability', 'Capacité', () => this.doAbility()),
-      customize: B('use', 'Personnaliser', () => this.openCustomize()),
     };
     this.taskbar = el('div', 'au-taskbar', [el('i'), el('span', '', 'TOTAL DES TÂCHES ACCOMPLIES')]);
     this.taskList = el('div', 'au-tasklist');
@@ -198,8 +204,10 @@ export class Play {
     this.topBtns = {
       chat: top('chat', ICONS.chat, () => this.openChat(), 'Discussion'), settings: top('settings', ICONS.gear, () => this.openSettings(), 'Réglages'),
       map: top('map', ICONS.map, () => this.openMap(false), 'Carte'), mic: top('mic', ICONS.mic, () => this.toggleMic(), 'Micro'),
-      cosmetics: top('cos', ICONS.cos, () => this.openCustomize(), 'Personnaliser'), role: top('role', ICONS.role, () => this.openFreeplayRoles(), 'Rôle'),
+      players: top('players', ICONS.tablet, () => this.openPlayers(), 'Joueurs du salon'), role: top('role', ICONS.role, () => this.openFreeplayRoles(), 'Rôle'),
     };
+    this.wardrobe = el('button', 'au-wardrobe', el('img', '', [], { src: 'among/ui/wardrobe.webp', alt: 'Vestiaire', draggable: 'false' }), { type: 'button', title: 'Vestiaire' });
+    this.wardrobe.onclick = () => { sfx.play('click'); this.openCustomize(); };
     this.notesBtn = el('button', 'au-act notes', [el('b', '', 'Notes')], { type: 'button' }); this.notesBtn.onclick = () => this.openNotes();
     this.lobby = el('div', 'au-lobby');
     this.lobbyNotes = el('div', 'au-notices');
@@ -209,10 +217,12 @@ export class Play {
     this.ventArrows = el('div', 'au-ventarrows');
     this.hud.append(
       el('div', 'au-tl', [this.taskbar, el('div', 'au-taskwrap', [this.taskTab, this.taskList])]),
-      el('div', 'au-tr', Object.values(this.topBtns)),
-      el('div', 'au-br', [this.btns.ability, this.btns.sabotage, this.btns.use, this.btns.customize, this.btns.kill, this.btns.vent, this.btns.report, this.notesBtn]),
+      el('div', 'au-tr', [[this.topBtns.mic], [this.topBtns.chat, this.topBtns.settings], [this.topBtns.map, this.topBtns.players, this.topBtns.role]].map(g => el('div', 'au-tgroup', g))),
+      el('div', 'au-br', [this.btns.ability, this.btns.sabotage, this.btns.use, this.btns.kill, this.btns.vent, this.btns.report, this.notesBtn]),
+      this.wardrobe,
       el('div', 'au-bc', [this.roomName, this.ping]),
-      this.lobby, this.lobbyNotes, el('div', 'au-lobbybottom', [this.hostLine, this.startBtn, this.countdown]), this.ventArrows);
+      this.lobby, this.lobbyNotes, el('div', 'au-lobbybottom', [this.hostLine, el('div', 'au-startwrap', [this.startBtn, this.lobbyPing = el('div', 'au-lobbyping')]), this.countdown]), this.ventArrows);
+    if (isTouch()) this.showJoy();
   }
   updateMic() {
     const v = this.voice, b = this.topBtns.mic;
@@ -308,7 +318,7 @@ export class Play {
     const show = (b, on) => { b.hidden = !on; };
     const set = (b, enabled, cd = 0) => { b.disabled = !enabled || cd > 0; b.querySelector('.au-cd').textContent = cd > 0 ? Math.ceil(cd / 1000) : ''; b.classList.toggle('cooling', cd > 0); };
     const me = V?.me, role = me?.alive ? me?.role : me?.ghostRole;
-    show(B.customize, lobby); set(B.customize, !!T.use);
+    this.wardrobe.hidden = !lobby;
     show(B.use, play && !!me); set(B.use, !!T.use || !!me?.vent);
     B.use.classList.toggle('exitvent', !!me?.vent);
     B.use.querySelector('b').textContent = me?.vent ? 'Sortir' : T.use?.kind === 'sys' ? { admin: 'Admin', cams: 'Sécurité', vitals: 'Signes vitaux' }[T.use.s] : T.use?.kind === 'button' ? 'Urgence' : 'Utiliser';
@@ -332,13 +342,13 @@ export class Play {
     // top buttons
     this.topBtns.chat.hidden = !this.canChat();
     this.topBtns.map.hidden = !play;
-    this.topBtns.cosmetics.hidden = !lobby;
+    this.topBtns.players.hidden = !lobby || this.freeplay;
     this.topBtns.role.hidden = !(this.freeplay && play);
     // the vent: arrows toward the linked vents
     this.updateVentArrows(me);
     // room name and ping
     if (play || lobby) { const r = c.map.roomAt(c.pos.x, c.pos.y); this.roomName.textContent = lobby ? '' : r ? r.name : c.map.def.outside || ''; }
-    this.ping.textContent = `Ping : ${c.ping} ms`;
+    this.ping.textContent = this.lobbyPing.textContent = `PING: ${c.ping} ms`;
     // lobby countdown
     if (lobby && V?.phase === 'countdown') { const s = Math.ceil(c.left(V.countdown) / 1000); this.countdown.textContent = s > 0 ? `Lancement dans ${s}` : ''; if (s !== this.lastCount) { this.lastCount = s; if (s > 0) sfx.play('countdown'); } } else this.countdown.textContent = '';
     // sabotage countdown in the task list
@@ -464,23 +474,28 @@ export class Play {
   renderLobby(V) {
     const c = this.c, host = V.host === c.n, s = V.settings, n = V.players.filter(p => !p.bot).length;
     const hostP = V.players.find(p => p.n === V.host);
+    const btn = (cls, kids, fn, disabled = false) => { const b = el('button', cls, kids, { type: 'button' }); b.disabled = disabled; b.onclick = () => { sfx.play('click'); fn(); }; return b; };
+    const copy = btn('lb-copy', [], () => navigator.clipboard?.writeText(V.code).then(() => this.toast('Code copié'), () => this.toast(`Code : ${V.code}`)));
+    copy.innerHTML = ICONS.copy; copy.title = 'Copier le code';
     this.lobby.replaceChildren(
       el('div', 'lb-label', 'CODE DU SALON'),
-      el('div', 'lb-code', [el('b', '', this.freeplay ? '—' : V.code), this.freeplay ? null : (() => { const b = el('button', 'lb-copy', '⧉', { type: 'button', title: 'Copier le code' }); b.onclick = () => { navigator.clipboard?.writeText(V.code).then(() => this.toast('Code copié'), () => this.toast(`Code : ${V.code}`)); }; return b; })()]),
-      el('div', 'lb-label', 'PARAMÈTRES DU SALON'), el('div', 'lb-map', mapLogo(s.map)),
-      el('div', 'lb-row', [el('span', '', 'CAPACITÉ'), el('b', '', [crewIcon(colorOf(c.self?.color).id, 18), ` ${n}/${s.maxPlayers}`])]),
+      el('div', 'lb-code', [el('b', '', this.freeplay ? '—' : V.code), this.freeplay ? null : copy]),
+      el('hr'),
+      el('div', 'lb-label', 'PARAMÈTRES DU SALON'),
+      el('div', 'lb-map', s.map === 'skeld' ? el('img', '', [], { src: 'among/ui/logo-skeld.webp', alt: 'The Skeld' }) : mapLogo(s.map)),
+      el('div', 'lb-row', [el('span', '', 'CAPACITÉ'), el('b', 'lb-cap', [crewIcon('red', 30), `${n}/${s.maxPlayers}`])]),
       el('div', 'lb-row', [el('span', '', 'PRÉRÉGLAGE'), el('b', '', PRESETS[V.preset]?.name.toUpperCase() || 'PERSONNALISÉ')]),
-      el('div', 'lb-row', [el('span', '', 'CONFIDENTIALITÉ'), (() => { const b = el('button', 'lb-priv' + (V.public ? ' pub' : ''), V.public ? 'PUBLIQUE' : 'PRIVÉE', { type: 'button' }); b.disabled = !host || V.mode !== 'online'; b.onclick = () => c.send({ k: 'privacy', public: !V.public }); return b; })()]),
+      el('div', 'lb-row', [el('span', 'sm', 'CONFIDENTIALITÉ'), btn('lb-priv' + (V.public ? ' pub' : ''), V.public ? 'PUBLIC' : 'PRIVÉ', () => c.send({ k: 'privacy', public: !V.public }), !host || V.mode !== 'online')]),
       el('div', 'lb-label', 'PARAMÈTRES DE JEU'),
-      el('div', 'lb-btns', [(() => { const b = el('button', 'lb-btn', 'MODIFIER', { type: 'button' }); b.disabled = !host; b.onclick = () => this.openGameSettings(true); return b; })(), (() => { const b = el('button', 'lb-btn', 'VOIR', { type: 'button' }); b.onclick = () => this.openGameSettings(false); return b; })()]),
+      el('div', 'lb-btns', [btn('lb-btn', 'MODIFIER', () => this.openGameSettings(true), !host), btn('lb-btn', 'VOIR', () => this.openGameSettings(false))]),
     );
-    this.hostLine.replaceChildren('HÔTE : ', crewIcon(hostP?.color || 'red', 22), el('b', '', hostP?.name || ''), host ? el('i', '', ' (Toi !)') : null);
+    this.hostLine.replaceChildren(el('span', '', 'HÔTE :'), crewIcon(hostP?.color || 'red', 34), el('b', '', hostP?.name || ''), host ? el('i', '', '(Toi !)') : null);
+    this.hostLine.querySelector('b').style.color = colorOf(hostP?.color).body;
     const ready = n >= MIN_PLAYERS;
-    this.startBtn.hidden = !host || this.freeplay;
-    this.startBtn.textContent = V.phase === 'countdown' ? 'Annuler' : ready ? 'Commencer' : 'En attente de joueurs';
-    this.startBtn.disabled = !ready && V.phase !== 'countdown';
-    this.startBtn.classList.toggle('ready', ready);
-    if (!host && !this.freeplay) this.startBtn.hidden = true;
+    this.startBtn.parentElement.hidden = this.freeplay;
+    this.startBtn.textContent = V.phase === 'countdown' ? (host ? 'ANNULER' : 'LANCEMENT…') : !ready ? 'EN ATTENTE DE JOUEURS' : host ? 'COMMENCER' : 'EN ATTENTE DE L’HÔTE';
+    this.startBtn.disabled = !host || (!ready && V.phase !== 'countdown');
+    this.startBtn.classList.toggle('ready', host && (ready || V.phase === 'countdown'));
   }
 
   // ------------------------------------------------------------------ events
@@ -506,13 +521,14 @@ export class Play {
       case 'fixed': sfx.play('fixed'); if (this.panel?.sab) this.closePanel(); return;
       case 'vent': this.r.ventFx(m.x, m.y); if (!m.me) sfx.play('vent', .6); return;
       case 'interrogated': this.toast(`${c.player(m.n)?.name} était : ${m.room} au moment du meurtre.`); return;
-      case 'settings': { const keys = m.keys.map(k => LABELS[k] ? `${LABELS[k]} = ${fmtSetting(k, c.v?.settings?.[k])}` : null).filter(Boolean); for (const k of keys) this.notice(`Changement effectué : ${k}`); return; }
+      case 'settings': { for (const k of m.keys) if (LABELS[k]) this.notice('Changement effectué : ', `${LABELS[k]} = ${fmtSetting(k, c.v?.settings?.[k])}.`); return; }
     }
   }
-  notice(text) {
-    const n = el('div', 'au-notice', [el('span', 'ic', '⚙'), text]);
-    this.lobbyNotes.prepend(n);
-    while (this.lobbyNotes.childElementCount > 5) this.lobbyNotes.lastChild.remove();
+  notice(text, value) {
+    const n = el('div', 'au-notice', [el('i', 'ic'), el('span', '', [text, value ? el('b', '', value) : null])]);
+    n.firstChild.innerHTML = ICONS.cog;
+    this.lobbyNotes.append(n);
+    while (this.lobbyNotes.childElementCount > 5) this.lobbyNotes.firstChild.remove();
     setTimeout(() => n.remove(), 8000);
   }
   onChat(m) {
@@ -741,6 +757,21 @@ export class Play {
     }, { walk: true });
   }
 
+  // the tablet of the lobby: who is in the room (the host can exclude a player)
+  openPlayers() {
+    const c = this.c;
+    this.openPanel((box, api, P) => {
+      box.className = 'au-panel au-players';
+      const render = () => {
+        const V = c.v; if (!V || c.inGame) return;
+        const host = V.host === c.n, list = V.players.filter(p => !p.bot);
+        box.replaceChildren(el('h2', '', `JOUEURS ${list.length}/${V.settings.maxPlayers}`), el('div', 'au-plist', list.map(p => el('div', 'au-prow', [
+          crewIcon(p.color, 34), el('b', '', p.name), p.n === V.host ? el('i', '', 'Hôte') : null,
+          host && p.n !== c.n ? (() => { const b = el('button', 'au-btn small danger', 'Exclure', { type: 'button' }); b.onclick = () => c.send({ k: 'kick', id: p.id }); return b; })() : null]))));
+      };
+      render(); P.onView = render;
+    }, { walk: true });
+  }
   openCustomize() {
     const c = this.c;
     if (c.inGame) return;
@@ -1029,12 +1060,13 @@ function presetArt(id) {
   list.forEach(([c, x, y, l]) => drawCrew(g, c, x, y, 95, { left: l, ghost: id !== 'classic' && c === 'gray' }));
   return cv;
 }
+const face = n => `<img src="among/ui/top-${n}.webp" alt="" draggable="false">`;
 const ICONS = {
-  chat: '<svg viewBox="0 0 24 24"><path d="M3 5h14v9H8l-4 4v-4H3z" fill="#fff" stroke="#222" stroke-width="1.6"/><path d="M19 8h2v9h-1v3l-3-3h-6" fill="none" stroke="#fff" stroke-width="1.6"/></svg>',
-  gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.4" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',
-  map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="#fff" stroke-width="2"/><path d="M9 4v14M15 6v14" stroke="#fff" stroke-width="2"/></svg>',
-  mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" stroke="#fff" stroke-width="2" fill="none"/></svg>',
-  cos: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="#fff"/><path d="M8 17c1-2 2.5-3 4-3s3 1 4 3" stroke="#fff" stroke-width="2" fill="none"/></svg>',
-  role: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#fff"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7" fill="#fff"/></svg>',
+  chat: face('chat'), gear: face('gear'), tablet: face('tablet'),
+  map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="#2b2e31" stroke-width="2"/><path d="M9 4v14M15 6v14" stroke="#2b2e31" stroke-width="2"/></svg>',
+  mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="#2b2e31"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" stroke="#2b2e31" stroke-width="2" fill="none"/></svg>',
+  role: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#2b2e31"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7" fill="#2b2e31"/></svg>',
+  cog: '<svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M10.3 1.5h3.4l.5 2.9 2 .9 2.4-1.7 2.4 2.4-1.7 2.4.9 2 2.9.5v3.4l-2.9.5-.9 2 1.7 2.4-2.4 2.4-2.4-1.7-2 .9-.5 2.9h-3.4l-.5-2.9-2-.9-2.4 1.7-2.4-2.4 1.7-2.4-.9-2-2.9-.5v-3.4l2.9-.5.9-2-1.7-2.4 2.4-2.4 2.4 1.7 2-.9zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="8" y="3" width="11" height="14" rx="1.5" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M5 7v12.5A1.5 1.5 0 0 0 6.5 21H15" fill="none" stroke="#fff" stroke-width="2.2"/></svg>',
 };
 export { cleanSettings, GAMES, getMap };
