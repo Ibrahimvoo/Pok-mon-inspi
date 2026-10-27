@@ -1,6 +1,7 @@
 // Task minigames and sabotage repair panels. Each one builds its own interaction in `el` and calls api.done() only
 // when the player really completed it (the room also refuses completions faster than the task's minimum time).
 // api: { done(), close(), sfx(name), step: { console, game, target }, roomName(id), sab, fix(msg) }
+import * as POLUS from './tasks/polus.js';
 const NS = 'http://www.w3.org/2000/svg';
 const $ = (tag, attrs = {}, kids = []) => { const e = document.createElement(tag); for (const k in attrs) { if (k === 'style') e.style.cssText = attrs[k]; else if (k === 'text') e.textContent = attrs[k]; else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); } kids.forEach(c => c && e.append(c)); return e; };
 const svg = (w, h, html) => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', `0 0 ${w} ${h}`); s.innerHTML = html; return s; };
@@ -373,3 +374,7 @@ function handScan(el, api, title, wait) {
   hold(pad, { start: () => { api.fix({ a: 'hold', on: true }); info.textContent = wait; }, stop: () => { api.fix({ a: 'hold', on: false }); info.textContent = 'Maintiens jusqu’à ce que l’autre scanner soit aussi utilisé.'; } });
   api.onClose = () => api.fix({ a: 'hold', on: false });
 }
+
+// task screens reproduced from the in-game footage replace the earlier versions
+for (const k of ['asteroids', 'download', 'upload', 'wifi', 'wifiEnd', 'weather', 'weatherLab', 'temperature', 'telescope', 'sample', 'sampleEnd', 'scan', 'drill',
+  'chart', 'keys', 'fuelFill', 'fuelPour', 'jugFill', 'jugPour', 'canisters', 'waterwheel', 'swipe', 'boarding', 'tree', 'wires', 'manifolds', 'garbage']) MINIGAMES[k] = POLUS[k];

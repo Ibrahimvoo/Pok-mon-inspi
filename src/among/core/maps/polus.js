@@ -121,7 +121,7 @@ export default {
     storage_fuel: { x: 622, y: 410, room: 'storage' }, storage_water: { x: 500, y: 410, room: 'storage' },
     elec_wires: { x: 200, y: 395, room: 'electrical' }, elec_upload: { x: 268, y: 395, room: 'electrical' },
     o2_tree: { x: 60, y: 520, room: 'o2' }, o2_canisters: { x: 50, y: 610, room: 'o2' }, o2_wires: { x: 160, y: 604, room: 'o2' },
-    o2_plants: { x: 120, y: 545, room: 'o2' }, o2_upload: { x: 96, y: 620, room: 'o2' },
+    o2_plants: { x: 120, y: 545, room: 'o2' }, o2_garbage: { x: 130, y: 600, room: 'o2' }, o2_upload: { x: 96, y: 620, room: 'o2' },
     boiler_wheel: { x: 60, y: 760, room: 'boiler' }, boiler_jug: { x: 120, y: 722, room: 'boiler' },
     comms_wifi: { x: 362, y: 530, room: 'comms' }, comms_upload: { x: 312, y: 530, room: 'comms' }, comms_wires: { x: 378, y: 585, room: 'comms' },
     weapons_asteroids: { x: 362, y: 722, room: 'weapons' }, weapons_upload: { x: 330, y: 782, room: 'weapons' },

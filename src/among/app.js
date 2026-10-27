@@ -146,7 +146,7 @@ export class AmongApp {
     if (reason) this.toast(reason);
   }
   // console hooks
-  action(a) { if (this.play) return this.play.action(a); if (a === 'back') { const b = this.ui.querySelector('.back'); if (b) { b.click(); return true; } } return false; }
+  action(a, ev) { if (this.play) return this.play.action(a, ev); if (a === 'back') { const b = this.ui.querySelector('.back'); if (b) { b.click(); return true; } } return false; }
   suspend() { this.play?.suspend(); }
   resume() { this.play?.resume(); }
   destroy() { this.closed = true; this.play?.destroy(); this.stars.stop(); }

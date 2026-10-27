@@ -61,6 +61,7 @@ export const TASKS = {
     { id: 'fillCanisters', name: 'Remplir les bonbonnes', kind: 'short', steps: [S('o2_canisters', 'canisters')] },
     { id: 'storeArtifacts', name: 'Ranger les artefacts', kind: 'short', steps: [S('specimen_artifacts', 'artifacts')] },
     { id: 'unlockManifolds', name: 'Déverrouiller les collecteurs', kind: 'short', steps: [S('specimen_manifold', 'manifolds')] },
+    { id: 'emptyGarbage', name: 'Vider les ordures', kind: 'short', steps: [S('o2_garbage', 'garbage')] },
     { id: 'chartCourse', name: 'Tracer la route', kind: 'short', steps: [S('dropship_chart', 'chart')] },
     { id: 'uploadData', name: 'Transférer les données', kind: 'short', steps: [S({ oneOf: ['office_upload', 'elec_upload', 'weapons_upload', 'lab_upload', 'specimen_upload', 'o2_upload'] }, 'download'), S('comms_upload', 'upload')] },
   ],

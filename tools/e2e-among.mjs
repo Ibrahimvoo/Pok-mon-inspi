@@ -84,7 +84,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const st = () => state(A);
     const s0 = await st();
     ok('dummies are visible', s0.others >= 3, JSON.stringify(s0));
-    await A.keyboard.down('ArrowDown'); await A.waitForTimeout(1500); await A.keyboard.up('ArrowDown');
+    await A.until?.(); await A.waitForFunction(() => !(globalThis.__au.seqUntil > performance.now()), null, { timeout: 15000 }); await A.keyboard.down('ArrowDown'); await A.waitForTimeout(1500); await A.keyboard.up('ArrowDown');
     const s1 = await st();
     ok('walking moves the crewmate', Math.hypot(s1.x - s0.x, s1.y - s0.y) > 1, JSON.stringify([s0.x, s0.y, s1.x, s1.y]));
     await A.keyboard.down('ArrowUp'); await A.waitForTimeout(6000); await A.keyboard.up('ArrowUp');
@@ -95,12 +95,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const M = getMap('skeld'), gb = M.consoles.cafe_garbage;
     ok('walks to the garbage chute', await walkTo(A, gb.x, gb.y + .6));
     await A.keyboard.press('KeyE');
-    ok('the minigame opens', await until(A, () => !!document.querySelector('.mg-garbage'), 6000));
+    ok('the minigame opens', await until(A, () => !!document.querySelector('.mgx canvas'), 6000));
+    await A.waitForTimeout(400);
     await A.shot('task');
-    const lv = await A.$('.mg-lever'); const bb = await lv.boundingBox();
-    await A.mouse.move(bb.x + bb.width / 2, bb.y + 20); await A.mouse.down();
-    await A.mouse.move(bb.x + bb.width / 2, bb.y + bb.height - 10, { steps: 6 });
-    ok('the garbage empties while the lever is held', await until(A, () => !!document.querySelector('.mg-done'), 12000));
+    const at = (x, y) => A.evaluate(([x, y]) => document.querySelector('.mgx').toScreen(x, y), [x, y]);
+    const [lx, ly] = await at(425, 180), [, ly2] = await at(425, 300);
+    await A.mouse.move(lx, ly); await A.mouse.down();
+    await A.mouse.move(lx, ly2, { steps: 8 });
+    ok('the garbage empties while the lever is held', await until(A, () => !!document.querySelector('.mg-complete'), 12000));
     await A.mouse.up();
     ok('the room validates the step', await until(A, () => globalThis.__au.c.v.tasks.find(t => t.id === 'emptyGarbage').step === 1, 8000));
     // impostor: switch role, kill a dummy, vent, sabotage the lights
@@ -117,7 +119,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     ok('walks to the cafeteria vent', await walkTo(A, vent.x - .3, vent.y));
     await A.keyboard.press('KeyV');
     ok('enters the vent', await until(A, () => globalThis.__au.c.v.me.vent === 'cafe', 4000));
-    await A.shot('vent');
+    await A.shot('vent'); await A.waitForTimeout(600);
     await A.click('.au-ventarrow >> nth=0');
     ok('moves through the vents', await until(A, () => !!globalThis.__au.c.v.me.vent && globalThis.__au.c.v.me.vent !== 'cafe', 4000));
     await A.keyboard.press('KeyE');

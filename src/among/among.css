@@ -409,3 +409,11 @@
 .mg-lights .switch::after, .mg-door .switch::after { content: ''; position: absolute; left: 8px; right: 8px; height: 40px; bottom: 8px; background: #777; border-radius: 6px; transition: bottom .15s; }
 .mg-lights .switch.on::after, .mg-door .switch.on::after { bottom: 58px; background: #43ff7a; }
 .mg-simple .mg-btn { margin: 30px; }
+/* task screens drawn by src/among/tasks (one canvas in reference-screen units, no backdrop) */
+.au-panelwrap.mgw { background: transparent; }
+.au-panelwrap.mgw .au-close { display: none; }
+.au-panel.mgx { position: absolute; inset: 0; background: none; border: 0; border-radius: 0; padding: 0; max-width: none; max-height: none; overflow: hidden; box-shadow: none; }
+.mgx canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+.mg-complete { position: absolute; left: 50%; z-index: 40; transform: translate(-50%, -50%); font-family: Arial, 'Liberation Sans', Helvetica, sans-serif; color: #fff; white-space: nowrap; pointer-events: none;
+  text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 2px 0 #000; animation: mgRise 1.9s ease-out forwards; }
+@keyframes mgRise { 0%, 25% { transform: translate(-50%, -50%); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, calc(-50% + var(--rise, -70px))); opacity: 0; } }

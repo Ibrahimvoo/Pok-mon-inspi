@@ -5,6 +5,7 @@
 import { Renderer } from './render.js';
 import { ProximityVoice } from './voice.js';
 import { MINIGAMES } from './minigames.js';
+const PEEK = new Set(['wifiEnd', 'sampleEnd']);
 import { sfx } from './sound.js';
 import { el, crewIcon, mapLogo, fmtTime } from './ui.js';
 import { drawCrew, drawDead } from './art/crew.js';
@@ -176,10 +177,11 @@ export class Play {
     if (this.closed) return;
     this.raf = requestAnimationFrame(tt => this.loop(tt));
     if (this.minFrame && t - this.last < this.minFrame) return;   // tests may lower the frame rate (?aufps=)
-    const dt = Math.min(.05, (t - this.last) / 1000); this.last = t;
+    // real time, even on a slow device (movement in sub-steps so that collisions stay exact)
+    const dt = Math.min(.25, (t - this.last) / 1000); this.last = t;
     if (this.paused) return;
     const [dx, dy] = this.seqUntil > t || (this.panel && !this.panel.walk) ? [0, 0] : this.moveVector();
-    this.c.step(dx, dy, dt);
+    for (let left = dt; left > 1e-4; left -= .04) this.c.step(dx, dy, Math.min(.04, left));
     if (this.c.moving && !this.c.ghost && this.c.v) { this.stepT += dt; if (this.stepT > .3) { this.stepT = 0; sfx.play('step', .5); } }
     this.r.camView = this.panel?.camView || null;
     this.r.frame(dt);
@@ -221,7 +223,8 @@ export class Play {
     for (const t of V.tasks || []) {
       if (t.done || t.fake) continue;
       const st = t.steps[t.step]; const cs = st && M.consoles[st.console];
-      if (cs && d2(me, cs) <= USE_RANGE && now >= t.readyAt) cands.push({ kind: 'task', id: t.id, x: cs.x, y: cs.y, d: d2(me, cs) });
+      // screens that show their own countdown (reboot wifi, inspect sample) can be opened while waiting, like in the game
+      if (cs && d2(me, cs) <= USE_RANGE && (now >= t.readyAt || PEEK.has(st.game))) cands.push({ kind: 'task', id: t.id, x: cs.x, y: cs.y, d: d2(me, cs), peek: now < t.readyAt });
     }
     if (alive && V.sab) (M.sabotage[V.sab.kind] || []).forEach((s, i) => { if (d2(me, s) <= USE_RANGE + .5) cands.push({ kind: 'sab', i, x: s.x, y: s.y, d: d2(me, s) }); });
     if (alive && M.button && V.me.meetingsLeft > 0 && !this.freeplay) { const B = M.button, box = B.box ? { x: Math.max(B.box[0] / M.k, Math.min(B.box[2] / M.k, me.x)), y: Math.max(B.box[1] / M.k, Math.min(B.box[3] / M.k, me.y)) } : B; if (d2(me, box) <= (B.r || 2)) cands.push({ kind: 'button', x: B.x, y: B.y, d: d2(me, box) + .5 }); }
@@ -314,7 +317,7 @@ export class Play {
     if (!T) return;
     sfx.play('click');
     if (T.kind === 'customize') return this.openCustomize();
-    if (T.kind === 'task') { c.send({ k: 'task', a: 'open', id: T.id }); return; }
+    if (T.kind === 'task') { if (T.peek) { const t = c.v.tasks.find(x => x.id === T.id); this.openTask(T.id, t.step, true); } else c.send({ k: 'task', a: 'open', id: T.id }); return; }
     if (T.kind === 'sab') return this.openSabotageFix(T.i);
     if (T.kind === 'button') { c.send({ k: 'button' }); return; }
     if (T.kind === 'sys') { c.send({ k: 'sys', s: T.s }); this.openSystem(T.s); return; }
@@ -429,7 +432,7 @@ export class Play {
       case 'meeting': return this.showMeetingSplash(m);
       case 'voted': sfx.play('vote'); return;
       case 'verdict': { const j = c.player(m.judge), t = c.player(m.target); this.toast(`Verdict du Juge contre ${t?.name} : ${m.guilty ? 'COUPABLE' : 'innocent'}${m.dead != null ? ` — ${c.player(m.dead)?.name} est éliminé` : ''}`); sfx.play(m.guilty ? 'kill' : 'lose'); void j; return; }
-      case 'taskOpen': return this.openTask(m.id, m.step);
+      case 'taskOpen': if (this.panel?.taskId === m.id && this.panel.api.onStep) { this.panel.api.step = this.c.v?.tasks?.find(x => x.id === m.id)?.steps[m.step] || {}; this.panel.api.onStep(m.step); return; } return this.openTask(m.id, m.step);
       case 'taskDone': sfx.play('taskDone'); return;
       case 'stepDone': sfx.play('taskStep'); return;
       case 'sabotage': this.toast(`Sabotage : ${SAB[m.s] || m.s}`); if (!['reactor', 'o2', 'seismic'].includes(m.s)) sfx.play('alarm'); return;
@@ -480,7 +483,7 @@ export class Play {
       done: () => opts.onDone?.(), close: () => this.closePanel(), sfx: n => sfx.play(n), step: opts.step || {}, index: opts.index,
       roomName: id => { const M = this.c.map; const cs = id ? M.consoles[id] : null; return cs?.room ? M.rooms.find(r => r.id === cs.room)?.name : M.roomAt(this.c.pos.x, this.c.pos.y)?.name || 'Extérieur'; },
       sab: this.c.v?.sab, fix: msg => this.c.send({ k: 'fix', i: opts.index, ...msg }),
-      me: { name: this.c.self?.name, colorName: colorOf(this.c.self?.color).name },
+      me: { name: this.c.self?.name, color: this.c.self?.color, colorName: colorOf(this.c.self?.color).name },
     };
     P.api = api;
     close.onclick = () => { sfx.play('click'); this.closePanel(); };
@@ -503,17 +506,29 @@ export class Play {
     const P = this.panel;
     if (P?.console && d2(this.c.pos, P.console) > USE_RANGE + 1.2) this.closePanel(true);
   }
-  openTask(id, step) {
+  openTask(id, step, peek = false) {
     const c = this.c, t = c.v?.tasks?.find(x => x.id === id);
     if (!t) return;
     const st = t.steps[step], game = MINIGAMES[st.game];
     if (!game) { this.toast('Mini-jeu introuvable : ' + st.game); return; }
     const cs = c.map.consoles[st.console];
-    this.openPanel((box, api) => { box.classList.add('au-mgbox'); game(box, api); }, {
+    const P = this.openPanel((box, api) => {
+      box.classList.add('au-mgbox');
+      // chained steps stay on screen: advance() completes the current step without closing, reopen() asks the
+      // authority for the next one when its wait is over, left() is that wait in ms
+      Object.assign(api, {
+        peek, task: t,
+        left: () => Math.max(0, (c.v?.tasks?.find(x => x.id === id)?.readyAt || 0) - c.serverNow()),
+        advance: () => c.send({ k: 'task', a: 'done', id }),
+        reopen: () => c.send({ k: 'task', a: 'open', id }),
+      });
+      game(box, api);
+    }, {
       step: st, console: cs,
       onDone: () => { c.send({ k: 'task', a: 'done', id }); this.closePanel(true); },
       onClosed: () => c.send({ k: 'task', a: 'close', id }),
     });
+    P.taskId = id;
   }
   openSabotageFix(i) {
     const V = this.c.v, kind = V.sab?.kind;
