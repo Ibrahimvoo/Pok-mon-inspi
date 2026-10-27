@@ -39,6 +39,7 @@ import { drawCrew, drawDead } from './art/crew.js';
 import { mapImage } from './art/maparts.js';
 import { getMap, judgeLocked } from './core/room.js';
 import { MINIMAP } from './art/minimap.js';
+import { ITEMS, NONE_PLATE, itemName, preloadItems } from './art/cosmetics.js';
 import { taskDef, GAMES } from './core/tasks.js';
 import { ROLES, ROLE_INFO, COLORS, SETTINGS, SETTING_GROUPS, LABELS, ROLE_OPTIONS, ROLE_LABELS, CREW_ROLES, IMP_ROLES, PRESETS, MAX_PLAYERS, KILL_RANGE, USE_RANGE, REPORT_RANGE, ABILITY_RANGE, MIN_PLAYERS, CREW_HEIGHT, fmtSetting, fmtRoleOpt, cleanSettings } from './core/rules.js';
 import { saveProfile } from './app.js';
@@ -207,7 +208,7 @@ export class Play {
       players: top('players', ICONS.tablet, () => this.openPlayers(), 'Joueurs du salon'), role: top('role', ICONS.role, () => this.openFreeplayRoles(), 'Rôle'),
     };
     this.wardrobe = el('button', 'au-wardrobe', el('img', '', [], { src: 'among/ui/wardrobe.webp', alt: 'Vestiaire', draggable: 'false' }), { type: 'button', title: 'Vestiaire' });
-    this.wardrobe.onclick = () => { sfx.play('click'); this.openCustomize(); };
+    this.wardrobe.onclick = () => { if (!this.T?.use) return; sfx.play('click'); this.doUse(); };
     this.notesBtn = el('button', 'au-act notes', [el('b', '', 'Notes')], { type: 'button' }); this.notesBtn.onclick = () => this.openNotes();
     this.lobby = el('div', 'au-lobby');
     this.lobbyNotes = el('div', 'au-notices');
@@ -279,9 +280,9 @@ export class Play {
     const out = { use: null, report: null, kill: null, vent: null, ability: null };
     if (!V) return out;
     if (!c.inGame) {
-      // the laptop and the hat chest of the dropship open the customisation, like the game
-      const near = ['laptop', 'chest'].filter(id => M.consoles[id] && d2(me, M.consoles[id]) < 1.3);
-      if (near.length) out.use = { kind: 'customize', x: M.consoles[near[0]].x, y: M.consoles[near[0]].y, glow: near };
+      // the dropship: the laptop opens the game settings (« Personnaliser »), the hat chest the wardrobe (« Vestiaire »)
+      const near = ['laptop', 'chest'].map(id => ({ id, cs: M.consoles[id] })).filter(o => o.cs && d2(me, o.cs) < 1.3).sort((a, b) => d2(me, a.cs) - d2(me, b.cs))[0];
+      if (near) out.use = { kind: near.id === 'laptop' ? 'settings' : 'customize', x: near.cs.x, y: near.cs.y, glow: [near.id] };
       return out;
     }
     if (c.phase !== 'play') return out;
@@ -321,8 +322,10 @@ export class Play {
     const set = (b, enabled, cd = 0) => { b.disabled = !enabled || cd > 0; b.querySelector('.au-cd').textContent = cd > 0 ? Math.ceil(cd / 1000) : ''; b.classList.toggle('cooling', cd > 0); };
     const me = V?.me, role = me?.alive ? me?.role : me?.ghostRole;
     this.wardrobe.hidden = !lobby;
-    const pc = lobby && T.use?.kind === 'customize';
-    if (this.wardrobe.dataset.pc !== String(pc)) { this.wardrobe.dataset.pc = pc; this.wardrobe.firstChild.src = `among/ui/${pc ? 'customize' : 'wardrobe'}.webp`; this.wardrobe.title = pc ? 'Personnaliser' : 'Vestiaire'; }
+    // the corner button of the lobby: « Vestiaire » next to the hat chest, « Personnaliser » (the laptop) otherwise,
+    // greyed out while nothing is in reach
+    const near = lobby ? T.use?.kind : null, face = near === 'customize' ? 'wardrobe' : near === 'settings' ? 'customize-on' : 'customize';
+    if (this.wardrobe.dataset.face !== face) { this.wardrobe.dataset.face = face; this.wardrobe.firstChild.src = `among/ui/${face}.webp`; this.wardrobe.title = near === 'customize' ? 'Vestiaire' : 'Personnaliser'; this.wardrobe.classList.toggle('off', !near); }
     show(B.use, play && !!me); set(B.use, !!T.use || !!me?.vent);
     B.use.classList.toggle('exitvent', !!me?.vent);
     B.use.querySelector('b').textContent = me?.vent ? 'Sortir' : T.use?.kind === 'sys' ? { admin: 'Admin', cams: 'Sécurité', vitals: 'Signes vitaux' }[T.use.s] : T.use?.kind === 'button' ? 'Urgence' : 'Utiliser';
@@ -386,6 +389,7 @@ export class Play {
     if (!T) return;
     sfx.play('click');
     if (T.kind === 'customize') return this.openCustomize();
+    if (T.kind === 'settings') return this.openGameSettings(this.c.v?.host === this.c.n && !this.freeplay);
     if (T.kind === 'task') { if (T.peek) { const t = c.v.tasks.find(x => x.id === T.id); this.openTask(T.id, t.step, true); } else c.send({ k: 'task', a: 'open', id: T.id }); return; }
     if (T.kind === 'sab') return this.openSabotageFix(T.i);
     if (T.kind === 'button') { c.send({ k: 'button' }); return; }
@@ -806,27 +810,75 @@ export class Play {
       render(); P.onView = render;
     }, { walk: true });
   }
+  // the wardrobe (« Vestiaire », the hat chest of the dropship), laid out like the game: tab bar, grid on the left,
+  // the crewmate wearing the selection on the right (item pictures from tools/among/cut_wardrobe.py)
   openCustomize() {
     const c = this.c;
     if (c.inGame) return;
+    preloadItems();
     this.openPanel((box, api, P) => {
-      box.className = 'au-panel au-custom';
-      const tabs = [['Couleurs', 'color'], ['Chapeaux', 'hat'], ['Skins', 'skin'], ['Visières', 'visor'], ['Familiers', 'pet'], ['Plaques', 'plate']];
-      let tab = 'color';
-      const head = el('div', 'au-tabs'), grid = el('div', 'au-cgrid'), preview = el('canvas', 'au-preview', [], { width: 240, height: 300 }), label = el('div', 'au-plabel');
-      const render = () => {
-        head.replaceChildren(...tabs.map(([n, k]) => { const b = el('button', 'au-tab' + (k === tab ? ' on' : ''), n, { type: 'button' }); b.onclick = () => { tab = k; render(); }; return b; }));
-        const V = c.v, mine = c.self;
-        const taken = new Set((V?.players || []).filter(p => p.n !== c.n).map(p => p.color));
-        if (tab === 'color') grid.replaceChildren(...COLORS.map(col => { const b = el('button', 'au-swatch' + (mine?.color === col.id ? ' on' : '') + (taken.has(col.id) ? ' taken' : ''), [], { type: 'button', title: col.name, style: `--c:${col.body};--s:${col.shade}` }); b.disabled = taken.has(col.id); b.onclick = () => { c.send({ k: 'look', color: col.id }); this.app.prof.color = col.id; saveProfile(this.app.prof); sfx.play('click'); }; return b; }));
-        else grid.replaceChildren(el('div', 'au-missing', [el('b', '', 'AUCUN'), el('p', '', 'Les sprites de cette catégorie ne sont pas dans le projet. Déposez des sprites autorisés dans public/among/sprites pour les activer.')]));
-        const g = preview.getContext('2d'); g.clearRect(0, 0, 240, 300);
-        drawCrew(g, mine?.color || 'red', 120, 280, 250);
-        label.textContent = colorOf(mine?.color).name.toUpperCase();
+      box.className = 'wd';
+      P.wrap.classList.add('wdw');
+      this.root.classList.add('wdopen');
+      const TABS = [['color', 'COULEURS'], ['hat', 'CHAPEAUX'], ['skin', 'SKINS'], ['visor', 'VISIÈRES'], ['pet', 'BESTIOLES'], ['plate', 'PLAQUES'], ['cube', 'COSMICUBES']];
+      let tab = 'color', shown = null;               // shown: the item named under the preview (last one picked)
+      const btn = (cls, kids, fn, attrs = {}) => { const b = el('button', cls, kids, { type: 'button', ...attrs }); b.onclick = () => { sfx.play('click'); fn(); }; return b; };
+      const close = btn('wd-close', [], () => this.closePanel(), { 'aria-label': 'Fermer' });
+      const tabs = el('div', 'wd-tabs');
+      const title = el('h2', 'wd-title'), grid = el('div', 'wd-grid'), bar = el('div', 'wd-sbar', el('i'));
+      const cv = el('canvas', 'wd-crew', [], { width: 600, height: 760 }), name = el('div', 'wd-name'), state = el('div', 'wd-eq');
+      const plate = el('div', 'wd-plate', [el('img', '', [], { alt: '' }), el('b')]);
+      const cube = el('div', 'wd-cube', [el('img', '', [], { src: 'among/ui/wd/cube.webp', alt: '' }), el('div', 'wd-cname', 'MIRA COSMICUBE'),
+        el('div', 'wd-cbtns', [btn('', 'Activer', () => this.toast('Les Cosmicubes ne sont pas disponibles dans cette recréation.')), btn('', 'Voir cube', () => this.toast('Les Cosmicubes ne sont pas disponibles dans cette recréation.'))])]);
+      box.append(el('div', 'wd-bar', [close, tabs]), title, grid, bar, el('div', 'wd-prev', [cv, plate, name, state]), cube);
+      const syncBar = () => { const r = grid.scrollHeight - grid.clientHeight; bar.hidden = r <= 2; const k = grid.clientHeight / grid.scrollHeight; bar.firstChild.style.height = `${k * 100}%`; bar.firstChild.style.top = `${r > 0 ? grid.scrollTop / r * (1 - k) * 100 : 0}%`; };
+      grid.addEventListener('scroll', syncBar);
+      const me = () => c.self || {};
+      const wear = (k, id) => { c.send({ k: 'look', [k]: id }); this.app.prof[k] = id; saveProfile(this.app.prof); shown = id; };
+      const look = () => { const m = me(); return { hat: m.hat, skin: m.skin, visor: m.visor, pet: m.pet }; };
+      const drawPreview = () => {
+        const g = cv.getContext('2d'); g.clearRect(0, 0, 600, 760);
+        drawCrew(g, me().color || 'red', 290, 640, 520, { look: look() });
       };
-      box.append(head, el('div', 'au-custombody', [grid, el('div', 'au-pwrap', [preview, label])]));
+      const render = () => {
+        if (!c.v || c.inGame) return;
+        const m = me();
+        tabs.replaceChildren(...TABS.map(([k], i) => btn('wd-tab' + (k === tab ? ' on' : ''), el('img', '', [], { src: `among/ui/wd/tab-${i}.webp`, alt: '' }), () => { tab = k; shown = null; grid.scrollTop = 0; render(); }, { 'aria-label': TABS[i][1] })));
+        title.textContent = TABS.find(t => t[0] === tab)[1];
+        box.dataset.tab = tab;
+        const keep = grid.scrollTop;
+        if (tab === 'color') {
+          const used = new Set((c.v.players || []).map(p => p.color));
+          grid.className = 'wd-grid colors';
+          grid.replaceChildren(...COLORS.map(col => {
+            const b = btn('wd-col' + (m.color === col.id ? ' on' : '') + (used.has(col.id) ? ' used' : ''), used.has(col.id) ? el('i', 'x', '✕') : [], () => { if (m.color !== col.id) { c.send({ k: 'look', color: col.id }); this.app.prof.color = col.id; saveProfile(this.app.prof); } }, { title: col.name, 'aria-label': col.name });
+            b.style.setProperty('--c', col.body); b.disabled = used.has(col.id) && m.color !== col.id;
+            return b;
+          }));
+          name.textContent = colorOf(m.color).name.toUpperCase(); state.textContent = 'ÉQUIPÉ';
+        } else if (tab === 'cube') {
+          grid.className = 'wd-grid cubes';
+          grid.replaceChildren(btn('wd-card', el('img', '', [], { src: 'among/ui/wd/cube-card.webp', alt: 'Mira Cosmicube' }), () => {}));
+        } else {
+          const list = ITEMS[tab], cur = m[tab] || 'none';
+          grid.className = 'wd-grid ' + (tab === 'plate' ? 'plates' : 'items');
+          const tile = (id, kids) => btn('wd-item' + (cur === id ? ' on' : ''), kids, () => wear(tab, id), { 'aria-label': id === 'none' ? 'Aucun' : itemName(tab, id) });
+          grid.replaceChildren(
+            tile('none', tab === 'plate' ? el('img', '', [], { src: `among/ui/wd/${NONE_PLATE}.webp`, alt: '' }) : []),
+            ...list.map(it => tile(it.id, el('img', '', [], { src: `among/ui/wd/${it.id}.webp`, alt: '' }))));
+          const sel = shown ?? cur;
+          name.textContent = sel === 'none' ? '' : itemName(tab, sel).toUpperCase();
+          state.textContent = sel !== 'none' && sel === cur ? 'ÉQUIPÉ' : '';
+          if (tab === 'plate') { plate.firstChild.src = `among/ui/wd/${cur === 'none' ? NONE_PLATE : cur}.webp`; plate.lastChild.textContent = m.name || ''; }
+        }
+        grid.scrollTop = keep;
+        drawPreview(); requestAnimationFrame(syncBar);
+      };
       render();
+      // the item pictures arrive after the first render
+      [250, 800, 2000].forEach(t => setTimeout(() => { if (this.panel === P) drawPreview(); }, t));
       P.onView = () => render();
+      P.onClosed = () => this.root.classList.remove('wdopen');
     }, { walk: false });
   }
 
@@ -1031,10 +1083,12 @@ export class Play {
         grid.replaceChildren(...players.map(p => {
           const votes = res ? res.votes.filter(([, t]) => t === p.n) : [];
           const card = el('button', 'mt-card' + (p.dead ? ' dead' : '') + (p.voted && !res ? ' voted' : '') + (pick === p.n ? ' pick' : ''), [
-            crewIcon(p.color, 46, { dead: p.dead }), el('b', '', p.name), M.caller === p.n ? el('span', 'mega', '📢') : null,
+            crewIcon(p.color, 46, { dead: p.dead, look: p }), el('b', '', p.name), M.caller === p.n ? el('span', 'mega', '📢') : null,
             p.voted && !res ? el('span', 'stamp', 'J’AI VOTÉ') : null, p.dead ? el('span', 'x', '✕') : null,
             res ? el('div', 'mt-votes', votes.map(([voter]) => voter >= 0 ? crewIcon(c.player(voter)?.color || 'gray', 18) : crewIcon('gray', 18))) : null,
           ], { type: 'button' });
+          // the nameplate chosen in the wardrobe is the background of the card, like the game
+          if (p.plate && p.plate !== 'none') { card.classList.add('plated'); card.style.backgroundImage = `url(among/ui/wd/${p.plate}.webp)`; }
           card.disabled = !canVote || p.dead;
           card.onclick = () => { pick = pick === p.n ? null : p.n; E.update(c.v); };
           if (pick === p.n && canVote) {

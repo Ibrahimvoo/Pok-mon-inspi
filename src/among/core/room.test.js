@@ -68,9 +68,9 @@ test('lobby: joining, colours, host-only settings, capacity and kick', () => {
   assert.equal(s.room.hostId, 'a');
   const colors = [...s.room.players.values()].map(p => p.color);
   assert.equal(new Set(colors).size, 3, 'every player gets a different colour');
-  s.send('b', { k: 'look', color: s.p('a').color, hat: 'cowboy', visor: 'bogus' });
+  s.send('b', { k: 'look', color: s.p('a').color, hat: 'hat-11', visor: 'bogus' });
   assert.notEqual(s.p('b').color, s.p('a').color, 'a colour already taken is refused');
-  assert.equal(s.p('b').hat, 'cowboy'); assert.equal(s.p('b').visor, 'none');
+  assert.equal(s.p('b').hat, 'hat-11'); assert.equal(s.p('b').visor, 'none');
   s.send('b', { k: 'set', settings: { impostors: 3 } });
   assert.equal(s.room.settings.impostors, 1, 'only the host changes settings');
   s.send('a', { k: 'set', settings: { killCooldown: 999, playerSpeed: 1.3, map: 'polus', roles: { engineer: { count: 2, chance: 55 } } } });

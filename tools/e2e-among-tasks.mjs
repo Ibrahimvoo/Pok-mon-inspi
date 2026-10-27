@@ -130,7 +130,7 @@ try {
   ok('start reactor: a wrong key fails the sequence', (await probe()).state === 'fail');
   // Empty Garbage: hold the lever down
   await open('garbage', { console: 'cafe_garbage', task: 'emptyGarbage' });
-  { const [lx, ly] = await scr(425, 180), [, ly2] = await scr(425, 300); await page.mouse.move(lx, ly); await page.mouse.down(); for (let i = 1; i <= 8; i++) await page.mouse.move(lx, ly + (ly2 - ly) * i / 8); await shot('garbage'); const emptied = await done(9000); await page.mouse.up();
+  { const [lx, ly] = await scr(425, 180), [, ly2] = await scr(425, 300); await page.mouse.move(lx, ly); await page.mouse.down(); for (let i = 1; i <= 8; i++) await page.mouse.move(lx, ly + (ly2 - ly) * i / 8); await shot('garbage'); const emptied = await done(25000);   // 2.2 s of real holding; slow software rendering advances at most .25 s per frame await page.mouse.up();
   ok('empty garbage: lever held until the bin is empty', emptied); }
   // sabotage screens: they send the repair to the room
   await open('reactorHand', {}, { kind: 'reactor', holds: [-1, -1], fixed: [false, false] });

@@ -7,6 +7,7 @@ import { DEAD } from './dead-ref.js';
 import { WALK } from './walk-ref.js';
 import { COLORS } from '../core/rules.js';
 import { spriteBase } from './sprites.js';
+import { drawWorn, drawPet } from './cosmetics.js';
 
 export const SIZE = REF.size;                 // [width, height] in reference pixels
 export const FEET = REF.feet;                 // y of the lowest foot
@@ -20,33 +21,28 @@ function fill(g, list, color) { g.beginPath(); polys(g, list); g.fillStyle = col
 const bbox = list => { let a = 1e9, b = 1e9, c = -1e9, d = -1e9; for (const p of list) for (const [x, y] of p) { a = Math.min(a, x); b = Math.min(b, y); c = Math.max(c, x); d = Math.max(d, y); } return [a, b, c, d]; };
 const CROTCH_T = 20;   // thickness of the outline under the suit between the legs (measured on the reference)
 
-// Walk cycle: the 12 frames of the supplied Detective trailer (walk-ref.js, tools/among/trace_walk.py). Legs come from
-// those frames, the upper body is the base itself, lifted by the hop measured against the shadow on the floor.
+// Walk cycle: the 12 frames of the supplied walk recording (walk-ref.js, tools/among/trace_walk_video.py), 24 fps.
+// Each frame is a whole crewmate (the body turns and hops while walking), anchored on its shadow like the base.
 export const WALK_FRAMES = WALK.frames.length;
-export function pose(frame) {
-  if (frame < 0) return { bob: 0, legs: null };
-  const f = WALK.frames[frame % WALK_FRAMES];
-  return { bob: -f.lift, legs: f.legs };
-}
+export const WALK_FPS = WALK.fps;
 function leg(g, which, part) {
   fill(g, SHAPES[`${which}Leg${part}`], part === 'Sil' ? K.outline : g.shadeColor);
 }
-function walkLegs(g, legs, color) {
-  g.beginPath(); polys(g, legs);
-  g.lineJoin = 'round'; g.lineWidth = 2 * CROTCH_T; g.strokeStyle = K.outline; g.stroke();
-  g.fillStyle = K.outline; g.fill();
-  g.beginPath(); polys(g, legs); g.fillStyle = color; g.fill();
+function walkFrame(g, f, C, noVisor) {
+  fill(g, f.sil, K.outline); fill(g, f.shade, C.shade); fill(g, f.lit, C.body);
+  if (noVisor) return;
+  fill(g, f.ring, K.ring); fill(g, f.glass, K.glass);
+  g.save(); g.beginPath(); polys(g, f.glass); g.clip(); fill(g, f.glassShade, K.glassShade); g.restore();
+  fill(g, f.shine, K.shine);
 }
 
 // draw at the origin of the reference box (facing right); opts: ghost, noVisor, alpha
 export function drawCrewBase(g, color, frame = -1, opts = {}) {
   const C = colorOf(color);
-  const P = pose(frame);
+  if (frame >= 0 && !opts.ghost) { walkFrame(g, WALK.frames[frame % WALK_FRAMES], C, opts.noVisor); return; }
   g.save();
   g.shadeColor = C.shade;
-  g.translate(0, P.bob);
-  if (!opts.ghost && P.legs) walkLegs(g, P.legs, C.shade);
-  else if (!opts.ghost) {
+  if (!opts.ghost) {
     // standing: the traced legs, the dark band under the suit between them, then their fill
     leg(g, 'back', 'Sil'); leg(g, 'front', 'Sil');
     g.fillStyle = K.outline; g.beginPath();
@@ -133,15 +129,18 @@ export function deadSprite(color, scale) {
 // pixels per unit of the current transform (world view or plain canvas)
 const pxPerUnit = g => { const m = g.getTransform(); return Math.hypot(m.a, m.b) || 1; };
 // draw a crewmate in a 2D context with its feet at (x, y); height = height of the whole suit in the context's units
-export function drawCrew(g, color, x, y, height, { frame = -1, left = false, ghost = false, alpha = 1, noVisor = false } = {}) {
+// look: the worn cosmetics ({ hat, skin, visor, pet }), drawn over the sprite (they are not part of the cached image)
+export function drawCrew(g, color, x, y, height, { frame = -1, left = false, ghost = false, alpha = 1, noVisor = false, look = null } = {}) {
   const scale = height / SIZE[1], px = pxPerUnit(g);
   const spr = crewSprite(color, frame, Math.max(.01, scale * px), { ghost, noVisor });
   g.save();
   g.globalAlpha *= alpha;
   g.translate(x, y);
   if (left) g.scale(-1, 1);
+  if (look && !ghost) { g.save(); g.scale(scale, scale); g.translate(-CENTER, -FEET); drawPet(g, look); g.restore(); }
   // the sprite was rendered at spr.scale device pixels per reference pixel: back to context units
   g.drawImage(spr, -(CENTER + PAD) * scale, -(FEET + PAD) * scale, spr.width / spr.scale * scale, spr.height / spr.scale * scale);
+  if (look && !noVisor) { g.save(); g.scale(scale, scale); g.translate(-CENTER, -FEET); drawWorn(g, look, frame, { ghost }); g.restore(); }
   g.restore();
 }
 export function drawDead(g, color, x, y, height, { left = false, alpha = 1 } = {}) {

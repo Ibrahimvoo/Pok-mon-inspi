@@ -73,3 +73,8 @@ ImageDraw.Draw(help_).rectangle((160, 14, 536, 200), fill=(0, 0, 0))
 save(flood_key(help_, lambda p: 20 < sum(p[:3]) < 130 and max(p[:3]) - min(p[:3]) < 22, False), 'help')
 
 save(flood_key(LOBBY.crop((2130, 925, 2325, 1110)), lambda p: sum(p[:3]) < 120 and max(p[:3]) - min(p[:3]) < 30, False), 'customize', OUT.parent)
+# the « Personnaliser » face with the laptop in reach: the greyed capture, brightened
+from PIL import ImageEnhance
+grey = Image.open(OUT.parent / 'customize.webp').convert('RGBA')
+on = ImageEnhance.Contrast(ImageEnhance.Brightness(grey.convert('RGB')).enhance(1.45)).enhance(1.15).convert('RGBA'); on.putalpha(grey.getchannel('A'))
+save(on, 'customize-on', OUT.parent)

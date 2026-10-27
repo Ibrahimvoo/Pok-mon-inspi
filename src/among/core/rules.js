@@ -28,13 +28,11 @@ export const COLORS = [
 ];
 export const COLOR_IDS = COLORS.map(c => c.id);
 
+// the wardrobe items (art/cosmetics.js has their names and pictures)
+const ids = (p, n) => Array.from({ length: n }, (_, i) => `${p}-${String(i + 1).padStart(2, '0')}`);
 export const COSMETICS = {
-  hat: ['none', 'astronaut', 'slime', 'cowboy', 'poop', 'tophat', 'flowerpot', 'goggles', 'hardhat', 'heart', 'military', 'police', 'paperhat', 'wizard', 'cap',
-    'crown', 'eyebrows', 'halo', 'elf', 'beanie', 'chef', 'party', 'santa', 'headphones', 'bandana', 'antenna', 'egg', 'leaf', 'mohawk', 'pirate', 'viking', 'beret'],
-  skin: ['none', 'red', 'mechanic', 'captain', 'jeans', 'military', 'police', 'doctor', 'suit', 'whitesuit', 'security', 'astro'],
-  visor: ['none', 'mask', 'eyelash', 'gum'],
-  pet: ['none', 'mini', 'dog', 'robot', 'slug', 'ufo', 'hamster'],
-  plate: ['none', 'hex', 'stripes', 'stars', 'circuit', 'lava', 'snow'],
+  hat: ['none', ...ids('hat', 18)], skin: ['none', ...ids('skin', 17)], visor: ['none', ...ids('visor', 8)], pet: ['none', ...ids('pet', 1)],
+  plate: ['none', 'plate-02', 'plate-03', 'plate-04', 'plate-05', 'plate-06'],
 };
 
 export const ROLES = {

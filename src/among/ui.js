@@ -12,11 +12,11 @@ export function el(tag, cls = '', kids = [], attrs = {}) {
 export const mapLogo = m => el('span', `au-maplogo ${m}`, m === 'polus' ? 'POLUS' : 'THE SKELD');
 
 // a crewmate icon (canvas) in the shared base
-export function crewIcon(color, size = 40, { ghost = false, left = false, dead = false } = {}) {
+export function crewIcon(color, size = 40, { ghost = false, left = false, dead = false, look = null } = {}) {
   const c = el('canvas', 'au-crewicon', [], { width: size * 2, height: size * 2 });
   c.style.width = c.style.height = size + 'px';
   const g = c.getContext('2d');
-  drawCrew(g, color, size, size * 1.86, size * 1.65, { ghost, left, alpha: dead ? .45 : 1 });
+  drawCrew(g, color, size, size * 1.86, size * 1.65, { ghost, left, alpha: dead ? .45 : 1, look: look && { hat: look.hat, visor: look.visor, skin: look.skin } });
   return c;
 }
 

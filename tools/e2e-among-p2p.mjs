@@ -1,6 +1,6 @@
 // End-to-end test of Among Us without the project server, as on the static site (GitHub Pages): the host's console
 // runs the room and the others join it by code through PeerJS (a local broker here). Four browsers with fake
-// microphones: create, join by code, settings, proximity voice in the lobby, game start, roles, a kill and the voice
+// microphones: create, a friend joining while the host is away (iOS suspends the page), join by code, settings, proximity voice in the lobby, game start, roles, a kill and the voice
 // groups of the living and the dead.
 // Usage: npm run e2e:among-p2p
 import { createServer } from 'node:http';
@@ -58,7 +58,16 @@ try {
   ok('…hosted in the browser (no server)', await A.evaluate(() => globalThis.__au.c.link.constructor.name) !== 'ServerLink');
   const code = await A.evaluate(() => globalThis.__au.c.v.code);
   ok('the code is shown in the lobby panel', (await A.locator('.lb-code b').innerText()) === code, code);
-  for (const p of P.slice(1)) {
+  // the host's phone leaves the game to send the code (iOS suspends the page: the broker connection is cut, then the
+  // whole peer is gone); a friend typing the code meanwhile must still get in once the host is back
+  await A.evaluate(() => globalThis.__au.c.link.peer.destroy());
+  const early = P[1];
+  await early.click('.am-card:has-text("ENTRER UN CODE")');
+  await early.fill('.am-code', code);
+  await early.press('.am-code', 'Enter');
+  ok('the friend waits for the host instead of failing', await until(early, () => /pas encore joignable/.test(document.querySelector('.au-wait')?.innerText || '') || globalThis.__au?.c?.phase === 'lobby', 20000));
+  ok('…and gets in once the host is back', await until(A, () => globalThis.__au.c.v.players.filter(p => !p.bot).length === 2, 45000));
+  for (const p of P.slice(2)) {
     await p.click('.am-card:has-text("ENTRER UN CODE")');
     await p.fill('.am-code', code.toLowerCase());
     await p.press('.am-code', 'Enter');

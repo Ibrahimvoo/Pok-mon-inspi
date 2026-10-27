@@ -1,13 +1,12 @@
 // Draws the world: the reference map image, vents, bodies, crewmates (one shared base), names, the light cone with
 // shadows behind the walls, task arrows and highlights. Everything is in world units scaled to the screen like the
 // reference footage (VIEW_HEIGHT units from top to bottom).
-import { drawCrew, drawDead, WALK_FRAMES } from './art/crew.js';
+import { drawCrew, drawDead, WALK_FRAMES, WALK_FPS } from './art/crew.js';
 import { mapArt, drawMapImage } from './art/maparts.js';
 import { COLORS, CREW_HEIGHT, VIEW_HEIGHT, VISION_BASE, LIGHTS_VISION, USE_RANGE } from './core/rules.js';
 
 const LOBBY_GLOW = { laptop: { r: [437, 290, 79, 109] }, chest: { r: [641, 314, 75, 69] } };   // dropship image px
 const colorOf = id => COLORS.find(c => c.id === id) || COLORS[0];
-const WALK_FPS = 24;
 
 export class Renderer {
   constructor(canvas, client) {
@@ -100,7 +99,7 @@ export class Renderer {
     const bob = ghost ? Math.sin(this.time * 2.2 + p.n) * .05 : 0;
     // shadow under the feet
     if (!ghost) { g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(p.x, p.y, .27, .075, 0, 0, Math.PI * 2); g.fill(); }
-    drawCrew(g, L.color, p.x, p.y + bob, CREW_HEIGHT, { frame, left, ghost, alpha });
+    drawCrew(g, L.color, p.x, p.y + bob, CREW_HEIGHT, { frame, left, ghost, alpha, look: L });
     // medbay scan
     if (p.f & 8) { g.save(); g.globalAlpha = .55 + Math.sin(this.time * 8) * .2; g.fillStyle = '#5dff8a'; const yy = p.y - CREW_HEIGHT * (.5 + .5 * Math.sin(this.time * 3)); g.fillRect(p.x - .34, yy, .68, .04); g.globalAlpha = .18; g.fillRect(p.x - .34, p.y - CREW_HEIGHT, .68, CREW_HEIGHT); g.restore(); }
     // guardian angel protection

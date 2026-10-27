@@ -189,7 +189,7 @@ async function amongScenario() {
   }
   const [A, B, C, D] = users;
   const au = (u, op, extra = {}) => u.s.req('au', { op, ...extra });
-  const created = await au(A, 'create', { public: true, region: 'Europe', name: 'Hote', look: { color: 'red', hat: 'cowboy' } });
+  const created = await au(A, 'create', { public: true, region: 'Europe', name: 'Hote', look: { color: 'red', hat: 'hat-11' } });
   assert.ok(created.ok);
   assert.match(created.code, /^[A-Z]{6}$/);
   await A.s.next(m => m.t === 'au' && m.k === 'welcome');
@@ -201,7 +201,7 @@ async function amongScenario() {
   assert.equal(bad.error, 'join');
   for (const u of [B, C, D]) { const j = await au(u, 'join', { code: created.code.toLowerCase(), name: u.psn }); assert.ok(j.ok, j.message); }
   const view = await B.s.next(m => m.t === 'au' && m.k === 'v' && m.v.players.length === 4, 4000);
-  assert.equal(view.v.players.find(p => p.name === 'Hote').hat, 'cowboy');
+  assert.equal(view.v.players.find(p => p.name === 'Hote').hat, 'hat-11');
   // the host starts: countdown, then roles
   A.s.send('au', { op: 'msg', m: { k: 'start' } });
   const intro = await B.s.next(m => m.t === 'au' && m.k === 'ev' && m.e === 'intro', 8000);

@@ -194,14 +194,18 @@ export class AmongApp {
   // ------------------------------------------------------------------ connection
   async connect(opts) {
     const me = this.me;
-    this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { cancelled = true; link?.close(); this.menu(this.cur || 'home'); }, 'ghost back'));
+    const wait = this.screen('au-wait', el('div', 'au-spinner'), el('p', '', opts.freeplay ? 'Préparation de l’entraînement…' : opts.join ? `Connexion à la partie ${opts.join}…` : 'Création de la partie…'), this.btn('Annuler', () => { cancelled = true; link?.close(); this.menu(this.cur || 'home'); }, 'ghost back'));
     let link = null, cancelled = false;
     try {
       if (opts.freeplay) { link = new LocalLink(me); }
       else if (this.online()) {
         link = new ServerLink();
         if (opts.join) await link.join(opts.join, this.hello()); else await link.create({ settings: opts.create, public: opts.public, lan: opts.lan, region: 'Europe' }, this.hello());
-      } else if (opts.join) { link = new GuestLink(me); await link.join(opts.join, this.hello()); }
+      } else if (opts.join) {
+        link = new GuestLink(me);
+        link.addEventListener('status', e => { if (e.detail.s === 'waiting' && !cancelled) wait.querySelector('p').textContent = `Partie ${opts.join} : l’hôte n’est pas encore joignable, nouvelle tentative…`; });
+        await link.join(opts.join, this.hello());
+      }
       else { link = new HostLink(me); await link.create(this.hello(), opts.create); }
     } catch (e) { link?.close(); if (cancelled) return; sfx.play('leave'); this.onlineMenuError(e.message || 'Connexion impossible.'); return; }
     if (cancelled) { link.close(); return; }       // « Annuler » pressed while connecting: leave the room we just entered
