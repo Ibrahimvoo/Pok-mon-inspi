@@ -23,6 +23,7 @@ export class GameClient extends EventTarget {
     this.onStatus = e => this.emit('status', e.detail);
     link.addEventListener('msg', this.onMsg);
     link.addEventListener('status', this.onStatus);
+    queueMicrotask(() => link.attach());
     this.pingTimer = setInterval(() => this.send({ k: 'ping', t: performance.now() }), 2000);
   }
   emit(type, detail) { this.dispatchEvent(new CustomEvent(type, { detail })); }

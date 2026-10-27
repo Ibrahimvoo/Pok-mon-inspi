@@ -1,7 +1,8 @@
-// The dropship where players wait before a game (traced from the reference image, 46 px = 1 crewmate).
+// The dropship where players wait before a game (traced from the reference image; 74 px = 1 world unit, measured
+// on the lobby screenshot: crate width vs crewmate height).
 const R = (x0, y0, x1, y1) => ({ r: [x0, y0, x1, y1] });
 export default {
-  id: 'lobby', name: 'Vaisseau', scale: 46, bounds: [250, 40, 920, 700],
+  id: 'lobby', name: 'Vaisseau', scale: 74, bounds: [250, 40, 920, 700],
   rooms: [{ id: 'lobby', name: 'Vaisseau', label: [588, 600], floor: 'lobby' }],
   ops: [
     ['add', { p: [[332, 302], [505, 302], [505, 285], [645, 285], [645, 302], [843, 302], [843, 600], [822, 622], [352, 622], [332, 600]] }, { room: 'lobby' }],

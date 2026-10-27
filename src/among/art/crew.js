@@ -122,33 +122,33 @@ function make(key, scale, draw) {
 }
 // scale = output pixels per reference pixel
 export function crewSprite(color, frame, scale, opts = {}) {
-  const q = Math.round(scale * 200) / 200;
+  const q = Math.max(.005, Math.round(scale * 200) / 200);
   const key = `c|${color}|${frame}|${q}|${opts.ghost ? 1 : 0}|${opts.noVisor ? 1 : 0}`;
   return make(key, q, g => { const imp = spriteBase(); if (imp) imp.draw(g, color, frame, opts); else drawCrewBase(g, color, frame, opts); });
 }
 export function deadSprite(color, scale) {
-  const q = Math.round(scale * 200) / 200;
+  const q = Math.max(.005, Math.round(scale * 200) / 200);
   return make(`d|${color}|${q}`, q, g => { const imp = spriteBase(); if (imp?.hasDead) imp.drawDead(g, color); else drawDeadBase(g, color); });
 }
-// draw a crewmate in a 2D context with its feet at (x, y); height = on-screen height of the whole suit
+// pixels per unit of the current transform (world view or plain canvas)
+const pxPerUnit = g => { const m = g.getTransform(); return Math.hypot(m.a, m.b) || 1; };
+// draw a crewmate in a 2D context with its feet at (x, y); height = height of the whole suit in the context's units
 export function drawCrew(g, color, x, y, height, { frame = -1, left = false, ghost = false, alpha = 1, noVisor = false } = {}) {
-  const scale = height / SIZE[1];
-  const dpr = g.canvas.dpr || 1;
-  const spr = crewSprite(color, frame, scale * dpr, { ghost, noVisor });
-  const w = spr.width / dpr, h = spr.height / dpr;
+  const scale = height / SIZE[1], px = pxPerUnit(g);
+  const spr = crewSprite(color, frame, Math.max(.01, scale * px), { ghost, noVisor });
   g.save();
   g.globalAlpha *= alpha;
   g.translate(x, y);
   if (left) g.scale(-1, 1);
-  g.drawImage(spr, -(CENTER + PAD) * scale, -(FEET + PAD) * scale, w, h);
+  // the sprite was rendered at spr.scale device pixels per reference pixel: back to context units
+  g.drawImage(spr, -(CENTER + PAD) * scale, -(FEET + PAD) * scale, spr.width / spr.scale * scale, spr.height / spr.scale * scale);
   g.restore();
 }
 export function drawDead(g, color, x, y, height, { left = false, alpha = 1 } = {}) {
-  const scale = height / SIZE[1];
-  const dpr = g.canvas.dpr || 1;
-  const spr = deadSprite(color, scale * dpr);
+  const scale = height / SIZE[1], px = pxPerUnit(g);
+  const spr = deadSprite(color, Math.max(.01, scale * px));
   g.save(); g.globalAlpha *= alpha; g.translate(x, y); if (left) g.scale(-1, 1);
-  g.drawImage(spr, -(CENTER + PAD) * scale, -(FEET + PAD) * scale, spr.width / dpr, spr.height / dpr);
+  g.drawImage(spr, -(CENTER + PAD) * scale, -(FEET + PAD) * scale, spr.width / spr.scale * scale, spr.height / spr.scale * scale);
   g.restore();
 }
 export function clearCrewCache() { cache.clear(); }

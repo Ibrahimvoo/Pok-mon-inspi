@@ -167,6 +167,20 @@ GAMES.unshift({ id: 'uno', title: 'UNO', publisher: 'Recréation non officielle'
     T('Champion', 'Remporter une partie', 'gold'),
     T('Perfectionniste', 'Obtenir tous les autres trophées', 'platinum'),
   ] });
+// Among Us: real, playable recreation (src/among). Maps, crewmates and role sounds come from the owner's references.
+GAMES.unshift({ id: 'among-us', title: 'Among Us', publisher: 'Recréation non officielle', genre: 'Party game', genres: ['Party', 'Action'],
+  release: '2026-10-26', price: 4.99, discount: 0, rating: 4.8, votes: 8120, pegi: 7, size: 1.1, players: '4-15 joueurs (en ligne et local)',
+  font: 'lilita', mood: 'space', thumb: .5, accent: '#c51111', real: true,
+  tagline: 'Un imposteur se cache parmi vous.',
+  desc: 'Le jeu de déduction sociale : équipiers et imposteurs à bord du Skeld ou sur Polus. Tâches interactives, sabotages, conduits, réunions d’urgence et votes, avec les rôles Scientifique, Ingénieur, Ange gardien, Tapageur, Mouchard, Détective, Juge, Métamorphe, Spectre et Vipère. Salons publics ou privés avec code, mode Entraînement, et chat vocal de proximité qui sépare strictement les vivants des fantômes.',
+  features: ['voice', 'vibration', 'online'], activities: ['Partie en ligne', 'Entraînement', 'Salon privé avec code'],
+  trophies: [
+    T('Première tâche', 'Terminer une tâche', 'bronze'),
+    T('Démasqué', 'Éjecter un Imposteur', 'silver'),
+    T('Imposteur parfait', 'Gagner en tant qu’Imposteur', 'gold'),
+    T('Équipage soudé', 'Gagner en tant qu’Équipier', 'silver'),
+    T('Perfectionniste', 'Obtenir tous les autres trophées', 'platinum'),
+  ] });
 export const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 
 export const FONT = {

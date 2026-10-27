@@ -122,8 +122,8 @@ export const ROLE_LABELS = {
 export const KILL_RANGE = [1.1, 1.8, 2.5];   // world units for Courte / Moyenne / Longue
 export const USE_RANGE = 1.15;
 export const REPORT_RANGE = 2.2;
-export const VISION_BASE = 4.6;             // light radius at 1x
-export const SPEED_BASE = 3.6;              // world units per second at 1x
+export const VISION_BASE = 5;               // light radius at 1x (the reference frames show a fully lit screen height)
+export const SPEED_BASE = 2.7;              // world units per second at 1x, measured on the supplied trailer
 export const LIGHTS_VISION = .25;           // crewmate vision multiplier while the lights are out
 export const ABILITY_RANGE = 1.9;
 
@@ -189,3 +189,6 @@ export function fmtRoleOpt(role, key, v) {
   if (d.type === 'bool') return v ? 'Oui' : 'Non';
   return `${String(+v.toFixed(2)).replace('.', ',')}${d.unit}`;
 }
+// on-screen scale, measured on the reference screenshots (lobby crate vs crewmate, Skeld cafeteria tables)
+export const CREW_HEIGHT = .82;             // world units from the top of the dome to the feet
+export const VIEW_HEIGHT = 7.4;             // world units visible from the top to the bottom of the screen

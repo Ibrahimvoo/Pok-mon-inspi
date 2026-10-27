@@ -27,7 +27,9 @@ const peerError = e => ({
 }[e?.type] || e?.message || 'La connexion a échoué.');
 
 class Base extends EventTarget {
-  emit(m) { this.dispatchEvent(new CustomEvent('msg', { detail: m })); }
+  // messages that arrive before the game client is attached (welcome, position, first view) are kept and replayed
+  emit(m) { if (!this.attached) { (this.queue ||= []).push(m); return; } this.dispatchEvent(new CustomEvent('msg', { detail: m })); }
+  attach() { this.attached = true; const q = this.queue || []; this.queue = []; q.forEach(m => this.emit(m)); }
   status(s, info) { this.state = s; this.dispatchEvent(new CustomEvent('status', { detail: { s, info } })); }
 }
 

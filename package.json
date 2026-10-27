@@ -18,7 +18,9 @@
     "e2e:mimic": "npm run build && node --no-warnings tools/e2e-mimic.mjs",
     "e2e:mimic-online": "npm run build && node --no-warnings tools/e2e-mimic-online.mjs",
     "e2e:uno": "npm run build && node --no-warnings tools/e2e-uno.mjs",
-    "check:crewmate": "node tools/among/check-crewmate.mjs"
+    "check:crewmate": "node tools/among/check-crewmate.mjs",
+    "e2e:among": "npm run build && node --no-warnings tools/e2e-among.mjs",
+    "e2e:among-online": "npm run build && node --no-warnings tools/e2e-among-online.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "^17.2.0-beta.15",

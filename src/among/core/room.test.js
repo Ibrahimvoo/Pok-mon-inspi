@@ -253,6 +253,10 @@ test('ties, skip votes, anonymous votes and confirm ejects', () => {
 test('impostors win at parity, and the button is refused during a crisis', () => {
   const s = new Sim({ seed: 8 });
   s.start(4, { roles: { p0: 'impostor' } });
+  const [h1, h2] = getMap('skeld').sabotage.reactor;
+  // two crewmates wait at the reactor (walking there takes longer than the meltdown timer)
+  assert.ok(s.walk('p2', h1.x + .6, h1.y + .3));
+  assert.ok(s.walk('p3', h2.x + .6, h2.y - .3));
   s.step(10000);
   s.send('p0', { k: 'sab', s: 'reactor' });
   assert.equal(s.room.game.sab.kind, 'reactor');
@@ -264,11 +268,6 @@ test('impostors win at parity, and the button is refused during a crisis', () =>
   assert.equal(s.room.phase, 'play');
   assert.match(s.c.get('p1').errs.at(-1), /crise/);
   // two players hold the reactor hands: fixed
-  const [h1, h2] = getMap('skeld').sabotage.reactor;
-  assert.ok(s.walk('p2', h1.x + .6, h1.y + .3));
-  if (process.env.DBG) console.log('p2 after', s.p('p2').x, s.p('p2').y, h1);
-  assert.ok(s.walk('p3', h2.x + .6, h2.y - .3));
-  if (process.env.DBG) console.log('reactor', Math.hypot(s.p('p2').x - h1.x, s.p('p2').y - h1.y), s.room.phase, s.t);
   s.send('p2', { k: 'fix', a: 'hold', i: 0, on: true });
   assert.ok(s.room.game.sab, 'one hand is not enough');
   s.send('p3', { k: 'fix', a: 'hold', i: 1, on: true });
