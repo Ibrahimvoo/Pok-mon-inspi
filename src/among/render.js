@@ -152,7 +152,7 @@ export class Renderer {
   }
   drawArrows(V) {
     const { g, W, H, U } = this, c = this.c;
-    const m = 34 * this.dpr, size = H * .036;
+    const m = 40 * this.dpr, size = H * .06;            // ~45 px high on a 720 px screen, like the footage
     const red = Math.floor(this.time * 2.5) % 2 === 1;          // sabotage arrows alternate red / yellow
     for (const t of this.arrowTargets(V)) {
       const [sx, sy] = this.toScreen(t.x, t.y);
